@@ -1,0 +1,45 @@
+2004-03-11  Pascal Scheffers  <pascal@scheffers.net>
+	
+	* bridge.tcl: Fixed a /msg loop for welcome messages, added config
+	options for irc server, port, nick and channel.
+	* chat.tcl: Added chatter2.cgi support to cut chat-lag
+	
+2004-03-11  Pascal Scheffers  <pascal@scheffers.net>
+	
+	* bridge.tcl: Added ~/.ircbridge sourcing
+	* chat.tcl: Added killpassword safeguard and chatpassword
+	
+2003-10-10  Pascal Scheffers  <pascal@scheffers.net>
+	
+	* bridge.tcl: slight improvement to onlineusers tracking
+
+2003-10-07  Pascal Scheffers  <pascal@scheffers.net>
+	
+	* bridge.tcl: Added code to [daemonize] the bridge (uses Tclx)
+	* bridge.tcl, chat.tcl: Added support for onlineusers tracking and
+	listing with the 'onlineusers' whisper from a webchat user.
+
+2003-10-07  Pascal Scheffers  <pascal@scheffers.net>
+	
+	* pkgIndex.tcl: Added so the bridge runs straight from CVS
+
+2003-06-26  David N. Welton  <davidw@dedasys.com>
+
+	* bridge.tcl: Large reworking by Aaron Faupell.
+	* chat.tcl:   Lots of changes here too.
+
+2003-02-28  David N. Welton  <davidw@dedasys.com>
+
+	* bridge.tcl: Add changes from Kristoffer Lawson
+	<setok@fishpool.com>.
+
+2003-01-30  David N. Welton  <davidw@dedasys.com>
+
+	* bridge.tcl: This file is the one that starts everything up.
+	  Removed startup #!/bin/sh stuff from chat.tcl.
+
+2003-01-29  David N. Welton  <davidw@dedasys.com>
+
+	* Added ircbridge to CVS.  There are several people interested in
+	  contributing to development efforts, so this seemed like an apt
+	  place to put it.

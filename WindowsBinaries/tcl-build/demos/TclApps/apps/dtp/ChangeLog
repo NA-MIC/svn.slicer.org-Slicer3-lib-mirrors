@@ -1,0 +1,67 @@
+2003-11-20  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* lib/tools/tools.tcl: Changed to understand the option '-out'.
+	* lib/app-toc/toc.tcl: The pre-existing option -out for 'meta'
+	* lib/app-map/map.tcl: was renamed to '-outdir'. Now when -out
+	* lib/app-idx/idx.tcl: is present for these sub-commands output
+	* lib/app-script/script.tcl: is written to the file specified
+	* lib/app-copyright/copyright.tcl: through the option instead of
+	* lib/app-subst/subst.tcl: stdout.
+	* lib/app-navbar/navbar.tcl:
+	* lib/app-meta/meta.tcl:
+	* lib/app-doc/doc.tcl:
+	* lib/app-changelog/changelog.tcl:
+
+2003-05-13  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* lib/app-assemble/assemble.tcl (help text): Fixed two spelling
+	  errors. SF Tcllib Bug [737171].
+
+2003-03-29  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* WRAPPING.txt: Added a description of the new one-step process
+	  for assembly + wrap.
+
+	* lib/tools/sync.tcl: 
+	* lib/app-assemble/assemble.tcl: Added wrapping of the assembled
+	  directory hierarchy to the code. The synchronization engine to
+	  do this can be found in 'sync.tcl' and was lifted from 'sdx'.
+
+	* lib/app-changelog/changelog.tcl: New package /
+	  subcommand. Parsing of changelogs and conversion into a doctools
+	  document for integration into other documentation.
+
+2003-03-28  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* lib/app-doc/doc.tcl: New package / subcommand. Command added to
+	  aid in the quick conversion of a single file without having to
+	  jump through all the hoops required for the batch processing of
+	  large sets.
+
+2003-03-25  Andreas Kupries  <andreask@activestate.com>
+
+	* lib/app-help/help.tcl (app-help::run): Extended the range
+	  covered by catch.
+
+2003-03-24  Andreas Kupries  <andreask@activestate.com>
+
+	* lib/app-help/help.tcl (app-help::run): Catching errors
+	  generating when trying to cache a new file in the
+	  starkit/pack. Application ight be set read-only instead of
+	  transparent.
+
+2003-03-13  Andreas Kupries  <andreask@activestate.com>
+
+	* WRAPPING.txt: Clarified that an installed tcllib cannot be used.
+
+	* README.txt: Extended a bit to explain the application.
+
+	* lib/app-assemble/assemble.tcl: Made assemble more robust when
+	  used with unuseable versions of tcllib.
+
+2003-03-11  Andreas Kupries  <andreas_kupries@users.sourceforge.net>
+
+	* lib/app-assemble/assemble.tcl: Added the subcommand 'assemble'
+	* lib/app-assemble/pkgIndex.tcl: described in 'WRAPPING.txt'.
+
+	* Initial import of the doctools processor.
