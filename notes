@@ -33,7 +33,7 @@ cvs -z3 -d :pserver:anoncvs@www.kwwidgets.org:/cvsroot/KWWidgets checkout -r HEA
 cvs -d :pserver:anoncvs:@www.itk.org:/cvsroot/Insight login
 cvs -z3 -d :pserver:anoncvs@www.itk.org:/cvsroot/Insight checkout -r HEAD Insight
 
-cvs -z3 -d :pserver:anonymous@teem.cvs.sf.net/cvsroot/teem login
+cvs -z3 -d :pserver:anonymous:@teem.cvs.sf.net/cvsroot/teem login
 cvs -z3 -d :pserver:anonymous@teem.cvs.sf.net/cvsroot/teem co -r HEAD teem
 
 cvs -d :pserver:anonymous:igstk@public.kitware.com:/cvsroot/IGSTK login
