@@ -1,0 +1,22 @@
+srcdir        = @srcdir@
+VPATH         = @srcdir@
+
+EXECUTABLES = \
+itkBasicArchitectureTest \
+itkTraitsTest \
+itkSmartPointerTest \
+itkDataTypeTest \
+itkExceptionObjectTest \
+itkImageMomentsTest \
+itkImageIteratorTest \
+itkMeshTest \
+itkExtractMeshConnectedRegionsTest \
+itkMeshInstanceTest \
+itkNumericsTest \
+itkPixelAccessTest
+
+
+
+INSIGHT_BIN = @fullSrcDir@
+
+@MAKEINCLUDE@ @MAKEQUOTE@@ITK_OBJ@/Code/config/Insight.make@MAKEQUOTE@
