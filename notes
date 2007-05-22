@@ -1,0 +1,41 @@
+#
+# this set of mirrors was originally made using the following commands
+# - the plan is to do cvs updates in these directories and
+#   check the updated code back into subversion
+# - this repository does not include commit checks, because some
+#   of the original files include tabs and even windows newlines!
+#
+
+
+cvs -d :pserver:anonymous:cmake@www.cmake.org:/cvsroot/CMake login
+cvs -z3 -d :pserver:anonymous:cmake@www.cmake.org:/cvsroot/CMake checkout -r CMake-2-4-2 CMake
+
+mkdir tcl
+cd tcl
+cvs -z3 -d :pserver:anonymous:@tcl.cvs.sf.net/cvsroot/tcl login
+cvs -z3 -d :pserver:anonymous@tcl.cvs.sf.net/cvsroot/tcl co -r core-8-4-6 tcl
+cvs -z3 -d :pserver:anonymous:@tktoolkit.cvs.sf.net/cvsroot/tktoolkit login
+cvs -z3 -d :pserver:anonymous@tktoolkit.cvs.sf.net/cvsroot/tktoolkit co -r core-8-4-6 tk
+cvs -z3 -d :pserver:anonymous:@incrtcl.cvs.sf.net/cvsroot/incrtcl login
+cvs -z3 -d :pserver:anonymous@incrtcl.cvs.sf.net/cvsroot/incrtcl co -r itcl-3-2-1 incrTcl
+cvs -z3 -d :pserver:anonymous@incrtcl.cvs.sf.net/cvsroot/incrtcl co -r iwidgets-4-0-1 iwidgets
+cvs -z3 -d :pserver:anonymous:@blt.cvs.sf.net/cvsroot/blt login
+cvs -z3 -d :pserver:anonymous@blt.cvs.sf.net/cvsroot/blt co -r blt24z blt
+
+cd ..
+
+cvs -d :pserver:anonymous:vtk@public.kitware.com:/cvsroot/VTK login
+cvs -z3 -d :pserver:anonymous@public.kitware.com:/cvsroot/VTK checkout -r VTK-5-0 VTK
+
+cvs -d :pserver:anoncvs:@www.kwwidgets.org:/cvsroot/KWWidgets login
+cvs -z3 -d :pserver:anoncvs@www.kwwidgets.org:/cvsroot/KWWidgets checkout -r HEAD KWWidgets
+
+cvs -d :pserver:anoncvs:@www.itk.org:/cvsroot/Insight login
+cvs -z3 -d :pserver:anoncvs@www.itk.org:/cvsroot/Insight checkout -r HEAD Insight
+
+cvs -z3 -d :pserver:anonymous@teem.cvs.sf.net/cvsroot/teem login
+cvs -z3 -d :pserver:anonymous@teem.cvs.sf.net/cvsroot/teem co -r HEAD teem
+
+cvs -d :pserver:anonymous:igstk@public.kitware.com:/cvsroot/IGSTK login
+cvs -z3 -d :pserver:anonymous@public.kitware.com:/cvsroot/IGSTK checkout -r IGSTK-2-0-1 IGSTK
+
