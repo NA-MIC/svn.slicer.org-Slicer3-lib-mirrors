@@ -1,0 +1,32 @@
+/bgerror.tcl/1.23.2.1/Fri Apr 25 20:11:06 2003//Tcore-8-4-6
+/button.tcl/1.17/Wed Sep  4 02:05:52 2002//Tcore-8-4-6
+/choosedir.tcl/1.15/Mon Jul 22 21:25:39 2002//Tcore-8-4-6
+/clrpick.tcl/1.20/Fri Feb 21 14:40:26 2003//Tcore-8-4-6
+/comdlg.tcl/1.9/Fri Feb 21 13:32:14 2003//Tcore-8-4-6
+/console.tcl/1.22/Fri Feb 21 03:34:29 2003//Tcore-8-4-6
+/dialog.tcl/1.14.2.1/Wed Oct 22 15:22:07 2003//Tcore-8-4-6
+/entry.tcl/1.21/Thu Jan 23 23:30:11 2003//Tcore-8-4-6
+/focus.tcl/1.9/Wed Aug  1 16:21:11 2001//Tcore-8-4-6
+/listbox.tcl/1.13.2.2/Tue Feb 17 07:17:17 2004//Tcore-8-4-6
+/menu.tcl/1.18.2.1/Wed Feb  4 00:23:04 2004//Tcore-8-4-6
+/mkpsenc.tcl/1.3/Fri Jul 19 14:37:21 2002//Tcore-8-4-6
+/msgbox.tcl/1.24.2.1/Fri Mar 14 21:30:58 2003//Tcore-8-4-6
+/obsolete.tcl/1.2/Mon Sep 14 18:23:24 1998//Tcore-8-4-6
+/optMenu.tcl/1.4/Wed Aug  1 16:21:11 2001//Tcore-8-4-6
+/palette.tcl/1.8/Thu Nov 29 10:54:21 2001//Tcore-8-4-6
+/panedwindow.tcl/1.6.2.1/Sat Jul 19 01:22:15 2003//Tcore-8-4-6
+/prolog.ps/1.3/Thu Feb  4 20:59:48 1999//Tcore-8-4-6
+/safetk.tcl/1.8/Tue Oct 31 01:11:51 2000//Tcore-8-4-6
+/scale.tcl/1.9.2.3/Fri Oct  3 00:42:17 2003//Tcore-8-4-6
+/scrlbar.tcl/1.10.2.1/Tue Feb 17 07:17:17 2004//Tcore-8-4-6
+/spinbox.tcl/1.6/Sat Aug 31 06:12:28 2002//Tcore-8-4-6
+/tclIndex/1.8/Tue Jun 25 16:27:44 2002//Tcore-8-4-6
+/tearoff.tcl/1.7/Wed Aug  1 16:21:11 2001//Tcore-8-4-6
+/text.tcl/1.24.2.2/Tue Feb 17 07:17:17 2004//Tcore-8-4-6
+/tk.tcl/1.46.2.1/Tue Oct 28 15:59:34 2003//Tcore-8-4-6
+/tkfbox.tcl/1.38.2.3/Wed Nov 12 00:04:32 2003//Tcore-8-4-6
+/unsupported.tcl/1.4/Wed Jul 17 16:51:53 2002//Tcore-8-4-6
+/xmfbox.tcl/1.25/Tue Feb 18 21:19:35 2003//Tcore-8-4-6
+D/demos////
+D/images////
+D/msgs////
