@@ -1,0 +1,24 @@
+/GNUmakefile/1.23/Sun Oct 15 04:27:54 2006//THEAD
+/INFO.txt/1.3/Mon Jan 10 00:02:54 2005//THEAD
+/TODO.txt/1.13/Sun Sep 25 02:37:52 2005//THEAD
+/ctx.c/1.38/Mon Apr 23 08:58:07 2007//THEAD
+/deconvolve.c/1.4/Tue Jan 23 14:44:47 2007//THEAD
+/defaultsGage.c/1.17/Thu Mar 29 01:25:00 2007//THEAD
+/filter.c/1.27/Tue Jan  2 23:36:33 2007//THEAD
+/gage.h/1.102/Thu Mar 29 01:25:00 2007//THEAD
+/kind.c/1.13/Wed Jan  3 05:02:45 2007//THEAD
+/miscGage.c/1.27/Thu Mar 29 01:25:00 2007//THEAD
+/print.c/1.23/Wed Mar  1 13:09:01 2006//THEAD
+/privateGage.h/1.20/Wed Mar  1 13:09:01 2006//THEAD
+/pvl.c/1.30/Thu Mar 29 01:25:01 2007//THEAD
+/scl.c/1.49/Tue Jan 30 22:11:52 2007//THEAD
+/sclanswer.c/1.33/Wed Mar  1 13:09:01 2006//THEAD
+/sclfilter.c/1.24/Wed Mar  1 13:09:01 2006//THEAD
+/sclprint.c/1.19/Wed Mar  1 13:09:01 2006//THEAD
+/shape.c/1.29/Mon Apr 23 08:58:07 2007//THEAD
+/sources.cmake/1.3/Thu Mar 23 11:51:42 2006//THEAD
+/st.c/1.19/Wed Mar  1 13:09:01 2006//THEAD
+/update.c/1.30/Thu Mar 29 01:25:01 2007//THEAD
+/vecGage.c/1.36/Tue Jan 30 22:11:52 2007//THEAD
+/vecprint.c/1.13/Sat Jan 14 20:29:13 2006//THEAD
+D/test////
