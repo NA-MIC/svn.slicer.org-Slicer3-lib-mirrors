@@ -3,9 +3,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.0)
 PROJECT(TEEM)
 
 #-----------------------------------------------------------------------------
-# TEEM version number.  Must reflect the values in teem/src/air/air.h
+# TEEM version number.  Must reflect the values in teem/src/air.h
 SET(TEEM_VERSION_MAJOR "1")
-SET(TEEM_VERSION_MINOR "10")
+SET(TEEM_VERSION_MINOR "9")
 SET(TEEM_VERSION_PATCH "0")
 
 # Version string should not include patch level.  The major.minor is
@@ -59,13 +59,21 @@ ENDIF(NOT TEEM_BUILD_SHARED_LIBS)
 
 OPTION(TEEM_ZLIB "Build Teem with support for gzip compression." OFF)
 OPTION(TEEM_PNG "Build Teem with support for PNG images." OFF)
+OPTION(TEEM_VTK_MANGLE "Build Teem using the mangled libraries from VTK for ZLIB and PNG (needed for VTK5)." OFF)
+OPTION(TEEM_VTK_TOOLKITS_IPATH "Location of VTK Build directory for ZLIB and PNG includes (needed for VTK5)." OFF)
 
 # Can't build PNG without ZLIB, so force it on.
 IF(TEEM_PNG AND NOT TEEM_ZLIB)
   SET(TEEM_ZLIB ON)
 ENDIF(TEEM_PNG AND NOT TEEM_ZLIB)
 
+IF(TEEM_VTK_MANGLE)
+  ADD_DEFINITIONS(-DTEEM_VTK_MANGLE=1)
+  INCLUDE_DIRECTORIES( ${TEEM_VTK_TOOLKITS_IPATH} )
+ENDIF(TEEM_VTK_MANGLE)
+
 SET(TEEM_ZLIB_LIB "")
+SET(TEEM_VTK_MANGLE "")
 SET(TEEM_PNG_LIB "")
 IF(TEEM_ZLIB)
   # Find ZLIB
@@ -84,6 +92,7 @@ IF(TEEM_ZLIB)
       ADD_DEFINITIONS(-DTEEM_PNG=1 ${PNG_DEFINITIONS})
       SET(TEEM_PNG_LIB ${PNG_LIBRARIES})
       SET(TEEM_PNG_IPATH ${PNG_INCLUDE_DIR})
+      INCLUDE_DIRECTORIES( ${ZLIB_INCLUDE_DIR}/.. )
     ELSE(PNG_FOUND)
       SET(TEEM_PNG OFF)
     ENDIF(PNG_FOUND)
@@ -141,7 +150,8 @@ ADD_DEFINITIONS(-DTEEM_DIO=0)
 #ENDIF(USE_DIRECTIO)
 
 SET(TEEM_LIBRARIES air hest biff nrrd ell unrrdu dye moss gage bane
- limn seek hoover alan echo ten mite coil push)
+  limn hoover alan echo ten
+  mite coil push)
 
 SET(TEEM_INSTALLED_HEADER_FILES)
 FOREACH(header_file
@@ -156,18 +166,19 @@ FOREACH(header_file
     ell/ellMacros.h
     unrrdu/unrrdu.h
     dye/dye.h
-    moss/moss.h
-    gage/gage.h
-    bane/bane.h
-    limn/limn.h
-    seek/seek.h
-    hoover/hoover.h
     alan/alan.h
+    limn/limn.h
+    gage/gage.h
+    moss/moss.h
     echo/echo.h
+    bane/bane.h
     ten/ten.h
     ten/tenMacros.h
+    hoover/hoover.h
     mite/mite.h
-    coil/coil.h
+    nrrd/nrrdDefines.h
+    nrrd/nrrdMacros.h
+    nrrd/nrrdEnums.h
     push/push.h
     )
   # When debugging, uncomment this line
@@ -183,92 +194,20 @@ ENDFOREACH(header_file)
 #---
 # Include directory 
 INCLUDE_DIRECTORIES(
-  "${TEEM_BINARY_DIR}/include/"
   "${TEEM_SOURCE_DIR}/include/"
+  "${TEEM_BINARY_DIR}/include/"
   )
-
-
-OPTION(BUILD_VTK_CAPATIBLE_TEEM "Build a VTK compatible teem library" OFF)
-
-IF(BUILD_VTK_CAPATIBLE_TEEM)
-  SET (TEEM_ZLIB_DLLCONF_IPATH "" CACHE PATH "Path to zlib DLL configure stuff")
-  SET (TEEM_PNG_DLLCONF_IPATH "" CACHE PATH "Path to png DLL configure stuff")
-ENDIF(BUILD_VTK_CAPATIBLE_TEEM)
-
-
-## Add external library path includes
-IF(TEEM_ZLIB)
-  INCLUDE_DIRECTORIES(${TEEM_ZLIB_IPATH})
-  INCLUDE_DIRECTORIES(${TEEM_ZLIB_DLLCONF_IPATH})
-  IF(TEEM_PNG)
-    INCLUDE_DIRECTORIES(${TEEM_PNG_IPATH})
-    INCLUDE_DIRECTORIES(${TEEM_PNG_DLLCONF_IPATH})
-  ENDIF(TEEM_PNG)
-ENDIF(TEEM_ZLIB)
-
-IF(TEEM_BZIP2)
-  INCLUDE_DIRECTORIES(${TEEM_BZIP2_IPATH})
-ENDIF(TEEM_BZIP2)
-
-# All the source files
-SET(TEEM_SOURCES)
-
-#-----------------------------------------------------------------------------
-# Macro for adding the current set of source files to the master list
-MACRO(ADD_TEEM_LIBRARY dir)
-  SET(srcs)
-  FOREACH(src ${ARGN})
-    SET(srcs ${srcs} "src/${dir}/${src}")
-  ENDFOREACH(src ${ARGN})
-  SET(TEEM_SOURCES ${TEEM_SOURCES} ${srcs})
-ENDMACRO(ADD_TEEM_LIBRARY name)
-
 
 #-----------------------------------------------------------------------------
 # Dispatch the build into the proper subdirectories.
-FOREACH(dir ${TEEM_LIBRARIES})
-  INCLUDE(src/${dir}/sources.cmake)
-ENDFOREACH(dir ${TEEM_LIBRARIES})
-
-#-----------------------------------------------------------------------------
-# Build the Mega library
-#
-# This needs to occur after the parsing of the subdirectories.
-
-# Create the library target
-ADD_LIBRARY(teem ${TEEM_SOURCES})
-
-IF(TEEM_BZIP2_LIB)
-  TARGET_LINK_LIBRARIES(teem ${TEEM_BZIP2_LIB})
-ENDIF(TEEM_BZIP2_LIB)
-IF(TEEM_ZLIB_LIB)
-  TARGET_LINK_LIBRARIES(teem ${TEEM_ZLIB_LIB})
-  IF(TEEM_PNG_LIB)
-    TARGET_LINK_LIBRARIES(teem ${TEEM_PNG_LIB})
-  ENDIF(TEEM_PNG_LIB)
-ENDIF(TEEM_ZLIB_LIB)
-
-IF(UNIX)
-  TARGET_LINK_LIBRARIES(teem -lm)
-ENDIF(UNIX)
-
-INSTALL_TARGETS(/lib teem)
-
-# Now compile the binaries
-SUBDIRS(src/bin)
-
-# I found some hex programs
-OPTION(BUILD_HEX "Build hehex and enhex" OFF)
-IF(BUILD_HEX)
-  SUBDIRS(src/hex)
-ENDIF(BUILD_HEX)
+SUBDIRS(src)
 
 #-----------------------------------------------------------------------------
 # For testing
 OPTION(BUILD_TESTING "Enable this to perform testing of TEEM" OFF)
 IF(BUILD_TESTING)
   SET(DART_ROOT "" CACHE INTERNAL "" FORCE)
-  INCLUDE(CTest)
+  INCLUDE(Dart)
   ENABLE_TESTING()
   MARK_AS_ADVANCED(TCL_TCLSH)
 ENDIF(BUILD_TESTING)
@@ -289,9 +228,6 @@ SET(TEEM_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
 SET(TEEM_USE_FILE ${TEEM_SOURCE_DIR}/CMake/TEEMUse.cmake)
 SET(TEEM_INCLUDE_DIRS "${TEEM_BINARY_DIR}/include")
 SET(TEEM_BUILD_SETTINGS_FILE ${TEEM_BINARY_DIR}/TEEMBuildSettings.cmake)
-SET(TEEM_TOOLS "affine;idx2pos;nrrdSanity;spots;unu;airSanity;ilk;overrgb;talkweb;vprobe;cubic;miter;pos2idx;tend;emap;mrender;pprobe;undos;gkms;ninspect;qbert;ungantry;deconv")
-
-
 SET(prefix "${TEEM_BINARY_DIR}")
 SET(exec_prefix "${prefix}")
 SET(exec_prefix_set "no")
