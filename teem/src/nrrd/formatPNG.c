@@ -25,7 +25,11 @@
 
 #include <teemPng.h>
 #if TEEM_PNG
+#if USE_VTK_PNG
+#include <vtk_png.h>
+#else
 #include <png.h>
+#endif
 #endif
 
 #define MAGIC "\211PNG"
