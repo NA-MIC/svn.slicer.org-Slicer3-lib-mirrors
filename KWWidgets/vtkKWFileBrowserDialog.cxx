@@ -35,7 +35,7 @@
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkKWFileBrowserDialog );
-vtkCxxRevisionMacro(vtkKWFileBrowserDialog, "$Revision: 1.25 $");
+vtkCxxRevisionMacro(vtkKWFileBrowserDialog, "$Revision: 1.27 $");
 
 //----------------------------------------------------------------------------
 class vtkKWFileBrowserDialogInternals
@@ -220,7 +220,7 @@ void vtkKWFileBrowserDialog::Update()
     {
     this->FileBrowserWidget->DirectoryExplorerVisibilityOn();
     this->FileBrowserWidget->FileListTableVisibilityOff();
-    this->SetMinimumSize(500, 300);
+    this->SetMinimumSize(565, 400);
     if (!this->GetTitle() || !strcmp(this->GetTitle(), "Select File"))
       {
       this->SetTitle("Select Directory");
@@ -678,7 +678,8 @@ int vtkKWFileBrowserDialog::FileOK()
           }
         }
 
-      this->FileNames->InsertNextValue(fullname.c_str());
+      this->FileNames->InsertNextValue(
+        KWFileBrowser_GetUnixPath(fullname.c_str()));
       return 1;
       }
 
@@ -688,7 +689,8 @@ int vtkKWFileBrowserDialog::FileOK()
 
     if (this->SaveDialog)
       {
-      this->FileNames->InsertNextValue(fullname.c_str());
+      this->FileNames->InsertNextValue(
+        KWFileBrowser_GetUnixPath(fullname.c_str()));
       return 1;
       }
     
@@ -786,6 +788,16 @@ void vtkKWFileBrowserDialog::FileTypeChangedCallback(
 }
 
 //----------------------------------------------------------------------------
+char* vtkKWFileBrowserDialog::GetLastPath()
+{
+  if(this->LastPath)
+    {
+    return KWFileBrowser_GetUnixPath(this->LastPath);
+    }
+  return NULL;
+}
+
+//----------------------------------------------------------------------------
 const char* vtkKWFileBrowserDialog::GenerateLastPath(
   const char* path)
 {
@@ -800,7 +812,7 @@ const char* vtkKWFileBrowserDialog::GenerateLastPath(
     this->SetLastPath(NULL);
     }
     
-  return this->LastPath;
+  return KWFileBrowser_GetUnixPath(this->LastPath);
 }
 
 //----------------------------------------------------------------------------

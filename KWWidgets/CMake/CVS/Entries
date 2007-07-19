@@ -1,14 +1,14 @@
-/CMakeLists.txt/1.2/Wed May 24 18:17:32 2006//THEAD
-/FindGettext.cmake/1.1/Wed May 17 15:58:51 2006//THEAD
-/FindIncrTCL.cmake/1.1/Thu Jan  4 17:13:17 2007//THEAD
-/KWWidgetsGettextExtract.cmake/1.1/Wed May 17 15:58:51 2006//THEAD
-/KWWidgetsGettextInitOrMerge.cmake/1.1/Wed May 17 15:58:51 2006//THEAD
-/KWWidgetsInternationalizationMacros.cmake/1.2/Wed May 31 20:14:01 2006//THEAD
-/KWWidgetsPathsMacros.cmake/1.9/Fri Jan  5 23:14:38 2007//THEAD
-/KWWidgetsResourceMacros.cmake/1.2/Tue May 30 17:30:37 2006//THEAD
-/KWWidgetsTclTkMacros.cmake/1.2/Thu Jan  4 19:14:20 2007//THEAD
-/KWWidgetsTestingMacros.cmake/1.1/Wed May 17 15:58:51 2006//THEAD
-/KWWidgetsValgrindSuppressions.supp/1.1/Wed May 17 15:58:51 2006//THEAD
-/KWWidgetsVersionMacros.cmake/1.1/Wed Jul 12 15:59:04 2006//THEAD
-/KWWidgetsWrappingMacros.cmake/1.1/Wed May 17 15:58:51 2006//THEAD
 D/ExportConfiguration////
+/CMakeLists.txt/1.2/Thu Jul 19 20:24:27 2007//
+/FindGettext.cmake/1.1/Thu Jul 19 20:24:27 2007//
+/FindIncrTCL.cmake/1.1/Thu Jul 19 20:24:27 2007//
+/KWWidgetsGettextExtract.cmake/1.1/Thu Jul 19 20:24:27 2007//
+/KWWidgetsGettextInitOrMerge.cmake/1.1/Thu Jul 19 20:24:27 2007//
+/KWWidgetsInternationalizationMacros.cmake/1.2/Thu Jul 19 20:24:27 2007//
+/KWWidgetsPathsMacros.cmake/1.9/Thu Jul 19 20:24:27 2007//
+/KWWidgetsResourceMacros.cmake/1.2/Thu Jul 19 20:24:27 2007//
+/KWWidgetsTclTkMacros.cmake/1.2/Thu Jul 19 20:24:27 2007//
+/KWWidgetsTestingMacros.cmake/1.1/Thu Jul 19 20:24:27 2007//
+/KWWidgetsValgrindSuppressions.supp/1.1/Thu Jul 19 20:24:27 2007//
+/KWWidgetsVersionMacros.cmake/1.1/Thu Jul 19 20:24:27 2007//
+/KWWidgetsWrappingMacros.cmake/1.1/Thu Jul 19 20:24:27 2007//

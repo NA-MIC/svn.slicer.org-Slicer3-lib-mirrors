@@ -1,8 +1,8 @@
-/.cvsignore/1.1/Sat Feb  4 14:22:10 2006//THEAD
-/CMakeLists.txt/1.1/Sun Jan 29 19:31:00 2006//THEAD
-/KWWidgetsPythonExtraInit.cxx/1.5/Thu Aug 24 14:36:24 2006//THEAD
-/PythonInstall.cmake.in/1.2/Mon Feb  6 23:29:01 2006//THEAD
-/compile_all_vtk.py.in/1.1/Sun Jan 29 19:31:00 2006//THEAD
-/kwwidgets.py/1.2/Sat Feb  4 14:04:54 2006//THEAD
-/setup.py.in/1.1/Sun Jan 29 19:31:00 2006//THEAD
+/.cvsignore/1.1/Thu Jul 19 20:24:27 2007//
+/CMakeLists.txt/1.1/Thu Jul 19 20:24:27 2007//
+/KWWidgetsPythonExtraInit.cxx/1.5/Thu Jul 19 20:24:27 2007//
+/PythonInstall.cmake.in/1.2/Thu Jul 19 20:24:27 2007//
+/compile_all_vtk.py.in/1.1/Thu Jul 19 20:24:27 2007//
+/kwwidgets.py/1.2/Thu Jul 19 20:24:27 2007//
+/setup.py.in/1.1/Thu Jul 19 20:24:27 2007//
 D
