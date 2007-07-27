@@ -11,12 +11,11 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkCmds.c,v 1.31 2002/09/02 19:16:23 hobbs Exp $
+ * RCS: @(#) $Id: tkCmds.c,v 1.31.2.3 2006/03/13 18:18:59 dgp Exp $
  */
 
 #include "tkPort.h"
 #include "tkInt.h"
-#include <errno.h>
 
 #if defined(WIN32)
 #include "tkWinInt.h"
@@ -755,12 +754,11 @@ Tk_TkObjCmd(clientData, interp, objc, objv)
 		return TCL_ERROR;
 	    }
 
-	    screenPtr = Tk_Screen(tkwin);
-
 	    skip = TkGetDisplayOf(interp, objc - 2, objv + 2, &tkwin);
 	    if (skip < 0) {
 		return TCL_ERROR;
 	    }
+	    screenPtr = Tk_Screen(tkwin);
 	    if (objc - skip == 2) {
 		d = 25.4 / 72;
 		d *= WidthOfScreen(screenPtr);
@@ -789,7 +787,7 @@ Tk_TkObjCmd(clientData, interp, objc, objv)
 	    break;
 	}
 	case TK_USE_IM: {
-	    TkDisplay *dispPtr = ((TkWindow *) tkwin)->dispPtr;
+	    TkDisplay *dispPtr;
 	    int skip;
 
 	    if (Tcl_IsSafe(interp)) {
@@ -802,9 +800,8 @@ Tk_TkObjCmd(clientData, interp, objc, objv)
 	    skip = TkGetDisplayOf(interp, objc-2, objv+2, &tkwin);
 	    if (skip < 0) {
 		return TCL_ERROR;
-	    } else if (skip) {
-		dispPtr = ((TkWindow *) tkwin)->dispPtr;
 	    }
+	    dispPtr = ((TkWindow *) tkwin)->dispPtr;
 	    if ((objc - skip) == 3) {
 		/*
 		 * In the case where TK_USE_INPUT_METHODS is not defined,
@@ -1245,6 +1242,10 @@ Tk_WinfoObjCmd(clientData, interp, objc, objv)
 	    
 	    Tk_MakeWindowExist(tkwin);
 	    TkpPrintWindowId(buf, Tk_WindowId(tkwin));
+	    /*
+	     * interp result may have changed, refetch it
+	     */
+	    resultPtr = Tcl_GetObjResult(interp);
 	    Tcl_SetStringObj(resultPtr, buf, -1);
 	    break;
 	}

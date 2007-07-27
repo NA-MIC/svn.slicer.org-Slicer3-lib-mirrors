@@ -1,10 +1,3138 @@
-2004-03-01  Don Porter  <dgp@users.sourceforge.net>
+2007-05-25  Don Porter  <dgp@users.sourceforge.net>
+
+	*** 8.4.15 TAGGED FOR RELEASE ***
+
+	* unix/README:	Updates and typo corrections.  [Bug 1724841]
+
+2007-05-16  Don Porter  <dgp@users.sourceforge.net>
+
+	* tests/bind.test:	Make test suite more SCIM-tolerant [Bug 1609316]
+
+2007-05-15  Don Porter  <dgp@users.sourceforge.net>
+
+	* changes: updates for 8.4.15 release.
+
+	* generic/tkGrid.c: Stop crash due to list intrep shimmer [Bug 1677608]
+
+2007-05-09  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkFileFilter.c (AddClause): OSType endianness fixes.
+
+	* library/palette.tcl (tk::RecolorTree): handle color options with
+	empty value, fixes error due to emtpy -selectforeground (reported on
+	tcl-mac by Russel E. Owen).
+
+	* macosx/tkMacOSXWindowEvent.c:	ensure window is brought to the front
+	* macosx/tkMacOSXMouseEvent.c:	at the start of a window drag (except
+	* macosx/tkMacOSXInt.h:		when cmd key is down); formatting and
+					whitespace fixes.
+
+	* macosx/tkMacOSXDialog.c (Tk_GetSaveFileObjCmd): add -filetypes option
+	processing.
+
+	* macosx/tkMacOSXEmbed.c (TkpMakeWindow, TkpUseWindow): fix sending of
+	Visibility event for embedded windows (fixes frame-3.9 hang).
+
+	* macosx/tkMacOSXScrlbr.c (ScrollbarBindProc):		fix testsuite
+	* macosx/tkMacOSXSubwindows.c (TkMacOSXUpdateClipRgn):	crashes by
+	adding sanity checks.
+
+	* macosx/tkMacOSXButton.c: fix debug msg typo.
+
+2007-04-29  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkCanvas.c:	allow -selectforeground option to be None; add
+	* generic/tkCanvText.c:	fallback to fgColor when selFgColor is None
+	* generic/tkEntry.c:	(new default on aqua to match native L&F).
+	* generic/tkListbox.c:
+	* generic/tkText.c:
+
+	* generic/tkCanvas.c:	   add support for bypassing all of Tk's double
+	* generic/tkEntry.c:	   buffered drawing into intermediate pixmaps
+	* generic/tkFrame.c:	   (via TK_NO_DOUBLE_BUFFERING #define), it is
+	* generic/tkListbox.c:	   unnecessary & wasteful on aqua where all
+	* generic/tkPanedWindow.c: drawing is already double-buffered by the
+	* generic/tkTextDisp.c:	   window server. (Use of this on other
+	* macosx/tkMacOSXPort.h:   platforms would only require implementation
+	* unix/tkUnixScale.c:	   of TkpClipDrawableToRect()).
+
+	* library/bgerror.tcl:	on aqua, use moveable alert resp. modal dialog
+	* library/dialog.tcl:	window class and corresponding system
+				background pattern; fix button padding.
+
+	* library/tearoff.tcl:	correct aqua menu bar height; vertically offset
+	* library/tk.tcl:	aqua tearoff floating window to match menu.
+
+	* library/demos/menu.tcl:   on aqua, use custom MDEF and tearoffs;
+	* library/demos/menubu.tcl: correct menubutton toplevel name.
+
+	* library/demos/puzzle.tcl: fix button size & padding for aqua.
+
+	* macosx/tkMacOSXCarbonEvents.c: add window event target carbon event
+	* macosx/tkMacOSXEvent.c:	 handler for all kEventClassWindow and
+	* macosx/tkMacOSXEvent.h:	 kEventClassMouse events; move all
+	* macosx/tkMacOSXNotify.c:	 remaining events except for
+	* macosx/tkMacOSXWindowEvent.c:	 kEventClassKeyboard from dispatcher to
+	application event handler; pass event handler callRef downstream; fix
+	debug event tracing; process all tcl event types in carbon event timer;
+	delay carbon event timer first fire; add TkMacOSXTrackingLoop() to mark
+	enter/exit of event tracking loop during which all tcl events but only
+	carbon update events should be processed by the timer (replaces various
+	calls to Tcl_SetServiceMode()); rename TkMacOSXReceiveAndProcessEvent()
+	to TkMacOSXReceiveAndDispatchEvent(), move it from tkMacOSXEvent.c to
+	tkMacOSXCarbonEvents.c and modify it to dequeue only update events
+	during a tracking loop; add TkMacOSXRunTclEventLoop() to standardize
+	the various ways in use to run the tcl event loop; add handling of
+	kEventClassAppearance events (for ScrollBarVariantChanged event).
+
+	* macosx/tkMacOSXDialog.c:	use new TkMacOSXTrackingLoop() around
+	* macosx/tkMacOSXEvent.c:	blocking API that puts up modal dialogs
+	* macosx/tkMacOSXMenu.c:	or when entering/exiting menu/control
+	* macosx/tkMacOSXMouseEvent.c:	tracking, window dragging and other
+	* macosx/tkMacOSXScale.c:	mouse tracking loops.
+	* macosx/tkMacOSXScrlbr.c:
+	* macosx/tkMacOSXWindowEvent.c:
+	* macosx/tkMacOSXWm.c:
+
+	* macosx/tkMacOSXDialog.c:	use new TkMacOSXRunTclEventLoop()
+	* macosx/tkMacOSXScale.c:	instead of Tcl_DoOneEvent(),
+	* macosx/tkMacOSXScrlbr.c:	Tcl_ServiceAll(), TclServiceIdle()
+	* macosx/tkMacOSXWindowEvent.c:	and Tcl_GlobalEval("update idletasks").
+
+	* macosx/tkMacOSXColor.c: make available as Tk system colors all
+	* macosx/tkMacOSXPort.h:  appearance manager brushes, text colors and
+	backgrounds with new and legacy names, as well as the fully transparent
+	color "systemTransparent"; add TkMacOSXSetColorIn{Port,Context}() to
+	directly set an X pixel color value in the current QD port resp. the
+	given CG context without requiring passage through rgb representation
+	(lossy for most system colors); modernize/remove Classic-era code;
+	replace crufty strcmp() elseifs by Tcl_GetIndexFromObjStruct().
+
+	* macosx/tkMacOSXButton.c:	use new TkMacOSXSetColorInPort()
+	* macosx/tkMacOSXDraw.c:	instead of setting rgb color directly
+	* macosx/tkMacOSXMenubutton.c:	to allow for non-rgb system colors.
+
+	* macosx/tkMacOSXCursor.c: implement "none" cursor as on other
+	platforms [Patch 1615427]; add all missing appearance manager cursors.
+
+	* macosx/tkMacOSXDefault.h: set SELECT_FG_COLORs to None to match aqua
+	L&F; use standard system color names; use new 'menu' system font;
+	correct default scrollbar width.
+
+	* macosx/tkMacOSXDraw.c: 	standardize initialization, use and
+	* macosx/tkMacOSXInt.h: 	emptying of various static temp rgns
+	* macosx/tkMacOSXRegion.c:	onto two global RgnHandles; in debug
+	* macosx/tkMacOSXSubwindows.c:	builds, verify emptiness of these temp
+	* macosx/tkMacOSXWindowEvent.c:	rgns before use.
+
+	* macosx/tkMacOSXDraw.c: add TkMacOSX{Setup,Restore}DrawingContext() to
+	* macosx/tkMacOSXInt.h:  abstract common setup & teardown of drawing
+	environment (for both CG and QD); save/restore QD theme drawing state;
+	handle GC clip region; add TkpClipDrawableToRect() to allow clipped
+	drawing into drawable regardless of GC used; use new system color
+	"systemWindowHeaderBackground" to setup background in themed toplevels;
+	correct implementation of TkMacOSXMakeStippleMap().
+
+	* macosx/tkMacOSXEntry.c: use new TkMacOSXSetupDrawingContext() and
+	* macosx/tkMacOSXFont.c:  TkMacOSXRestoreDrawingContext() instead of
+	various setup/teardown procs like TkMacOSX{SetUp,Release}CGContext(),
+	TkMacOSXQuarz{Start,End}Draw(), TkMacOSXSetUpGraphicsPort() etc.
+
+	* macosx/tkMacOSXEmbed.c: add CG context and drawable clip rgn fields
+	* macosx/tkMacOSXInt.h:   to MacDrawable struct.
+	* macosx/tkMacOSXSubwindows.c:
+
+	* macosx/tkMacOSXDialog.c: make -parent option of tk_getOpenFile et al.
+	use the sheet version of NavServices dialogs; ensure native parent win
+	exists before using StandardSheet API for tk_messageBox [Bug 1677611];
+	force sheets to behave like app-modal dialogs via WindowModality() API;
+	use more modern ColorPicker API.
+
+	* macosx/tkAboutDlg.r: use themed movable modal dialog, fix (c) year.
+
+	* macosx/tkMacOSXEntry.c:  take xOff/yOff of MacDrawable into account
+	when computing locations/bounds to ensure correct posititioning when
+	not drawing into intermediate pixmap.
+
+	* macosx/tkMacOSXFont.c: use appearance manager API to map system font
+	* macosx/tkMacOSXFont.h: names to TkFonts; add "menu" system font for
+	menu item text drawing from MDEF; disable broken QD stippling.
+
+	* macosx/tkMacOSXMenu.c:		large-scale rewrite of custom
+	* macosx/tkMacOSXMenu.r (removed):	MDEF and related code that
+	* unix/Makefile.in:			restores many longtime-MIA
+	features to working order (e.g. images, custom colors & fonts in menus
+	etc); implement compound menu items; use Appearance Mgr and ThemeText
+	APIs to mimic native MDEF as closely as possible when default "menu"
+	system font is used; remove now obsolete SICN drawing code and
+	resources.
+
+	* macosx/tkMacOSXCarbonEvents.c: handle additional menu carbon events
+	* macosx/tkMacOSXEvent.c:	 in order to support <<MenuSelect>> in
+	* macosx/tkMacOSXMenu.c:	 the menubar and in menus that are not
+	* macosx/tkMacOSXMenus.c:	 using the custom MDEF [Bug 1620826];
+	fix early and missing clearing of current Tk active menu entry; fix
+	extraneous sending of <<MenuSelect>> during active menu entry clearing.
+
+	* macosx/tkMacOSXMouseEvent.c: add support for async window dragging by
+	the window server; set the corresponding window attribute by default.
+
+	* macosx/tkMacOSXMouseEvent.c: rationalized handling order of
+	non-mousedown events; add TkMacOSXModifierState() to retrieve the
+	current key modifiers in carbon format.
+
+	* macosx/tkMacOSXScrlbr.c: use appearance manager API to retrieve
+	scrollbar component metrics; add awareness of multiple possibilites for
+	scrollbar arrow position in aqua and handle user changes to arrow
+	position pref; handle difference in metrics of small & large scrollbar
+	variants; handle aqua "jump to here" scrollbar behaviour; correct
+	computation of scroll view size and position; enforce min scrollbar
+	height to avoid scrollbar component overlap; erase scrollbar area
+	outside of standard width; remove broken auto-adjust code; account for
+	window class when leaving space for grow box; remove code to manually
+	draw grow box; use modern API for thumb scroll proc; replace
+	HiliteControl() by modern API; replace control mgr constants with
+	appearance mgr equivalents.
+
+	* macosx/tkMacOSXSubwindows.c: use SetWindowBounds() API instead of
+	SizeWindow(); invalidate clip regions after X{Map,Unmap}Window as fix
+	for [Bug 940117] made them dependent on mapping state; remove unneeded
+	calls to TkMacOSXInvalClipRgns() and unnecessary setting of QD port;
+	use native-endian pixmap on intel; remove obsolete pixmap pix locking.
+
+	* macosx/tkMacOSXWindowEvent.c: handle only the first of a batch of
+	kEventAppAvailableWindowBoundsChanged events sent per transaction;
+	handle kEventWindowBoundsChanged event to support live window resizing
+	and centralized sending of location/size changed ConfigureNotify
+	events; ensure HIGrowBox is redrawn after bounds change; constrain
+	window after dragging to ensure titlebar is not inacessible
+	offscreen or under dock/menubar; handle kEventWindowGetRegion and
+	kEventWindowDrawContent for transparent windows to mark resp. paint
+	content region as transparent; handle kEventWindowConstrain for
+	fullscreen windows to ensure bounds match new screen size; enter/exit
+	fullscreen UIMode upon activation/deactivation of fullscreen window.
+
+	* macosx/tkMacOSXWm.c: use live-resize and async-drag carbon window
+	* macosx/tkMacOSXWm.h: attributes for toplevels by default; implement
+	new [wm attributes] -topmost, -transparent and -fullscreen; refactor
+	WmAttributesCmd() parallelling the tkUnixWm.c implementation, use thus
+	factored proc to set proxy icon from [wm iconbitmap]; dynamically
+	determine default values for toplevel min and max sizes (similar to
+	tkWinWm.c impl): min sizes depend on window class & attributes to
+	ensure visibility of all titlebar widgets and grow box, max sizes
+	depend on maximal window bounds for all active displays; factor out
+	code that puts into effect changes to master or override_redirect; use
+	RepositionWindow() API to determine staggered initial window bounds;
+	correct resize limit calculations, handle gridding and use modern
+	resize API in TkMacOSXGrowToplevel(); remove sending of ConfigureNotify
+	after resize or zoom (now handled by BoundsChanged handler); correct
+	composite carbon window attribute handling, remove currently unusable
+	attributes and add new attributes in [tk::unsupported::MacWindowStyle];
+	ensure validity of window class and attributes before use; apply
+	changes to window class when handling carbon window attribute changes
+	(if HIWindowChangeClass() API available); add debug build warning
+	message when deprecated window style is used instead of window class;
+	use transparent HIGrowBox for resizable windows; avoid unnecessary
+	calls to window structure width API; use tcl time API in TkpGetMS();
+	add TkMacOSXEnterExitFullscreen() to enter/exit UIMode with dock and
+	menubar hidden; restrict wmTracing output to debug builds; remove
+	unneeded calls to TkMacOSXInvalClipRgns() and unnecessary setting of QD
+	port; workaround GetWindowStructureWidths() Carbon bug (bogus results
+	for never-mapped floating windows).
+
+	* macosx/tkMacOSXXStubs.c (TkMacOSXDisplayChanged): add maximal window
+	bounds field to Screen record (in ext_data), computed as the union of
+	available window positioning bounds of all graphics devices (displays).
+
+	* macosx/tkMacOSXBitmap.c: fix macRoman encoding leak.
+	* macosx/tkMacOSXCursor.c:
+	
+	* macosx/tkMacOSXDebug.c (TkMacOSXCarbonEventToAscii): use static
+	* macosx/tkMacOSXDebug.h: buffer to simplify callers; const fixes.
+
+	* macosx/tkMacOSXBitmap.c: use more efficient QDSwapPort() instead of
+	* macosx/tkMacOSXButton.c: GetPort()/SetPort()/GetGWorld()/SetGWorld().
+	* macosx/tkMacOSXDraw.c:
+	* macosx/tkMacOSXFont.c:
+	* macosx/tkMacOSXMenubutton.c:
+	* macosx/tkMacOSXScale.c:
+	* macosx/tkMacOSXScrlbr.c:
+	* macosx/tkMacOSXXStubs.c:
+
+	* macosx/tkMacOSXColor.c: use kHIToolboxVersionNumber for runtime OS
+	* macosx/tkMacOSXEntry.c: version check rather than Gestalt() etc.
+	* macosx/tkMacOSXInt.h:
+	* macosx/tkMacOSXWm.c:
+
+	* macosx/tkMacOSXDraw.c: remove obsolete and now incorrect
+	* macosx/tkMacOSXInt.h:  tkMenuCascadeRgn clipping code.
+	* macosx/tkMacOSXMenu.c:
+
+	* macosx/tkMacOSXHLEvents.c: replace Tcl_GlobalEval() resp. Tcl_Eval()
+	* macosx/tkMacOSXScrlbr.c:   by Tcl_EvalEx().
+	* macosx/tkMacOSXInit.c:
+
+	* macosx/tkMacOSXInit.c (TkpInit): reorder initialization steps.
+
+	* macosx/tkMacOSXKeyEvent.c: remove pre-10.2 support.
+
+	* macosx/tkMacOSXMenus.c: remove now useless call to
+	TkMacOSXHandleTearoffMenu(); use \x.. quoting for non-latin1 macroman
+	literar chars to allow file to be edited as utf-8.
+
+	* macosx/tkMacOSXScale.c: replace TrackControl() by modern
+	* macosx/tkMacOSXScrlbr.c: HandleControlClick() API (using new
+	TkMacOSXModifierState()).
+	
+	* macosx/tkMacOSXInt.h:		move all constant #defines needed to
+	* macosx/tkMacOSXColor.c:	support building on older OS X releases
+	* macosx/tkMacOSXEvent.h:	to a central location in tkMacOSXInt.h.
+	* macosx/tkMacOSXFont.c:
+	* macosx/tkMacOSXMenu.c:
+	* macosx/tkMacOSXMenubutton.c:
+	* macosx/tkMacOSXMenus.c:
+	* macosx/tkMacOSXMouseEvent.c:
+	* macosx/tkMacOSXWm.c:
+
+	* macosx/tkMacOSXInt.h:		 add ChkErr() macro to factor out
+	* macosx/tkMacOSXButton.c:	 Carbon OSStatus return value checking
+	* macosx/tkMacOSXCarbonEvents.c: and TkMacOSXDbgMsg() macro to factour
+	* macosx/tkMacOSXClipboard.c:	 out debug message output; use these
+	* macosx/tkMacOSXColor.c:	 macros to replace #ifdef TK_MAC_DEBUG
+	* macosx/tkMacOSXCursor.c:	 blocks & direct printing to stderr,
+	* macosx/tkMacOSXDebug.c:	 and to do additional OSStatus return
+	* macosx/tkMacOSXDialog.c:	 checking, and to standardize OSStatus
+	* macosx/tkMacOSXDraw.c:	 usage.
+	* macosx/tkMacOSXEntry.c:
+	* macosx/tkMacOSXEvent.c:
+	* macosx/tkMacOSXFont.c:
+	* macosx/tkMacOSXHLEvents.c:
+	* macosx/tkMacOSXInit.c:
+	* macosx/tkMacOSXKeyEvent.c:
+	* macosx/tkMacOSXMenu.c:
+	* macosx/tkMacOSXMenubutton.c:
+	* macosx/tkMacOSXMenus.c:
+	* macosx/tkMacOSXMouseEvent.c:
+	* macosx/tkMacOSXScrlbr.c:
+	* macosx/tkMacOSXSubwindows.c:
+	* macosx/tkMacOSXWindowEvent.c:
+	* macosx/tkMacOSXWm.c:
+	* macosx/tkMacOSXXStubs.c:
+
+	* macosx/tkMacOSXSend.c:	remove duplicate/unused declarations.
+	* macosx/tkMacOSXXStubs.c:
+
+	* macosx/tkMacOSXDebug.c:	const fixes.
+	* macosx/tkMacOSXInit.c:
+	* macosx/tkMacOSXTest.c:
+	* macosx/tkMacOSXWm.c:
+	* macosx/tkMacOSXXStubs.c:
+
+	* macosx/Wish-Info.plist.in: add tcl document extensions/mime types and
+	LSMinimumSystemVersion, LSRequiresCarbon & NSAppleScriptEnabled keys.
+
+	* macosx/tkMacOSXAETE.r:	fix whitespace.
+	* macosx/tkMacOSXConfig.c:
+	* macosx/tkMacOSXCursors.r:
+	* macosx/tkMacOSXKeyboard.c:
+	* macosx/tkMacOSXSend.c:
+	* macosx/tkMacOSXXCursors.r:
+	* macosx/README:
+
+	* macosx/Makefile:		fix/add copyright and license refs.
+	* macosx/Tk-Info.plist.in:
+	* macosx/Wish-Info.plist.in:
+	* macosx/tkMacOSX.h:
+
+	* unix/Makefile.in (dist): copy license.terms to dist macosx dir.
+	* unix/configure.in: install license.terms into Tk.framework; fix tk
+	debug build detection.
+	* unix/configure: autoconf-2.13
+
+	* doc/colors.n:		document new Mac OS X system colors.
+	* doc/cursors.n:	document new Mac OS X native cursors.
+	* doc/font.n:		document new Mac OS X 'menu' system font.
+	* doc/wm.n:		document new Mac OS X [wm attributes].
+
+2007-03-07  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkMain.c (Tk_MainEx): replicate macosx-specific code from
+	TkpInit() that ensures the console window appears when wish is started
+	from the OS X Finder (i.e. with stdin == /dev/null), jeffh's 2006-11-24
+	change rendered the corresponding code in TkpInit() ineffective in wish
+	because Tk_MainEx() sets tcl_interactive before calling TkpInit().
+
+	* macosx/tkMacOSXDebug.c (TkMacOSXGetNamedDebugSymbol): add fix for
+	libraries loaded with a DYLD_IMAGE_SUFFIX.
+
+	* unix/tcl.m4 (Darwin): s/CFLAGS/CPPFLAGS/ in macosx-version-min check.
+	* unix/configure: autoconf-2.13
+
+2007-02-19  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/tcl.m4: use SHLIB_SUFFIX=".so" on HP-UX ia64 arch.
+	* unix/configure: autoconf-2.13
+
+	* library/tkfbox.tcl (::tk::IconList_Goto): avoid goto issues in
+	empty dirs.  [Bug 1662959]
+
+2007-02-04  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/configure.in: add caching to -pipe check.
+	* unix/configure: autoconf-2.13
+
+2007-01-30  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/Makefile.in (install-private-headers): added target
+
+2007-01-25  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/tcl.m4:       integrate CPPFLAGS into CFLAGS as late as possible
+	* unix/configure.in: and move (rather than duplicate) -isysroot flags
+	from CFLAGS to CPPFLAGS to avoid errors about multiple -isysroot flags
+	from some older gcc builds.
+
+	* unix/configure: autoconf-2.13
+
+2006-01-19  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/tcl.m4: ensure CPPFLAGS env var is used when set. [Bug 1586861]
+	(Darwin): add -isysroot and -mmacosx-version-min flags to CPPFLAGS when
+	present in CFLAGS to avoid discrepancies between what headers configure
+	sees during preprocessing tests and compiling tests.
+
+	* unix/configure: autoconf-2.13
+
+2006-12-22  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* unix/tkUnixEvent.c (TkUnixDoOneXEvent): Made correct on AMD64 and
+	other similar 64-bit systems where fd_mask is not 'unsigned int' in
+	effect. [Bug 1522467]
+
+	* library/msgs/es_ES.msg (removed):
+	* library/msgs/es.msg: Fixed translation fault that was present in all
+	Spanish-speaking locales. [Bug 1111213]
+
+2006-12-19  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinButton.c (TkpDisplayButton): lint init. [Bug 1618604]
+
+2006-12-19  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/tcl.m4 (Darwin): --enable-64bit: verify linking with 64bit -arch
+	flag succeeds before enabling 64bit build.
+	* unix/configure: autoconf-2.13
+
+2006-12-04  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkListbox.c (ConfigureListboxItem): ListboxWorldChanged
+	not needed - just call EventuallyRedrawRange. [Bug 1608046] (rezic)
+
+2006-12-01  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* doc/wm.n, tests/winWm.test:
+	* win/tkWinWm.c: add -transparentcolor attribute for Windows.
+
+2006-11-30  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXDialog.c (Tk_MessageBoxObjCmd): fix inability to use
+	buttons with standard Escape key binding as -default button (reported
+	on tcl-mac by Hans-Christoph Steiner).
+
+2006-11-26  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/tcl.m4 (Linux): --enable-64bit support.	[Patch 1597389]
+	* unix/configure: autoconf-2.13			[Bug 1230558]
+
+2006-11-24  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* macosx/tkMacOSXInit.c (TkpInit): only set tcl_interactive 1 if
+	it isn't already defined.  Allows embedders to set it to 0 to
+	prevent the console appearing on OS X. [Bug 1487701]
+
+	* unix/tkUnixMenu.c (DrawMenuUnderline): bound Tcl_UtfAtIndex usage
+	* tests/menu.test (menu-36.1): [Bug 1599877]
+
+2006-11-23  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinMenu.c (TkWinHandleMenuEvent, DrawMenuUnderline):
+	handle unichar underlining correctly and safely. [Bug 1599877]
+
+2006-11-02  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXWindowEvent.c (GenerateUpdateEvent): fix handling of
+	Carbon Update events: the QuickDraw window update region was being
+	ignored and all child TkWindows were sent an Expose XEvent even when
+	they did not need to be redrawn. [Patch 1589226]
+
+2006-11-01  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXDebug.c: add TkMacOSX prefix to leftover macosx-private
+	* macosx/tkMacOSXDebug.h: global symbols without Tk prefix; ifdef out
+	* macosx/tkMacOSXEmbed.c: currently unused debug procs.
+	* macosx/tkMacOSXEvent.c:
+	* macosx/tkMacOSXInt.h:
+	* macosx/tkMacOSXCarbonEvents.c:
+	* macosx/tkMacOSXSubwindows.c:
+	* macosx/tkMacOSXWm.c:
+
+2006-10-31  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* rules.vc: Fix bug #1582769 build with VC2003 and correct i386 arch.
+
+2006-10-23  Don Porter  <dgp@users.sourceforge.net>
+
+	* README:		Bump version number to 8.4.15
+	* generic/tk.h:
+	* unix/configure.in:
+	* unix/tk.spec:
+	* win/configure.in:
+
+	* unix/configure:	autoconf-2.13
+	* win/configure:
+
+2006-10-18  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	*** 8.4.14 TAGGED FOR RELEASE ***
+
+	* win/nmakehlp.c: Ensure builds with VC6 without Platform SDK.
+	* win/rules.vc:   Pickup MACHINE from environment.
+
+2006-10-17  Don Porter  <dgp@users.sourceforge.net>
+
+	* generic/tkPanedWindow.c:	Cleaned up some code flagged by a
+	* generic/tkText.c:		`make checkexports` test.
+	* generic/tkText.h
+	* generic/tkTextTag.c:
+
+2006-10-16  Daniel Steffen  <das@users.sourceforge.net>
+
+	* changes: updates for 8.4.14 release.
+
+	* macosx/tkMacOSXDraw.c: fix numerous issues in CG and QD drawing procs
+	so that they now match X11 drawing much more closely [Bug 1558051];
+	use Tiger ellipse drawing API when available; fix comments & whitespace.
+
+	* macosx/tkMacOSXInit.c: set default linewidth limit for CG
+	antialiasing to 0 as thin horizontal/vertical lines look good now.
+	* macosx/README: document CG antialiasing limit changes.
+
+	* generic/tkCanvLine.c (ConfigureLine):     on TkAqua, pass outline
+	* generic/tkCanvPoly.c (ConfigurePolygon):  linewidth in gc even for
+	* generic/tkRectOval.c (ConfigureRectOval): fills (as it controls AA).
+
+	* macosx/Makefile: don't redo prebinding of non-prebound binaires.
+
+2006-10-10  Don Porter  <dgp@users.sourceforge.net>
+
+	* changes:		changes updated for 8.4.14 release.
+
+2006-10-05  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/tkUnixFont.c (Ucs2beToUtfProc, UtfToUcs2beProc):
+	(TkpFontPkgInit, encodingAliases): Correct alignment issues in
+	encoding conversion.  Call ucs-2be "unicode" on big-endian
+	systems. [Bug 1122671]
+
+2006-09-27  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* win/makefile.vc:  Support MSVC8 and AMD64 target. Also try using
+	* win/rules.vc:     sed to generate the manifest (cross-compile cannot
+	* win/nmakehlp.c:   execute tclsh). If no sed, use the tclsh exe.
+
+2006-09-25  Andreas Kupries  <andreask@activestate.com>
+
+	* generic/tkConsole.c: Complete reversal of the changes of Sep 22.
+	* generic/tkMain.c:    For compat reason the Tcl core will not change
+	* generic/tkWindow.c:  the registered version to include the patchlevel,
+	* library/tk.tcl:      making the changes to Tk unnecessary.
+	* unix/configure:
+	* unix/Makefile.in:
+	* unix/tcl.m4:
+	* win/configure:
+	* win/Makefile.in:
+	* win/makefile.vc:
+	* win/rules.vc:
+	* win/tcl.m4:
+
+2006-09-22  Andreas Kupries  <andreask@activestate.com>
+
+	* generic/tkConsole.c: TIP #268 update regarding registered package
+	* generic/tkMain.c:    version, now using full patchlevel instead of
+	* generic/tkWindow.c:  major.minor
+	* library/tk.tcl:
+	* unix/configure:
+	* unix/Makefile.in:
+	* unix/tcl.m4:
+	* win/configure:
+	* win/Makefile.in:
+	* win/makefile.vc:
+	* win/rules.vc:
+	* win/tcl.m4:
+
+2006-09-22  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkImgBmap.c (ImgBmapPostscript):  Use NULL instead of 0 as
+	end-of-strings marker to Tcl_AppendResult; the difference matters on
+	64-bit machines. [Bug 1562528]
+
+2006-09-20  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinMenu.c (TkpPostMenu): disable menu animation in menus
+	with images to avoid clipping bug.  [Bug 1329198]
+
+2006-09-11  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXWm.c (TkMacOSXMakeRealWindowExist): revert part of
+	2006-05-16 change that had set overrideredirect windows to not become
+	activated by the window manager, as this prevented interaction with
+	native widgets in such windows [Bug 1472624]; apply changes to carbon
+	window attributes even if native window has already been created.
+
+	* macosx/tkMacOSXKeyEvent.c (TkMacOSXProcessKeyboardEvent): fix app
+	* macosx/tkMacOSXMenu.c (DrawMenuBarWhenIdle): menu item key shortcuts
+	* macosx/tkMacOSXInt.h: when custom ".apple" menu is installed.
+
+	* library/demos/widget: on TkAqua, don't install file menu with single
+	quit menu item, as the application menu already has a quit item.
+
+	* macosx/tkMacOSXColor.c: fix building on Mac OS X 10.2.
+
+2006-09-10  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXColor.c (TkSetMacColor, TkpGetColor): use AppearanceMgr
+	* macosx/tkMacOSXDefault.h: to retrieve platform std colors for text
+	* macosx/tkMacOSXPort.h:    selections, add "systemHighlightSecondary"
+	color name for standard color of inactive selections.
+
+	* library/text.tcl (aqua): change focus bindings to implement platform
+	standard look for inactive text selections using this new color.
+
+	* generic/tkTextBTree.c (TkTextIsElided): on TkAqua, don't show text
+	* generic/tkTextDisp.c (GetStyle):        selection when text widget
+	* generic/tkText.c (TextEventProc):       is in disabled state.
+
+	* generic/tkEntry.c (DisplayEntry): change default TkAqua selection
+	* macosx/tkMacOSXDefault.h:         relief to "flat" (platform std).
+
+	* generic/tkText.c (Tk_TextCmd): fix bug leading to default text
+	selection relief string DEF_TEXT_SELECT_RELIEF being ignored.
+
+	* macosx/tkMacOSXMouseEvent.c (TkMacOSXProcessMouseEvent): allow mouse
+	event delivery to background windows with kWindowNoActivatesAttribute
+	(e.g. overrideredirect windows), as these never come to the foreground
+	they would never receive any mouse events otherwise. [Bug 1472624]
+
+	* macosx/tkMacOSXWindowEvent.c (TkMacOSXGenerateFocusEvent): do not
+	send focus events to any windows with kWindowNoActivatesAttribute.
+
+	* macosx/tkMacOSXXStubs.c (XQueryColor, XQueryColors): implement basic
+	XColor computation from pixel values, enough to make tkImg's window.c
+	happy, fixes img::window failures reported on tcl-mac.
+
+	* macosx/tkMacOSXMenu.c (DrawMenuEntryLabel): fix leak. [Bug 1554672]
+
+	* macosx/Makefile: workaround bug in 'cp -pRH' on Darwin 6 and earlier,
+	fixes 'make embedded' failure reported on tcl-mac; fix error from 'make
+	deploy' with same build tree as previous 'make embedded'.
+
+	* macosx/tkMacOSXEntry.c (TkpDrawEntryBorderAndFocus): fix typo.
+
+	* unix/tcl.m4: sync with tcl/unix/tcl.m4.
+
+2006-09-07  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkWindow.c: add #include "tclInt.h" now required due to use
+	of tcl internal Tcl_CreateNamespace() in previous commit.
+
+2006-09-06  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkEntry.c:     move hard-coded ALWAYS_SHOW_SELECTION
+	* generic/tkInt.h:       control of entry/text selection display
+	* generic/tkText.c:      based on focus to the Tcl level,
+	* generic/tkTextBTree.c: controlled by ::tk::AlwaysShowSelection
+	* generic/tkTextDisp.c:  (boolean, private).  [Bug 1553691]
+	* generic/tkWindow.c:
+	* library/tk.tcl
+	* unix/tkUnixPort.h:
+
+	* generic/tkText.c (DeleteChars): backport of 8.5 text delete
+	speedup that removes tags from deleted area first. [Bug 1456342]
+
+2006-08-30  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinKey.c: Add WM_UNICHAR window message support (used by
+	* win/tkWinX.c:   virtual keyboard apps). [Bug 1518677] (petasis)
+
+2006-08-24  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXScrlbr.c (UpdateControlValues): set native scrollbar
+	control bounds only once all size adjustments have been computed.
+	Fixes issue with grow icon obscuring scrollbar reported on tcl-mac.
+
+2006-08-21  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXCarbonEvents.c (CarbonTimerProc): avoid starving main
+	event loop: limit the number of tcl events processed per invocation.
+	Fixes bug reported on tcl-mac by Kevan Hashemi.
+
+2006-08-18  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/tcl.m4 (Darwin): add support for --enable-64bit on x86_64, for
+	universal builds including x86_64, for 64-bit CoreFoundation on Leopard
+	and for use of -mmacosx-version-min instead of MACOSX_DEPLOYMENT_TARGET.
+	* unix/configure.in (Darwin): remove 64-bit arch flags from CFLAGS for
+	combined 32-bit and 64-bit universal builds, as neither TkAqua nor TkX11
+	can be built for 64-bit at present.
+	* unix/configure: autoconf-2.13
+
+	* macosx/README: updates for x86_64 support in Tcl.
+
+	* macosx/tkMacOSXInit.c (TkpInit): when available, use public
+	TransformProcessType() API instead of CPSEnableForegroundOperation() SPI
+	to notify the window server that we are a GUI application.
+
+	* macosx/tkMacOSXWm.c (WmAttrGetTitlePath): use HIWindow API on >=Tiger.
+
+	* macosx/tkMacOSXMouseEvent.c (GenerateToolbarButtonEvent):
+	* macosx/tkMacOSXMenus.c (GenerateEditEvent):
+	* macosx/tkMacOSXMenu.c (MenuSelectEvent): bzero XVirtualEvent structure
+	before use to ensure all fields are initialized. [Bug 1542205]
+
+2006-08-16  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* macosx/tkMacOSXWm.c (WmAttributesCmd): correct OS X result for
+	[wm attributes $top].
+
+2006-07-25  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXKeyEvent.c (TkMacOSXProcessKeyboardEvent): handle key
+	shortcut for kHICommandQuit in the same way as other application menu
+	item key shortcuts. [Bug 1516950]
+
+2006-07-24  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXWm.c (TkWmMapWindow): fix incorrect values of wmInfo
+	parentWidth/Height for toplevels by recalculating them once the window
+	is mapped (i.e once the window&structure sizes are known). [Bug 1358663]
+	(ParseGeometry): sync with ParseGeometry in tkUnixWm.c/tkWinWm.c.
+
+2006-07-21  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkBind.c (TkBindInit): for REDO_KEYSYM_LOOKUP, change
+	keysym-to-string mapping hash to use first name in ks_names.h instead of
+	last (if there are multiple possibilities), e.g. "F11" instead of "L1".
+
+	* macosx/tkMacOSXKeyboard.c (TkpGetKeySym): correct keysyms for pure
+	modifier key presses [Bugs 700311, 1525905]; correct keysym for Enter
+	key; add keysyms for new NumLock and Fn modifiers (added 2005-08-09).
+
+2006-07-20  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXWm.c (WmAttributesCmd, WmIconbitmapCmd): add support
+	for weakly importing symbols not available on OSX 10.2 or 10.3, enables
+	binaires built on later OSX versions to run on earlier ones.
+	* macosx/README: document how to enable weak-linking; cleanup.
+	* unix/configure.in: enforce requirement of OSX 10.2 for TkAqua; move
+	* unix/tcl.m4:       Darwin specific checks & defines that are only
+	relevant to the tcl build out of tcl.m4; restrict framework option to
+	Darwin; cleanup quoting.
+	* unix/configure: autoconf-2.13
+
+	* macosx/tkMacOSXKeyEvent.c: ifdef out diagnostic messages to stderr.
+
+	* macosx/tkMacOSXEvent.h:      standardize MAC_OS_X_VERSION_MAX_ALLOWED
+	* macosx/tkMacOSXMenu.c:       checks per QA1316, ensure define can be
+	* macosx/tkMacOSXMenubutton.c: overridden on command line (from default
+	* macosx/tkMacOSXMenus.c:      of current OS version).
+	* macosx/tkMacOSXMouseEvent.c:
+	* macosx/tkMacOSXWm.c:
+
+	* macosx/tkMacOSXCursor.c (TkMacOSXCursor):
+	* macosx/tkMacOSXDebug.c (TkMacOSXGetNamedDebugSymbol):
+	* macosx/tkMacOSXInit.c (Map): fix signed-with-unsigned comparison and
+	other warnings from gcc4 -Wextra.
+
+2006-07-14  Andreas Kupries  <andreask@activestate.com>
+
+	* generic/tkWindow.c (Initialize): Modify change of 2006-05-25
+	  (jeffh). Release mutex a bit earlier, to prevent lock when OS X
+	  creates its console windows (recursively enters Tk_Init). Patch
+	  by JeffH.
+
+2006-07-06  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/tkfbox.tcl: catch scrollbar use of highlightthickness
+
+2006-06-21  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/bgerror.tcl (::tk::dialog::error::bgerror): remove a
+	couple of unnecessary hardcoded options
+
+2006-06-15  Don Porter  <dgp@users.sourceforge.net>
+
+	* changes: changes to start prep for an 8.4.14 release.
+
+2006-06-15  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* win/makefile.vc:  Sync with tcl to enable building with 
+	* win/rules.vc:     VC8 (VS2005 C compiler)
+	* win/nmakehlp.c:
+
+2006-06-14  Don Porter  <dgp@users.sourceforge.net>
+
+	* generic/tkScale.c:	Revised variable writing logic to account
+	for [scale]'s design that it deals with its value as a formatted
+	string, and not as a double.	[Bug 891141].
+
+2006-06-14  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXSubwindows.c (TkMacOSXInvalidateWindow): ensure invalid
+	clip regions are recreated via TkMacOSXUpdateClipRgn() before they are
+	used; correct call order of TkMacOSXInvalidateWindow() and
+	TkMacOSXInvalClipRgns() throughout. [Bug 1501922]
+
+	* macosx/tkMacOSXDraw.c (TkPutImage): implement drawing of very wide
+	images in slices of less than 4096 pixels to workaround CopyBits
+	limitation. [Bug 950121]
+
+2006-06-09  Don Porter  <dgp@users.sourceforge.net>
+
+	* generic/tkMain.c:     Added Tcl_Preserve() call on the master
+	interp as crash protection against any Tcl_DeleteInterp() call
+	that might happen.
+
+2006-06-05  Don Porter	<dgp@users.sourceforge.net>
+
+	* generic/tkInt.h:      Thread safety for the data structures of 
+	* generic/tkConsole.c:  the wish [console].  [Bug 1188340].
+
+2006-06-01  Don Porter	<dgp@users.sourceforge.net>
+
+	* generic/tkConsole.c:	Added Tcl_RegisterChannel() calls to bump
+	the refcount of channels passed to Tcl_SetStdChannel().	 This prevents
+	early free-ing of the channels that leads to crashes.  [Bug 912571].
+
+2006-05-29  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* tests/entry.test (entry-22.1):
+	* tests/listbox.test (listbox-6.15):
+	* generic/tkListbox.c (ListboxInsertSubCmd, ListboxDeleteSubCmd):
+	Ignore Tcl_SetVar2Ex failure of listVarName, similar to entry
+	widget handling. [Bug 1424513]
+
+2006-05-26  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* macosx/tkMacOSXButton.c (TkMacOSXDrawControl): correct redraw
+	for direct transition from disabled to active state. [Bug 706446]
+
+2006-05-25  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkMenu.c (DeleteMenuCloneEntries): Modify entry index
+	changes to work around VC6 optimization bug. [Bug 1224330]
+
+	* generic/tkMessage.c (MessageWidgetObjCmd): Correct msgPtr
+	preserve/release pairing. [Bug 1485750] (afredd)
+
+	* generic/tkWindow.c (Initialize): Correct mutex (un)lock
+	pairing. [Bug 1479587]
+
+2006-05-16  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXWindowEvent.c (TkMacOSXGenerateFocusEvent): don't send
+	focus events to windows of class help or to overrideredirect windows.
+	[Bug 1472624]
+
+	* macosx/tkMacOSXWm.c: set overrideredirect windows to not become
+	activated by the window manager and to not receive OS activate events
+	(should make them behave more like on other platforms); use modern
+	window class API for overrideredirect and transient windows; set the
+	default class of overrideredirect windows to 'simple' rather than
+	'plain' (i.e. no window frame); add missing Panther and Tiger window
+	attributes to [::tk::unsupported::MacWindowStyle].
+
+2006-05-12  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkImgPhoto.c (Tk_PhotoPutBlock, Tk_PhotoPutZoomedBlock):
+	Fix opt added 2006-03 that caused slowdown for some common cases.
+	[Bug 1409140]
+
+2006-05-13  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkCanvWind.c (DisplayWinItem, WinItemRequestProc): ensure
+	canvas window items are unmapped when canvas is unmapped. [Bug 940117]
+
+	* macosx/tkMacOSXSubwindows.c (TkMacOSXUpdateClipRgn): empty clip region
+	of unmapped windows to prevent any drawing into them or into their
+	children from becoming visible. [Bug 940117]
+
+	* macosx/tkMacOSXInt.h:         revert Jim's attempt of 2005-03-14 to
+	* macosx/tkMacOSXSubwindows.c:  fix Bug 940117 as it disables Map/Unmap
+	event propagation to children.  [Bug 1480105]
+
+	* macosx/tkMacOSXDraw.c (TkPutImage): handle tkPictureIsOpen flag, fixes
+	incorrect positioning of images with complex alpha on native buttons;
+	actual alpha blending is still broken in this situation. [Bug 1155596]
+
+	* macosx/tkMacOSXEvent.c (TkMacOSXProcessCommandEvent):
+	* macosx/tkMacOSXMenus.c (TkMacOSXInitMenus): workaround carbon bug with
+	key shortcut for 'Preferences' app menu item. [Bug 1481503]
+
+	* macosx/tkMacOSXKeyEvent.c (TkMacOSXProcessKeyboardEvent): only check
+	for HICommand menu item shortcuts in the application menu.
+
+	* macosx/tkMacOSXInt.h:       initialize keyboard layout setup in
+	* macosx/tkMacOSXInit.c:      TkpInit() rather than during handling of
+	* macosx/tkMacOSXKeyEvent.c:  first key down event.
+
+	* macosx/tkMacOSXDraw.c:        add optional debug code to flash clip
+	* macosx/tkMacOSXSubwindows.c:  regions during update or draw.
+
+2006-05-04  Don Porter  <dgp@users.sourceforge.net>
+
+	* README:		Bump version number to 8.4.14
+	* generic/tk.h:
+	* unix/configure.in:
+	* unix/tk.spec:
+	* win/configure.in:
+
+	* unix/configure:	autoconf-2.13
+	* win/configure:
+
+2006-04-28  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXWm.c (TkWmMapWindow, InitialWindowBounds): fix use of
+	potentially stale window position in initial configure event on first
+	map of a window. [Bug 1476443]
+	(TkMacOSXWindowOffset): use modern GetWindowStructureWidths API.
+
+	* macosx/tkMacOSXInt.h:
+	* macosx/tkMacOSXMouseEvent.c (TkGenerateButtonEventForXPointer): new
+	internal function to generate button events for current pointer
+	directly, without requiring prior call to XQueryPointer().
+
+	* macosx/tkMacOSXMouseEvent.c (XQueryPointer): implement return of
+	window-local pointer position.
+
+	* macosx/tkMacOSXInt.h:      use improvements above to avoid calls to
+	* macosx/tkMacOSXKeyEvent.c: GlobalToLocal() when the current port might
+	* macosx/tkMacOSXMenu.c:     not be set correctly. May fix [Bug 1243318]
+	* macosx/tkMacOSXMenus.c:    
+	* macosx/tkMacOSXScale.c:
+	* macosx/tkMacOSXScrlbr.c:
+
+	* tkAboutDlg.r: update copyright.
+
+	* macosx/tkMacOSXCarbonEvents.c: sync with HEAD
+	* macosx/tkMacOSXDebug.c:
+	* macosx/tkMacOSXDebug.h:
+	* macosx/tkMacOSXDraw.c:
+	* macosx/tkMacOSXEvent.c:
+	* macosx/tkMacOSXEvent.h:
+	* macosx/tkMacOSXFont.h:
+	* macosx/tkMacOSXInit.c:
+	* macosx/tkMacOSXInt.h:
+	* macosx/tkMacOSXKeyEvent.c:
+	* macosx/tkMacOSXMenu.c:
+	* macosx/tkMacOSXMenubutton.c:
+	* macosx/tkMacOSXMouseEvent.c:
+	* macosx/tkMacOSXSend.c:
+	* macosx/tkMacOSXTest.c:
+	* macosx/tkMacOSXWindowEvent.c:
+	* macosx/tkMacOSXWm.c:
+
+2006-04-25  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* unix/tkUnixFont.c (TkpGetFontFamilies): Fix crash caused when the
+	XServer returns invalid font names. [Bug 1475865]
+
+2006-04-22  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXEmbed.c:
+	* macosx/tkMacOSXWm.c:
+	* tests/constraints.tcl:
+	* tests/wm.test: sync with 2006-04-18 commit to HEAD. (darley)
+
+2006-04-12  Don Porter  <dgp@users.sourceforge.net>
+
+	*** 8.4.13 TAGGED FOR RELEASE ***
+
+	* generic/tkGrid.c: Fixed handling of out of bounds row or column.
+	* tests/grid.test:  [Bug 1432666]
+
+	* changes:	Updates for next RC.
+
+2006-04-11  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* changes: update for bug fix.
+
+	* generic/tkBind.c (Tk_BindEvent, ChangeScreen): replace
+	Tcl_GlobalEval with more efficient Tcl_EvalEx.
+
+	* win/tkWinEmbed.c (TkpGetOtherWindow):   do not panic if no window
+	* win/tkWinWm.c (UpdateGeometryInfo):     is found - handle it in
+	* unix/tkUnixEmbed.c (TkpGetOtherWindow): the caller. [Bug 1212056]
+	* unix/tkUnixWm.c (Tk_CoordsToWindow, UpdateGeometryInfo): 
+
+2006-04-11  Daniel Steffen  <das@users.sourceforge.net>
+
+	* changes: added latest aqua bug fixes.
+
+	* macosx/tkMacOSXDialog.c (Tk_MessageBoxObjCmd): added standard Escape
+	key binding for msgbox cancel buttons [Patch 1193614], whitespace.
+
+	* macosx/tkMacOSXCarbonEvents.c: handle kEventCommandUpdateStatus
+	* macosx/tkMacOSXEvent.c:        carbon event to dynamically enable
+	the 'Preferences' app menu item when proc [::tk::mac::ShowPreferences]
+	is defined. [Bug 700316]
+
+	* macosx/tkMacOSXHLEvents.c:    call ::tk::mac::* procs for all
+	* macosx/tkMacOSXWindowEvent.c: registered appleevents [FR 1105284],
+	implement print applevent handling, style/whitespace cleanup. 
+
+	* macosx/tkMacOSXDraw.c (TkMacOSXInitCGDrawing): prevent multiple init.
+
+	* macosx/tkMacOSXInt.h:         Implemented 'zoomed' window state
+	* macosx/tkMacOSXWindowEvent.c: handling for TkAqua, via titlebar
+	* macosx/tkMacOSXWm.c:          widget clicks as well as [wm state].
+	* doc/wm.n:                     [Bug 1073456]
+
+2006-04-10  Don Porter  <dgp@users.sourceforge.net>
+
+	* changes:	Updates for next RC.
+
+2006-04-09  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXWm.c (WmResizableCmd): propagate window attribute
+	changes to Carbon window manager. [FR 1467004]
+	(TkSetWMName, TkMacOSXMakeRealWindowExist): allow empty name for
+	toplevels, remove bogus initial window name. [Bug 1450800]
+
+2006-04-07  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXMouseEvent.c (TkMacOSXProcessMouseEvent): fix return
+	values, implement window dragging & growing in background (with Command
+	key down) and by fronting clicks [Bug 934524], use correct button &
+	modifier state API when application is in background (also in
+	TkMacOSXButtonKeyState).
+
+	* macosx/tkMacOSXWm.c (TkMacOSXGrowToplevel): ensure QD port is set
+	correctly before using API relying on it.
+	
+2006-04-06  Vince Darley <vincentdarley@users.sourceforge.net>
+
+	* macosx/tkMacOSXMouseEvent.c: now that [wm attributes -titlepath]
+	works correctly, add OS support for dragging proxy icons and 
+	using the titlepath menu.
+
+2006-04-06  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXWm.c (WmAttributesCmd, WmIconbitmapCmd): fix errors
+	in setting/removing window proxy icons via [wm attributes -titlepath]
+	and [wm iconbitmap], use HIWindow API on Tiger or later. [Bug 1455241]
+	
+	* unix/tcl.m4: remove TCL_IO_TRACK_OS_FOR_DRIVER_WITH_BAD_BLOCKING
+	define on Darwin. [Tcl Bug 1457515]
+	* unix/configure: autoconf-2.13
+
+2006-04-05  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinMenu.c (FreeID, TkpNewMenu, MenuExitHandler) 
+	(MenuThreadExitHandler, TkpMenuInit, TkpMenuThreadInit): rework
+	Windows menu init/finalization to better respect per-process and
+	per-thread boundaries.
+
+	* win/tkWinWm.c (WmProc): pass WM_QUERYENDSESSION message to Tk as
+	WM_SAVE_YOURSELF wm protocol callback.
+
+	* generic/tkTextDisp.c (TkTextPixelIndex): Don't segfault on full
+	-elide text. [Bug 1442102]
+
+	* win/tkWinX.c (TkWinXInit): init default keyboard charset
+	correctly. [Bug 1374119] (pajas)
+
+	* generic/tkText.c (DumpLine): stop dumping if we detect that the
+	text widget state has changed while dumping. [Bug 1414171]
+	(InsertChars, DeleteChars): fix undo with space-based path.
+	* tests/text.test (text-25.14): [Bug 1452419]
+
+	* tests/grid.test: fix segfault on empty index list
+	* generic/tkGrid.c (GridRowColumnConfigureCommand):  [Bug 1422430]
+
+2006-03-29  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkWindow.c (DeleteWindowsExitProc): added comments
+	* generic/tkOption.c (TkOptionDeadWindow): handle
+	OptionThreadExitProc being called before DeleteWindowsExitProc.
+
+2006-03-29  Don Porter  <dgp@users.sourceforge.net>
+
+	* unix/tkUnixDefault.h: Changed "Black" to "#000000" and "White" to
+	"#ffffff" to work around the (broken?) X servers that do not accept
+	those color names.  [Bug 917433]
+
+2006-03-28  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkWindow.c (CreateTopLevelWindow): use thread exit
+	handler for DeleteWindowsExitProc.
+
+2006-03-28  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* win/makefile.vc:   Avoid pipe problems on win98.
+
+2006-03-28  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/configure, win/tcl.m4: define MACHINE for gcc builds as well.
+	Needed by Tk for manifest generation.
+
+2006-03-28  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkFont.h: added prototype for TkFontGetFirstTextLayout()
+	needed by tkMacOSXButton.c and tkMacOSXMenubutton.c.
+
+	* macosx/tkMacOSX.h:             Cleaned up & rationalized order of
+	* macosx/tkMacOSXBitmap.c:       #includes of tk and carbon headers;
+	* macosx/tkMacOSXButton.c:       sync whitespace, comments & minor
+	* macosx/tkMacOSXCarbonEvents.c: changes with HEAD.
+	* macosx/tkMacOSXClipboard.c:
+	* macosx/tkMacOSXColor.c:
+	* macosx/tkMacOSXConfig.c:
+	* macosx/tkMacOSXCursor.c:
+	* macosx/tkMacOSXDialog.c:
+	* macosx/tkMacOSXDraw.c:
+	* macosx/tkMacOSXEmbed.c:
+	* macosx/tkMacOSXEntry.c:
+	* macosx/tkMacOSXEvent.c:
+	* macosx/tkMacOSXEvent.h:
+	* macosx/tkMacOSXFont.c:
+	* macosx/tkMacOSXFont.h (new file):
+	* macosx/tkMacOSXHLEvents.c:
+	* macosx/tkMacOSXInit.c:
+	* macosx/tkMacOSXInt.h:
+	* macosx/tkMacOSXKeyEvent.c:
+	* macosx/tkMacOSXKeyboard.c:
+	* macosx/tkMacOSXMenu.c:
+	* macosx/tkMacOSXMenubutton.c:
+	* macosx/tkMacOSXMenus.c:
+	* macosx/tkMacOSXMouseEvent.c:
+	* macosx/tkMacOSXNotify.c:
+	* macosx/tkMacOSXRegion.c:
+	* macosx/tkMacOSXScale.c:
+	* macosx/tkMacOSXScrlbr.c:
+	* macosx/tkMacOSXSend.c:
+	* macosx/tkMacOSXSubwindows.c:
+	* macosx/tkMacOSXTest.c:
+	* macosx/tkMacOSXWindowEvent.c:
+	* macosx/tkMacOSXWm.c:
+	* macosx/tkMacOSXWm.h:
+	* macosx/tkMacOSXXStubs.c:
+
+2006-03-27  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkImgGIF.c (FileReadGIF): Stop crashes when the first GIF
+	frame does not define the overall size of the image. [Bug 1458234]
+
+2006-03-22  Don Porter  <dgp@users.sourceforge.net>
+
+	* changes:	Updates for next RC.
+
+2006-03-21  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/configure.in: fix detection of symbols build when enabling
+	TkAqua debug code; filter nm output of libtclstub better to avoid
+	error on intel macs [Bug 1415789].
+	* unix/configure: autoconf-2.13
+
+2006-03-20  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkUndo.c (TkUndoSetDepth): Fix a crash in the undo stack
+	code. [Bug 1380427, Patch 1391939] Thanks to <lz_ufo@tin.it> for
+	reporting and Ludwig Callewaert for the fix.
+
+2006-03-17  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* library/clrpick.tcl:   bug #1451587: avoid using abbreviated
+	* library/palette.tcl:   sub-commands in core scripts as this can
+	* library/scale.tcl:     cause problems with mega-widget libraries
+	* library/scrlbar.tcl:   like snit.
+	* library/tkfbox.tcl:
+	* library/xmfbox.tcl:
+
+2006-03-16  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* library/msgs/pt.msg: Messages for Portuguese (strictly just for
+	Brazilian Portuguese, but they'll do until we get other Portuguese
+	speakers localize) from Ricardo Jorge <ricardoj@users.sf.net> and
+	Silas Justiano <silasj@users.sf.net>. Many thanks! [Bug 1405069]
+
+	* generic/tkImgPhoto.c (ImgPhotoCmd, Tk_PhotoPutBlock)
+	(Tk_PhotoPutZoomedBlock): Added hack to detect copying of a photo with
+	a simple alpha channel and skip calling ToggleComplexAlphaIfNeeded.
+	This should speed up many photo-to-photo copies, keeping the cost of
+	the alpha channel down.
+
+2006-03-15  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkImgPhoto.c (Tk_PhotoPutBlock, Tk_PhotoPutZoomedBlock): Try
+	to squelch performance issue with code that writes to large images by
+	single pixels. Masses of thanks to George Staplin for helping to trace
+	this down to the COMPLEX_ALPHA flag handling code. [Bug 1409140]
+
+2006-03-13  Don Porter  <dgp@users.sourceforge.net>
+
+	* tests/scrollbar.test:	Corrected several broken calls to [testmetrics]
+	that were crashing the test suite.
+
+	* tests/constraints.tcl:	Added notAqua constraint to canvPs-3.1
+	* tests/canvPs.test:		to stop test suite crash on Mac OSX.
+					[Bug 1088807]
+
+	* generic/tkCmds.c:		Purged remaining references to
+	* macosx/tkMacOSXPort.h:	errno, and errno.h.  Standardized
+	* macosx/tkMacOSXWm.c:		the logic for using header files from
+	* macosx/tkMacOSXWm.h:		the compat directory.  Thanks Joe
+	* unix/tkUnixPort.h:		English for the patch. [Patch 1445404]
+
+2006-03-11  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* library/bgerror.tcl (::tk::dialog::error::bgerror): Truncated error
+	details were getting lost, leading to unreadable error messages.
+
+2006-03-07  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* doc/canvas.n: Added note that stipples are not well-supported on
+	non-X11 platforms. [Bug 220787] It's not a great solution, but it does
+	indicate the state of affairs that has existed for years anyway; not
+	much modern software uses stipples anyway.
+
+2006-03-07  Don Porter  <dgp@users.sourceforge.net>
+
+	* READNE:		Bump version number to 8.4.13 and update
+	* changes:		changes to start prep for an 8.4.13 release.
+	* generic/tk.h:
+	* unix/configure{.in}:
+	* unix/tk.spec:
+	* win/configure{.in}:
+
+2006-03-02  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/Makefile.in: convert _NATIVE paths to use / to avoid ".\"
+	path-as-escape issue.
+
+	* unix/tcl.m4, win/tcl.m4: []-quote ac_defun functions.
+
+	* macosx/tkMacOSXDraw.c (TkPutImage): fix endian issue on OS X x86
+	displaying images.  Bitmap images still have a black/white
+	reversal issue, appears to be a general OS X issue (as seen in
+	frogger demo).
+
+2006-03-02  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* unix/tcl.m4:    Fix for tk bug #1334613 to sort out shared library
+	* unix/configure: issues on NetBSD. Regenerated configure script.
+
+2006-02-27  Donal K. Fellows  <donal.k.fellows@manchester.ac.uk>
+
+	* generic/tkBitmap.c (Tk_GetBitmapFromData): Improve thread-safety.
+	[Bug 470322]
+
+	* generic/tkImgBmap.c (ImgBmapConfigureInstance): Force creation of
+	new Pixmaps before deletion of old ones to prevent stupid caching
+	problems. [Bug 480862]
+
+2006-02-09  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tk.decls:             fix signature of TkMacOSXInvalClipRgns
+	* generic/tkPlatDecls.h:        to use Tk_Window instead of internal	
+	* macosx/tkMacOSXSubwindows.c:  type TkWindow (which led to any include 
+	* macosx/tkMacOSXWindowEvent.c: of public header tkMacOSX.h requiring
+	* macosx/tkMacOSXWm.c:          prior include of tkInt.h).
+	
+	* generic/tk.h:          move TkAqua specific REDO_KEYSYM_LOOKUP define
+	* macosx/tkMacOSXPort.h: out of tk.h into platform header.
+
+2006-01-25  Don Porter  <dgp@users.sourceforge.net>
+
+	* library/bgerror.tcl:	Updates to use Tcl 8.4 features. [Patch 1237759]
+	* library/button.tcl:
+	* library/choosedir.tcl:
+	* library/clrpick.tcl:
+	* library/comdlg.tcl:
+	* library/console.tcl:
+	* library/dialog.tcl:
+	* library/entry.tcl:
+	* library/focus.tcl:
+	* library/listbox.tcl:
+	* library/menu.tcl:
+	* library/msgbox.tcl:
+	* library/palette.tcl:
+	* library/panedwindow.tcl:
+	* library/safetk.tcl:
+	* library/scale.tcl:
+	* library/scrlbar.tcl:
+	* library/spinbox.tcl:
+	* library/tearoff.tcl:
+	* library/text.tcl:
+	* library/tk.tcl:
+	* library/tkfbox.tcl:
+	* library/xmfbox.tcl:
+
+2006-01-23  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/configure:    minor fix to Darwin specific code removing
+	* unix/configure.in: 64bit flags from CFLAGS for Tk build.
+
+2006-01-20  Joe English  <jenglish@users.sourceforge.net>
+
+	* generic/tkEvent.c, unix/tkUnixEvent.c:  XIM fixes 
+	[See #905830, patch tk84-xim-fixes.patch].
+	+ Revert 2005-12-05 patch disabling XIM when SCIM in use;
+	+ Make sure all X events get passed to XFilterEvent,
+	including those without a corresponding Tk window.
+
+2006-01-10  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXDraw.c: re-added inclusion of tclInt.h to allow access
+	* macosx/tkMacOSXFont.c: to 8.4-internal Tcl_CreateNamespace().
+
+	* macosx/tkMacOSXDebug.c: add TkMacOSXGetNamedDebugSymbol() function
+	* macosx/tkMacOSXDebug.h: that finds unexported symbols in loaded
+	libraries by manually walking their symbol table; only to be used for
+	debugging purposes, may break unexpectedly in the future. Needed to get
+	access to private_extern internal debugging functions in HIToolbox.
+
+	* macosx/tkMacOSXCarbonEvents.c: fix debug event tracing on Tiger.
+	* macosx/tkMacOSXMenu.c: add debug menu printing during reconfigure.
+	* macosx/tkMacOSXInit.c: conditionalize 64bit-unsafe dyld code.
+	* macosx/Makefile: add 'wish8.x' symlink to SYMROOT.
+
+	* unix/configure:    add caching, use AC_CACHE_CHECK instead of
+	* unix/configure.in: AC_CACHE_VAL where possible, consistent message
+	* unix/tcl.m4:       quoting, sync relevant tclconfig/tcl.m4 changes and
+	gratuitous formatting differences, fix SC_CONFIG_MANPAGES with default
+	argument, Darwin improvements to SC_LOAD_*CONFIG.
+
+2005-12-13  Daniel Steffen  <das@users.sourceforge.net>
+
+	* library/demos/cscroll.tcl: add MouseWheel bindings for aqua.
+
+	* macosx/tkMacOSXCarbonEvents.c (TkMacOSXInitCarbonEvents):
+	* macosx/tkMacOSXMouseEvent.c (TkMacOSXProcessMouseEvent,
+	GenerateMouseWheelEvent): add support for kEventMouseScroll events
+	(smooth mouse wheel scrolling from mighty mouse or scrolling trackpad)
+	by handling kEventMouseWheelMoved on application target as well as on
+	dispatcher, in order to pick up synthesized MouseWheel events from
+	HIObject handler (c.f. QA1453); add support for horizontal scrolling
+	events by generating MouseWheel XEvent with Shift modifier.
+
+2005-12-12  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/tcl.m4, unix/configure: Fix sh quoting error reported in
+	bash-3.1+ [Bug 1377619] (schafer)
+
+2005-12-08  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXDraw.c:  remove inclusion of tclInt.h and use of tcl
+	* macosx/tkMacOSXFont.c:  internals wherever possible in tk/macosx, the
+	* macosx/tkMacOSXInit.c:  only remaining tcl internals in TkAqua are
+	* macosx/tkMacOSXNotify.c: TclServiceIdle() in tkMacOSXScrlbr.c and
+	* macosx/tkMacOSXScrlbr.c: Tcl_Get/SetStartupScript() in tkMacOSXInit.c
+				   [RFE 1336531].
+	* macosx/tkMacOSXInt.h:
+	* macosx/tkMacOSXWindowEvent.c:
+	* macosx/tkMacOSXXStubs.c: sync comments/whitespace with HEAD.
+
+2005-12-05  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	*** 8.4.12 TAGGED FOR RELEASE ***
+
+	* generic/tkOldConfig.c (Tk_ConfigureWidget): fix the handling of
+	TK_CONFIG_OPTION_SPECIFIED to be flagged appropriately in original
+	Tk_ConfigSpec.  This is *not* thread safe, but will be retained
+	for 8.4.x and left out of 8.5.x. [Bug 749908]
+
+2005-12-05  Reinhard Max  <max@tclers.tk>
+
+	* unix/tkUnixEvent.c (OpenIM): Added a workaround to allow at
+	least ASCII and the Compose key when typing into text and entry
+	widgets on a system that uses SCIM. This has to be taken out again
+	once the SCIM problems have been fixed.
+
+2005-12-04  Daniel Steffen  <das@users.sourceforge.net>
+
+	* mac/README: add note that mac classic port is no longer supported.
+
+2005-12-01  Don Porter  <dgp@users.sourceforge.net>
+
+	* changes:	Update changes for 8.4.12 release
+
+	* mac/tkMacWm.c:	Restored consistent error checking and
+	* macosx/tkMacOSXWm.c:	messages among different platform's
+	* tests/wm.test:	[wm grid] commands.  [Bug 1323972].
+	* win/tkWinWm.c:
+
+2005-12-01  Kevin Kenny  <kennykb@acm.org>
+
+	* win/makefile.vc: restored buildability.
+	
+2005-12-01  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/menu.tcl (::tk::PostOverPoint): correct menu post near
+	bottom of screen on Windows. [Bug 1353416]
+
+2005-12-01  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/tcl.m4 (Darwin): fixed error when MACOSX_DEPLOYMENT_TARGET unset
+	* unix/configure: regen.
+
+	* macosx/tkMacOSXCarbonEvents.c (TkMacOSXInitCarbonEvents): added newly
+	registered kEventAppAvailableWindowBoundsChanged to debugging code.
+
+2005-11-30  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinWm.c (WmAttributesCmd): set (no)topmost window aspect
+	before rewrapping.  [Bug 1086049]
+
+	* generic/tkImgGIF.c: cast calls to block_out
+
+	* win/Makefile.in: place TCL_BIN_DIR first in PATH for targets to
+	get Tcl built dll first.
+
+	* tests/scrollbar.test (6.22): fix rounding-error sensitive test
+
+	* tests/textWind.test: use "Courier -12" on all platforms.
+	Reduces Windows XP test errors in that file from 9 to 2 (13.2 and
+	13.9 still off-by-one pixel).
+
+	* win/tkWinWm.c (UpdateWrapper): Don't install frame menu on dead
+	window.  Backport of 1233635
+
+	* generic/tkEvent.c: fix handling of ClientMessage handlers.
+	[Bug 1289565 983920]
+
+	* macosx/tkMacOSXEvent.h: define
+	kEventAppAvailableWindowBoundsChanged for OS X < 10.3.
+
+2005-11-29  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/console.tcl (::tk::ConsoleInit): improve work-around to
+	avoid '% ' from tclMain.c [Bug 1252259]
+
+	* macosx/tkMacOSXXStubs.c (TkpOpenDisplay, TkMacOSXDisplayChanged):
+	* macosx/tkMacOSXCarbonEvents.c (TkMacOSXInitCarbonEvents):
+	* macosx/tkMacOSXWindowEvent.c (TkMacOSXProcessApplicationEvent):
+	* macosx/tkMacOSXInt.h: Trap kEventAppAvailableWindowBoundsChanged
+	event to watch for change in display size and adjust internal
+	state appropriately.
+
+	* win/tcl.m4:      Add build support for Windows-x64 builds.
+	* win/configure:   --enable-64bit now accepts =amd64|ia64 for
+	* win/Makefile.in: Windows 64-bit build variants (default: amd64)
+	* win/makefile.vc: [Bug 1369597]
+	* win/configure.in:
+	* win/wish.exe.manifest.in (new):     manifest must map in MACHINE
+	* win/rc/wish.exe.manifest (removed): and VERSION to be correct.
+
+2005-11-27  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/tcl.m4 (Darwin): add 64bit support, check for Tiger copyfile(),
+	add CFLAGS to SHLIB_LD to support passing -isysroot in env(CFLAGS) to
+	configure (flag can't be present twice, so can't be in both CFLAGS and
+	LDFLAGS during configure), don't use -prebind when deploying on 10.4,
+	define TCL_IO_TRACK_OS_FOR_DRIVER_WITH_BAD_BLOCKING (rdar://3171542).
+	(SC_ENABLE_LANGINFO, SC_TIME_HANDLER): add/fix caching, fix obsolete
+	autoconf macros. Sync with tk/unix/tcl.m4, sync whitespace with HEAD.
+
+	* unix/configure.in: fix obsolete autoconf macros, sync gratuitous
+	formatting/ordering differences with tcl/unix/configure.in.
+
+	* unix/Makefile.in: add CFLAGS to wish/tktest link to make
+	executable linking the same as during configure (needed to avoid
+	loosing any linker relevant flags in CFLAGS, in particular flags
+	that can't be in LDFLAGS).  Avoid concurrent linking of wish and
+	compiling of tkTestInit.o during parallel make, fix dependencies
+	and flags for building tkMacOSXInit.o
+	(checkstubs, checkexports): dependency and Darwin fixes
+
+	* macosx/tkMacOSXEvent.c (TkMacOSXProcessEvent):
+	* macosx/tkMacOSXEvent.h:
+	* macosx/tkMacOSXMouseEvent.c (TkMacOSXProcessMouseEvent):
+	* macosx/tkMacOSXCarbonEvents.c: install standard application event
+	handler, add & call functions to start and stop carbon even timer that
+	runs the tcl event loop periodically during a nested carbon event loop
+	in the toolbox (e.g. during menutracking) to ensure tcl timers etc
+	continue to fire, register app event handler for menu tracking and HI
+	command carbon events, move menu event handling to new handlers for
+	those carbon events, no longer register for/handle appleevent carbon
+	event (now dealt with by standard application event handler), event
+	debugging code dynamically acquires carbon event debugging functions to
+	allow use on Tiger where they are no longer exported from HIToolbox.
+
+	* macosx/tkMacOSXFont.c (TkMacOSXUseAntialiasedText):
+	* macosx/tkMacOSXKeyEvent.c (GetKeyboardLayout):
+	* macosx/tkMacOSXCarbonEvents.c (TkMacOSXInitCarbonEvents):
+	* macosx/tkMacOSXInit.c:
+	* macosx/tkMacOSXInt.h: abstract common code to dynamically acquire
+	address of a named symbol (from a loaded dynamic library) into new
+	function TkMacOSXGetNamedSymbol() and macro TkMacOSXInitNamedSymbol.
+
+	* macosx/tkMacOSXMenu.c (TkpNewMenu):
+	* macosx/tkMacOSXMenubutton.c (MenuButtonInitControl):
+	* macosx/tkMacOSXMenus.c (TkMacOSXHandleMenuSelect): switch to  modern
+	utf8 aware menu manager API, remove obsolete code, add error handling.
+
+	* macosx/tkMacOSXMenu.c:
+	* macosx/tkMacOSXMenus.c:
+	* macosx/tkMacOSXMenubutton.c:
+	* macosx/tkMacOSXMouseEvent.c: define OSX 10.3 or later only constants
+	if necessary to allow compilation on OSX 10.2
+
+	* macosx/tkMacOSXWm.c (UpdateSizeHints): remove code that is never
+	executed.
+
+	* generic/tk.h: add/correct location of version numbers in macosx
+	files.
+
+	* generic/tkInt.h: clarify fat compile comment.
+
+	* macosx/Wish.pbproj/default.pbxuser (new file):
+	* macosx/Wish.pbproj/jingham.pbxuser:
+	* macosx/Wish.pbproj/project.pbxproj: sync with HEAD.
+
+	* macosx/buildTkConfig.tcl (removed): remove obsolete build files.
+
+	* macosx/README: clarification/cleanup, sync with HEAD, document
+	universal (fat) builds via CFLAGS (i.e. ppc and i386 at the same time).
+
+	* macosx/Makefile: add support for reusing configure cache, build
+	target fixes.
+
+	* generic/tkMenu.c:
+	* macosx/tkMacOSXButton.c:
+	* macosx/tkMacOSXDebug.c:
+	* macosx/tkMacOSXDebug.h:
+	* macosx/tkMacOSXDialog.c:
+	* macosx/tkMacOSXDraw.c:
+	* macosx/tkMacOSXEntry.c:
+	* macosx/tkMacOSXMenu.c:
+	* macosx/tkMacOSXMouseEvent.c:
+	* macosx/tkMacOSXXStubs.c:
+	* macosx/tkMacOSXSubwindows.c:
+	* xlib/xgc.c: declare functions and globals used only in own file as
+	static, #ifdef out a few Xlib and aqua functions that are never called
+	(sync with HEAD).
+
+	* macosx/tkMacOSXPort.h:
+	* generic/tkInt.decls: correct signature of TkMacOSXHandleMenuSelect,
+	add XSync to aqua Xlib stubs.
+
+	* generic/tkTest.c: #ifdef unix only declarations.
+	(TestmetricsCmd): unify win and mac implementation.
+
+	* generic/tkTextDisp.c:
+	* generic/tkTextBTree.c:
+	* macosx/tkMacOSXInit.c:
+	* macosx/tkMacOSXKeyEvent.c:
+	* macosx/tkMacOSXWindowEvent.c:
+	* macosx/tkMacOSXXStubs.c: fix gcc 4 warnings.
+
+	* macosx/tkMacOSXNotify.c:
+	* macosx/tkMacOSXTest.c: sync with HEAD.
+
+	* generic/tkIntPlatDecls.h:
+	* generic/tkIntXlibDecls.h:
+	* generic/tkStubInit.c:
+	* unix/configure: regen.
+
+2005-11-22  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkFont.c (ParseFontNameObj, ConfigAttributesObj): Allow
+	these functions to work with a NULL interp by making them check when
+	generating error messages. [Bug 1151523]
+
+	* unix/tkUnixSelect.c (SelCvtToX, SelCvtFromX): Backport of fixes for
+	* generic/tkSelect.c (TkSelDefaultSelection):	"spaces in atom names"
+	* tests/select.test (select-9.5):		problems. [Bug 1353414]
+
+	* library/tkfbox.tcl (::tk::dialog::file::): Correct the quoting of
+	the script used in variable traces so that widget names with spaces in
+	will work. [Bug 1335485]
+
+2005-11-16  Don Porter  <dgp@users.sourceforge.net>
+
+	* changes:	Update changes for 8.4.12 release
+
+	* README:		Bump version number to 8.4.12
+	* generic/tk.h:
+	* macosx/Wish.pbproj/project.pbxproj:
+	* unix/configure.in:
+	* unix/tk.spec:
+	* win/configure.in:
+
+	* unix/configure:	autoconf
+	* win/configure:
+
+2005-11-16  Vince Darley <vincentdarley@users.sourceforge.net>
+
+	* doc/text.n: clarify left to right interpretation of index
+	modifiers, including the fact that validation occurs after
+	each step [Bug 1357575]
+
+2005-11-06  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* unix/tcl.m4: Add missing LIBS for OpenBSD shared libary
+
+2005-10-18  Don Porter  <dgp@users.sourceforge.net>
+
+	* generic/tkMain.c:	Rewrote code that sets the ::argv value
+	to be sure conversion from the system encoding is complete before
+	any processing sensitive to list-special characters is done.
+	[Bug 1328926].
+
+2005-10-17  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* macosx/tkMacOSXScrlbr.c (UpdateControlValues): check geomMgrPtr
+	is valid before checking type
+
+2005-10-10  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkInt.h: add MODULE_SCOPE and WORDS_BIGENDIAN checks
+	that will work with OS X universal binary compiles. (steffen)
+
+	* generic/tkConfig.c (Tk_DeleteOptionTable, Tk_CreateOptionTable):
+	properly alloc/delete one more option. [Bug 1319720] (melbardis)
+
+2005-10-10  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* tests/winfo.test: Wait until child window is visible
+	* tests/wm.test:    Modified test to match actual error output.
+
+2005-10-04  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/dialog.tcl (::tk_dialog): add tkwait visibility before
+	grab. [Bug 1216775]
+
+	* win/tkWinDialog.c (ChooseDirectoryValidateProc): reset stored
+	path to "" if it doesn't exist and -mustexist is true. [Bug 1309218]
+
+2005-09-15  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkOldConfig.c (GetCachedSpecs): Split out the code to
+	manipulate the cached writable specs so that it can be reused from
+	all the public Tk_Configure* functions.
+	(Tk_ConfigureInfo, Tk_ConfigureWidget, Tk_ConfigureValue): Use the
+	factored out code everywhere, so we always manipulate the cache
+	correctly. [Bug 1288128]
+
+2005-09-11  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXMouseEvent.c (TkMacOSXProcessMouseEvent): check if
+	process is in front on MouseDown, otherwise request process activation
+	from BringWindowForward() via new isFrontProcess param.
+
+	* macosx/tkMacOSXCarbonEvents.c (TkMacOSXInitCarbonEvents):
+	register our event handler on the dispatcher target for all carbon
+	events of interest to TkAqua; this replaces event processing
+	directly from the event queue and thus allows to capture events
+	that are syntesized by Carbon and sent directly to the dispatcher
+	and not to the event queue.
+
+	* macosx/tkMacOSXEvent.c: remove TkMacOSXCountAndProcessMacEvents(),
+	rename ReceiveAndProcessEvent() to TkMacOSXReceiveAndProcessEvent().
+	(TkMacOSXReceiveAndProcessEvent): remove tk event processing before
+	sending events to the dispatcher, all events of interest are now
+	processed in our dispatcher target event handler.
+
+	* macosx/tkMacOSXNotify.c (CarbonEventsCheckProc): dispatch events
+	directly via TkMacOSXReceiveAndProcessEvent(), but dispatch no
+	more than four carbon events at one time to avoid starving other
+	event sources.
+
+	* macosx/tkMacOSXEvent.c: formatting cleanup, move XSync() to XStubs,
+	* macosx/tkMacOSXEvent.h: removed obsolete kEventClassWish handling.
+	* macosx/tkMacOSXXStubs.c
+
+	* macosx/tkMacOSXButton.c: conditionalize all debug message printing to
+	* macosx/tkMacOSXCursor.c: stderr via TK_MAC_DEBUG define.
+	* macosx/tkMacOSXDebug.c:
+	* macosx/tkMacOSXDebug.h:
+	* macosx/tkMacOSXDialog.c:
+	* macosx/tkMacOSXEvent.c:
+	* macosx/tkMacOSXInit.c:
+	* macosx/tkMacOSXKeyEvent.c:
+	* macosx/tkMacOSXMenu.c:
+	* macosx/tkMacOSXMenubutton.c:
+	* macosx/tkMacOSXScale.c:
+	* macosx/tkMacOSXWindowEvent.c:
+	* macosx/tkMacOSXWm.c: 
+
+	* unix/configure.in: define TK_MAC_DEBUG on aqua when symbols enabled.
+	* unix/configure: autoconf-2.13
+
+	* library/listbox.tcl: corrected comments.
+	* library/text.tcl: 
+
+	* xlib/xcolors.c: fixed warning
+
+2005-08-23  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* macosx/tkMacOSXDialog.c: make dialogs ignore -initialfile "" and
+	-initialdir "" instead of error.
+
+2005-08-23  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* win/tkWin32Dll.c (DllMain): Replace old asm SEH
+	approach with Kenny's new SEH implementation.
+	[Tcl bug 1235544]
+
+2005-08-22  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXButton.c:
+	* macosx/tkMacOSXDialog.c: fix warnings.
+
+2005-08-16  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkOldConfig.c (Tk_ConfigureWidget, Tk_ConfigureInfo): 
+	(Tk_ConfigureValue, DeleteSpecCacheTable): Keep per-interpreter (and
+	hence per-thread) copies of all the Tk_ConfigSpec tables so that
+	Tk_Uids do not leak across threads. [Bug 749908]
+
+2005-08-11  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkCanvLine.c, generic/tkCanvPoly.c, generic/tkCanvText.c: 
+	* generic/tkCanvas.c, generic/tkConfig.c, generic/tkFocus.c: 
+	* generic/tkFrame.c, generic/tkGrid.c, generic/tkImgPhoto.c: 
+	* generic/tkPack.c, generic/tkPanedWindow.c: Don't pass size_t
+	arguments to Tcl_GetStringFromObj, even with casting; it's not
+	portable to 64-bit systems. [Bug 1252702]
+
+2005-08-09  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXCarbonEvents.c (new): moved carbon events code into
+	* macosx/tkMacOSXHLEvents.c:           new file like on HEAD,
+	* macosx/tkMacOSXInit.c (TkpInit):     initialize carbon event handlers
+	* macosx/tkMacOSXInt.h:                in TkpInit(), add new source
+	* unix/Makefile.in:                    file to Makefile.in.
+
+	* macosx/tkMacOSXCarbonEvents.c (AppEventHandlerProc): handle carbon
+	events sent directly to application event target via the general
+	TkMacOSXProcessEvent() in the same way as events posted to the event
+	loop. Moved existing app event handlers to tkMacOSXWindowEvent.c.
+	(TkMacOSXInitCarbonEvents): register our application event handler for
+	kEventWindowExpanded events to deal with uncollapsing from the dock.
+
+	* macosx/tkMacOSXEvent.h: made TkMacOSXProcessEvent() non-static, added
+	* macosx/tkMacOSXEvent.c: new interp field to TkMacOSXEvent struct for
+	                          use by app event handler.
+
+	* macosx/tkMacOSXMouseEvent.c (TkMacOSXProcessMouseEvent): retrieve
+	current window, partCode, modifiers and local cursor position from
+	carbon mouse event if possible. Use new static GenerateButtonEvent()
+	taking a MouseEventData struct instead of TkGenerateButtonEvent() to
+	avoid recomputing already known values. Move process activation on
+	MouseDown into BringWindowForward() to allow clicking on window titlebar
+	widgets without activating process. Move code dealing with clicks in
+	window titelbar into separate function HandleWindowTitlebarMouseDown()
+	to avoid code duplication. Avoid repeated calls to TkMacOSXGetXWindow()
+	by storing result in MouseEventData struct.
+	(TkMacOSXButtonKeyState, XQueryPointer): try to get button and modifier
+	state from currently processed carbon event (to avoid unnecessary IPC
+	with the window server), otherwise use modern carbon API to get this
+	info instead of Button() and GetKeys(); only retrieve info caller asks
+	for (via non-NULL ptr passed to XQueryPointer).
+	(ButtonModifiers2State): new static function converting carbon button
+	and modifier state into tk state, allows detection of more than 3 mouse
+	buttons (tk supports up to 5) and of NumLock and Fn modifier keys
+	(NumLock is mapped to Mod3 and Fn to Mod4).
+
+	* macosx/tkMacOSXWindowEvent.c (TkMacOSXProcessApplicationEvent): handle
+	kEventWindowExpanded event to deal with window uncollapsing from the
+	dock by generating tk Map event, handle kEventAppHidden and
+	kEventAppShown events (moved here from tkMacOSXCarbonEvents.c).
+
+	* macosx/tkMacOSXSubwindows.c (XUnmapWindow): only hide window when
+	it is not iconified to avoid window flashing on collapse.
+
+	* macosx/tkMacOSXWm.c: replaced Tk_DoWhenIdle() by Tcl_DoWhenIdle().
+	(TkMacOSXZoomToplevel): remove call to TrackBox(), now done in
+	HandleWindowTitlebarMouseDown() in tkMacOSXMouseEvent.c.
+	(TkpWmSetState): avoid window flashing on collapse by unmapping after
+	calling CollapseWindow(); only uncollapse window if it is collapsed.
+
+	* generic/tkInt.decls: changed TkMacOSXZoomToplevel() signature.
+	* generic/tkIntPlatDecls.h:
+
+	* macosx/tkMacOSXKeyEvent.c (TkMacOSXProcessKeyboardEvent): only call
+	GetMenuItemCommandID() on KeyDown or KeyRepeat events.
+
+	* macosx/tkMacOSXMenu.c (ReconfigureMacintoshMenu): remove call to
+	obsolete AppendResMenu() API.
+
+	* macosx/tkMacOSXKeyEvent.c: replaced all direct uses of expensive
+	* macosx/tkMacOSXMenu.c:     GetMouse() and TkMacOSXButtonKeyState()
+	* macosx/tkMacOSXMenus.c:    APIs by calls to XQueryPointer()
+	* macosx/tkMacOSXMouseEvent.c:
+	* macosx/tkMacOSXScale.c:
+	* macosx/tkMacOSXScrlbr.c:
+	* macosx/tkMacOSXWm.c:
+
+	* macosx/tkMacOSXDialog.c:   replaced use of FrontNonFloatingWindow()
+	* macosx/tkMacOSXKeyEvent.c: by ActiveNonFloatingWindow() as
+	* macosx/tkMacOSXMenu.c:     recommended by Carbon docs.
+	* macosx/tkMacOSXMenus.c:
+	* macosx/tkMacOSXSubwindows.c:
+	* macosx/tkMacOSXWm.c:
+
+	* macosx/tkMacOSXDialog.c: fixed warnings
+	* macosx/tkMacOSXTest.c:
+
+	* macosx/tkMacOSXCarbonEvents.c: added CVS Id line to file header.
+	* macosx/tkMacOSXDebug.c:
+	* macosx/tkMacOSXDebug.h:
+	* macosx/tkMacOSXEntry.c:
+	* macosx/tkMacOSXEvent.h:
+	* macosx/tkMacOSXKeyEvent.c:
+	* macosx/tkMacOSXMouseEvent.c:
+	* macosx/tkMacOSXWindowEvent.c:
+	* macosx/tkMacOSXWm.h:
+
+	* macosx/tkMacOSXEmbed.c: replaced all uses of panic() with Tcl_Panic()
+	* macosx/tkMacOSXFont.c:  (sync with HEAD).
+	* macosx/tkMacOSXMenus.c:
+	* macosx/tkMacOSXSubwindows.c:
+	* macosx/tkMacOSXWm.c:
+	* macosx/tkMacOSXXStubs.c:
+
+	* macosx/tkMacOSXInt.h:      sync with HEAD changes of 2005-03-14.
+	* macosx/tkMacOSXSubwindows.c:
+
+	* macosx/tclets.r (removed): sync with HEAD.
+	* macosx/tkMacOSXScale.c:
+	* macosx/tkMacOSXPort.h:
+
+2005-07-30  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/Makefile.in (html): reverted/amended changes of 2005-07-24
+	that broke TkAqua 'make install'; added BUILD_HTML_FLAGS
+	optional var like in tcl/unix/Makefile.in.
+
+2005-07-28  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* macosx/tkMacOSXDraw.c (XDrawLines, XDrawSegments): correct
+	drawing of CoordModePrevious style (each point based on last).
+	Exposed by tktable -drawmode fast.
+
+	* library/bgerror.tcl (::tk::dialog::error::bgerror): use
+	zoomDocProc instead of dBoxProc for bgerror dialog
+
+	* macosx/tkMacOSXWm.c (TkpWmSetState): add IsWindowCollapsed check
+	before calling CollapseWindow.
+	(WmResizableCmd): adjust kWindow*Attributes according to resize
+	parameters.
+
+	* macosx/tkMacOSXMouseEvent.c (TkMacOSXProcessMouseEvent): handle
+	inToolbarButton action (generates <<ToolbarButton>> virtual event)
+	and correct inCollapseBox to properly track the event (waiting for
+	buttonrelease) and generate the Unmap event (Map event on
+	redisplay still missing).
+
+2005-07-27  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkFrame.c (DisplayFrame):
+	* generic/tkInt.decls:  add TkpDrawFrame to allow for
+	* generic/tkIntDecls.h: platform-specific drawing into the frame/
+	* generic/tkStubInit.c: toplevel area.  Currently only differs on
+	* generic/tkFrame.c:    OS X (Aqua), which will draw a themed bg
+	* win/tkWinDraw.c:      if tk::mac::useThemedToplevel == 1.
+	* unix/tkUnixDraw.c:    Normal frames left alone until we can
+	* mac/tkMacDraw.c:      better factor out frame drawing to be
+	* macosx/tkMacOSXDraw.c:widget-specific.
+
+	* generic/tkInt.h: Swap TkUnsupported1Cmd for TkUnsupported1ObjCmd.
+	* generic/tkWindow.c: Ditto. (neil madden)
+	* macosx/tkMacOSXInt.h: Added TkMacOSXWindowClass decl
+	* macosx/tkMacOSXWm.c (TkMacOSXWinStyle) New function.
+	(TkUnsupported1ObjCmd): New function, replaces the un-objectified
+	version of the command, recognizes more classes and attributes.
+	(TkMacOSXWindowClass): private function to return OS X class of a
+	Tk window.
+	* macosx/tkMacOSXSubwindows.c (XMapWindow, XUnmapWindow):
+	recognize special show/hide functions for sheets
+
+2005-07-24  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* unix/Makefile.in: Subst TCLSH_PROG and
+	BUILD_TCLSH into Makefile. Rework html
+	target so that it depends on the tclsh
+	installed on the system PATH.
+	* unix/configure: Regen.
+	* unix/configure.in: Invoke SC_PROG_TCLSH
+	and SC_BUILD_TCLSH and subst into Makefile.
+	* unix/tcl.m4: Update from Tcl.
+	* win/Makefile.in: Subst TCLSH_PROG and
+	BUILD_TCLSH into Makefile. Rework winhelp
+	target so that it depends on the tclsh
+	installed on the system PATH.
+	* win/configure: Regen.
+	* win/configure.in: Invoke SC_BUILD_TCLSH
+	and subst into Makefile.
+	* win/tcl.m4: Update from Tcl.
+	[Tcl patch 1244153]
+
+2005-07-21  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/configure, unix/tcl.m4: sync'ed to Tcl's tcl.m4
+
+	* macosx/tkMacOSXEntry.c (TkpDrawEntryBorderAndFocus): set
+	oldWidth to avoid warning
+
+	* macosx/tkMacOSXMouseEvent.c (TkMacOSXProcessMouseEvent): 
+	corrected if expression error (use of = instead of ==)
+
+2005-07-06  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* doc/getOpenFile.n: correct -multiple docs (takes boolean)
+
+2005-06-25  Daniel Steffen  <das@users.sourceforge.net>
+
+	*** 8.4.11 TAGGED FOR RELEASE ***
+
+	* library/demos/menu.tcl: removed errant '}'.
+
+2005-06-23  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkConsole.c: backport fix for bug 756840 & sync whitespace
+	changes from HEAD.
+
+	* generic/tkConsole.c (TkConsolePrint): prevent potential NULL deref.
+
+	* macosx/tkMacOSXDefault.h: change ENTRY_BORDER defaults to from 5 to 2
+	to make default entry widgets in TkAqua look like in other aqua apps
+	(and have same border dimensions as other platforms). [Bug 1176610]
+
+	* unix/Makefile.in (install-private-headers): rewrite tkPort.h when
+	installing private headers to remove ../unix relative #include path to
+	tkUnixPort.h (which is incorrect at the installed location).
+
+2005-06-21  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* doc/GetBitmap.3: Fix silly error in SYNOPSIS. [Bug 1224983]
+
+2005-06-20  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkImgGIF.c (mInit,Mgetc,Fread): Stop anyone from reading
+	off the end of a buffer.
+
+2005-06-18  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/Makefile: for X11 build, add -X11 suffix to unversioned wish
+	symbolic link.
+
+	* unix/tcl.m4 (Darwin): add -headerpad_max_install_names to LDFLAGS to
+	ensure we can always relocate binaries with install_name_tool.
+
+	* unix/configure: autoconf-2.13
+
+2005-06-18  Don Porter	<dgp@users.sourceforge.net>
+
+	* changes:		Update changes for 8.4.11 release
+
+	* README:		Bump version number to 8.4.11
+	* generic/tk.h:
+	* macosx/Wish.pbproj/project.pbxproc:
+	* unix/configure.in:
+	* win/configure.in:
+
+	* unix/configure.in:	Updated LOCALES to cover all msgs catalogs.
+
+	* unix/configure:	autoconf
+	* win/configure:
+
+2005-06-04  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkCanvas.c (SearchUids): Move all global data into
+	protected storage to stop cross-thread issues. [Bug 1114977] 
+
+2005-06-03  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkConsole.c (Tk_CreateConsoleWindow, TkConsolePrint):
+	Transmit the ConsoleInfo through AssocData, so renaming [console]
+	won't make things break. [Bug 1016385]
+
+2005-06-03  Daniel Steffen  <das@users.sourceforge.net>
+
+	*** 8.4.10 TAGGED FOR RELEASE ***
+
+	* macosx/Makefile: fixed 'embedded' target.
+
+2005-06-02  Jim Ingham  <jingham@apple.com>
+
+        Another patch from M. Kirkham.
+	
+	* macosx/tkMacOSXScrlbr.c (ThumbActionProc, ScrollBarBindProc):
+	Record the first mouse down point, and compute differences from
+	that, rather than getting the mouse down each time through the
+	loop.  The old method would get fooled if you moved the mouse less
+	than a text line height in the text widget.
+	[Bug 1083728]
+	
+2005-06-02  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* changes: update for 8.4.10 release (porter)
+
+2005-05-31  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* macosx/tkMacOSXWm.c (TkWmStackorderToplevelWrapperMap, TkWmStackorderToplevel):
+	* unix/tkUnixWm.c (TkWmStackorderToplevelWrapperMap, TkWmStackorderToplevel):
+	* win/tkWinWm.c (TkWmStackorderToplevelWrapperMap, TkWmStackorderToplevel):
+	Fix panic in wm stackorder when a toplevel is created on another
+	diplay. The code now ignores toplevels that have a display
+	that does not match the display of the parent window.
+	[Bug 1152809]
+
+2005-05-30  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkPanedWindow.c, tests/panedwindow.test: batch of fixes
+	to panedwindow from Daniel South.  Improved auto-size to fit
+	internal windows, fixed sash placement at edge of pane, fixed
+	calculation of stretch amount for internal windows.
+	[Bug 1124198 1161543 1054117 1010941 795869 690169 1192323]
+
+	* generic/tkMenu.c (MenuCmd): create event handler earlier to
+	ensure proper destruction of menu through DestroyNotify.
+	[Bug 1159367]
+
+	* library/console.tcl (::tk::ConsoleInit): print out first prompt
+	and swallow the extra "% " that comes once from Tcl on Windows.
+
+2005-05-29  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/Wish.pbproj/project.pbxproj: added missing FRAMEWORK defines
+	introduced with configure/make based build.
+
+	* macosx/tkMacOSXInit.c:
+	* macosx/tkMacOSXNotify.c: fixed warnings.
+
+	* unix/configure.in: skip X11 configure checks when building tk_aqua.
+	* unix/configure: autoconf-2.13
+
+2005-05-27  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* README:       Bumped patchlevel to 8.4.10
+	* generic/tk.h:
+	* macosx/Wish.pbproj/project.pbxproj:
+	* unix/configure, unix/configure.in, unix/tk.spec:
+	* win/configure, win/configure.in:
+
+2005-05-27  Todd Helfter <tmh@users.sourceforge.net>
+
+	* library/menu.tcl: correct the sticky behavior of menus posted by
+	tk_popup so that they "stick" after the initial <ButtonRelease>
+	following the post, that is not over an active menu entry.
+
+2005-05-26  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXInit.c (TkpInit): fixed resource file extraction
+	from __tk_rsrc section to work with non-prebound .dylib and .bundle.
+
+	* macosx/Makefile: corrected EMBEDDED_BUILD check, use separate tcl
+	and tk version vars to properly support tk/x11 framework version
+	overriding, rewrite tkConfig.sh when overriding tk version, corrected
+	Wish.app symlink in tk build dir.
+	
+	* unix/configure.in: corrected framework finalization to softlink
+	stub library to Versions/8.x subdir instead of Versions/Current.
+	* unix/configure: autoconf-2.13
+
+2005-05-25  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/configure, unix/configure.in: ensure false Tcl.framework is
+	only created with --enable-framework
+
+	* unix/Makefile.in (install-libraries): protect possible empty
+	list in for with list= trick for older shells.
+
+2005-05-24  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkTest.c: disable commands not available on TkAqua.
+
+	* macosx/Makefile:
+	* macosx/README:
+	* macosx/Tk-Info.plist.in (new file):
+	* macosx/Wish-Info.plist.in (new file):
+	* unix/Makefile.in:
+	* unix/configure.in:
+	* unix/tcl.m4:
+	* unix/tkUnixInit.c:  moved all Darwin framework and TkAqua build
+	support from macosx/Wish.pbproj and macosx/Makefile into the standard
+	unix configure/make buildsystem, the project and macosx/Makefile are
+	no longer required to build Tk.framework and/or TkAqua. TkAqua is now
+	enabled by the --enable-aqua configure option, and static and
+	non-framework builds of TkAqua are now available via the standard
+	configure switches. Tk/X11 can also be built as a framework. The
+	macosx/Makefile now wraps the unix buildsystem and no longer uses the
+	projects, embedded builds are still only available via this Makefile,
+	but for other builds it is not longer required (but its current
+	functionality is still available for backwards compatibility). The
+	projects currently do not call through to the Makefile to build
+	(unlike Tcl.pbproj) so project builds may differ from makefile builds.
+	Due to issues with spaces in pathnames, 'Wish Shell.app' has been
+	renamed to 'Wish.app', the macosx/Makefile installs backwards
+	compatibility symlinks for the old name.
+	* macosx/tkMacOSXInit.c (TkpInit): added support for Tk resource file
+	in non-framework and static builds: the resource file is copied into a
+	__tk_rsrc MachO segment of the library or executable at link time and
+	extracted into a temporary location at initialization.
+	* unix/configure: autoconf-2.13
+
+	* macosx/Wish.pbproj/project.pbxproj:
+	* macosx/tkAboutDlg.r: updated copyright years to 2005.
+
+2005-05-15  Jim Ingham  <jingham@apple.com>
+
+	Fixes from Michael Kirkham:
+
+	* macosx/tkMacOSXMenu.c (TkpConfigureMenuEntry): Thinko in clearing 
+	the ENTRY_ACCEL_MASK before re-parsing it. [Tk Bug 1012852]
+
+	* macosx/tkMacOSXScrlbr.c (UpdateControlValues): Don't set the 
+	control value BEFORE setting the min and max or the control manager
+	will reset it for you. [Tk Bug 1202181]
+
+	* macosx/tkMacOSXXStubs.c (TkMacOSXXGetPixel, TkMacOSXXPutPixel):
+	Restore the port to what it was before putting we were called.
+	[Tk Bug 1202223]
+	
+2005-05-14  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXInit.c:
+	* macosx/tkMacOSXNotify.c: introduction of new tcl notifier based on
+	CFRunLoop allows replacement of the custom TkAqua notifier by a
+	standard tcl event source. Removes requirement of threaded tcl core
+	for TkAqua, allows to stub-link TkAqua against Tcl by removing use of
+	the unstubbed TclInitNotifier & TclFinalizeNotifier. [Tcl Patch 1202052]
+
+	* macosx/Wish.pbproj/project.pbxproj: stub-link TkAqua: build with
+	USE_TCL_STUBS and link against libtclstub instead of Tcl.framework,
+	unexport libtclstub symbols from Tk to avoid duplicate symbol warnings
+	when linking with both Tcl and Tk, fixes for gcc4.0 warnings.
+
+	* macosx/tkMacOSXBitmap.c:
+	* macosx/tkMacOSXButton.c:
+	* macosx/tkMacOSXDialog.c:
+	* macosx/tkMacOSXFont.c:
+	* macosx/tkMacOSXHLEvents.c:
+	* macosx/tkMacOSXInit.c:
+	* macosx/tkMacOSXKeyboard.c:
+	* macosx/tkMacOSXMenu.c:
+	* macosx/tkMacOSXMenubutton.c:
+	* macosx/tkMacOSXWm.c:
+	* macosx/tkMacOSXXStubs.c: fixed gcc 4.0 warnings.
+
+	* unix/tcl.m4: sync with tcl
+	* unix/configure: autoconf-2.13
+
+2005-05-10  Vince Darley <vincentdarley@users.sourceforge.net>
+
+	* library/text.tcl: test and fix to TextPrevPara to avoid infinite loop
+	* tests/textIndex.test: at start of widget [Bug 1191895]
+
+2005-05-06  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/configure: regen
+	* unix/configure.in: add AC_C_BIGENDIAN check
+	* unix/tcl.m4: correct Solaris 10 (5.10) check and add support for
+	x86_64 Solaris cc builds.
+
+2005-04-25  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXNotify.c: syncd with tclUnixNotfy.c changes since
+	2004-06-22, added compile time check for threaded tcl core, removed
+	unthreaded code paths as they are never used anyway, fixed
+	TkMacOSXAlertNotifier() implementation.
+
+	* unix/Makefile.in: added TCL_STUB_LIB_FILE, needed for unexporting of
+	symbols from libtclstub to avoid duplicate symbol warnings.
+
+	* unix/tcl.m4 (Darwin): added configure checks for recently added linker
+	flags -single_module and -search_paths_first to allow building with
+	older tools (and on Mac OS X 10.1), use -single_module in SHLIB_LD and
+	not just T{CL,K}_SHLIB_LD_EXTRAS, added unexporting from Tk of symbols
+	from libtclstub to avoid duplicate symbol warnings, added PLAT_SRCS
+	definition for Mac OS X.
+	(SC_MISSING_POSIX_HEADERS): added caching of dirent.h check.
+	(SC_TCL_64BIT_FLAGS): fixed 'checking for off64_t' message output.
+
+	* unix/configure: autoconf-2.13
+
+2005-04-12  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/tkUnixFont.c (FontMapLoadPage): reorder char[] decls to
+	avoid possible segv.  Minimal fix for [Bug 1122671]
+
+	* library/tkfbox.tcl (::tk::dialog::file::): fix typeMenuLab ref.
+	Add undoc'd ::tk::dialog::file::showHiddenBtn var (default 0) that
+	will add a "Show Hidden" checkbutton to tk_get*File and
+	tk_chooseDirectory if set to true.
+	* library/choosedir.tcl (::tk::dialog::file::chooseDir::): fix
+	cancelBtn ref, add hiddenBtn ref for "Show Hidden" button.
+
+2005-04-09  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/README: updated requirements for OS & developer tool
+	versions + other small fixes/cleanup.
+
+	* macosx/tkMacOSXEntry.c (ComputeIncDecParameters): manually define
+	constants present only in 10.3 headers so that we can build on 10.2.
+	
+	* macosx/Wish.pbproj/project.pbxproj: fixed absolute path to 
+	tkEntry.h that confused 10.2 PBX.
+	
+	* unix/tcl.m4 (Darwin): added -single_module linker flag to
+	TCL_SHLIB_LD_EXTRAS and TK_SHLIB_LD_EXTRAS.
+	* unix/configure: autoconf-2.13
+
+2005-03-29  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tcl.m4, win/configure: do not require cygpath in macros to
+	allow msys alone as an alternative.
+
+2005-03-24  Jim Ingham  <jingham@apple.com>
+
+        These changes allow us to draw the Entry and Spinbox widget
+	with a native look and feel on Mac OS X.
+
+	* generic/tkEntry.h: New file, extracting the definitions of
+	Entry and Spinbox.
+	* generic/tkEntry.c (DisplayEntry): Call out to
+	TkpDrawEntryBorderAndFocus and TkpDrawSpinboxButtons.  Also
+	provide default implementations for X11 & Win.
+	* macosx/tkMacOSXEntry.c: New file, implements the entry & focus
+	and spinbox button drawing.
+	* tkMacOSXDefaults.h: Change the Mac OS X defaults so they fit
+	the native widget shapes.
+	
+	* xlib/xgc.c (XCreateGC): Set the default linewidth to 1, not
+	0.  Some extensions seem to expect this.
+	
+2005-03-15  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* unix/tcl.m4:    Updated for OpenBSD and regenerated the configure
+	* unix/configure: script
+
+2005-03-11  Jim Ingham  <jingham@apple.com>
+
+	* macosx/tkMacOSXButton.c (TkpDisplayButton): Set the port to
+	the Button window's port BEFORE you set the clip, otherwise you 
+	are setting the clip on the wrong window!
+	Also, a little cleanup - move x & y into the branches where they are
+	used, and don't compute the TextAnchor if we are using the native 
+	button text, since we aren't going to use it.
+	(TkMacOSXDrawControl): Call ShowControl & SetControlVisibility in a more
+	logical order.
+
+	* tkMacOSXInt.h: Add TkMacOSXGenerateFocusEvent.
+	* tkMacOSXSubwindows.c (XDestroyWindow): We don't get Activate events
+	for the remaining windows when a Floating window is destroyed.  This 
+	can cause the focus to disappear.  So catch this case when the window
+	is being destroyed and move the focus here.
+	* tkMacOSXWindowEvent.c (TkMacOSXGenerateFocusEvent): Make this public
+	(used to be GenerateFocusEvent) since we need it here and in 
+	tkMacOSXSubwindows.c.  Then change the name everywhere it is used.
+	[Bug 1124237]
+	
+2005-03-10  Jim Ingham  <jingham@apple.com>
+
+	* macosx/tkMacOSXMouseEvent.c (TkMacOSXProcessMouseEvent): In
+	the inDrag section, set the GrafPort to the drag window's GrafPort
+	before doing LocalToGlobal. [Bug 1160025]
+	
+2005-03-08  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinWm.c (WinSetIcon): fix GCLP_ICONSM -> GCLP_HICONSM.
+
+	* win/makefile.vc: clarify necessary defined vars that can come
+	from MSVC or the Platform SDK.
+
+2005-02-28  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinX.c (GenerateXEvent): correct %A translation on
+	MouseWheel [Bug 1118340]
+
+2005-02-25  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/tkUnixFont.c (FontMapLoadPage): swap decl of char arrays to
+	avoid aligment issues in Tcl_UtfToExternal. [Bug 1122671]
+
+	* unix/configure, unix/configure.in: add AC_C_BIGENDIAN check
+	which defines WORDS_BIGENDIAN on BE machines.
+
+2005-02-24  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSX.h: fixed incorrect inclusion of internal header.
+	* macosx/tkMacOSXNotify.c: corrected included headers.
+
+2005-02-22  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXDialog.c (Tk_GetSaveFileObjCmd, NavServicesGetFile):
+	fixed encoding problems with -initialfile & -filetypes and
+	corrected potential buffer overrun with -initialdir/-initialfile.
+	[Bug 1146057]
+
+2005-02-14  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* tests/all.tcl: Add a [package require Tk] so that a missing
+	display causes an early failure and keeps the error trace short.
+	Issue observed in [FRQ 11122147], even though that's unrelated.
+
+2005-02-11  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/panedwindow.tcl (::tk::panedwindow::Cursor): check
+	window existence on delayed call. [Bug 949792]
+
+	* doc/text.n: note 'image' key in 'dump' command. [Bug 1115907]
+
+	* win/tkWinWm.c (TkWinGetIcon): fix toplevel retrieval for
+	determining icon ref (potential crash). [Bug 1105738]
+
+	* generic/tkCanvBmap.c (ConfigureBitmap, ComputeBitmapBbox): Fixed
+	possible crash with disabled bmap and bbox handling [Bug 1119460]
+	(BitmapToPostscript): made aware of various bitmap types
+	(DisplayBitmap): remove unused fg/bgColor refs
+
+2005-02-10  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/Makefile.in: remove SHLIB_LD_FLAGS (only for AIX, inlined
+	* unix/tcl.m4:      into SHLIB_LD).  Combine AIX-* and AIX-5
+	* unix/configure:   branches in SC_CONFIG_CFLAGS.
+	Correct gcc builds for AIX-4+ and HP-UX-11.
+
+2005-01-31  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* library/msgs/es_ES.msg: Added more localization for Spanish
+	Spanish. [Bug 1111213]
+
+2005-01-28  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/configure, unix/tcl.m4: add solaris 64-bit gcc build
+	support. [Bug 1021871]
+
+2005-01-25  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXInit.c (TkpInit): set tcl_interactive to 1 to show
+	console at startup instead of directly calling [console show].
+	
+	* unix/tcl.m4 (Darwin): fixed bug with static build linking to
+	dynamic library in /usr/lib etc instead of linking to static library
+	earlier in search path. [Tcl Bug 956908]
+	Removed obsolete references to Rhapsody. 
+	* unix/configure: autoconf-2.13
+
+2005-01-18  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* library/demos/menu.tcl: Reworked to make dialogs children of the
+	demo widget so that they are properly visible. Issue reported by
+	Keith Nash <k.j.nash@usa.net>
+
+2005-01-14  Joe English  <jenglish@users.sourceforge.net>
+
+	* unix/tkUnixWm.c: Sync with CVS HEAD (r1.47):
+	Fixes: #959973 "wm title bug" (support Unicode titles)
+	Fixes: #742882 "Potential division by zero in gridded wm geometry"
+	Use Tcl_GetTime instead of TclpGetTime [#874745]
+	Use Tcl_Panic() instead of "panic" [#865264]
+	Fixes: #632816 "cannot remove transient"
+	Fixes: #568861 "Fix for wm minsize and maxsize commands"
+	* tests/unixWm.test, tests/wm.test: Updated test suite for 
+	#632816 (unixWm-37.3, unixWm-37.4, wm-grid-1.11, wm-grid-1.12)
+	and #742882 (unixWm-20.9, unixWm-20.11).
+
+2005-01-11  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkObj.c (TkParsePadAmount):
+	* generic/tkPack.c: Moved function to tkObj.c and rewrote so that it
+	takes advantage of Tcl_Objs properly and cannot leave objects in an
+	inconsistent state. [Bug 1098779]
+
+2005-01-07  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkWindow.c (GetScreen): Make sure the result is reset on
+	all error paths to stop strange errors. [Bug 697915]
+
+2005-01-05  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* doc/loadTk.n, doc/toplevel.n: Convert to other form of emacs
+	mode control comment to prevent problems with old versions of
+	man. [Bug 1085127]
+
+2005-01-03  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinWm.c (TkWinWmCleanup): clean up layered window class.
+	This caused crash in reinit of Tk (as seen in plugin).
+
+2004-12-29  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tcl.m4, win/configure: update MSVC CFLAGS_OPT to -O2, remove
+	-Gs (included in -O2) and -GD (outdated).  Use "link -lib" instead
+	of "lib" binary and remove -YX for MSVC7 portability.  Add
+	-fomit-frame-pointer for gcc OPT compiles. [Bug 1092952, 1091967]
+
+2004-12-20  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* doc/panedwindow.n: Fix silly typo. [Bug 1087842]
+
+2004-12-09  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkImgPhoto.c (Tk_PhotoPutBlock, Tk_PhotoPutZoomedBlock):
+	Added guards so that rescanning for the complex-alpha check is not
+	done in the common case of creating a simple image a bit at a
+	time, or any other time where the image was simple before and the
+	input data has no alpha channel. [Bug 1081966]
+
+2004-12-06  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	*** 8.4.9 TAGGED FOR RELEASE ***
+
+	* library/text.tcl (::tk::TextUpDownLine): revert 2004-11-23 as it
+	prevented scrolling to bottom.
+
+2004-12-03  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkImgPhoto.c (Tk_PhotoPutBlock, Tk_PhotoPutZoomedBlock):
+	Make overlay compositing where the target is empty no longer set
+	the target to magical gray, and also make sure that the
+	complex-alpha flag is toggled when necessary. [Patch 848161]
+
+2004-12-02  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* changes: updated for 8.4.9 release
+
+2004-12-01  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/tkUnixButton.c (TkpDisplayButton): constrain coords to
+	Tk_RedrawImage to display only portion that is valid.
+	* generic/tkImgPhoto.c (ImgPhotoDisplay): add X error suppression
+	around XGetImage to prevent app abort. [Bug 979239]
+
+2004-11-24  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* README:       Bumped patchlevel to 8.4.9
+	* generic/tk.h:
+	* macosx/Wish.pbproj/project.pbxproj:
+	* unix/configure, unix/configure.in, unix/tk.spec:
+	* win/configure, win/configure.in:
+
+2004-11-23  Vince Darley <vincentdarley@users.sourceforge.net>
+
+	* library/text.tcl: make up/down cursor keys move by display
+	lines, not logical lines [Bug 1011234] (REVERTED 2004-12-06)
+
+2004-11-19  Reinhard Max  <max@suse.de>
+
+	*** 8.4.8 TAGGED FOR RELEASE ***
+
+	* unix/installManPage: Classic sed doesn't support | in REs.
+
+	* doc/pack-old.n: Changed the internal name of the man page to
+	pack-old to avoid a name clash in the installed man pages.
+
+2004-11-18  Don Porter	<dgp@users.sourceforge.net>
+
+	* changes:	Final updates for Tcl 8.4.8 release.
+
+2004-11-18  Reinhard Max  <max@suse.de>
+
+	* unix/tcl.m4 (SC_CONFIG_MANPAGES): Applied an improved version of
+	* unix/configure.in:                patch #996085, that introduces
+	* unix/Makefile.in:                 --enable-man-suffix.
+
+	* unix/installManPage:              added
+	* unix/mkLinks:                     removed
+
+2004-11-17  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkCanvWind.c (ConfigureWinItem): unmap windows
+	immediately when state hidden is requested. [Bug 982248]
+
+	* generic/tkCanvImg.c (ImageToPostscript): don't try ps generation
+	of canvas image item without image specified. [Bug 1032300]
+
+	* library/console.tcl (::tk::console::ExpandVariable): correct
+	array keyname expansion. [Bug 1004508] (bold)
+
+	* generic/tkPanedWindow.c (Tk_PanedWindowObjCmd): set save_under X
+	attr to prevent expose events when moving sash. [Bug 1036963]
+
+2004-11-16  Don Porter	<dgp@users.sourceforge.net>
+
+	* changes:	Updates for Tk 8.4.8 release.
+
+	* library/msgs/it.msg:	Updated Italian message catalog.
+	Thanks to Roberto Ugoccioni [Bug 1063675].
+
+2004-11-12  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXXStubs.c: implemented XGetGeometry().
+
+2004-11-12  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkCmds.c (Tk_TkObjCmd): use correct screen data when
+	-displayof arg is passed to [tk scaling]. [Bug 800178]
+
+2004-11-12  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXFont.c (Tk_MeasureChars,Tk_DrawChars,etc): Make
+	sure that the lastSubFontPtr remains valid even when the subfont
+	array is reallocated. [Bug 618872]
+
+2004-11-11  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkMain.c:
+	* macosx/tkMacOSXAppInit.c (removed):
+	* macosx/Wish.pbproj/project.pbxproj: 
+	* macosx/tkMacOSXInit.c:
+	* macosx/tkMacOSXInt.h: changes to make TkAqua dynamically loadable,
+	enabling [package require Tk] from tclsh. Startup code from
+	tkMacOSXAppInit.c moved into tkMacOSXInit.c, added code that
+	notifies the window server that an unbundled executable is a full
+	GUI application after loading Tk. [Patch 1035348]
+
+	* doc/wm.n: documented [wm attributes] on Mac OS X. [Bug 606665]
+	* macosx/tkMacOSXWm.c: implemented TIP 222 [wm attributes -alpha] on
+	Mac OS X. [Patch 892194]
+	WmIconbitmapCmd: adopted FSRef changes from [wm atttrs -titlepath].
+
+	* macosx/tkMacOSXButton.c:
+	* macosx/tkMacOSXMenus.c:
+	* macosx/tkMacOSXRegion.c:
+	* macosx/tkMacOSXSubwindows.c: synced spacing/formatting with HEAD.
+
+	* macosx/tkMacOSXMouseEvent.c: endianness fixes.
+
+	* macosx/Wish.pbproj/project.pbxproj: corrected path to html help
+	inside framework.
+
+	* macosx/Makefile: prevent parallel make from building several
+	targets at the same time.
+	Ensure that xcodebuild will use Wish.pbproj project even if a .xcode
+	project is also present.
+
+2004-11-10  Jim Ingham  <jingham@apple.com>
+
+	From Michael Kirkham (mikek@muonics.com):
+	
+	* macosx/tkMacOSXButton.c (TkpDisplayButton): Don't set
+	the text if compound is NONE and we have and image.
+	[Bug 1055023]
+	
+2004-10-29  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* tests/wm.test: Add Win32 test cases for attributes
+	subcommand.
+	* win/tkWinWm.c (WmAttributesCmd): Fixup broken
+	option processing logic for attributes subcommand.
+
+2004-10-29  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* win/makefile.vc (DOTVERSION): Was installing 8.4 relabelled as 8.5
+
+	* library/tk.tcl (::tk::PlaceWindow): Backported the fix from 
+	#533519 to handle window placement on multi-monitor Windows.
+
+2004-10-28  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* doc/wm.n: Add wm attributes . -alpha doc to account
+	for recent alpha changes.
+
+2004-10-28  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* win/tkWin32Dll.c (DllMain, _except_dllmain_detach_handler):
+	Back port HAVE_NO_SEH handler code from CVS HEAD to fix
+	gcc build breakage caused by 2004-10-26 back port.
+
+2004-10-28  Don Porter	<dgp@users.sourceforge.net>
+
+	* README:				Bumped to patch level 8.4.8
+	* generic/tk.h:				to prepare for next patch
+	* macosx/Wish.pbproj/project.pbxproj:	release.
+	* unix/configure.in:
+	* unix/tk.spec:
+	* win/configure.in:
+
+	* unix/configure:	autoconf (2.13)
+	* win/configure:
+
+2004-10-28  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* unix/tkUnixScale.c (DisplayHorizontalValue): Backport fix for
+	#220927 by Michael Schlenker to keep the labels within the window.
+
+2004-10-28  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* doc/*.n: Backport of minor documentation fixes.
+
+2004-10-27  Don Porter	<dgp@users.sourceforge.net>
+
+	* library/xmfbox.tcl (MotifFDialog_BuildUI): Fix [Bug 987169] in
+	the Motif file dialogs as well.	 Backport of DKF bug fix.
+
+2004-10-26  David Gravereaux <davygrvy@pobox.com>
+
+	* generic/tkInt.h:	Backport of shutdown safety mods from the HEAD
+	* generic/tkMenu.c:	dating from 2003-12-21
+	* generic/tkUtil.c:
+	* generic/tkWindow.c:
+	* mac/tkMacButton.c:
+	* unix/tkUnixEvent.c:
+	* win/tkWin32Dll.c:
+	* win/tkWinEmbed.c:
+	* win/tkWinMenu.c:
+	* win/tkWinX.c:
+
+	* generic/tkInt.decls:       Signature for tkWinXCleanup needed to be
+	* generic/tkIntPlatDecls.h:  changed so it matches the Tcl_ExitProc
+				     typedef to avoid a bad-style cast.
+	
+
+	* win/makefile.vc:  Backport to the most recent
+	* win/rules.vc:     changes on the HEAD.
+	* win/nmakehlp.c:
+
+2004-10-26  Don Porter	<dgp@users.sourceforge.net>
+
+	* tests/safe.test (safe-1.3):  Made test less sensitve to the
+	full set of existing aliases in an interp, so the it only tests
+	whether the tested ones are present.
+
+	* unix/Makefile.in:	Copied LD_LIBRARY_PATH machinery from
+	`make shell` target to other similar targets so that just built
+	libraries are tested, rather than previous installations.
+
+2004-10-26  Reinhard Max  <max@suse.de>
+
+	* generic/tkEvent.c (Tk_HandleEvent): Call XSetICFocus whenever
+	the window receives focus. This fixes bug #905830 but avoids
+	#1000051.
+	
+2004-10-20  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinWm.c (UpdateWrapper): pass SWP_NOOWNERZORDER to
+	SetWindowPos when maintaining win Z order, to prevent parent
+	from flashing (adjusting Z order).
+
+2004-10-05  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	Backport of 8.5 wm iconphoto that added support for Tk photo
+	* generic/tkInt.h (TkDisplay):    images as titlebar icons. TIP #159
+	* win/tkWinWm.c (WmIconphotoCmd): wm iconphoto ?-default? image1 ...
+	* macosx/tkMacOSXWm.c (WmIconphotoCmd): Implemented for Win/Unix,
+	* unix/tkUnixWm.c (WmIconphotoCmd):     stubbed out for OS X.
+	* tests/wm.test, tests/unixWm.test, tests/winWm.test: [Bug 815751]
+
+2004-09-24  Don Porter	<dgp@users.sourceforge.net>
+
+	* generic/tkCursor.c:  Add missing initialization in debug routine.
+
+2004-09-22  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinInt.h (TkWinDisplayChanged): added decl
+	* win/tkWinX.c (TkWinDisplayChanged, TkpOpenDisplay): Correctly
+	* win/tkWinWm.c (InvalidateSubTreeDepth, WmProc):     handle color
+	and screen resolution changes.  Tested for 16/24/32 bpp changes on
+	XP.  May need more fixes for 8bpp switch, use of special
+	colormaps, or other special palette handling cases.  [Bug 223689]
+
+2004-09-22  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* generic/tkInt.decls: Add decl for TkWinGetPlatformTheme.
+	It is only defined under Win32.
+	* generic/tkIntPlatDecls.h: Regen.
+	* generic/tkStubInit.c: Regen.
+	* win/tkWinInt.h: Define TK_THEME_WIN_CLASSIC and
+	TK_THEME_WIN_XP.
+	* win/tkWinMenu.c (DrawMenuEntryAccelerator, DrawMenuEntryLabel):
+	Draw a disabled 3D text highlight for the accelerator only
+	with the Win95/98 look. Same goes for the menu entry text.
+	* win/tkWinX.c (TkWinGetPlatformId, TkWinGetPlatformTheme):
+	Automatically detect the Windows theme in use and return
+	either TK_THEME_WIN_CLASSIC or TK_THEME_WIN_XP when the
+	TkWinGetPlatformTheme function is invoked.
+	[Patch 866194]
+
+2004-09-22  Vince Darley <vincentdarley@users.sourceforge.net>
+
+	* win/tkWinMenu.c: only provide a submenu handle when the
+	MF_POPUP flag is given, fixing a recently-introduced crash
+	when submenus are disabled.  Also better error checking for
+	this sort of situation in the future.
+	
+2004-09-22  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* win/tkWinMenu.c (ReconfigureWindowsMenu): Fix drawing of a disabled
+	(TkWinHandleMenuEvent, DrawMenuEntryArrow): cascade menu arrow. Tk was
+	displaying a disabled cascade menu arrow in black instead of
+	gray. This was caused by a bug in the Win32 code for user drawn
+	menu items. The fix is to avoid telling Windows that the menu item
+	is a cascade type and then draw the gray arrow bitmap on our own.
+	[Patch 865842]
+
+2004-09-22  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* win/tkWinMenu.c (DrawWindowsSystemBitmap): Fix a strange Win32
+	bug where the logical coordinates returned by a call to DPtoLP are
+	wrong the first time a menu is posted.  This bug manifested itself
+	by drawing the bitmap in the wrong place in a menu.  The fix was
+	to pass the newly created DC instead of the DC from the window.
+
+2004-09-22  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* win/tkWinMenu.c (DrawMenuEntryAccelerator):
+	(DrawMenuEntryLabel): When drawing the label text and accelerator
+	text for a disabled menu entry be sure to draw a 3D highlight.
+	The only exception to this is when a disabled menu entry is
+	highlighted, in that case do not draw a 3D hightlight.
+
+2004-09-22  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* win/tkWinMenu.c (DrawMenuEntryAccelerator, DrawMenuEntryArrow):
+	Move the unused menu arrow drawing code in
+	DrawMenuEntryAccelerator into a new function named
+	DrawMenuEntryArrow.  This makes no functional change but it will
+	make it easier to fix things in the future.
+
+2004-09-22  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* win/tkWinWm.c: Rework WS_EX_LAYERED and LWA_ALPHA
+	defines so that compiling with mingw works again.
+
+2004-09-20  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinWm.c (UpdateWrapper, WmAttributesCmd): handle attribute
+	settings prior to window mapping and resort to more forceful
+	wrapper update again for -toolwindow (to remove it from taskbar).
+
+2004-09-18  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinWm.c (WmAttributesCmd): correct -alpha 0.0/1.0 setting
+	and round the value.
+	(UpdateWrapper): don't adjust Z order of TOPMOST window.
+	(WmAttributesCmd): don't call UpdateWrapper for -disabled or
+	-toolwindow attr changes.
+
+2004-09-18  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/README: typos
+	* macosx/tkMacOSXDraw.c (TkMacOSXSetUpCGContext): performance
+	improvements: removed slow & unnecessary calls.
+
+2004-09-17  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* tests/winWm.test: Add 'wm attributes -alpha' to control toplevel
+	* win/tkWinInt.h:   alpha transparency on Win2K/XP+.
+	* win/tkWinWm.c:    TIP #222 [Patch 892194]
+
+	* win/tkWinWm.c (UpdateWrapper): Ensure that we maintain Z order
+	* tests/winWm.test:              and focus of preexisting window
+	when replacing the wrapper window.
+	* win/tkWinWm.c (WmIconwindowCmd): Replace bogus call to
+	XWithdrawWindow with proper code. (mdejong)
+
+2004-09-16  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkMenu.c (MenuWorldChanged): ensure that we recompute
+	the menu geometry on WorldChanged to handle font size
+	changes. [Bug 607649]
+
+2004-09-16  Peter Spjuth  <peter.spjuth@space.se>
+
+	* tests/place.test:
+	* generic/tkPlace.c: Fixed a memory leak when a placed widget was
+	forgotten. [Bug 1028888]
+
+2004-09-13  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinWm.c (ReadIconFromFile): fix mem alloc to get the right
+	size for both icons ('?:' order of precedence mistake).
+
+2004-09-10  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* library/tkfbox.tcl (::tk::dialog::file::): Make sure that the
+	state is reset properly when starting to run the dialog. [Bug 845189]
+
+	* library/demos/filebox.tcl: Stop the use of tk_strictMotif from
+	poisoning the rest of the widget demo. [Bug 1013942]
+
+2004-09-10  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinWm.c (ActivateWindow): SetFocus to grab window when
+	clicking outside the grab window hierarchy. [Bug 220908]
+	(UpdateWrapper): update to Kovalenko to account for whether the
+	override window has a transient parent, and apply WS_POPUP in the
+	correct case.  The makes splash screens pop up as well as making
+	dropdowns not grab focus away from the parent.
+
+2004-09-09  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinWm.c: backport of several items from 8.5 head:
+	(ReadIconFromFile): when using SHGetFileInfo to retrieve icon, get
+	regular icon as well for correct Alt-Tab icon. (hobbs)
+	Fix for #742882 "Potential division by zero in gridded wm
+	geometry" (jenglish)
+	(UpdateWrapper): Let overrideredirect'ed window's wrapper be the
+	child of desktop window, thus making it to behave more similarly
+	to X11 Override Redirect. Esp. useful for combobox-like
+	megawidgets. (kovalenko)
+	(InstallColormaps): Check for TK_ALREADY_DEAD to avoid handling of
+	dead windows. (kovalenko)
+	Change 'panic' to 'Tcl_Panic' (davygrvy)
+
+2004-09-06  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/tkfbox.tcl (::tk::dialog::file::Create): use label
+	instead of button for "File of type", as it properly handles
+	-state disabled now.
+
+2004-08-26  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/text.tcl (::tk::TextTranspose): Ensure that Transpose is
+	an atomic op to undo.  Replace 'string compare' with 'ne'.
+
+2004-08-19  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinDialog.c (EatSpuriousMessageBugFix): Fix a problem with
+	double clicks in file dialogs falling through to the window
+	underneath in win32. [Patch #611615]
+
+	* win/tkWinDialog.c (Tk_MessageBoxObjCmd): Inherit the icon from
+	* win/tkWinInt.h:                          the -parent window for
+	* win/tkWinWm.c (TkWinGetIcon):            the MessageBox.
+
+2004-08-18  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkPanedWindow.c (optionSpecs): Add missing GEOMETRY flag
+	to -handlepad option. [Bug 1010938]
+
+2004-08-10  Joe English  <jenglish@users.sourceforge.net>
+
+	* unix/tkUnixWm.c: Fix for #1006686 "wm resizable command 
+	not working on Solaris/CDE" (patch from Colin McDonald).
+
+2004-08-09  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* tests/canvText.test:
+	* win/tkWinFont.c (Tk_MeasureChars): Fix for text
+	wrapping problem that appeared using canvas text
+	under Win32. A long wrapping string that had
+	leading spaces was being incorrectly wrapped.
+	This change makes the Win32 implementation behave
+	the same as the Unix implementation. [Patch 1006286]
+
+2004-08-04  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkImgPhoto.c (ImgPhotoBlendComplexAlpha): Clean the code
+	up a bit and add a few more comments.
+	(Tk_PhotoPutBlock, Tk_PhotoPutZoomedBlock): Clarified the code,
+	corrected the compositing rule now that I have looked up what the
+	right thing to do is, and factorized out the compositing rule code
+	into a few simpler macros.
+
+2004-07-30  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/configure:
+	* unix/tcl.m4 (SC_CONFIG_CFLAGS): Darwin: instead of setting PLAT_OBJS 
+	to explict object files in tcl.m4, refer to MAC_OSX_OBJS makefile var.
+
+2004-07-29  Don Porter	<dgp@users.sourceforge.net>
+
+	*** 8.4.7 TAGGED FOR RELEASE ***
+
+	* changes:
+	* generic/tkEvent.c (Tk_HandleEvent): revert the 2004-07-20 commit.
+	That commit created a new Bug 1000051 - a broken Compose Key.
+	This revert restores Bug 905830 until a cleaner fix can be provided.
+
+2004-07-27  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkImgGIF.c (FileReadGIF): fix crash reported by Reinhard Max:
+	in case of premature end of image data, return error instead of
+	passing nil buffer to Tk_PhotoPutBlock().
+
+	* generic/tkRectOval.c (ComputeRectOvalBbox): Mac OS X specific
+	fix to rounding in bounding box 'bloat' calculation to avoid drawing
+	outside of bounding box when CG drawing enabled. Fix probably
+	correct on other platforms as well?
+	
+	* macosx/tkMacOSXDraw.c (TkMacOSXInitCGDrawing): fixed LinkVar type
+	for tkMacOSXCGAntiAliasLimit.
+
+2004-07-26  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* changes:	Updated for Tcl 8.4.7 release.
+
+2004-07-24  Jim Ingham  <jingham@apple.com>
+
+	* macosx/tkMacOSXDefault.h: Change the default -tearoff value
+	to 0.  It doesn't work at present, so it is silly to make
+	it the default.
+	
+	Mac OS X: Complete the implementation of the CG version of
+	the X drawing emulation layer.
+	
+	This was mostly done by James Tittle (tigital<at>mac<dot>com), 
+	with a little help from me.
+
+	* macosx/tkMacOSXint.h: Add declaration of TkMacOSXInitCGDrawing.
+	* macosx/tkMacOSXInit.c: Call it.
+	* macosx/tkMacOSXDraw.c (TkMacOSXInitCGDrawing): New function
+	set up the variables controlling the use of cg drawing.
+	(XFillRectangles): Make the CG branch work.
+	(XDrawLines): Ditto
+	(XDrawSegments): Ditto
+	(XFillPolygon): Ditto
+	(XDrawRectangle): Ditto
+	(XDrawRectangles): Ditto
+	(XDrawArc): Ditto
+	(XDrawArcs): Ditto
+	(XFillArc): Ditto
+	(XFillArcs): Ditto
+	(TkMacOSXSetupCGContext): Make this actually work.
+	(TkMacOSXReleaseCGContext): Ditto.
+
+	Mac OS X: Add support for reading the wm attributes -titlepath 
+	command, and convert to using FSRef's.  
+	This was done by Neil Madden (nem<at>cs<dot>nott<dot>ac<dot>uk).
+
+	* macosx/tkMacOSXWm.c (WmAttrGetModifiedStatus): New function.
+	(WmAttrGetTitlePath) New function.
+	(WmAttributesCmd): Convert command parsing to use the options index.
+	Use the two above functions to report results.  Convert the titlepath
+	code to use FSRef's.
+	
+2004-07-23  Benjamin Riefenstahl  <Benjamin.Riefenstahl@epost.de>
+
+	[Merge from HEAD]
+
+	Mac OS X: Fix several problems with Icelandic (and Faroese) keyboards
+	reported by Jérôme Gagnon-Voyer <gagnonje5000<at>mac<dot>com> on
+	tcl-mac on 2004-03-22.
+	
+	* macosx/tkMacOSXKeyEvent.c (KLSInit): Add.
+	(GetKeyboardLayout): Add calls to Keyboard Layout Services, if
+	present.  Rework classic handling.  Use GetKCHREncoding().  Add
+	parameter encodingPtr.
+	(GetKCHREncoding): Add.
+
+2004-07-22  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/tkfbox.tcl (::tk::dialog::file::Update): use -directory
+	[pwd] (instead of .) to get around some VFS edge case bugs.
+	Use [bind $w], not [$w configure] to modify bindings.
+
+2004-07-20  Jim Ingham  <jingham@apple.com>
+
+	* generic/tkEvent.c (TkQueueEventForAllChildren): Don't queue
+	events for unmapped windows.
+	
+2004-07-20  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkEvent.c (Tk_HandleEvent): ensure IC focus is set after
+	creation. [Bug #905830]
+
+2004-07-20  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/tcl.m4: fixed Darwin autoconf breakage caused by
+	recent CFLAGS reordering.
+	* unix/configure: regen
+
+	* macosx/Makefile: added support to tk framework build to
+	optionally install tk manpages in addition to html help,
+	similarly to tcl/macosx/Makefile.
+	
+	* macosx/Wish.pbproj/project.pbxproj: fixes for building with
+	non-default SYMROOT/OBJROOT/SRCROOT, added support for using a
+	Tcl.framework in DYLIB_INSTALL_PATH != /Library/Frameworks,
+	added optional support for building html help without tcl sources 
+	present by giving explicit location of tcltk-man2html script.
+	
+	* macosx/tkMacOSXMenu.c: fixed #include case sensitivity bug.
+
+2004-07-19  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* unix/Makefile.in, unix/tcl.m4:     move (C|LD)FLAGS after their
+	* unix/configure.in, unix/configure: _DEFAULT to allow for env
+	setting to override m4 switches.
+	Consolidate header checks to limit redundancy in configure.
+	(CFLAGS_WARNING): Remove -Wconversion, add -fno-strict-aliasing
+	for gcc builds (need to suppress 3.x type puning warnings).
+	(SC_ENABLE_THREADS): Set m4 to force threaded build when built
+	against a threaded Tcl core.
+	Reorder configure.in for better 64-bit build configuration,
+	replacing EXTRA_CFLAGS with CFLAGS.  [Bug #874058]
+
+2004-07-14  Jim Ingham  <jingham@apple.com>
+
+	* macosx/tkMacOSXCursor.c (TkpSetCursor): The code to not
+	reset the cursor more often than necessary was getting fooled
+	when the current cursor was nulled out when the current cursor
+	gets freed.  So in the case where the input cursor was NULL, we
+	have to just always set it. [Bug #894550]
+	
+2004-07-14  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkUndo.c (TkUndoSetDepth): correct -maxundo
+	segfault. [Bug #969358] (jiangwu)
+
+	* generic/tk.h (TK_PATCH_LEVEL): 
+	* README, macosx/Wish.pbproj/project.pbxproj:      bumped to
+	* unix/configure, unix/configure.in, unix/tk.spec: patchlevel 8.4.7
+	* win/configure, win/configure.in:
+
+2004-07-11  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* library/tkfbox.tcl (::tk::dialog::file::Create): Watch out for
+	users destroying the dialog indirectly. [Bug 987169]
+
+2004-06-29  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* generic/tkCmds.c (Tk_WinfoObjCmd): refetch interp result obj for
+	'winfo id' as it can change when making the window exist.
+
+2004-06-25  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkImgPhoto.c (ImgPhotoDisplay): Early exit from image
+	redraw if the region to redraw is empty, so stopping XGetImage
+	from bailing out. [Bug 979239]
+
+2004-06-08  Mo DeJong  <mdejong@users.sourceforge.net>
+
+	* generic/tkCanvText.c (DisplayCanvText): Fix text
+	rendering problem with canvas text items that
+	have a selected region. The previous implementation
+	would render the whole line and then redraw the
+	selected text if it was a different color. This caused
+	problems when the selected text foreground differs
+	from the normal text foreground, the anti-aliasing
+	alpha pixels for the two text strings would blend
+	together resulting in strange looking text. The
+	fix is to draw the normal text and the selected text
+	separately. This problem has only been observed
+	under Windows, with anti-aliased text. [Patch 968725]
+
+2004-05-14  Chengye Mao <chengye.geo@yahoo.com>
+
+	* win/tkWinWm.c (UpdateWrapper): Modified to delete the old wrapper
+	correctly [Bug #767176]
+
+2004-05-14  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* library/msgbox.tcl (MessageBox): Shrank the default font size
+	for the message to 14-point; nobody liked 18-point!
+
+2004-05-12  Chengye Mao <chengye.geo@yahoo.com>
+
+	* generic/tkBind.c (HandleEventGenerate): Modified to fix wish
+	crash due to incorrectly generate <Destroy> event. This bug was
+	reported in comp.lang.tcl but not logged.
+
+2004-05-10  Pat Thoyts  <patthoyts@users.sourceforge.net>
+
+	* win/makefile.vc: Apply fix from tcl bug #950049 for make docs.
+
+2004-05-05  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinFont.c (Tk_MeasureChars,Tk_DrawChars,etc): Make sure
+	that the lastSubFontPtr remains valid even when the subfont array
+	is reallocated. [Bug #618872] (dkf, hobbs)
+
+2004-05-03  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* win/tkWinMenu.c, unix/tkUnixMenu.c (DrawMenuEntryLabel): place
+	images of compound menu entries in indicator space if not a radio
+	of checkbutton. [Bug #756952] (eserte)
+
+	* win/tkWinX.c:                fix drawing of unicode chars in menu
+	* win/tkWinInt.h (TkWinProcs): titles. [Bug #904371] (riefenstahl)
+	* win/tkWinMenu.c (ReconfigureWindowsMenu):
+
+	* generic/tkClipboard.c:   Move TkClipCleanup from tkClipboard.c
+	* mac/tkMacXStubs.c:       to being implemented in a platform
+	* macosx/tkMacOSXXStubs.c: specific manner.  The cleanup order was
+	* unix/tkUnixEvent.c:      bad at least on Windows, where we
+	* win/tkWinX.c:            reset/cleared display info that was
+	still needed for the clipboard to render.
+	[Bug #939389, #822002, #732662]
+
+	* library/panedwindow.tcl (MarkSash): call DragSash to stop sash
+	jump when B1 is pressed and released without moving. [Bug #932155]
+	Make the panedwindow -opaqueresize option work as per the docs.
+	[Bug #778893]
+
+	* tests/panedwindow.test: panedwindow-25.1
+	* generic/tkPanedWindow.c (Unlink): clean up -before/-after refs
+	to a slave when removing it. [Bug #928413] (griffin)
+
+	* generic/tkImgPhoto.c (ImgPhotoConfigureMaster): force -data into
+	ByteArray and -format into String to correctly handle them if they've
+	been shimmered or created as some other object type. [Bug #1027849]
+	(ImgPhotoCmd): correctly init matched to 0.
+
+2004-04-20  Joe English  <jenglish@users.sourceforge.net>
+
+	* unix/tkUnixWm.c: Backported fix for bug #915350  
+	"Tk sets min, max size in WM_HINTS when it shouldn't" 
+	and #922336 "Tk apps have no maximize window button under 
+	KDE-3.2.1"
+
+2004-04-16  Jeff Hobbs  <jeffh@ActiveState.com>
+
+	* library/bgerror.tcl (bgerror): rework to only set -topmost bit
+	on Windows if necessary.  Also use existing ::tk functions for
+	placing dialog and managing focus/grab.
+
+2004-03-31  Jim Ingham  <jingham@apple.com>
+
+	* tkMacOSXMenu.c (EventuallyInvokeMenu): Report errors from invoking
+	menu commands as background errors. [Bug 220871]
+
+2004-03-26  Donal K. Fellows  <donal.k.fellows@man.ac.uk>
+
+	* generic/tkImgPPM.c (ReadPPMStringHeader): Code to read PPM/PGM data
+	(StringReadPPM, StringMatchPPM): from strings/bytearrays. [FRQ 540375]
+	* generic/tkImgPPM.c (StringWritePPM): New function to support
+	converting of images to PPM strings.  Other direction not yet
+	done.  Rest of file converted to use new image API.
+	* generic/tkImgPhoto.c (ImgPhotoCmd): Restored support for the
+	stringWriteProc of old photo formats.  [Bug 923555]
+
+2004-03-20  Jim Ingham  <jingham@apple.com>
+
+	* macosx/tkMacOSXSubwindows.c (GenerateConfigureNotify): New
+	function.
+	(XMoveWindow): Generate configure notify events for child
+	widgets on move.
+	(XMoveResizeWindow): Ditto.
+
+2004-03-17  Jim Ingham  <jingham@apple.com>
+
+	* macosx/tkMacOSXHLEvents.c (ApplicationCarbonEventsHandler): New 
+	function.
+	(tkMacOSXInitAppleEvents): Init the Application Event handler as
+	well.
+	* macosx/tkMacOSXKeyEvent.c (TkMacOSXProcessKeyboardEvent): Grab
+	the Command-H & Command-Shift-H keys and use them for Hide and
+	Hide Others before passing keystrokes on to the generic keyboard
+	event processing.  There isn't any other good way to get the
+	Hide command to work, and the Apple HIG explicitly reserves them.
+	* macosx/tkMacOSXMenus.c (TkMacOSXInitMenus): Stop putting a Quit
+	menu item in the File menu.  It doesn't belong there.
+
+2004-03-01  Don Porter	<dgp@users.sourceforge.net>
 
 	*** 8.4.6 TAGGED FOR RELEASE ***
 
-        * unix/tcl.m4 (SC_CONFIG_CFLAGS):       Allow 64-bit enabling on
-        IRIX64-6.5* systems.  [Bug 218561]
-        * unix/configure:       autoconf-2.13
+	* unix/tcl.m4 (SC_CONFIG_CFLAGS):	Allow 64-bit enabling on
+	IRIX64-6.5* systems.  [Bug 218561]
+	* unix/configure:	autoconf-2.13
 
 2004-02-23  Daniel Steffen  <das@users.sourceforge.net>
 
@@ -259,7 +3387,7 @@
 	* generic/tkMenu.c (MenuVarProc): prevent this from triggering
 	while interp is being destroyed.
 
-2x03-11-21  Benjamin Riefenstahl  <Benjamin.Riefenstahl@epost.de>
+2003-11-21  Benjamin Riefenstahl  <Benjamin.Riefenstahl@epost.de>
 
 	*** 8.4.5 TAGGED FOR RELEASE ***
 

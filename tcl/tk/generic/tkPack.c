@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkPack.c,v 1.16.2.1 2003/07/17 03:17:08 dgp Exp $
+ * RCS: @(#) $Id: tkPack.c,v 1.16.2.3 2005/08/11 12:17:09 dkf Exp $
  */
 
 #include "tkPort.h"
@@ -1046,86 +1046,6 @@ GetPacker(tkwin)
 /*
  *--------------------------------------------------------------
  *
- * TkParsePadAmount --
- *
- *	This procedure parses a padding specification and returns
- *	the appropriate padding values.  A padding specification can
- *	be either a single pixel width, or a list of two pixel widths.
- *	If a single pixel width, the amount specified is used for 
- *	padding on both sides.  If two amounts are specified, then
- *	they specify the left/right or top/bottom padding.
- *
- * Results:
- *	A standard Tcl return value.
- *
- * Side effects:
- *	An error message is written to the interpreter is something
- *	is not right.
- *
- *--------------------------------------------------------------
- */
-
-int
-TkParsePadAmount(interp, tkwin, specObj, halfPtr, allPtr)
-    Tcl_Interp *interp;		/* Interpreter for error reporting. */
-    Tk_Window tkwin;		/* A window.  Needed by Tk_GetPixels() */
-    Tcl_Obj *specObj;		/* The argument to "-padx", "-pady", "-ipadx",
-				 * or "-ipady".  The thing to be parsed. */
-    int *halfPtr;		/* Write the left/top part of padding here */
-    int *allPtr;		/* Write the total padding here */
-{
-    char *secondPart; 		/* The second pixel amount of the list */
-    char *separator = 0;	/* Separator between 1st and 2nd pixel widths */
-    int sepChar = 0;		/* Character used as the separator */
-    int firstInt, secondInt;    /* The two components of the padding */
-    char *padSpec = Tcl_GetString(specObj);
-
-    for (secondPart=padSpec;
-	    (*secondPart != '\0') && !isspace(UCHAR(*secondPart));
-	    secondPart++)
-	{ /* Do nothing */ }
-    if (*secondPart != '\0') {
-	separator = secondPart;
-	sepChar = *secondPart;
-	*secondPart = '\0';
-        secondPart++;
-	while ( isspace(UCHAR(*secondPart)) ) {
-	    secondPart++;
-	}
-	if (*secondPart == '\0'){
-	    secondPart = 0;
-	    *separator = sepChar;
-	}
-    } else {
-	secondPart = 0;
-    }
-    if ((Tk_GetPixels(interp, tkwin, padSpec, &firstInt) != TCL_OK) ||
-	    (firstInt < 0)) {
-	Tcl_ResetResult(interp);
-	Tcl_AppendResult(interp, "bad pad value \"", padSpec, 
-		"\": must be positive screen distance", (char *) NULL);
-	return TCL_ERROR;
-    }
-    if (secondPart) {
-	if ((Tk_GetPixels(interp, tkwin, secondPart, &secondInt) != TCL_OK) ||
-		(secondInt < 0)) {
-	    Tcl_ResetResult(interp);
-	    Tcl_AppendResult(interp, "bad 2nd pad value \"", secondPart, 
-		    "\": must be positive screen distance", (char *) NULL);
-	    return TCL_ERROR;
-	}
-	*separator = sepChar;
-    } else {
-	secondInt = firstInt;
-    }
-    if (halfPtr != 0) *halfPtr = firstInt;
-    *allPtr = firstInt + secondInt;
-    return TCL_OK;
-}
-
-/*
- *--------------------------------------------------------------
- *
  * PackAfter --
  *
  *	This procedure does most of the real work of adding
@@ -1223,24 +1143,24 @@ PackAfter(interp, prevPtr, masterPtr, objc, objv)
 	packPtr->flags |= OLD_STYLE;
 	for (index = 0 ; index < optionCount; index++) {
 	    Tcl_Obj *curOptPtr = options[index];
-	    char *curOpt = Tcl_GetStringFromObj(curOptPtr, (int *) &length);
+	    char *curOpt = Tcl_GetStringFromObj(curOptPtr, &length);
 
 	    c = curOpt[0];
 
 	    if ((c == 't')
-		    && (strncmp(curOpt, "top", (size_t) length)) == 0) {
+		    && (strncmp(curOpt, "top", (unsigned) length)) == 0) {
 		packPtr->side = TOP;
 	    } else if ((c == 'b')
-		    && (strncmp(curOpt, "bottom", (size_t) length)) == 0) {
+		    && (strncmp(curOpt, "bottom", (unsigned) length)) == 0) {
 		packPtr->side = BOTTOM;
 	    } else if ((c == 'l')
-		    && (strncmp(curOpt, "left", (size_t) length)) == 0) {
+		    && (strncmp(curOpt, "left", (unsigned) length)) == 0) {
 		packPtr->side = LEFT;
 	    } else if ((c == 'r')
-		    && (strncmp(curOpt, "right", (size_t) length)) == 0) {
+		    && (strncmp(curOpt, "right", (unsigned) length)) == 0) {
 		packPtr->side = RIGHT;
 	    } else if ((c == 'e')
-		    && (strncmp(curOpt, "expand", (size_t) length)) == 0) {
+		    && (strncmp(curOpt, "expand", (unsigned) length)) == 0) {
 		packPtr->flags |= EXPAND;
 	    } else if ((c == 'f')
 		    && (strcmp(curOpt, "fill")) == 0) {
@@ -1278,7 +1198,7 @@ PackAfter(interp, prevPtr, masterPtr, objc, objv)
 		packPtr->iPadY = 0;
 		index++;
 	    } else if ((c == 'f') && (length > 1)
-		    && (strncmp(curOpt, "frame", (size_t) length) == 0)) {
+		    && (strncmp(curOpt, "frame", (unsigned) length) == 0)) {
 		if (optionCount < (index+2)) {
 		    Tcl_AppendResult(interp, "wrong # args: \"frame\" ",
 			    "option must be followed by anchor point",

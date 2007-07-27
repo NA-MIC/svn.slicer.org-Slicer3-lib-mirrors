@@ -8,36 +8,41 @@
 # 
 # Copyright (c) 1995-1996 Sun Microsystems, Inc.
 # Copyright (c) 1998-2000 Ajuba Solutions.
-# Copyright (c) 2001 ActiveState Corporation.
+# Copyright (c) 2001-2005 ActiveState Corporation.
 # Copyright (c) 2001-2002 David Gravereaux.
 #
 #------------------------------------------------------------------------------
-# RCS: @(#) $Id: makefile.vc,v 1.67.2.5 2003/11/17 02:20:20 dgp Exp $
+# RCS: @(#) $Id: makefile.vc,v 1.67.2.17 2006/09/26 23:55:50 patthoyts Exp $
 #------------------------------------------------------------------------------
 
-!if "$(MSVCDIR)" == ""
+# Check to see we are configured to build with MSVC (MSDEVDIR or MSVCDIR)
+# or with the MS Platform SDK (MSSDK). Visual Studio .NET 2003 and 2005 define
+# VCINSTALLDIR instead.
+!if !defined(MSDEVDIR) && !defined(MSVCDIR) && !defined(MSSDK) && !defined(VCINSTALLDIR)
 MSG = ^
-You'll need to run vcvars32.bat from Developer Studio, first, to setup^
-the environment.  Jump to this line to read the new instructions.
+You need to run vcvars32.bat from Developer Studio or setenv.bat from the^
+Platform SDK first to setup the environment.  Jump to this line to read^
+the build instructions.
 !error $(MSG)
 !endif
 
 #------------------------------------------------------------------------------
 # HOW TO USE this makefile:
 #
-# 1)  It is now necessary to have MSVCDir set in the environment.  This is used
-#     as a check to see if vcvars32.bat had been run prior to running nmake or
-#     during the install of Microsoft Developer Studio, MSVCDir had been set
-#     globally and the PATH adjusted.  Either way is valid.
+# 1)  It is now necessary to have MSVCDir, MSDevDir or MSSDK set in the
+#     environment.  This is used as a check to see if vcvars32.bat had been
+#     run prior to running nmake or during the installation of Microsoft
+#     Visual C++, MSVCDir had been set globally and the PATH adjusted.
+#     Either way is valid.
 #
 #     You'll need to run vcvars32.bat contained in the MsDev's vc(98)/bin
-#     directory to setup the proper environment, if needed, for your current
-#     setup.  This is a needed bootstrap requirement and allows the swapping of
-#     different environments to be easier.
+#     directory to setup the proper environment, if needed, for your
+#     current setup.  This is a needed bootstrap requirement and allows the
+#     swapping of different environments to be easier.
 #
 # 2)  To use the Platform SDK (not expressly needed), run setenv.bat after
-#     vcvars32.bat according to the instructions for it.  This can also turn on
-#     the 64-bit compiler, if your SDK has it.
+#     vcvars32.bat according to the instructions for it.  This can also
+#     turn on the 64-bit compiler, if your SDK has it.
 #
 # 3)  Targets are:
 #	release  -- builds the core, the shell. (default)
@@ -152,7 +157,7 @@ the environment.  Jump to this line to read the new instructions.
 MSG = ^
 You must run this makefile only from the directory it is in.^
 Please `cd` to its location first.
-!error $(MSG) 
+!error $(MSG)
 !endif
 
 PROJECT	= tk
@@ -172,9 +177,7 @@ WISHNAMEPREFIX = wish
 BINROOT		= .
 ROOT		= ..
 
-#TCLIMPLIBNAME	= tcl$(VERSION)$(SUFX).lib
-#TCLLIB	= tcl$(VERSION)$(SUFX).$(EXT)
-#TCLSTUBLIBNAME	= tclstub$(VERSION).lib
+TK_LIBRARY	= $(ROOT)\library
 
 TKIMPLIB	= "$(OUT_DIR)\$(PROJECT)$(VERSION)$(SUFX).lib"
 TKLIBNAME	= $(PROJECT)$(VERSION)$(SUFX).$(EXT)
@@ -207,7 +210,8 @@ TKTESTOBJS = \
 	$(TMP_DIR)\tkTest.obj \
 	$(TMP_DIR)\tkSquare.obj \
 	$(TMP_DIR)\testMain.obj \
-	$(TMP_DIR)\tkWinTest.obj
+	$(TMP_DIR)\tkWinTest.obj \
+        $(TMP_DIR)\wish.res
 
 XLIBOBJS = \
 	$(TMP_DIR)\xcolors.obj \
@@ -349,27 +353,28 @@ TK_DEFINES	= $(OPTDEFINES)
 # Compile flags
 #---------------------------------------------------------------------
 
-!if $(DEBUG)
-!if "$(MACHINE)" == "IA64"
-cdebug = -Od -Zi
+!if !$(DEBUG)
+!if $(OPTIMIZING)
+### This cranks the optimization level to maximize speed
+cdebug	= -O2 $(OPTIMIZATIONS)
 !else
-cdebug = -Z7 -Od -WX
+cdebug	=
 !endif
+!else if "$(MACHINE)" == "IA64"
+### Warnings are too many, can't support warnings into errors.
+cdebug	= -Z7 -Od $(DEBUGFLAGS)
 !else
-# This cranks the optimization level up.  We can't use -02 because sometimes
-# it causes problems.
-cdebug = -Oti
+cdebug	= -Z7 -WX $(DEBUGFLAGS)
 !endif
 
-# declarations common to all compiler options
-cflags = -nologo -c -W3 -YX -Fp$(TMP_DIR)^\
+### Declarations common to all compiler options
+cwarn = -D _CRT_SECURE_NO_DEPRECATE -D _CRT_NONSTDC_NO_DEPRECATE
+cflags = -nologo -c $(COMPILERFLAGS) $(cwarn) -Fp$(TMP_DIR)^\
 
-!if $(PENT_0F_ERRATA)
-cflags = $(cflags) -QI0f
-!endif
-
-!if $(ITAN_B_ERRATA)
-cflags = $(cflags) -QIA64_Bx
+!if $(FULLWARNINGS)
+cflags = $(cflags) -W4
+!else
+cflags = $(cflags) -W3
 !endif
 
 !if $(MSVCRT)
@@ -386,10 +391,10 @@ crt = -MTd
 !endif
 !endif
 
-BASE_CLFAGS	= $(cdebug) $(cflags) $(crt) $(TK_INCLUDES)
-TK_CFLAGS	= $(BASE_CLFAGS) $(TK_DEFINES) -DUSE_TCL_STUBS
+BASE_CFLAGS	= $(cdebug) $(cflags) $(crt) $(TK_INCLUDES)
+TK_CFLAGS	= $(BASE_CFLAGS) $(TK_DEFINES) -DUSE_TCL_STUBS
 CON_CFLAGS	= $(cdebug) $(cflags) $(crt) -DCONSOLE
-WISH_CFLAGS	= $(BASE_CLFAGS) $(TK_DEFINES)
+WISH_CFLAGS	= $(BASE_CFLAGS) $(TK_DEFINES)
 
 
 #---------------------------------------------------------------------
@@ -402,18 +407,22 @@ ldebug	= -debug:full -debugtype:cv
 ldebug	= -release -opt:ref -opt:icf,3
 !endif
 
-# declarations common to all linker options
-lflags	= -nologo -machine:$(MACHINE) $(ldebug)
+### Declarations common to all linker options
+lflags	= -nologo -machine:$(MACHINE) $(LINKERFLAGS) $(ldebug)
+
+!if $(FULLWARNINGS)
+lflags = $(lflags) -warn:3
+!endif
 
 !if $(PROFILE)
 lflags	= $(lflags) -profile
 !endif
 
 !if $(ALIGN98_HACK) && !$(STATIC_BUILD)
-# align sections for PE size savings.
+### Align sections for PE size savings.
 lflags	= $(lflags) -opt:nowin98
 !else if !$(ALIGN98_HACK) && $(STATIC_BUILD)
-# align sections for speed in loading by choosing the virtual page size.
+### Align sections for speed in loading by choosing the virtual page size.
 lflags	= $(lflags) -align:4096
 !endif
 
@@ -426,6 +435,11 @@ conlflags = $(lflags) -subsystem:console
 guilflags = $(lflags) -subsystem:windows
 
 baselibs  = kernel32.lib advapi32.lib user32.lib
+# Avoid 'unresolved external symbol __security_cookie' errors.
+# c.f. http://support.microsoft.com/?id=894573
+!if "$(MACHINE)" == "IA64" || "$(MACHINE)" == "AMD64"
+baselibs   = $(baselibs) bufferoverflowU.lib
+!endif
 guilibs	  = $(baselibs) shell32.lib gdi32.lib comdlg32.lib winspool.lib imm32.lib comctl32.lib
 
 
@@ -452,6 +466,7 @@ tktest:	  setup $(TKTEST) $(CAT32)
 
 test: setup $(TKTEST) $(TKLIB) $(CAT32)
 	set TCL_LIBRARY=$(TCL_LIBRARY)
+	set TK_LIBRARY=$(TK_LIBRARY)
 !if $(TCLINSTALL)
 	set PATH=$(_TCLDIR)\bin;$(PATH)
 !else
@@ -460,11 +475,13 @@ test: setup $(TKTEST) $(TKLIB) $(CAT32)
 !if "$(OS)" == "Windows_NT"  || "$(MSVCDIR)" == "IDE"
 	$(TKTEST) "$(ROOT)/tests/all.tcl" $(TESTFLAGS) | $(CAT32)
 !else
-	$(TKTEST) "$(ROOT)/tests/all.tcl" $(TESTFLAGS) | $(CAT32)
+	$(TKTEST) "$(ROOT)/tests/all.tcl" $(TESTFLAGS) > tests.log
+	type tests.log | more
 !endif
 
 runtest: setup $(TKTEST) $(TKLIB) $(CAT32)
 	set TCL_LIBRARY=$(TCL_LIBRARY)
+	set TK_LIBRARY=$(TK_LIBRARY)
 !if $(TCLINSTALL)
 	set PATH=$(_TCLDIR)\bin;$(PATH)
 !else
@@ -499,6 +516,7 @@ $**
 		$(TCLSTUBLIB) @<<
 $**
 <<
+	$(_VC_MANIFEST_EMBED_DLL)
 	-@del $*.exp
 !endif
 
@@ -509,17 +527,20 @@ $(TKSTUBLIB): $(TKSTUBOBJS)
 
 $(WISH): $(WISHOBJS) $(TKIMPLIB)
 	$(link32) $(guilflags) -out:$@ $(guilibs) $(TCLIMPLIB) $**
+	$(_VC_MANIFEST_EMBED_EXE)
 
 $(WISHC): $(WISHOBJS) $(TKIMPLIB)
 	$(link32) $(conlflags) -out:$@ $(guilibs) $(TCLIMPLIB) $**
+	$(_VC_MANIFEST_EMBED_EXE)
 
 $(TKTEST): $(TKTESTOBJS) $(TKIMPLIB)
 	$(link32) $(guilflags) -out:$@ $(guilibs) $(TCLIMPLIB) $**
-
+	$(_VC_MANIFEST_EMBED_EXE)
 
 $(CAT32): $(_TCLDIR)\win\cat.c
 	$(cc32) $(CON_CFLAGS) -Fo$(TMP_DIR)\ $?
 	$(link32) $(conlflags) -out:$@ -stack:16384 $(TMP_DIR)\cat.obj $(baselibs)
+	$(_VC_MANIFEST_EMBED_EXE)
 
 install-binaries:
 	@$(CPY) "$(WISH)" "$(BIN_INSTALL_DIR)\"
@@ -555,6 +576,7 @@ install-libraries:
 #---------------------------------------------------------------------
 
 genstubs:
+	set TCL_LIBRARY=$(TCL_LIBRARY)
 	$(TCLSH) $(_TCLDIR)\tools\genStubs.tcl $(GENERICDIR) \
 		$(GENERICDIR)\$(PROJECT).decls $(GENERICDIR)\$(PROJECT)Int.decls
 
@@ -567,6 +589,7 @@ depend:
 !if !exist($(TCLSH))
 	@echo Build tclsh first!
 !else
+	set TCL_LIBRARY=$(TCL_LIBRARY)
 	$(TCLSH) $(TOOLSDIR:\=/)/mkdepend.tcl -vc32 -out:"$(OUT_DIR)\depend.mk" \
 		-passthru:"-DBUILD_tcl $(TK_INCLUDES:"="")" $(GENERICDIR) \
 		$(COMPATDIR) $(WINDIR) @<<
@@ -656,7 +679,7 @@ while {![eof $$f]} {
     }
 }
 close $$f
-set f [open $(DOC_INSTALL_DIR:\=/)/tcl$(VERSION).cnt a]
+set f [open "$(DOC_INSTALL_DIR:\=/)/tcl$(VERSION).cnt" a]
 puts $$f {:Include $(HLPBASE).cnt}
 close $$f
 <<
@@ -704,6 +727,29 @@ $(TMP_DIR)\tkStubImg.obj : $(GENERICDIR)\tkStubImg.c
 #---------------------------------------------------------------------
 # Dedependency rules
 #---------------------------------------------------------------------
+
+$(TMP_DIR)\wish.exe.manifest: $(WINDIR)\wish.exe.manifest.in
+!if ![sed "1d" < NUL > NUL]
+        sed -f << $** > $@
+s/@MACHINE@/$(MACHINE:IX86=X86)/
+s/@TK_WIN_VERSION@/$(DOTVERSION).0.0/
+<<
+!else
+	$(TCLSH) <<
+set f [open {$(WINDIR:\=/)/wish.exe.manifest.in} r]
+set data [read $$f]
+close $$f
+set mach {$(MACHINE)}
+if {[regexp -nocase {$(IX86)$$} $mach ]} {set mach X86}
+set winver "$(DOTVERSION).0.0"
+set data [string map [list @MACHINE@ $$mach @TK_WIN_VERSION@ $$winver] $$data]
+puts {Creating $(TMP_DIR:\=/)/wish.exe.manifest}
+set f [open {$(TMP_DIR:\=/)/wish.exe.manifest} w]
+puts -nonewline $$f $$data
+close $$f
+exit
+<<
+!endif
 
 $(TMP_DIR)\tk.res: \
     $(RCDIR)\buttons.bmp \
@@ -776,18 +822,29 @@ $<
 $<
 <<
 
-{$(RCDIR)}.rc{$(TMP_DIR)}.res:
-	$(rc32) -fo $@ -r -i "$(GENERICDIR)" $(TCL_INCLUDES) \
 !if $(DEBUG)
-		-d DEBUG \
+RCDEBUG = -d DEBUG
+!else
+RCDEBUG = 
 !endif
 !if $(TCL_THREADS)
-		-d TCL_THREADS \
+RCTHREADS = -d TCL_THREADS
+!else
+RCTHREADS =
 !endif
 !if $(STATIC_BUILD)
-		-d STATIC_BUILD \
+RCSTATIC = -d STATIC_BUILD
+!else
+RCSTATIC =
 !endif
+
+{$(RCDIR)}.rc{$(TMP_DIR)}.res:
+	$(rc32) -fo $@ -r -i "$(GENERICDIR)" -i "$(TMP_DIR)" $(TCL_INCLUDES) \
+		$(RCDEBUG) $(RCTHREADS) $(RCSTATIC) \
 		$<
+
+$(TMP_DIR)\tk.res: $(TMP_DIR)\wish.exe.manifest
+$(TMP_DIR)\wish.res: $(TMP_DIR)\wish.exe.manifest
 
 #---------------------------------------------------------------------
 # Clean up

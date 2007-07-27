@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkWinX.c,v 1.25 2002/12/08 00:46:51 hobbs Exp $
+ * RCS: @(#) $Id: tkWinX.c,v 1.25.2.8 2006/08/30 21:53:47 hobbs Exp $
  */
 
 #include "tkWinInt.h"
@@ -39,6 +39,15 @@
 
 #include <imm.h>
 
+/*
+ * WM_UNICHAR is a message for Unicode input on all windows systems.
+ * Perhaps this definition should be moved in another file.
+ */
+#ifndef WM_UNICHAR
+#define WM_UNICHAR     0x0109
+#define UNICODE_NOCHAR 0xFFFF
+#endif
+
 static TkWinProcs asciiProcs = {
     0,
 
@@ -52,6 +61,8 @@ static TkWinProcs asciiProcs = {
 	    LPCTSTR lpWindowName, DWORD dwStyle, int x, int y,
 	    int nWidth, int nHeight, HWND hWndParent, HMENU hMenu,
 	    HINSTANCE hInstance, LPVOID lpParam)) CreateWindowExA,
+    (BOOL (WINAPI *)(HMENU hMenu, UINT uPosition, UINT uFlags,
+	    UINT uIDNewItem, LPCTSTR lpNewItem)) InsertMenuA,
 };
 
 static TkWinProcs unicodeProcs = {
@@ -67,6 +78,8 @@ static TkWinProcs unicodeProcs = {
 	    LPCTSTR lpWindowName, DWORD dwStyle, int x, int y,
 	    int nWidth, int nHeight, HWND hWndParent, HMENU hMenu,
 	    HINSTANCE hInstance, LPVOID lpParam)) CreateWindowExW,
+    (BOOL (WINAPI *)(HMENU hMenu, UINT uPosition, UINT uFlags,
+	    UINT uIDNewItem, LPCTSTR lpNewItem)) InsertMenuW,
 };
 
 TkWinProcs *tkWinProcs;
@@ -80,6 +93,7 @@ static HINSTANCE tkInstance = NULL; /* Application instance handle. */
 static int childClassInitialized;   /* Registered child class? */
 static WNDCLASS childClass;	    /* Window class for child windows. */
 static int tkPlatformId = 0;	    /* version of Windows platform */
+static int tkWinTheme = 0;          /* See TkWinGetPlatformTheme */
 static Tcl_Encoding keyInputEncoding = NULL;/* The current character
 				     * encoding for keyboard input */
 static int keyInputCharset = -1;    /* The Win32 CHARSET for the keyboard
@@ -221,6 +235,9 @@ void
 TkWinXInit(hInstance)
     HINSTANCE hInstance;
 {
+    CHARSETINFO lpCs;
+    DWORD lpCP;
+
     if (childClassInitialized != 0) {
 	return;
     }
@@ -276,10 +293,20 @@ TkWinXInit(hInstance)
     }
 
     /*
+     * Initialize input language info
+     */
+
+    if (GetLocaleInfo(LANGIDFROMLCID(GetKeyboardLayout(0)),
+	       LOCALE_IDEFAULTANSICODEPAGE | LOCALE_RETURN_NUMBER,
+	       (LPTSTR) &lpCP, sizeof(lpCP)/sizeof(TCHAR))
+	    && TranslateCharsetInfo((DWORD *)lpCP, &lpCs, TCI_SRCCODEPAGE)) {
+	UpdateInputLanguage(lpCs.ciCharset);
+    }
+
+    /*
      * Make sure we cleanup on finalize.
      */
-    Tcl_CreateExitHandler((Tcl_ExitProc *) TkWinXCleanup,
-	    (ClientData) hInstance);
+    TkCreateExitHandler(TkWinXCleanup, (ClientData) hInstance);
 }
 
 /*
@@ -299,9 +326,10 @@ TkWinXInit(hInstance)
  */
 
 void
-TkWinXCleanup(hInstance)
-    HINSTANCE hInstance;
+TkWinXCleanup(clientData)
+    ClientData clientData;
 {
+    HINSTANCE hInstance = (HINSTANCE) clientData;
     /*
      * Clean up our own class.
      */
@@ -343,7 +371,7 @@ TkWinXCleanup(hInstance)
  *----------------------------------------------------------------------
  */
 
-int		
+int
 TkWinGetPlatformId()
 {
     if (tkPlatformId == 0) {
@@ -352,8 +380,62 @@ TkWinGetPlatformId()
 	os.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx(&os);
 	tkPlatformId = os.dwPlatformId;
+        
+        /* Set tkWinTheme to be TK_THEME_WIN_XP or TK_THEME_WIN_CLASSIC.
+         * The TK_THEME_WIN_CLASSIC could be set even when running
+         * under XP if the windows classic theme was selected. */
+	if ((os.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+	        (os.dwMajorVersion == 5 && os.dwMinorVersion == 1)) {
+	    HKEY   hKey;
+	    LPCSTR szSubKey  = TEXT("Control Panel\\Appearance");
+	    LPCSTR szCurrent = TEXT("Current");
+	    DWORD  dwSize = 200;
+	    char pBuffer[200];
+	    memset(pBuffer, 0, dwSize);
+	    if (RegOpenKeyEx(HKEY_CURRENT_USER, szSubKey, 0L,
+                    KEY_READ, &hKey) != ERROR_SUCCESS) {
+                tkWinTheme = TK_THEME_WIN_XP;
+	    } else {
+	        RegQueryValueEx(hKey, szCurrent, NULL, NULL, pBuffer, &dwSize);
+	        RegCloseKey(hKey);
+	        if (strcmp(pBuffer, "Windows Standard") == 0) {
+	            tkWinTheme = TK_THEME_WIN_CLASSIC;
+	        } else {
+	            tkWinTheme = TK_THEME_WIN_XP;
+	        }
+	    }
+	} else {
+	    tkWinTheme = TK_THEME_WIN_CLASSIC;
+	}
     }
     return tkPlatformId;
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * TkWinGetPlatformTheme --
+ *
+ *	Return the Windows drawing style we should be using.
+ *
+ * Results:
+ *	The return value is one of:
+ *	    TK_THEME_WIN_CLASSIC		95/98/NT or XP in classic mode
+ *	    TK_THEME_WIN_XP	                XP not in classic mode
+ *
+ * Side effects:
+ *	Could invoke TkWinGetPlatformId.
+ *
+ *----------------------------------------------------------------------
+ */
+
+int
+TkWinGetPlatformTheme()
+{
+    if (tkPlatformId == 0) {
+        TkWinGetPlatformId();
+    }
+    return tkWinTheme;
 }
 
 /*
@@ -387,6 +469,100 @@ TkGetDefaultScreenName(interp, screenName)
 /*
  *----------------------------------------------------------------------
  *
+ * TkWinDisplayChanged --
+ *
+ *	Called to set up initial screen info or when an event indicated
+ *	display (screen) change.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	May change info regarding the screen.
+ *
+ *----------------------------------------------------------------------
+ */
+
+void
+TkWinDisplayChanged(Display *display)
+{
+    HDC dc;
+    Screen *screen;
+
+    if (display == NULL || display->screens == NULL) {
+	return;
+    }
+    screen = display->screens;
+
+    dc = GetDC(NULL);
+    screen->width = GetDeviceCaps(dc, HORZRES);
+    screen->height = GetDeviceCaps(dc, VERTRES);
+    screen->mwidth = MulDiv(screen->width, 254,
+	    GetDeviceCaps(dc, LOGPIXELSX) * 10);
+    screen->mheight = MulDiv(screen->height, 254,
+	    GetDeviceCaps(dc, LOGPIXELSY) * 10);
+
+    /*
+     * On windows, when creating a color bitmap, need two pieces of
+     * information: the number of color planes and the number of pixels per
+     * plane.  Need to remember both quantities so that when constructing an
+     * HBITMAP for offscreen rendering, we can specify the correct value for
+     * the number of planes.  Otherwise the HBITMAP won't be compatible with
+     * the HWND and we'll just get blank spots copied onto the screen.
+     */
+
+    screen->ext_data = (XExtData *) GetDeviceCaps(dc, PLANES);
+    screen->root_depth = GetDeviceCaps(dc, BITSPIXEL) * (int) screen->ext_data;
+
+    if (screen->root_visual != NULL) {
+	ckfree((char *) screen->root_visual);
+    }
+    screen->root_visual = (Visual *) ckalloc(sizeof(Visual));
+    screen->root_visual->visualid = 0;
+    if (GetDeviceCaps(dc, RASTERCAPS) & RC_PALETTE) {
+	screen->root_visual->map_entries = GetDeviceCaps(dc, SIZEPALETTE);
+	screen->root_visual->class = PseudoColor;
+	screen->root_visual->red_mask = 0x0;
+	screen->root_visual->green_mask = 0x0;
+	screen->root_visual->blue_mask = 0x0;
+    } else if (screen->root_depth == 4) {
+	screen->root_visual->class = StaticColor;
+	screen->root_visual->map_entries = 16;
+    } else if (screen->root_depth == 8) {
+	screen->root_visual->class = StaticColor;
+	screen->root_visual->map_entries = 256;
+    } else if (screen->root_depth == 12) {
+	screen->root_visual->class = TrueColor;
+	screen->root_visual->map_entries = 32;
+	screen->root_visual->red_mask = 0xf0;
+	screen->root_visual->green_mask = 0xf000;
+	screen->root_visual->blue_mask = 0xf00000;
+    } else if (screen->root_depth == 16) {
+	screen->root_visual->class = TrueColor;
+	screen->root_visual->map_entries = 64;
+	screen->root_visual->red_mask = 0xf8;
+	screen->root_visual->green_mask = 0xfc00;
+	screen->root_visual->blue_mask = 0xf80000;
+    } else if (screen->root_depth >= 24) {
+	screen->root_visual->class = TrueColor;
+	screen->root_visual->map_entries = 256;
+	screen->root_visual->red_mask = 0xff;
+	screen->root_visual->green_mask = 0xff00;
+	screen->root_visual->blue_mask = 0xff0000;
+    }
+    screen->root_visual->bits_per_rgb = screen->root_depth;
+    ReleaseDC(NULL, dc);
+
+    if (screen->cmap != None) {
+	XFreeColormap(display, screen->cmap);
+    }
+    screen->cmap = XCreateColormap(display, None, screen->root_visual,
+	    AllocNone);
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
  * TkpOpenDisplay --
  *
  *	Create the Display structure and fill it with device
@@ -406,7 +582,6 @@ TkpOpenDisplay(display_name)
     CONST char *display_name;
 {
     Screen *screen;
-    HDC dc;
     TkWinDrawable *twdPtr;
     Display *display;
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
@@ -428,21 +603,14 @@ TkpOpenDisplay(display_name)
     strcpy(display->display_name, display_name);
 
     display->cursor_font = 1;
-    display->nscreens = 1;
-    display->request = 1;
-    display->qlen = 0;
+    display->nscreens    = 1;
+    display->request     = 1;
+    display->qlen        = 0;
 
     screen = (Screen *) ckalloc(sizeof(Screen));
+    ZeroMemory(screen, sizeof(Screen));
     screen->display = display;
 
-    dc = GetDC(NULL);
-    screen->width = GetDeviceCaps(dc, HORZRES);
-    screen->height = GetDeviceCaps(dc, VERTRES);
-    screen->mwidth = MulDiv(screen->width, 254,
-	    GetDeviceCaps(dc, LOGPIXELSX) * 10);
-    screen->mheight = MulDiv(screen->height, 254,
-	    GetDeviceCaps(dc, LOGPIXELSY) * 10);
-    
     /*
      * Set up the root window.
      */
@@ -457,72 +625,24 @@ TkpOpenDisplay(display_name)
     screen->root = (Window)twdPtr;
 
     /*
-     * On windows, when creating a color bitmap, need two pieces of 
-     * information: the number of color planes and the number of 
-     * pixels per plane.  Need to remember both quantities so that
-     * when constructing an HBITMAP for offscreen rendering, we can
-     * specify the correct value for the number of planes.  Otherwise
-     * the HBITMAP won't be compatible with the HWND and we'll just
-     * get blank spots copied onto the screen.
-     */
-
-    screen->ext_data = (XExtData *) GetDeviceCaps(dc, PLANES);
-    screen->root_depth = GetDeviceCaps(dc, BITSPIXEL) * (int) screen->ext_data;
-
-    screen->root_visual = (Visual *) ckalloc(sizeof(Visual));
-    screen->root_visual->visualid = 0;
-    if (GetDeviceCaps(dc, RASTERCAPS) & RC_PALETTE) {
-	screen->root_visual->map_entries = GetDeviceCaps(dc, SIZEPALETTE);
-	screen->root_visual->class = PseudoColor;
-	screen->root_visual->red_mask = 0x0;
-	screen->root_visual->green_mask = 0x0;
-	screen->root_visual->blue_mask = 0x0;
-    } else {
-	if (screen->root_depth == 4) {
-	    screen->root_visual->class = StaticColor;
-	    screen->root_visual->map_entries = 16;
-	} else if (screen->root_depth == 8) {
-	    screen->root_visual->class = StaticColor;
-	    screen->root_visual->map_entries = 256;
-	} else if (screen->root_depth == 12) {
-	    screen->root_visual->class = TrueColor;
-	    screen->root_visual->map_entries = 32;
-	    screen->root_visual->red_mask = 0xf0;
-	    screen->root_visual->green_mask = 0xf000;
-	    screen->root_visual->blue_mask = 0xf00000;
-	} else if (screen->root_depth == 16) {
-	    screen->root_visual->class = TrueColor;
-	    screen->root_visual->map_entries = 64;
-	    screen->root_visual->red_mask = 0xf8;
-	    screen->root_visual->green_mask = 0xfc00;
-	    screen->root_visual->blue_mask = 0xf80000;
-	} else if (screen->root_depth >= 24) {
-	    screen->root_visual->class = TrueColor;
-	    screen->root_visual->map_entries = 256;
-	    screen->root_visual->red_mask = 0xff;
-	    screen->root_visual->green_mask = 0xff00;
-	    screen->root_visual->blue_mask = 0xff0000;
-	}
-    }
-    screen->root_visual->bits_per_rgb = screen->root_depth;
-    ReleaseDC(NULL, dc);
-
-    /*
      * Note that these pixel values are not palette relative.
      */
 
     screen->white_pixel = RGB(255, 255, 255);
     screen->black_pixel = RGB(0, 0, 0);
+    screen->cmap        = None;
 
     display->screens		= screen;
     display->nscreens		= 1;
     display->default_screen	= 0;
-    screen->cmap = XCreateColormap(display, None, screen->root_visual,
-	    AllocNone);
+
+    TkWinDisplayChanged(display);
+
     tsdPtr->winDisplay = (TkDisplay *) ckalloc(sizeof(TkDisplay));
     ZeroMemory(tsdPtr->winDisplay, sizeof(TkDisplay));
     tsdPtr->winDisplay->display = display;
     tsdPtr->updatingClipboard = FALSE;
+
     return tsdPtr->winDisplay;
 }
 
@@ -589,6 +709,54 @@ TkpCloseDisplay(dispPtr)
         ckfree((char *) display->screens);
     }
     ckfree((char *) display);
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * TkClipCleanup --
+ *
+ *	This procedure is called to cleanup resources associated with
+ *	claiming clipboard ownership and for receiving selection get
+ *	results.  This function is called in tkWindow.c.  This has to be
+ *	called by the display cleanup function because we still need the
+ *	access display elements.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	Resources are freed - the clipboard may no longer be used.
+ *
+ *----------------------------------------------------------------------
+ */
+
+void
+TkClipCleanup(dispPtr)
+    TkDisplay *dispPtr;	/* display associated with clipboard */
+{
+    if (dispPtr->clipWindow != NULL) {
+	/*
+	 * Force the clipboard to be rendered if we are the clipboard owner.
+	 */
+
+	HWND hwnd = Tk_GetHWND(Tk_WindowId(dispPtr->clipWindow));
+	if (GetClipboardOwner() == hwnd) {
+	    OpenClipboard(hwnd);
+	    EmptyClipboard();
+	    TkWinClipboardRender(dispPtr, CF_TEXT);
+	    CloseClipboard();
+	}
+
+	Tk_DeleteSelHandler(dispPtr->clipWindow, dispPtr->clipboardAtom,
+		dispPtr->applicationAtom);
+	Tk_DeleteSelHandler(dispPtr->clipWindow, dispPtr->clipboardAtom,
+		dispPtr->windowAtom);
+
+	Tk_DestroyWindow(dispPtr->clipWindow);
+	Tcl_Release((ClientData) dispPtr->clipWindow);
+	dispPtr->clipWindow = NULL;
+    }
 }
 
 /*
@@ -680,6 +848,22 @@ TkWinChildProc(hwnd, message, wParam, lParam)
 	    result =  TkWinEmbeddedEventProc(hwnd, message, wParam, lParam);
 	    break;
 
+	case WM_UNICHAR: 
+	    if (wParam == UNICODE_NOCHAR) {
+		/* If wParam is UNICODE_NOCHAR and the application processes
+		 * this message, then return TRUE. */
+		result = 1;
+	    } else {
+		/* If the event was translated, we must return 0 */
+		if (Tk_TranslateWinEvent(hwnd, message, wParam, lParam,
+			    &result)) {
+		    result = 0;
+		} else {
+		    result = 1;
+		}
+	    }
+	    break;
+
 	default:
 	    if (!Tk_TranslateWinEvent(hwnd, message, wParam, lParam,
 		    &result)) {
@@ -769,6 +953,7 @@ Tk_TranslateWinEvent(hwnd, message, wParam, lParam, resultPtr)
 	case WM_SETFOCUS:
 	case WM_KILLFOCUS:
 	case WM_DESTROYCLIPBOARD:
+	case WM_UNICHAR:
 	case WM_CHAR:
 	case WM_SYSKEYDOWN:
 	case WM_SYSKEYUP:
@@ -851,7 +1036,7 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 	case WM_SETFOCUS:
 	case WM_KILLFOCUS: {
 	    TkWindow *otherWinPtr = (TkWindow *)Tk_HWNDToWindow((HWND) wParam);
-	    
+
 	    /*
 	     * Compare toplevel windows to avoid reporting focus
 	     * changes within the same toplevel.
@@ -907,15 +1092,16 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 		Tk_InternAtom((Tk_Window)winPtr, "CLIPBOARD");
 	    event.xselectionclear.time = TkpGetMS();
 	    break;
-	    
+
 	case WM_MOUSEWHEEL:
 	    /*
 	     * The mouse wheel event is closer to a key event than a
 	     * mouse event in that the message is sent to the window
 	     * that has focus.
 	     */
-	    
+
 	case WM_CHAR:
+	case WM_UNICHAR:
 	case WM_SYSKEYDOWN:
 	case WM_SYSKEYUP:
 	case WM_KEYDOWN:
@@ -929,7 +1115,7 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 	    /*
 	     * Compute the screen and window coordinates of the event.
 	     */
-	    
+
 	    msgPos = GetMessagePos();
 	    rootPoint = MAKEPOINTS(msgPos);
 	    clientPoint.x = rootPoint.x;
@@ -961,11 +1147,14 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 		     * We have invented a new X event type to handle
 		     * this event.  It still uses the KeyPress struct.
 		     * However, the keycode field has been overloaded
-		     * to hold the zDelta of the wheel.
+		     * to hold the zDelta of the wheel.  Set nbytes to 0
+		     * to prevent conversion of the keycode to a keysym
+		     * in TkpGetString. [Bug 1118340].
 		     */
-		    
+
 		    event.type = MouseWheelEvent;
 		    event.xany.send_event = -1;
+		    event.xkey.nbytes = 0;
 		    event.xkey.keycode = (short) HIWORD(wParam);
 		    break;
 		case WM_SYSKEYDOWN:
@@ -977,7 +1166,7 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 		     * event was generated by windows and that the Windows
 		     * extension xkey.trans_chars is filled with the
 		     * MBCS characters that came from the TranslateMessage
-		     * call. 
+		     * call.
 		     */
 
 		    event.type = KeyPress;
@@ -1053,6 +1242,21 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 		    Tk_QueueWindowEvent(&event, TCL_QUEUE_TAIL);
 		    event.type = KeyRelease;
 		    break;
+
+		case WM_UNICHAR: {
+		    char buffer[TCL_UTF_MAX+1];
+		    int i;
+		    event.type = KeyPress;
+		    event.xany.send_event = -3;
+		    event.xkey.keycode = wParam;
+		    event.xkey.nbytes = Tcl_UniCharToUtf(wParam, buffer);
+		    for (i=0; i<event.xkey.nbytes && i<TCL_UTF_MAX; ++i) {
+			event.xkey.trans_chars[i] = buffer[i];
+		    }
+		    Tk_QueueWindowEvent(&event, TCL_QUEUE_TAIL);
+		    event.type = KeyRelease;
+		    break;
+		}
 	    }
 	    break;
 	}
@@ -1207,13 +1411,12 @@ GetTranslatedKey(xkey)
  *
  * UpdateInputLanguage --
  *
- *	Gets called when a WM_INPUTLANGCHANGE message is received
- *      by the TK child window procedure. This message is sent
- *      by the Input Method Editor system when the user chooses
- *      a different input method. All subsequent WM_CHAR
- *      messages will contain characters in the new encoding. We record
- *      the new encoding so that TkpGetString() knows how to
- *      correctly translate the WM_CHAR into unicode.
+ *	Gets called when a WM_INPUTLANGCHANGE message is received by the Tk
+ *	child window procedure. This message is sent by the Input Method
+ *	Editor system when the user chooses a different input method. All
+ *	subsequent WM_CHAR messages will contain characters in the new
+ *	encoding. We record the new encoding so that TkpGetString() knows how
+ *	to correctly translate the WM_CHAR into unicode.
  *
  * Results:
  *	Records the new encoding in keyInputEncoding.

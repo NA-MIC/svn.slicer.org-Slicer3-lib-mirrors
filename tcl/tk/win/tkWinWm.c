@@ -12,11 +12,24 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkWinWm.c,v 1.54 2002/12/06 23:29:37 hobbs Exp $
+ * RCS: @(#) $Id: tkWinWm.c,v 1.54.2.26 2006/12/01 19:47:42 hobbs Exp $
  */
 
 #include "tkWinInt.h"
 #include <shellapi.h>
+
+/*
+ * These next two defines are only valid on Win2K/XP+.
+ */
+#ifndef WS_EX_LAYERED
+#define WS_EX_LAYERED	0x00080000
+#endif
+#ifndef LWA_COLORKEY
+#define LWA_COLORKEY	0x00000001
+#endif
+#ifndef LWA_ALPHA
+#define LWA_ALPHA	0x00000002
+#endif
 
 /*
  * Event structure for synthetic activation events.  These events are
@@ -176,9 +189,9 @@ typedef struct TkWmInfo {
 				 * window is gridded;  otherwise it isn't
 				 * gridded. */
     int minWidth, minHeight;	/* Minimum dimensions of window, in
-				 * grid units, not pixels. */
+				 * pixels or grid units. */
     int maxWidth, maxHeight;	/* Maximum dimensions of window, in
-				 * grid units, not pixels, or 0 to default. */
+				 * pixels or grid units. 0 to default. */
     Tk_Window gridWin;		/* Identifies the window that controls
 				 * gridding for this top-level, or NULL if
 				 * the top-level isn't currently gridded. */
@@ -199,7 +212,7 @@ typedef struct TkWmInfo {
      */
 
     int width, height;		/* Desired dimensions of window, specified
-				 * in grid units.  These values are
+				 * in pixels or grid units.  These values are
 				 * set by the "wm geometry" command and by
 				 * ConfigureNotify events (for when wm
 				 * resizes window).  -1 means user hasn't
@@ -228,6 +241,10 @@ typedef struct TkWmInfo {
     DWORD style, exStyle;	/* Style flags for the wrapper window. */
     LONG styleConfig;		/* Extra user requested style bits */
     LONG exStyleConfig;		/* Extra user requested extended style bits */
+    Tcl_Obj *crefObj;		/* COLORREF object for transparent handling */
+    COLORREF colorref;		/* COLORREF for transparent handling */
+    double alpha;		/* Alpha transparency level
+				 * 0.0 (fully transparent) .. 1.0 (opaque) */
 
     /*
      * List of children of the toplevel which have private colormaps.
@@ -315,7 +332,7 @@ typedef struct TkWmInfo {
  * Window styles for various types of toplevel windows.
  */
 
-#define WM_OVERRIDE_STYLE (WS_POPUP|WS_CLIPCHILDREN|CS_DBLCLKS)
+#define WM_OVERRIDE_STYLE (WS_CLIPCHILDREN|WS_CLIPSIBLINGS|CS_DBLCLKS)
 #define EX_OVERRIDE_STYLE (WS_EX_TOOLWINDOW)
 
 #define WM_TOPLEVEL_STYLE (WS_OVERLAPPEDWINDOW|WS_CLIPCHILDREN|CS_DBLCLKS)
@@ -376,6 +393,13 @@ static int initialized;        /* Flag indicating whether module has
 DWORD* (WINAPI *shgetfileinfoProc) (LPCTSTR pszPath, DWORD dwFileAttributes,
     SHFILEINFO* psfi, UINT cbFileInfo, UINT uFlags) = NULL;
 
+/*
+ * A pointer to SetLayeredWindowAttributes (user32.dll) which we
+ * retrieve dynamically because it is only valid on Win2K+.
+ */
+BOOL (WINAPI *setLayeredWindowAttributesProc) (HWND hwnd, COLORREF crKey,
+	BYTE bAlpha, DWORD dwFlags) = NULL;
+
 TCL_DECLARE_MUTEX(winWmMutex)
 
 /*
@@ -397,6 +421,7 @@ static int		InstallColormaps _ANSI_ARGS_((HWND hwnd, int message,
 			    int isForemost));
 static void		InvalidateSubTree _ANSI_ARGS_((TkWindow *winPtr,
 			    Colormap colormap));
+static void		InvalidateSubTreeDepth _ANSI_ARGS_((TkWindow *winPtr));
 static int		ParseGeometry _ANSI_ARGS_((Tcl_Interp *interp,
 			    char *string, TkWindow *winPtr));
 static void		RefreshColormap _ANSI_ARGS_((Colormap colormap,
@@ -404,6 +429,7 @@ static void		RefreshColormap _ANSI_ARGS_((Colormap colormap,
 static void		SetLimits _ANSI_ARGS_((HWND hwnd, MINMAXINFO *info));
 static void		TkWmStackorderToplevelWrapperMap _ANSI_ARGS_((
 			    TkWindow *winPtr,
+			    Display *display,
 			    Tcl_HashTable *table));
 static LRESULT CALLBACK	TopLevelProc _ANSI_ARGS_((HWND hwnd, UINT message,
 			    WPARAM wParam, LPARAM lParam));
@@ -478,6 +504,9 @@ static int 		WmIconmaskCmd _ANSI_ARGS_((Tk_Window tkwin,
 			    TkWindow *winPtr, Tcl_Interp *interp, int objc,
 			    Tcl_Obj *CONST objv[]));
 static int 		WmIconnameCmd _ANSI_ARGS_((Tk_Window tkwin,
+			    TkWindow *winPtr, Tcl_Interp *interp, int objc,
+			    Tcl_Obj *CONST objv[]));
+static int 		WmIconphotoCmd _ANSI_ARGS_((Tk_Window tkwin,
 			    TkWindow *winPtr, Tcl_Interp *interp, int objc,
 			    Tcl_Obj *CONST objv[]));
 static int 		WmIconpositionCmd _ANSI_ARGS_((Tk_Window tkwin,
@@ -798,7 +827,8 @@ ReadICOHeader( Tcl_Channel channel )
  *----------------------------------------------------------------------
  */
 static int 
-InitWindowClass(WinIconPtr titlebaricon) {
+InitWindowClass(WinIconPtr titlebaricon)
+{
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
 	    Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
@@ -821,6 +851,17 @@ InitWindowClass(WinIconPtr titlebaricon) {
 		    (DWORD* (WINAPI *) (LPCTSTR pszPath, DWORD dwFileAttributes,
     SHFILEINFO* psfi, UINT cbFileInfo, UINT uFlags)) GetProcAddress(hInstance, 
 		      "SHGetFileInfo");
+		    FreeLibrary(hInstance);
+		}
+	    }
+	    if (setLayeredWindowAttributesProc == NULL) {
+		HINSTANCE hInstance = LoadLibraryA("user32");
+		if (hInstance != NULL) {
+		    setLayeredWindowAttributesProc =
+			(BOOL (WINAPI *) (HWND hwnd, COLORREF crKey,
+				BYTE bAlpha, DWORD dwFlags))
+			GetProcAddress(hInstance,
+				"SetLayeredWindowAttributes");
 		    FreeLibrary(hInstance);
 		}
 	    }
@@ -864,8 +905,25 @@ InitWindowClass(WinIconPtr titlebaricon) {
 	    class.hCursor = LoadCursor(NULL, IDC_ARROW);
 
 	    if (!(*tkWinProcs->registerClass)(&class)) {
-		panic("Unable to register TkTopLevel class");
+		Tcl_Panic("Unable to register TkTopLevel class");
 	    }
+
+#ifndef TCL_THREADS
+	    /*
+	     * Use of WS_EX_LAYERED disallows CS_CLASSDC, as does
+	     * TCL_THREADS usage, so only create this if necessary.
+	     */
+	    if (setLayeredWindowAttributesProc != NULL) {
+		class.style = CS_HREDRAW | CS_VREDRAW;
+		Tcl_DStringFree(&classString);
+		Tcl_WinUtfToTChar(TK_WIN_TOPLEVEL_NOCDC_CLASS_NAME,
+			-1, &classString);
+		class.lpszClassName = (LPCTSTR) Tcl_DStringValue(&classString);
+		if (!(*tkWinProcs->registerClass)(&class)) {
+		    Tcl_Panic("Unable to register TkTopLevelNoCDC class");
+		}
+	    }
+#endif
 	    Tcl_DStringFree(&classString);
 	}
 	Tcl_MutexUnlock(&winWmMutex);
@@ -1064,6 +1122,75 @@ WinSetIcon(interp, titlebaricon, tkw)
 /*
  *----------------------------------------------------------------------
  *
+ * TkWinGetIcon --
+ *
+ *	Gets either the default toplevel titlebar icon, or the icon
+ *	for a specific toplevel (ICON_SMALL or ICON_BIG).
+ *
+ * Results:
+ *	A Windows HICON.
+ *
+ * Side effects:
+ *	The given window will be forced into existence.
+ *
+ *----------------------------------------------------------------------
+ */
+HICON
+TkWinGetIcon(Tk_Window tkwin, DWORD iconsize)
+{
+    WmInfo *wmPtr;
+    HICON icon;
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+	    Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
+
+    if (tsdPtr->iconPtr != NULL) {
+	/*
+	 * return default toplevel icon
+	 */
+	return GetIcon(tsdPtr->iconPtr, iconsize);
+    }
+
+    /* ensure we operate on the toplevel, that has the icon refs */
+    while (!Tk_IsTopLevel(tkwin)) {
+	tkwin = Tk_Parent(tkwin);
+	if (tkwin == NULL) {
+	    return NULL;
+	}
+    }
+
+    if (Tk_WindowId(tkwin) == None) {
+	Tk_MakeWindowExist(tkwin);
+    }
+
+    wmPtr = ((TkWindow *) tkwin)->wmInfoPtr;
+    if (wmPtr->iconPtr != NULL) {
+	/*
+	 * return window toplevel icon
+	 */
+	return GetIcon(wmPtr->iconPtr, iconsize);
+    }
+
+    /*
+     * Find the icon otherwise associated with the toplevel, or
+     * finally with the window class.
+     */
+    icon = (HICON) SendMessage(wmPtr->wrapper, WM_GETICON, iconsize,
+	    (LPARAM) NULL);
+    if (icon == (HICON) NULL) {
+#ifdef _WIN64
+	icon = (HICON) GetClassLongPtr(wmPtr->wrapper,
+		(iconsize == ICON_BIG) ? GCLP_HICON : GCLP_HICONSM);
+#else
+	icon = (HICON) GetClassLong(wmPtr->wrapper,
+		(iconsize == ICON_BIG) ? GCL_HICON : GCL_HICONSM);
+#endif
+    }
+    return icon;
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
  * ReadIconFromFile --
  *
  *	Read the contents of a file (usually .ico, .icr) and extract an
@@ -1113,44 +1240,62 @@ ReadIconFromFile(interp, fileName)
 	/* First check if it is a .ico file */
 	BlockOfIconImagesPtr lpIR;
 	lpIR = ReadIconOrCursorFromFile(interp, fileName, TRUE);
-	
-	/* Then see if we can ask the shell for the icon for this file */
+
+	/*
+	 * Then see if we can ask the shell for the icon for this file.
+	 * We want both the regular and small icons so that the Alt-Tab
+	 * (task-switching) display uses the right icon.
+	 */
 	if (lpIR == NULL && shgetfileinfoProc != NULL) {
-	    SHFILEINFO sfi;
+	    SHFILEINFO sfiSM;
 	    Tcl_DString ds, ds2;
 	    DWORD *res;
 	    CONST char *file;
-	    
+
 	    file = Tcl_TranslateFileName(interp, Tcl_GetString(fileName), &ds);
 	    if (file == NULL) { return NULL; }
 	    Tcl_UtfToExternalDString(NULL, file, -1, &ds2);
 	    Tcl_DStringFree(&ds);
-	    
-	    res = (*shgetfileinfoProc)(Tcl_DStringValue(&ds2), 0, &sfi, 
-			  sizeof(SHFILEINFO), SHGFI_SMALLICON|SHGFI_ICON);
-	   
-	    Tcl_DStringFree(&ds2);
-	    
+	    res = (*shgetfileinfoProc)(Tcl_DStringValue(&ds2), 0, &sfiSM,
+		    sizeof(SHFILEINFO), SHGFI_SMALLICON|SHGFI_ICON);
+
 	    if (res != 0) {
+		SHFILEINFO sfi;
+		int size;
+
 		Tcl_ResetResult(interp);
-			      
-		lpIR = (BlockOfIconImagesPtr) ckalloc(sizeof(BlockOfIconImages));
+		res = (*shgetfileinfoProc)(Tcl_DStringValue(&ds2), 0, &sfi,
+			sizeof(SHFILEINFO), SHGFI_ICON);
+
+		/* Account for extra icon, if necessary */
+		size = sizeof(BlockOfIconImages) +
+		    ((res != 0) ? sizeof(ICONIMAGE) : 0);
+		lpIR = (BlockOfIconImagesPtr) ckalloc(size);
 		if (lpIR == NULL) {
-		    DestroyIcon(sfi.hIcon);
+		    if (res != 0) {
+			DestroyIcon(sfi.hIcon);
+		    }
+		    DestroyIcon(sfiSM.hIcon);
+		    Tcl_DStringFree(&ds2);
 		    return NULL;
 		}
-	    
-		lpIR->nNumImages = 1;
-		lpIR->IconImages[0].Width = 16;
-		lpIR->IconImages[0].Height = 16;
-		lpIR->IconImages[0].Colors = 4;
-		lpIR->IconImages[0].hIcon = sfi.hIcon;
-		/* These fields are ignored */
-		lpIR->IconImages[0].lpBits = 0;
-		lpIR->IconImages[0].dwNumBytes = 0;
-		lpIR->IconImages[0].lpXOR = 0;
-		lpIR->IconImages[0].lpAND = 0;
+		ZeroMemory(lpIR, size);
+
+		lpIR->nNumImages               = ((res != 0) ? 2 : 1);
+		lpIR->IconImages[0].Width      = 16;
+		lpIR->IconImages[0].Height     = 16;
+		lpIR->IconImages[0].Colors     = 4;
+		lpIR->IconImages[0].hIcon      = sfiSM.hIcon;
+		/* All other IconImages fields are ignored */
+
+		if (res != 0) {
+		    lpIR->IconImages[1].Width  = 32;
+		    lpIR->IconImages[1].Height = 32;
+		    lpIR->IconImages[1].Colors = 4;
+		    lpIR->IconImages[1].hIcon  = sfi.hIcon;
+		}
 	    }
+	    Tcl_DStringFree(&ds2);
 	}
 	if (lpIR != NULL) {
 	    titlebaricon = (WinIconPtr) ckalloc(sizeof(WinIconInstance));
@@ -1216,7 +1361,7 @@ GetIconFromPixmap(dsPtr, pixmap)
 	int width, height;
 
 	Tk_SizeOfBitmap(dsPtr, pixmap, &width, &height);
-    
+
 	icon.fIcon = TRUE;
 	icon.xHotspot = 0;
 	icon.yHotspot = 0;
@@ -1233,7 +1378,7 @@ GetIconFromPixmap(dsPtr, pixmap)
 	    DestroyIcon(hIcon);
 	    return NULL;
 	}
-	
+
 	lpIR->nNumImages = 1;
 	lpIR->IconImages[0].Width = width;
 	lpIR->IconImages[0].Height = height;
@@ -1244,7 +1389,7 @@ GetIconFromPixmap(dsPtr, pixmap)
 	lpIR->IconImages[0].dwNumBytes = 0;
 	lpIR->IconImages[0].lpXOR = 0;
 	lpIR->IconImages[0].lpAND = 0;
-	
+
 	titlebaricon = (WinIconPtr) ckalloc(sizeof(WinIconInstance));
 	titlebaricon->iconBlock = lpIR;
 	titlebaricon->refCount = 1;
@@ -1301,7 +1446,8 @@ DecrIconRefCount(WinIconPtr titlebaricon) {
  *----------------------------------------------------------------------
  */
 static void 
-FreeIconBlock(BlockOfIconImagesPtr lpIR) {
+FreeIconBlock(BlockOfIconImagesPtr lpIR)
+{
     int i;
 
     /* Free all the bits */
@@ -1332,7 +1478,8 @@ FreeIconBlock(BlockOfIconImagesPtr lpIR) {
  *----------------------------------------------------------------------
  */
 static HICON 
-GetIcon(WinIconPtr titlebaricon, int icon_size) {
+GetIcon(WinIconPtr titlebaricon, int icon_size)
+{
     BlockOfIconImagesPtr lpIR;
     
     if (titlebaricon == NULL) {
@@ -1367,7 +1514,8 @@ GetIcon(WinIconPtr titlebaricon, int icon_size) {
 }
 
 static HCURSOR 
-TclWinReadCursorFromFile(Tcl_Interp* interp, Tcl_Obj* fileName) {
+TclWinReadCursorFromFile(Tcl_Interp* interp, Tcl_Obj* fileName)
+{
     BlockOfIconImagesPtr lpIR;
     HICON res = NULL;
     
@@ -1400,7 +1548,8 @@ TclWinReadCursorFromFile(Tcl_Interp* interp, Tcl_Obj* fileName) {
  *----------------------------------------------------------------------
  */
 static BlockOfIconImagesPtr 
-ReadIconOrCursorFromFile(Tcl_Interp* interp, Tcl_Obj* fileName, BOOL isIcon) {
+ReadIconOrCursorFromFile(Tcl_Interp* interp, Tcl_Obj* fileName, BOOL isIcon)
+{
     BlockOfIconImagesPtr lpIR, lpNew;
     Tcl_Channel          channel;
     int                  i;
@@ -1466,44 +1615,36 @@ ReadIconOrCursorFromFile(Tcl_Interp* interp, Tcl_Obj* fileName, BOOL isIcon) {
 	ckfree( (char*)lpIR );
 	return NULL;
     }
+    /* NULL-out everything to make memory management easier */
+    for( i = 0; i < lpIR->nNumImages; i++ ) {
+	lpIR->IconImages[i].lpBits = NULL;
+    }
     /*  Loop through and read in each image */
     for( i = 0; i < lpIR->nNumImages; i++ )    {
 	/*  Allocate memory for the resource */
 	lpIR->IconImages[i].lpBits = (LPBYTE) ckalloc(lpIDE[i].dwBytesInRes);
 	if (lpIR->IconImages[i].lpBits == NULL) {
 	    Tcl_AppendResult(interp,"Error allocating memory",(char*)NULL);
-	    Tcl_Close(NULL, channel);
-	    ckfree( (char*)lpIR );
-	    ckfree( (char*)lpIDE );
-	    return NULL;
+	    goto readError;
 	}
 	lpIR->IconImages[i].dwNumBytes = lpIDE[i].dwBytesInRes;
 	/*  Seek to beginning of this image */
 	if (Tcl_Seek(channel, lpIDE[i].dwImageOffset, FILE_BEGIN) == -1) {
 	    Tcl_AppendResult(interp,"Error seeking in file",(char*)NULL);
-	    Tcl_Close(NULL, channel);
-	    ckfree( (char*)lpIR );
-	    ckfree( (char*)lpIDE );
-	    return NULL;
+	    goto readError;
 	}
 	/*  Read it in */
 	dwBytesRead = Tcl_Read( channel, lpIR->IconImages[i].lpBits, 
 			       lpIDE[i].dwBytesInRes);
 	if (dwBytesRead != lpIDE[i].dwBytesInRes) {
 	    Tcl_AppendResult(interp,"Error reading file",(char*)NULL);
-	    Tcl_Close(NULL, channel);
-	    ckfree( (char*)lpIDE );
-	    ckfree( (char*)lpIR );
-	    return NULL;
+	    goto readError;
 	}
 	/*  Set the internal pointers appropriately */
 	if (!AdjustIconImagePointers( &(lpIR->IconImages[i]))) {
 	    Tcl_AppendResult(interp,"Error converting to internal format",
 			     (char*)NULL);
-	    Tcl_Close(NULL, channel);
-	    ckfree( (char*)lpIDE );
-	    ckfree( (char*)lpIR );
-	    return NULL;
+	    goto readError;
 	}
 	lpIR->IconImages[i].hIcon =
 	    MakeIconOrCursorFromResource(&(lpIR->IconImages[i]), isIcon);
@@ -1513,10 +1654,20 @@ ReadIconOrCursorFromFile(Tcl_Interp* interp, Tcl_Obj* fileName, BOOL isIcon) {
     Tcl_Close(NULL, channel);
     if (lpIR == NULL){
 	Tcl_AppendResult(interp,"Reading of ", Tcl_GetString(fileName),
-	" failed!",(char*)NULL);
+			 " failed!",(char*)NULL);
 	return NULL;
     }
     return lpIR;
+  readError:
+    Tcl_Close(NULL, channel);
+    for( i = 0; i < lpIR->nNumImages; i++ )    {
+    	if (lpIR->IconImages[i].lpBits != NULL) {
+	    ckfree((char*)lpIR->IconImages[i].lpBits);
+	}
+    }
+    ckfree((char*)lpIDE );
+    ckfree((char*)lpIR );
+    return NULL;
 }
 
 /*
@@ -1694,6 +1845,15 @@ TkWinWmCleanup(hInstance)
     tsdPtr->initialized = 0;
 
     UnregisterClass(TK_WIN_TOPLEVEL_CLASS_NAME, hInstance);
+#ifndef TCL_THREADS
+    /*
+     * Clean up specialized class created for layered windows.
+     */
+    if (setLayeredWindowAttributesProc != NULL) {
+	UnregisterClass(TK_WIN_TOPLEVEL_NOCDC_CLASS_NAME, hInstance);
+	setLayeredWindowAttributesProc = NULL;
+    }
+#endif
 }
 
 /*
@@ -1755,6 +1915,9 @@ TkWmNewWindow(winPtr)
     wmPtr->height = -1;
     wmPtr->x = winPtr->changes.x;
     wmPtr->y = winPtr->changes.y;
+    wmPtr->crefObj = NULL;
+    wmPtr->colorref = (COLORREF) NULL;
+    wmPtr->alpha = 1.0;
 
     wmPtr->configWidth = -1;
     wmPtr->configHeight = -1;
@@ -1803,8 +1966,8 @@ UpdateWrapper(winPtr)
     TkWindow *winPtr;		/* Top-level window to redecorate. */
 {
     register WmInfo *wmPtr = winPtr->wmInfoPtr;
-    HWND parentHWND, oldWrapper;
-    HWND child;
+    HWND parentHWND, oldWrapper = wmPtr->wrapper;
+    HWND child, nextHWND, focusHWND;
     int x, y, width, height, state;
     WINDOWPLACEMENT place;
     HICON hSmallIcon = NULL;
@@ -1823,29 +1986,48 @@ UpdateWrapper(winPtr)
 
     child = TkWinGetHWND(winPtr->window);
     parentHWND = NULL;
+    /*
+     * nextHWND will help us maintain Z order.
+     * focusHWND will help us maintain focus, if we had it.
+     */
+    nextHWND = NULL;
+    focusHWND = GetFocus();
+    if ((oldWrapper == NULL) || (oldWrapper != GetForegroundWindow())) {
+	focusHWND = NULL;
+    }
 
     if (winPtr->flags & TK_EMBEDDED) {
 	wmPtr->wrapper = (HWND) winPtr->privatePtr;
 	if (wmPtr->wrapper == NULL) {
-	    panic("UpdateWrapper: Cannot find container window");
+	    Tcl_Panic("UpdateWrapper: Cannot find container window");
 	}
 	if (!IsWindow(wmPtr->wrapper)) {
-	    panic("UpdateWrapper: Container was destroyed");
+	    Tcl_Panic("UpdateWrapper: Container was destroyed");
 	}
 
     } else {
 	/*
 	 * Pick the decorative frame style.  Override redirect windows get
-	 * created as undecorated popups.  Transient windows get a modal
-	 * dialog frame.  Neither override, nor transient windows appear in
-	 * the Windows taskbar.  Note that a transient window does not resize
-	 * by default, so we need to explicitly add the WS_THICKFRAME style
-	 * if we want it to be resizeable.
+	 * created as undecorated popups if they have no transient parent,
+	 * otherwise they are children.  This allows splash screens to operate
+	 * as an independent window, while having dropdows (like for a
+	 * combobox) not grab focus away from their parent.  Transient windows
+	 * get a modal dialog frame.  Neither override, nor transient windows
+	 * appear in the Windows taskbar.  Note that a transient window does
+	 * not resize by default, so we need to explicitly add the
+	 * WS_THICKFRAME style if we want it to be resizeable.
 	 */
 
 	if (winPtr->atts.override_redirect) {
 	    wmPtr->style = WM_OVERRIDE_STYLE;
 	    wmPtr->exStyle = EX_OVERRIDE_STYLE;
+	    /* parent must be desktop even if we have a transient parent */
+	    parentHWND = GetDesktopWindow();
+	    if (wmPtr->masterPtr) {
+		wmPtr->style |= WS_CHILD;
+	    } else {
+		wmPtr->style |= WS_POPUP;
+	    }
 	} else if (wmPtr->masterPtr) {
 	    wmPtr->style = WM_TRANSIENT_STYLE;
 	    wmPtr->exStyle = EX_TRANSIENT_STYLE;
@@ -1901,7 +2083,17 @@ UpdateWrapper(winPtr)
 	tsdPtr->createWindow = winPtr;
 	Tcl_WinUtfToTChar(((wmPtr->title != NULL) ?
                            wmPtr->title : winPtr->nameUid), -1, &titleString);
-	Tcl_WinUtfToTChar(TK_WIN_TOPLEVEL_CLASS_NAME, -1, &classString);
+#ifndef TCL_THREADS
+	/*
+	 * Transparent windows require a non-CS_CLASSDC window class.
+	 */
+	if ((wmPtr->exStyleConfig & WS_EX_LAYERED)
+		&& setLayeredWindowAttributesProc != NULL) {
+	    Tcl_WinUtfToTChar(TK_WIN_TOPLEVEL_NOCDC_CLASS_NAME,
+		    -1, &classString);
+	} else
+#endif
+	    Tcl_WinUtfToTChar(TK_WIN_TOPLEVEL_CLASS_NAME, -1, &classString);
 	wmPtr->wrapper = (*tkWinProcs->createWindowEx)(wmPtr->exStyle,
 		(LPCTSTR) Tcl_DStringValue(&classString),
 		(LPCTSTR) Tcl_DStringValue(&titleString),
@@ -1916,12 +2108,44 @@ UpdateWrapper(winPtr)
 #endif
 	tsdPtr->createWindow = NULL;
 
+	if ((wmPtr->exStyleConfig & WS_EX_LAYERED)
+		&& setLayeredWindowAttributesProc != NULL) {
+	    /*
+	     * The user supplies a double from [0..1], but Windows wants an
+	     * int (transparent) 0..255 (opaque), so do the translation.
+	     * Add the 0.5 to round the value.
+	     */
+	    setLayeredWindowAttributesProc((HWND) wmPtr->wrapper,
+		    wmPtr->colorref, (BYTE) (wmPtr->alpha * 255 + 0.5),
+		    LWA_ALPHA | (wmPtr->crefObj ? LWA_COLORKEY : 0));
+	} else {
+	    /*
+	     * Layering not used or supported.
+	     */
+	    wmPtr->alpha = 1.0;
+	    if (wmPtr->crefObj) {
+		Tcl_DecrRefCount(wmPtr->crefObj);
+		wmPtr->crefObj = NULL;
+	    }
+	}
+
 	place.length = sizeof(WINDOWPLACEMENT);
 	GetWindowPlacement(wmPtr->wrapper, &place);
 	wmPtr->x = place.rcNormalPosition.left;
 	wmPtr->y = place.rcNormalPosition.top;
 
-	TkInstallFrameMenu((Tk_Window) winPtr);
+	if (!(winPtr->flags & TK_ALREADY_DEAD)) {
+	    TkInstallFrameMenu((Tk_Window) winPtr);
+	}
+
+	if (oldWrapper && (oldWrapper != wmPtr->wrapper)
+		&& !(wmPtr->exStyle & WS_EX_TOPMOST)) {
+	    /*
+	     * We will adjust wrapper to have the same Z order as oldWrapper
+	     * if it isn't a TOPMOST window.
+	     */
+	    nextHWND = GetNextWindow(oldWrapper, GW_HWNDPREV);
+	}
     }
 
     /*
@@ -1944,7 +2168,7 @@ UpdateWrapper(winPtr)
 	SetWindowLong(child, GWL_WNDPROC, (LONG) TopLevelProc);
 #endif
     }
-    oldWrapper = SetParent(child, wmPtr->wrapper);
+    SetParent(child, wmPtr->wrapper);
     if (oldWrapper) {
 	hSmallIcon = (HICON) SendMessage(oldWrapper, WM_GETICON, ICON_SMALL,
 		(LPARAM) NULL);
@@ -1994,11 +2218,17 @@ UpdateWrapper(winPtr)
 
     /*
      * Force an initial transition from withdrawn to the real
-     * initial state.
+     * initial state.  Set the Z order based on previous wrapper
+     * before we set the state.
      */
 
     state = wmPtr->hints.initial_state;
     wmPtr->hints.initial_state = WithdrawnState;
+    if (nextHWND) {
+	SetWindowPos(wmPtr->wrapper, nextHWND, 0, 0, 0, 0,
+		SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOSENDCHANGING
+		|SWP_NOOWNERZORDER);
+    }
     TkpWmSetState(winPtr, state);
 
     if (hSmallIcon != NULL) {
@@ -2055,12 +2285,17 @@ UpdateWrapper(winPtr)
 
     /*
      * If this is the first window created by the application, then
-     * we should activate the initial window.
+     * we should activate the initial window.  Otherwise, if this had
+     * the focus, we need to restore that.
+     * XXX: Rewrapping generates a <FocusOut> and <FocusIn> that would
+     * XXX: best be avoided, if we could safely mask them.
      */
 
     if (tsdPtr->firstWindow) {
 	tsdPtr->firstWindow = 0;
 	SetActiveWindow(wmPtr->wrapper);
+    } else if (focusHWND) {
+	SetFocus(focusHWND);
     }
 }
 
@@ -2244,7 +2479,7 @@ TkWmDeadWindow(winPtr)
 	for (prevPtr = winPtr->dispPtr->firstWmPtr; ;
 	     prevPtr = prevPtr->nextPtr) {
 	    if (prevPtr == NULL) {
-		panic("couldn't unlink window in TkWmDeadWindow");
+		Tcl_Panic("couldn't unlink window in TkWmDeadWindow");
 	    }
 	    if (prevPtr->nextPtr == wmPtr) {
 		prevPtr->nextPtr = wmPtr->nextPtr;
@@ -2272,7 +2507,7 @@ TkWmDeadWindow(winPtr)
 	}
     }
     if (wmPtr->numTransients != 0)
-        panic("numTransients should be 0");
+        Tcl_Panic("numTransients should be 0");
 
     if (wmPtr->title != NULL) {
 	ckfree(wmPtr->title);
@@ -2327,6 +2562,10 @@ TkWmDeadWindow(winPtr)
 		VisibilityChangeMask|StructureNotifyMask,
 		WmWaitVisibilityOrMapProc, (ClientData) winPtr);
 	wmPtr->masterPtr = NULL;
+    }
+    if (wmPtr->crefObj != NULL) {
+	Tcl_DecrRefCount(wmPtr->crefObj);
+	wmPtr->crefObj = NULL;
     }
 
     /*
@@ -2411,7 +2650,8 @@ Tk_WmObjCmd(clientData, interp, objc, objv)
 	"aspect", "attributes", "client", "colormapwindows",
 	"command", "deiconify", "focusmodel", "frame",
 	"geometry", "grid", "group", "iconbitmap",
-	"iconify", "iconmask", "iconname", "iconposition",
+	"iconify", "iconmask", "iconname",
+	"iconphoto", "iconposition",
 	"iconwindow", "maxsize", "minsize", "overrideredirect",
         "positionfrom", "protocol", "resizable", "sizefrom",
         "stackorder", "state", "title", "transient",
@@ -2420,7 +2660,8 @@ Tk_WmObjCmd(clientData, interp, objc, objv)
         WMOPT_ASPECT, WMOPT_ATTRIBUTES, WMOPT_CLIENT, WMOPT_COLORMAPWINDOWS,
 	WMOPT_COMMAND, WMOPT_DEICONIFY, WMOPT_FOCUSMODEL, WMOPT_FRAME,
 	WMOPT_GEOMETRY, WMOPT_GRID, WMOPT_GROUP, WMOPT_ICONBITMAP,
-	WMOPT_ICONIFY, WMOPT_ICONMASK, WMOPT_ICONNAME, WMOPT_ICONPOSITION,
+	WMOPT_ICONIFY, WMOPT_ICONMASK, WMOPT_ICONNAME,
+	WMOPT_ICONPHOTO, WMOPT_ICONPOSITION,
 	WMOPT_ICONWINDOW, WMOPT_MAXSIZE, WMOPT_MINSIZE, WMOPT_OVERRIDEREDIRECT,
         WMOPT_POSITIONFROM, WMOPT_PROTOCOL, WMOPT_RESIZABLE, WMOPT_SIZEFROM,
         WMOPT_STACKORDER, WMOPT_STATE, WMOPT_TITLE, WMOPT_TRANSIENT,
@@ -2511,6 +2752,8 @@ Tk_WmObjCmd(clientData, interp, objc, objv)
 	return WmIconmaskCmd(tkwin, winPtr, interp, objc, objv);
       case WMOPT_ICONNAME:
 	return WmIconnameCmd(tkwin, winPtr, interp, objc, objv);
+      case WMOPT_ICONPHOTO:
+        return WmIconphotoCmd(tkwin, winPtr, interp, objc, objv);
       case WMOPT_ICONPOSITION:
 	return WmIconpositionCmd(tkwin, winPtr, interp, objc, objv);
       case WMOPT_ICONWINDOW:
@@ -2641,13 +2884,15 @@ WmAttributesCmd(tkwin, winPtr, interp, objc, objv)
 {
     register WmInfo *wmPtr = winPtr->wmInfoPtr;
     LONG style, exStyle, styleBit, *stylePtr;
-    char buf[TCL_INTEGER_SPACE], *string;
+    char *string;
     int i, boolean, length;
 
-    if (objc < 3) {
+    if ((objc < 3) || ((objc > 5) && ((objc%2) == 0))) {
         configArgs:
 	Tcl_WrongNumArgs(interp, 2, objv,
 		"window"
+		" ?-alpha ?double??"
+		" ?-transparentcolor ?color??"
 		" ?-disabled ?bool??"
 		" ?-toolwindow ?bool??"
 		" ?-topmost ?bool??");
@@ -2656,12 +2901,27 @@ WmAttributesCmd(tkwin, winPtr, interp, objc, objv)
     exStyle = wmPtr->exStyleConfig;
     style   = wmPtr->styleConfig;
     if (objc == 3) {
-	sprintf(buf, "%d", ((style & WS_DISABLED) != 0));
-	Tcl_AppendResult(interp, "-disabled ", buf, (char *) NULL);
-	sprintf(buf, "%d", ((exStyle & WS_EX_TOOLWINDOW) != 0));
-	Tcl_AppendResult(interp, " -toolwindow ", buf, (char *) NULL);
-	sprintf(buf, "%d", ((exStyle & WS_EX_TOPMOST) != 0));
-	Tcl_AppendResult(interp, " -topmost ", buf, (char *) NULL);
+	Tcl_Obj *objPtr = Tcl_NewObj();
+	Tcl_ListObjAppendElement(NULL, objPtr,
+		Tcl_NewStringObj("-alpha", -1));
+	Tcl_ListObjAppendElement(NULL, objPtr, Tcl_NewDoubleObj(wmPtr->alpha));
+	Tcl_ListObjAppendElement(NULL, objPtr,
+		Tcl_NewStringObj("-transparentcolor", -1));
+	Tcl_ListObjAppendElement(NULL, objPtr,
+		wmPtr->crefObj ? wmPtr->crefObj : Tcl_NewObj());
+	Tcl_ListObjAppendElement(NULL, objPtr,
+		Tcl_NewStringObj("-disabled", -1));
+	Tcl_ListObjAppendElement(NULL, objPtr,
+		Tcl_NewBooleanObj((style & WS_DISABLED)));
+	Tcl_ListObjAppendElement(NULL, objPtr,
+		Tcl_NewStringObj("-toolwindow", -1));
+	Tcl_ListObjAppendElement(NULL, objPtr,
+		Tcl_NewBooleanObj((exStyle & WS_EX_TOOLWINDOW)));
+	Tcl_ListObjAppendElement(NULL, objPtr,
+		Tcl_NewStringObj("-topmost", -1));
+	Tcl_ListObjAppendElement(NULL, objPtr,
+		Tcl_NewBooleanObj((exStyle & WS_EX_TOPMOST)));
+	Tcl_SetObjResult(interp, objPtr);
 	return TCL_OK;
     }
     for (i = 3; i < objc; i += 2) {
@@ -2669,19 +2929,20 @@ WmAttributesCmd(tkwin, winPtr, interp, objc, objv)
 	if ((length < 2) || (string[0] != '-')) {
 	    goto configArgs;
 	}
-	if ((i < objc-1) &&
-		(Tcl_GetBooleanFromObj(interp, objv[i+1], &boolean) != TCL_OK)) {
-	    return TCL_ERROR;
-	}
 	if (strncmp(string, "-disabled", length) == 0) {
 	    stylePtr = &style;
 	    styleBit = WS_DISABLED;
-	} else if ((strncmp(string, "-toolwindow", length) == 0)
-		   && (length >= 3)) {
+	} else if ((strncmp(string, "-alpha", length) == 0)
+		|| ((length > 2) && (strncmp(string, "-transparentcolor",
+					     length) == 0))) {
+	    stylePtr = &exStyle;
+	    styleBit = WS_EX_LAYERED;
+	} else if ((length > 3)
+		   && (strncmp(string, "-toolwindow", length) == 0)) {
 	    stylePtr = &exStyle;
 	    styleBit = WS_EX_TOOLWINDOW;
-	} else if ((strncmp(string, "-topmost", length) == 0)
-		   && (length >= 3)) {
+	} else if ((length > 3)
+		   && (strncmp(string, "-topmost", length) == 0)) {
 	    stylePtr = &exStyle;
 	    styleBit = WS_EX_TOPMOST;
 	    if ((i < objc-1) && (winPtr->flags & TK_EMBEDDED)) {
@@ -2693,20 +2954,127 @@ WmAttributesCmd(tkwin, winPtr, interp, objc, objv)
 	} else {
 	    goto configArgs;
 	}
-	if (i == objc-1) {
-	    Tcl_SetIntObj(Tcl_GetObjResult(interp),
-		    ((*stylePtr & styleBit) != 0));
-	} else if (boolean) {
-	    *stylePtr |= styleBit;
+	if (styleBit == WS_EX_LAYERED) {
+	    if (objc == 4) {
+		if (string[1] == 'a') {		/* -alpha */
+		    Tcl_SetObjResult(interp, Tcl_NewDoubleObj(wmPtr->alpha));
+		} else {			/* -transparentcolor */
+		    Tcl_SetObjResult(interp,
+			    wmPtr->crefObj ? wmPtr->crefObj : Tcl_NewObj());
+		}
+	    } else {
+		if (string[1] == 'a') {		/* -alpha */
+		    double dval;
+
+		    if (Tcl_GetDoubleFromObj(interp, objv[i+1], &dval)
+			    != TCL_OK) {
+			return TCL_ERROR;
+		    }
+
+		    /*
+		     * The user should give (transparent) 0 .. 1.0 (opaque),
+		     * but we ignore the setting of this (it will always be 1)
+		     * in the case that the API is not available.
+		     */
+		    if (dval < 0.0) {
+			dval = 0;
+		    } else if (dval > 1.0) {
+			dval = 1;
+		    }
+		    wmPtr->alpha = dval;
+		} else {			/* -transparentcolor */
+		    char *crefstr = Tcl_GetStringFromObj(objv[i+1], &length);
+
+		    if (length == 0) {
+			/* reset to no transparent color */
+			if (wmPtr->crefObj) {
+			    Tcl_DecrRefCount(wmPtr->crefObj);
+			    wmPtr->crefObj = NULL;
+			}
+		    } else {
+			XColor *cPtr =
+			    Tk_GetColor(interp, tkwin, Tk_GetUid(crefstr));
+			if (cPtr == NULL) {
+			    return TCL_ERROR;
+			}
+
+			if (wmPtr->crefObj) {
+			    Tcl_DecrRefCount(wmPtr->crefObj);
+			}
+			wmPtr->crefObj = objv[i+1];
+			Tcl_IncrRefCount(wmPtr->crefObj);
+			wmPtr->colorref = RGB((BYTE) (cPtr->red >> 8),
+				(BYTE) (cPtr->green >> 8),
+				(BYTE) (cPtr->blue >> 8));
+			Tk_FreeColor(cPtr);
+		    }
+		}
+
+		if ((wmPtr->alpha < 1.0) || (wmPtr->crefObj != NULL)) {
+		    *stylePtr |= styleBit;
+		} else {
+		    *stylePtr &= ~styleBit;
+		}
+		if ((setLayeredWindowAttributesProc != NULL)
+			&& (wmPtr->wrapper != NULL)) {
+		    /*
+		     * Set the window directly regardless of UpdateWrapper.
+		     * The user supplies a double from [0..1], but Windows
+		     * wants an int (transparent) 0..255 (opaque), so do the
+		     * translation.  Add the 0.5 to round the value.
+		     */
+		    setLayeredWindowAttributesProc((HWND) wmPtr->wrapper,
+			    wmPtr->colorref, (BYTE) (wmPtr->alpha * 255 + 0.5),
+			    LWA_ALPHA | (wmPtr->crefObj ? LWA_COLORKEY : 0));
+		}
+	    }
 	} else {
-	    *stylePtr &= ~styleBit;
+	    if ((i < objc-1) &&
+		    (Tcl_GetBooleanFromObj(interp, objv[i+1], &boolean)
+			    != TCL_OK)) {
+		return TCL_ERROR;
+	    }
+	    if (objc == 4) {
+		Tcl_SetIntObj(Tcl_GetObjResult(interp),
+			((*stylePtr & styleBit) != 0));
+	    } else if (boolean) {
+		*stylePtr |= styleBit;
+	    } else {
+		*stylePtr &= ~styleBit;
+	    }
+	}
+	if ((styleBit == WS_EX_TOPMOST) && (wmPtr->wrapper != NULL)) {
+	    /*
+	     * Force the topmost position aspect to ensure that switching
+	     * between (no)topmost reflects properly when rewrapped.
+	     */
+	    SetWindowPos(wmPtr->wrapper,
+		    ((exStyle & WS_EX_TOPMOST) ?
+			    HWND_TOPMOST : HWND_NOTOPMOST), 0, 0, 0, 0,
+		    SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOSENDCHANGING
+		    |SWP_NOOWNERZORDER);
 	}
     }
-    if ((wmPtr->styleConfig != style) ||
-	    (wmPtr->exStyleConfig != exStyle)) {
+    if (wmPtr->styleConfig != style) {
+	/*
+	 * Currently this means only WS_DISABLED changed, which we can
+	 * effect with EnableWindow.
+	 */
 	wmPtr->styleConfig = style;
+	if ((wmPtr->exStyleConfig == exStyle)
+		&& !(wmPtr->flags & WM_NEVER_MAPPED)) {
+	    EnableWindow(wmPtr->wrapper, (style & WS_DISABLED) ? 0 : 1);
+	}
+    }
+    if (wmPtr->exStyleConfig != exStyle) {
+	/*
+	 * UpdateWrapper ensure that all effects are properly handled,
+	 * such as TOOLWINDOW disappearing from the taskbar.
+	 */
 	wmPtr->exStyleConfig = exStyle;
-	UpdateWrapper(winPtr);
+	if (!(wmPtr->flags & WM_NEVER_MAPPED)) {
+	    UpdateWrapper(winPtr);
+	}
     }
     return TCL_OK;
 }
@@ -3266,12 +3634,12 @@ WmGridCmd(tkwin, winPtr, interp, objc, objv)
 	    Tcl_SetResult(interp, "baseHeight can't be < 0", TCL_STATIC);
 	    return TCL_ERROR;
 	}
-	if (widthInc < 0) {
-	    Tcl_SetResult(interp, "widthInc can't be < 0", TCL_STATIC);
+	if (widthInc <= 0) {
+	    Tcl_SetResult(interp, "widthInc can't be <= 0", TCL_STATIC);
 	    return TCL_ERROR;
 	}
-	if (heightInc < 0) {
-	    Tcl_SetResult(interp, "heightInc can't be < 0", TCL_STATIC);
+	if (heightInc <= 0) {
+	    Tcl_SetResult(interp, "heightInc can't be <= 0", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	Tk_SetGrid((Tk_Window) winPtr, reqWidth, reqHeight, widthInc,
@@ -3370,8 +3738,7 @@ WmIconbitmapCmd(tkwin, winPtr, interp, objc, objv)
     Tcl_Obj *CONST objv[];	/* Argument objects. */
 {
     register WmInfo *wmPtr = winPtr->wmInfoPtr;
-    /* If true, then set for all windows. */
-    int isDefault = 0;
+    TkWindow *useWinPtr = winPtr; /* window to apply to (NULL if -default) */
     char *string;
 
     if ((objc < 3) || (objc > 5)) {
@@ -3386,7 +3753,7 @@ WmIconbitmapCmd(tkwin, winPtr, interp, objc, objv)
 		    (char *) NULL);
 	    return TCL_ERROR;
 	}
-	isDefault = 1;
+	useWinPtr = NULL;
     } else if (objc == 3) {
 	/* No arguments were given */
 	if (wmPtr->hints.flags & IconPixmapHint) {
@@ -3404,8 +3771,7 @@ WmIconbitmapCmd(tkwin, winPtr, interp, objc, objv)
 	    wmPtr->hints.icon_pixmap = None;
 	}
 	wmPtr->hints.flags &= ~IconPixmapHint;
-	if (WinSetIcon(interp, NULL, 
-		       (isDefault ? NULL : (Tk_Window) winPtr)) != TCL_OK) {
+	if (WinSetIcon(interp, NULL, (Tk_Window) useWinPtr) != TCL_OK) {
 	    return TCL_ERROR;
 	}
     } else {
@@ -3434,8 +3800,8 @@ WmIconbitmapCmd(tkwin, winPtr, interp, objc, objv)
 	     * Try to set the icon for the window.  If it is a '-default'
 	     * icon, we must pass in NULL
 	     */
-	    if (WinSetIcon(interp, titlebaricon,
-		    (isDefault ? NULL : (Tk_Window) winPtr)) != TCL_OK) {
+	    if (WinSetIcon(interp, titlebaricon, (Tk_Window) useWinPtr)
+		    != TCL_OK) {
 		/* We didn't use the titlebaricon after all */
 		DecrIconRefCount(titlebaricon);
 		titlebaricon = NULL;
@@ -3457,8 +3823,8 @@ WmIconbitmapCmd(tkwin, winPtr, interp, objc, objv)
 	    wmPtr->hints.flags |= IconPixmapHint;
 	    titlebaricon = GetIconFromPixmap(Tk_Display(winPtr), pixmap);
 	    if (titlebaricon != NULL) {
-		if (WinSetIcon(interp, titlebaricon, 
-			(isDefault ? NULL : (Tk_Window) winPtr)) != TCL_OK) {
+		if (WinSetIcon(interp, titlebaricon, (Tk_Window) useWinPtr)
+			!= TCL_OK) {
 		    /* We didn't use the titlebaricon after all */
 		    DecrIconRefCount(titlebaricon);
 		    titlebaricon = NULL;
@@ -3637,6 +4003,110 @@ WmIconnameCmd(tkwin, winPtr, interp, objc, objv)
 /*
  *----------------------------------------------------------------------
  *
+ * WmIconphotoCmd --
+ *
+ *	This procedure is invoked to process the "wm iconphoto"
+ *	Tcl command.
+ *	See the user documentation for details on what it does.
+ *
+ * Results:
+ *	A standard Tcl result.
+ *
+ * Side effects:
+ *	See the user documentation.
+ *
+ *----------------------------------------------------------------------
+ */
+
+static int
+WmIconphotoCmd(tkwin, winPtr, interp, objc, objv)
+    Tk_Window tkwin;		/* Main window of the application. */
+    TkWindow *winPtr;           /* Toplevel to work with */
+    Tcl_Interp *interp;		/* Current interpreter. */
+    int objc;			/* Number of arguments. */
+    Tcl_Obj *CONST objv[];	/* Argument objects. */
+{
+    register WmInfo *wmPtr = winPtr->wmInfoPtr;
+    TkWindow *useWinPtr = winPtr; /* window to apply to (NULL if -default) */
+    Tk_PhotoHandle photo;
+    Tk_PhotoImageBlock block;
+    int i, size, width, height, startObj = 3;
+    BlockOfIconImagesPtr lpIR;
+    WinIconPtr titlebaricon = NULL;
+    HICON hIcon;
+
+    if (objc < 4) {
+	Tcl_WrongNumArgs(interp, 2, objv,
+		"window ?-default? image1 ?image2 ...?");
+	return TCL_ERROR;
+    }
+    /*
+     * Iterate over all images to validate their existence.
+     */
+    if (strcmp(Tcl_GetString(objv[3]), "-default") == 0) {
+	useWinPtr = NULL;
+	startObj = 4;
+	if (objc == 4) {
+	    Tcl_WrongNumArgs(interp, 2, objv,
+		    "window ?-default? image1 ?image2 ...?");
+	    return TCL_ERROR;
+	}
+    }
+    for (i = startObj; i < objc; i++) {
+	photo = Tk_FindPhoto(interp, Tcl_GetString(objv[i]));
+	if (photo == NULL) {
+	    Tcl_AppendResult(interp, "can't use \"", Tcl_GetString(objv[i]),
+		    "\" as iconphoto: not a photo image", (char *) NULL);
+	    return TCL_ERROR;
+	}
+    }
+    /* We have calculated the size of the data. Try to allocate the needed
+     * memory space. */
+    size = sizeof(BlockOfIconImages)
+	+ (sizeof(ICONIMAGE) * (objc - (startObj+1)));
+    lpIR = (BlockOfIconImagesPtr) Tcl_AttemptAlloc(size);
+    if (lpIR == NULL) {
+	return TCL_ERROR;
+    }
+    ZeroMemory(lpIR, size);
+
+    lpIR->nNumImages = objc - startObj;
+    for (i = startObj; i < objc; i++) {
+	photo = Tk_FindPhoto(interp, Tcl_GetString(objv[i]));
+	Tk_PhotoGetSize(photo, &width, &height);
+	Tk_PhotoGetImage(photo, &block);
+
+	/*
+	 * Encode the image data into an HICON.
+	 */
+	hIcon = CreateIcon(Tk_GetHINSTANCE(), width, height, 1, 32,
+		NULL, (BYTE *) block.pixelPtr);
+	if (hIcon == NULL) {
+	    /* XXX should free up created icons */
+	    Tcl_Free((char *) lpIR);
+	    Tcl_AppendResult(interp, "failed to create icon for \"",
+		    Tcl_GetString(objv[i]), "\"", (char *) NULL);
+	    return TCL_ERROR;
+	}
+	lpIR->IconImages[i-startObj].Width  = width;
+	lpIR->IconImages[i-startObj].Height = height;
+	lpIR->IconImages[i-startObj].Colors = 4;
+	lpIR->IconImages[i-startObj].hIcon  = hIcon;
+    }
+    titlebaricon = (WinIconPtr) ckalloc(sizeof(WinIconInstance));
+    titlebaricon->iconBlock = lpIR;
+    titlebaricon->refCount = 1;
+    if (WinSetIcon(interp, titlebaricon, (Tk_Window) useWinPtr) != TCL_OK) {
+	/* We didn't use the titlebaricon after all */
+	DecrIconRefCount(titlebaricon);
+	return TCL_ERROR;
+    }
+    return TCL_OK;
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
  * WmIconpositionCmd --
  *
  *	This procedure is invoked to process the "wm iconposition"
@@ -3792,13 +4262,8 @@ WmIconwindowCmd(tkwin, winPtr, interp, objc, objv)
 	wmPtr->icon = tkwin2;
 	wmPtr2->iconFor = (Tk_Window) winPtr;
 	if (!(wmPtr2->flags & WM_NEVER_MAPPED)) {
-	    if (XWithdrawWindow(Tk_Display(tkwin2), Tk_WindowId(tkwin2),
-		    Tk_ScreenNumber(tkwin2)) == 0) {
-		Tcl_SetResult(interp,
-			"couldn't send withdraw message to window manager",
-			TCL_STATIC);
-		return TCL_ERROR;
-	    }
+	    wmPtr2->flags |= WM_WITHDRAWN;
+	    TkpWmSetState(((TkWindow *) tkwin2), WithdrawnState);
 	}
     }
     return TCL_OK;
@@ -4284,7 +4749,7 @@ WmStackorderCmd(tkwin, winPtr, interp, objc, objv)
     if (objc == 3) {
 	windows = TkWmStackorderToplevel(winPtr);
 	if (windows == NULL) {
-	    panic("TkWmStackorderToplevel failed");
+	    Tcl_Panic("TkWmStackorderToplevel failed");
 	} else {
 	    for (window_ptr = windows; *window_ptr ; window_ptr++) {
 		Tcl_AppendElement(interp, (*window_ptr)->pathName);
@@ -4339,9 +4804,9 @@ WmStackorderCmd(tkwin, winPtr, interp, objc, objv)
 		    index2 = (window_ptr - windows);
 	    }
 	    if (index1 == -1)
-		panic("winPtr window not found");
+		Tcl_Panic("winPtr window not found");
 	    if (index2 == -1)
-		panic("winPtr2 window not found");
+		Tcl_Panic("winPtr2 window not found");
 
 	    ckfree((char *) windows);
 	}
@@ -4442,8 +4907,10 @@ WmStateCmd(tkwin, winPtr, interp, objc, objv)
 	} else if (index == OPT_WITHDRAWN) {
 	    wmPtr->flags |= WM_WITHDRAWN;
 	    TkpWmSetState(winPtr, WithdrawnState);
-	} else { /* OPT_ZOOMED */
+	} else if (index == OPT_ZOOMED) {
 	    TkpWmSetState(winPtr, ZoomState);
+	} else {
+	    Tcl_Panic("wm state not matched");
 	}
     } else {
 	if (wmPtr->iconFor != NULL) {
@@ -4777,6 +5244,17 @@ Tk_SetGrid(tkwin, reqWidth, reqHeight, widthInc, heightInc)
     register WmInfo *wmPtr;
 
     /*
+     * Ensure widthInc and heightInc are greater than 0
+     */
+    if (widthInc <= 0) {
+	widthInc = 1;
+    }
+    if (heightInc <= 0) {
+	heightInc = 1;
+    }
+
+
+    /*
      * Find the top-level window for tkwin, plus the window manager
      * information.
      */
@@ -5018,6 +5496,7 @@ UpdateGeometryInfo(clientData)
 {
     int x, y;			/* Position of border on desktop. */
     int width, height;		/* Size of client area. */
+    int min, max;
     RECT rect;
     register TkWindow *winPtr = (TkWindow *) clientData;
     register WmInfo *wmPtr = winPtr->wmInfoPtr;
@@ -5031,7 +5510,8 @@ UpdateGeometryInfo(clientData)
      * state of the window changes.
      */
 
-    if (IsIconic(wmPtr->wrapper) || IsZoomed(wmPtr->wrapper)) {
+    if (wmPtr->wrapper && (IsIconic(wmPtr->wrapper) ||
+	    IsZoomed(wmPtr->wrapper))) {
 	return;
     }
 
@@ -5056,8 +5536,9 @@ UpdateGeometryInfo(clientData)
      * requested depends on (a) the size requested internally
      * by the window's widgets, (b) the size requested by the
      * user in a "wm geometry" command or via wm-based interactive
-     * resizing (if any), and (c) whether or not the window is
-     * gridded.  Don't permit sizes <= 0 because this upsets
+     * resizing (if any), (c) whether or not the window is
+     * gridded, and (d) the current min or max size for
+     * the toplevel. Don't permit sizes <= 0 because this upsets
      * the X server.
      */
 
@@ -5072,6 +5553,28 @@ UpdateGeometryInfo(clientData)
     if (width <= 0) {
 	width = 1;
     }
+    /*
+     * Account for window max/min width
+     */
+    if (wmPtr->gridWin != NULL) {
+	min = winPtr->reqWidth
+		+ (wmPtr->minWidth - wmPtr->reqGridWidth)*wmPtr->widthInc;
+	if (wmPtr->maxWidth > 0) {
+	    max = winPtr->reqWidth
+		+ (wmPtr->maxWidth - wmPtr->reqGridWidth)*wmPtr->widthInc;
+	} else {
+	    max = 0;
+	}
+    } else {
+	min = wmPtr->minWidth;
+	max = wmPtr->maxWidth;
+    }
+    if (width < min) {
+	width = min;
+    } else if ((max > 0) && (width > max)) {
+	width = max;
+    }
+
     if (wmPtr->height == -1) {
 	height = winPtr->reqHeight;
     } else if (wmPtr->gridWin != NULL) {
@@ -5082,6 +5585,27 @@ UpdateGeometryInfo(clientData)
     }
     if (height <= 0) {
 	height = 1;
+    }
+    /*
+     * Account for window max/min height
+     */
+    if (wmPtr->gridWin != NULL) {
+	min = winPtr->reqHeight
+		+ (wmPtr->minHeight - wmPtr->reqGridHeight)*wmPtr->heightInc;
+	if (wmPtr->maxHeight > 0) {
+	    max = winPtr->reqHeight
+		+ (wmPtr->maxHeight - wmPtr->reqGridHeight)*wmPtr->heightInc;
+	} else {
+	    max = 0;
+	}
+    } else {
+	min = wmPtr->minHeight;
+	max = wmPtr->maxHeight;
+    }
+    if (height < min) {
+	height = min;
+    } else if ((max > 0) && (height > max)) {
+	height = max;
     }
 
     /*
@@ -5114,10 +5638,13 @@ UpdateGeometryInfo(clientData)
      */
 
     if (winPtr->flags & TK_BOTH_HALVES) {
+	TkWindow *childPtr = TkpGetOtherWindow(winPtr);
+
 	wmPtr->x = wmPtr->y = 0;
 	wmPtr->flags &= ~(WM_NEGATIVE_X|WM_NEGATIVE_Y);
-	Tk_GeometryRequest((Tk_Window) TkpGetOtherWindow(winPtr),
-		width, height);
+	if (childPtr != NULL) {
+	    Tk_GeometryRequest((Tk_Window) childPtr, width, height);
+	}
 	return;
     }
 
@@ -5501,6 +6028,13 @@ Tk_GetVRootGeometry(tkwin, xPtr, yPtr, widthPtr, heightPtr)
 {
     TkWindow *winPtr = (TkWindow *) tkwin;
 
+    /*
+     * XXX: This is not correct for multiple monitors.  There may be many
+     * changes required to get this right, and it may effect existing
+     * applications that don't consider possible <0 vroot.  See
+     * http://msdn.microsoft.com/library/en-us/gdi/monitor_3lrn.asp
+     * for more info.
+     */
     *xPtr = 0;
     *yPtr = 0;
     *widthPtr = DisplayWidth(winPtr->display, winPtr->screenNum);
@@ -5538,7 +6072,7 @@ Tk_MoveToplevelWindow(tkwin, x, y)
     register WmInfo *wmPtr = winPtr->wmInfoPtr;
 
     if (!(winPtr->flags & TK_TOP_LEVEL)) {
-	panic("Tk_MoveToplevelWindow called with non-toplevel window");
+	Tcl_Panic("Tk_MoveToplevelWindow called with non-toplevel window");
     }
     wmPtr->x = x;
     wmPtr->y = y;
@@ -5669,7 +6203,7 @@ BOOL CALLBACK TkWmStackorderToplevelEnumProc(hwnd, lParam)
         childWinPtr = (TkWindow *) Tcl_GetHashValue(hPtr);
         /* Double check that same HWND does not get passed twice */
         if (childWinPtr == NULL) {
-            panic("duplicate HWND in TkWmStackorderToplevelEnumProc");
+            Tcl_Panic("duplicate HWND in TkWmStackorderToplevelEnumProc");
         } else {
             Tcl_SetHashValue(hPtr, NULL);
         }
@@ -5698,8 +6232,9 @@ BOOL CALLBACK TkWmStackorderToplevelEnumProc(hwnd, lParam)
  */
 
 static void
-TkWmStackorderToplevelWrapperMap(winPtr, table)
+TkWmStackorderToplevelWrapperMap(winPtr, display, table)
     TkWindow *winPtr;				/* TkWindow to recurse on */
+    Display *display;                          /* X display of parent window */
     Tcl_HashTable *table;		/* Table to maps HWND to TkWindow */
 {
     TkWindow *childPtr;
@@ -5708,7 +6243,7 @@ TkWmStackorderToplevelWrapperMap(winPtr, table)
     int newEntry;
 
     if (Tk_IsMapped(winPtr) && Tk_IsTopLevel(winPtr) &&
-            !Tk_IsEmbedded(winPtr)) {
+            !Tk_IsEmbedded(winPtr) && (winPtr->display == display)) {
         wrapper = TkWinGetWrapperWindow((Tk_Window) winPtr);
 
         /*fprintf(stderr, "Mapped HWND %d to %x (%s)\n", wrapper,
@@ -5721,7 +6256,7 @@ TkWmStackorderToplevelWrapperMap(winPtr, table)
 
     for (childPtr = winPtr->childList; childPtr != NULL;
             childPtr = childPtr->nextPtr) {
-        TkWmStackorderToplevelWrapperMap(childPtr, table);
+        TkWmStackorderToplevelWrapperMap(childPtr, display, table);
     }
 }
 /*
@@ -5756,7 +6291,7 @@ TkWmStackorderToplevel(parentPtr)
      */
 
     Tcl_InitHashTable(&table, TCL_ONE_WORD_KEYS);
-    TkWmStackorderToplevelWrapperMap(parentPtr, &table);
+    TkWmStackorderToplevelWrapperMap(parentPtr, parentPtr->display, &table);
 
     windows = (TkWindow **) ckalloc((table.numEntries+1)
         * sizeof(TkWindow *));
@@ -5793,7 +6328,7 @@ TkWmStackorderToplevel(parentPtr)
         windows = NULL;
     } else {
         if (pair.window_ptr != (windows-1))
-            panic("num matched toplevel windows does not equal num children");
+            Tcl_Panic("num matched toplevel windows does not equal num children");
     }
 
     done:
@@ -6359,7 +6894,7 @@ InstallColormaps(hwnd, message, isForemost)
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
-    if (winPtr == NULL) {
+    if (winPtr == NULL || (winPtr->flags & TK_ALREADY_DEAD) ) {
 	return 0;
     }
 
@@ -6523,6 +7058,62 @@ InvalidateSubTree(winPtr, colormap)
 
 	if (!Tk_TopWinHierarchy(childPtr) && Tk_IsMapped(childPtr)) {
 	    InvalidateSubTree(childPtr, colormap);
+	}
+    }
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * InvalidateSubTreeDepth --
+ *
+ *	This function recursively updates depth info for a window and
+ *	all of its children that belong to the same toplevel.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	Sets the depth of each window to that of the display.
+ *
+ *----------------------------------------------------------------------
+ */
+
+static void
+InvalidateSubTreeDepth(winPtr)
+    TkWindow *winPtr;
+{
+    Display *display = Tk_Display(winPtr);
+    int screenNum = Tk_ScreenNumber(winPtr);
+    TkWindow *childPtr;
+
+    winPtr->depth = DefaultDepth(display, screenNum);
+
+#if 0
+    /*
+     * XXX: What other elements may require changes?  Changing just
+     * the depth works for standard windows and 16/24/32-bpp changes.
+     * I suspect 8-bit (palettized) displays may require colormap and/or
+     * visual changes as well.
+     */
+
+    if (winPtr->window) {
+	InvalidateRect(Tk_GetHWND(winPtr->window), NULL, FALSE);
+    }
+    winPtr->visual = DefaultVisual(display, screenNum);
+    winPtr->atts.colormap = DefaultColormap(display, screenNum);
+    winPtr->dirtyAtts |= CWColormap;
+#endif
+
+    for (childPtr = winPtr->childList; childPtr != NULL;
+	 childPtr = childPtr->nextPtr) {
+	/*
+	 * We can stop the descent when we hit a toplevel window, as it
+	 * should get its own message.
+	 */
+
+	if (!Tk_TopWinHierarchy(childPtr)) {
+	    InvalidateSubTreeDepth(childPtr);
 	}
     }
 }
@@ -6817,6 +7408,48 @@ WmProc(hwnd, message, wParam, lParam)
 	    result = 0;
 	    goto done;
 
+	case WM_DISPLAYCHANGE:
+	    /* display and/or color resolution changed */
+	    winPtr = GetTopLevel(hwnd);
+	    if (winPtr) {
+		Screen *screen = Tk_Screen(winPtr);
+		if (screen->root_depth != (int) wParam) {
+		    /*
+		     * Color resolution changed, so do extensive rebuild of
+		     * display parameters.  This will affect the display for
+		     * all Tk windows.  We will receive this event for each
+		     * toplevel, but this check makes us update only once, for
+		     * the first toplevel that receives the message.
+		     */
+		    TkWinDisplayChanged(Tk_Display(winPtr));
+		} else {
+		    HDC dc = GetDC(NULL);
+		    screen->width   = LOWORD(lParam); /* horizontal res */
+		    screen->height  = HIWORD(lParam); /* vertical res */
+		    screen->mwidth  = MulDiv(screen->width, 254,
+			    GetDeviceCaps(dc, LOGPIXELSX) * 10);
+		    screen->mheight = MulDiv(screen->height, 254,
+			    GetDeviceCaps(dc, LOGPIXELSY) * 10);
+		    ReleaseDC(NULL, dc);
+		}
+		if (Tk_Depth(winPtr) != (int) wParam) {
+		    /*
+		     * Defer the window depth check to here so that each
+		     * toplevel will properly update depth info.
+		     */
+		    InvalidateSubTreeDepth(winPtr);
+		}
+	    }
+	    result = 0;
+	    goto done;
+
+	case WM_SYSCOLORCHANGE:
+	    /*
+	     * XXX: Called when system color changes.  We need to
+	     * update any widgets that use a system color.
+	     */
+	    break;
+
 	case WM_PALETTECHANGED:
 	    result = InstallColormaps(hwnd, WM_PALETTECHANGED,
 		    hwnd == (HWND)wParam);
@@ -6877,6 +7510,18 @@ WmProc(hwnd, message, wParam, lParam)
 	    }
 	    result = MA_NOACTIVATE;
 	    goto done;
+	}
+
+	case WM_QUERYENDSESSION: {
+	    XEvent event;
+
+	    winPtr = GetTopLevel(hwnd);
+	    event.xclient.message_type =
+		Tk_InternAtom((Tk_Window) winPtr, "WM_PROTOCOLS");
+	    event.xclient.data.l[0] =
+		Tk_InternAtom((Tk_Window) winPtr, "WM_SAVE_YOURSELF");
+	    TkWmProtocolEventProc(winPtr, &event);
+	    break;
 	}
 
 	default:
@@ -7065,11 +7710,16 @@ ActivateWindow(
     winPtr = ((ActivateEvent *) evPtr)->winPtr;
 
     /*
-     * Ensure that the window is not excluded by a grab.
+     * If the window is excluded by a grab, call SetFocus on the
+     * grabbed window instead. [Bug 220908]
      */
 
-    if (winPtr && (TkGrabState(winPtr) != TK_GRAB_EXCLUDED)) {
-	SetFocus(Tk_GetHWND(winPtr->window));
+    if (winPtr) {
+	if (TkGrabState(winPtr) != TK_GRAB_EXCLUDED) {
+	    SetFocus(Tk_GetHWND(winPtr->window));
+	} else {
+	    SetFocus(Tk_GetHWND(winPtr->dispPtr->grabWinPtr->window));
+	}
     }
 
     return 1;

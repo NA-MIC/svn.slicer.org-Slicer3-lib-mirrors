@@ -1,7 +1,3 @@
-/ChangeLog/1.758.2.112/Mon Mar  1 18:24:28 2004//Tcore-8-4-6
-/README/1.39.2.6/Fri Feb 13 01:44:02 2004//Tcore-8-4-6
-/changes/1.64.2.10/Mon Mar  1 19:26:12 2004//Tcore-8-4-6
-/license.terms/1.1/Wed Apr  1 09:37:39 1998//Tcore-8-4-6
 D/bitmaps////
 D/compat////
 D/doc////
@@ -13,3 +9,7 @@ D/tests////
 D/unix////
 D/win////
 D/xlib////
+/ChangeLog/1.758.2.466/Fri Jul 27 22:20:15 2007//Tcore-8-4-15
+/README/1.39.2.15/Fri Jul 27 22:20:15 2007//Tcore-8-4-15
+/changes/1.64.2.47/Fri Jul 27 22:20:15 2007//Tcore-8-4-15
+/license.terms/1.1/Fri Jul 27 21:10:35 2007//Tcore-8-4-15

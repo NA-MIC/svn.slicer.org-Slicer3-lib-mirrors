@@ -12,7 +12,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkMenu.c,v 1.20.2.2 2003/12/03 04:57:37 hobbs Exp $
+ * RCS: @(#) $Id: tkMenu.c,v 1.20.2.7 2006/05/25 23:51:37 hobbs Exp $
  */
 
 /*
@@ -119,7 +119,7 @@ static char *compoundStrings[] = {
     "bottom", "center", "left", "none", "right", "top", (char *) NULL
 };
 
-Tk_OptionSpec tkBasicMenuEntryConfigSpecs[] = {
+static Tk_OptionSpec tkBasicMenuEntryConfigSpecs[] = {
     {TK_OPTION_BORDER, "-activebackground", (char *) NULL, (char *) NULL,
 	DEF_MENU_ENTRY_ACTIVE_BG, Tk_Offset(TkMenuEntry, activeBorderPtr), -1, 
 	TK_OPTION_NULL_OK},
@@ -168,14 +168,14 @@ Tk_OptionSpec tkBasicMenuEntryConfigSpecs[] = {
     {TK_OPTION_END}
 };
 
-Tk_OptionSpec tkSeparatorEntryConfigSpecs[] = {
+static Tk_OptionSpec tkSeparatorEntryConfigSpecs[] = {
     {TK_OPTION_BORDER, "-background", (char *) NULL, (char *) NULL,
 	DEF_MENU_ENTRY_BG,
 	Tk_Offset(TkMenuEntry, borderPtr), -1, TK_OPTION_NULL_OK},
     {TK_OPTION_END}
 };
 
-Tk_OptionSpec tkCheckButtonEntryConfigSpecs[] = {
+static Tk_OptionSpec tkCheckButtonEntryConfigSpecs[] = {
     {TK_OPTION_BOOLEAN, "-indicatoron", (char *) NULL, (char *) NULL,
 	DEF_MENU_ENTRY_INDICATOR,
 	-1, Tk_Offset(TkMenuEntry, indicatorOn)},
@@ -198,7 +198,7 @@ Tk_OptionSpec tkCheckButtonEntryConfigSpecs[] = {
 	(char *) NULL, 0, -1, 0, (ClientData) tkBasicMenuEntryConfigSpecs}
 };
 
-Tk_OptionSpec tkRadioButtonEntryConfigSpecs[] = {
+static Tk_OptionSpec tkRadioButtonEntryConfigSpecs[] = {
     {TK_OPTION_BOOLEAN, "-indicatoron", (char *) NULL, (char *) NULL,
 	DEF_MENU_ENTRY_INDICATOR,
 	-1, Tk_Offset(TkMenuEntry, indicatorOn)},
@@ -218,7 +218,7 @@ Tk_OptionSpec tkRadioButtonEntryConfigSpecs[] = {
 	(char *) NULL, 0, -1, 0, (ClientData) tkBasicMenuEntryConfigSpecs}
 };
 
-Tk_OptionSpec tkCascadeEntryConfigSpecs[] = {
+static Tk_OptionSpec tkCascadeEntryConfigSpecs[] = {
     {TK_OPTION_STRING, "-menu", (char *) NULL, (char *) NULL,
 	DEF_MENU_ENTRY_MENU,
 	Tk_Offset(TkMenuEntry, namePtr), -1, TK_OPTION_NULL_OK},
@@ -226,7 +226,7 @@ Tk_OptionSpec tkCascadeEntryConfigSpecs[] = {
 	(char *) NULL, 0, -1, 0, (ClientData) tkBasicMenuEntryConfigSpecs}
 };
 
-Tk_OptionSpec tkTearoffEntryConfigSpecs[] = {
+static Tk_OptionSpec tkTearoffEntryConfigSpecs[] = {
     {TK_OPTION_BORDER, "-background", (char *) NULL, (char *) NULL,
 	DEF_MENU_ENTRY_BG,
 	Tk_Offset(TkMenuEntry, borderPtr), -1, TK_OPTION_NULL_OK},
@@ -248,7 +248,7 @@ static Tk_OptionSpec *specsArray[] = {
 static CONST char *menuTypeStrings[] = {"normal", "tearoff", "menubar",
 	(char *) NULL};
 
-Tk_OptionSpec tkMenuConfigSpecs[] = {
+static Tk_OptionSpec tkMenuConfigSpecs[] = {
     {TK_OPTION_BORDER, "-activebackground", "activeBackground", 
 	"Foreground", DEF_MENU_ACTIVE_BG_COLOR, 
 	Tk_Offset(TkMenu, activeBorderPtr), -1, 0,
@@ -370,7 +370,7 @@ static void		MenuWorldChanged _ANSI_ARGS_((
 static int		PostProcessEntry _ANSI_ARGS_((TkMenuEntry *mePtr));
 static void		RecursivelyDeleteMenu _ANSI_ARGS_((TkMenu *menuPtr));
 static void		UnhookCascadeEntry _ANSI_ARGS_((TkMenuEntry *mePtr));
-static void		TkMenuCleanup _ANSI_ARGS_((ClientData unused));
+static Tcl_ExitProc	TkMenuCleanup;
 
 /*
  * The structure below is a list of procs that respond to certain window
@@ -502,50 +502,28 @@ MenuCmd(clientData, interp, objc, objv)
      */
 
     menuPtr = (TkMenu *) ckalloc(sizeof(TkMenu));
+    memset(menuPtr, 0, sizeof(TkMenu));
     menuPtr->tkwin = new;
     menuPtr->display = Tk_Display(new);
     menuPtr->interp = interp;
     menuPtr->widgetCmd = Tcl_CreateObjCommand(interp,
 	    Tk_PathName(menuPtr->tkwin), MenuWidgetObjCmd,
 	    (ClientData) menuPtr, MenuCmdDeletedProc);
-    menuPtr->entries = NULL;
-    menuPtr->numEntries = 0;
     menuPtr->active = -1;
-    menuPtr->borderPtr = NULL;
-    menuPtr->borderWidthPtr = NULL;
-    menuPtr->reliefPtr = NULL;
-    menuPtr->activeBorderPtr = NULL;
-    menuPtr->activeBorderWidthPtr = NULL;
-    menuPtr->fontPtr = NULL;
-    menuPtr->fgPtr = NULL;
-    menuPtr->disabledFgPtr = NULL;
-    menuPtr->activeFgPtr = NULL;
-    menuPtr->indicatorFgPtr = NULL;
-    menuPtr->tearoff = 0;
-    menuPtr->tearoffCommandPtr = NULL;
     menuPtr->cursorPtr = None;
-    menuPtr->takeFocusPtr = NULL;
-    menuPtr->postCommandPtr = NULL;
-    menuPtr->postCommandGeneration = 0;
-    menuPtr->postedCascade = NULL;
-    menuPtr->nextInstancePtr = NULL;
     menuPtr->masterMenuPtr = menuPtr;
     menuPtr->menuType = UNKNOWN_TYPE;
-    menuPtr->menuFlags = 0;
-    menuPtr->parentTopLevelPtr = NULL;
-    menuPtr->menuTypePtr = NULL;
-    menuPtr->titlePtr = NULL;
-    menuPtr->errorStructPtr = NULL;
     menuPtr->optionTablesPtr = optionTablesPtr;
     TkMenuInitializeDrawingFields(menuPtr);
 
     Tk_SetClass(menuPtr->tkwin, "Menu");
     Tk_SetClassProcs(menuPtr->tkwin, &menuClass, (ClientData) menuPtr);
+    Tk_CreateEventHandler(new, ExposureMask|StructureNotifyMask|ActivateMask,
+	    TkMenuEventProc, (ClientData) menuPtr);
     if (Tk_InitOptions(interp, (char *) menuPtr,
 	    menuPtr->optionTablesPtr->menuOptionTable, menuPtr->tkwin)
 	    != TCL_OK) {
     	Tk_DestroyWindow(menuPtr->tkwin);
-    	ckfree((char *) menuPtr);
     	return TCL_ERROR;
     }
 
@@ -556,12 +534,9 @@ MenuCmd(clientData, interp, objc, objv)
     menuPtr->menuRefPtr = menuRefPtr;
     if (TCL_OK != TkpNewMenu(menuPtr)) {
     	Tk_DestroyWindow(menuPtr->tkwin);
-    	ckfree((char *) menuPtr);
     	return TCL_ERROR;
     }
 
-    Tk_CreateEventHandler(new, ExposureMask|StructureNotifyMask|ActivateMask,
-	    TkMenuEventProc, (ClientData) menuPtr);
     if (ConfigureMenu(interp, menuPtr, objc - 2, objv + 2) != TCL_OK) {
     	Tk_DestroyWindow(menuPtr->tkwin);
     	return TCL_ERROR;
@@ -583,7 +558,7 @@ MenuCmd(clientData, interp, objc, objv)
      * to be the cascade entry for the clone of .m1. This is special case
      * #1 listed in the introductory comment.
      */
-    
+
     if (menuRefPtr->parentEntryPtr != NULL) {
         TkMenuEntry *cascadeListPtr = menuRefPtr->parentEntryPtr;
         TkMenuEntry *nextCascadePtr;
@@ -593,7 +568,7 @@ MenuCmd(clientData, interp, objc, objv)
         while (cascadeListPtr != NULL) {
 
 	    nextCascadePtr = cascadeListPtr->nextCascadePtr;
-     
+
      	    /*
      	     * If we have a new master menu, and an existing cloned menu
 	     * points to this menu in a cascade entry, we have to clone
@@ -602,7 +577,7 @@ MenuCmd(clientData, interp, objc, objv)
 	     * will hook up the platform-specific cascade linkages now
 	     * that the menu we are creating exists.
      	     */
-     	     
+
      	    if ((menuPtr->masterMenuPtr != menuPtr)
      	    	    || ((menuPtr->masterMenuPtr == menuPtr)
      	    	    && ((cascadeListPtr->menuPtr->masterMenuPtr
@@ -625,7 +600,7 @@ MenuCmd(clientData, interp, objc, objv)
      	    		windowNamePtr, menuPtr);
 		Tcl_IncrRefCount(newMenuName);
             	CloneMenu(menuPtr, newMenuName, normalPtr);
-    	            
+
                 /*
                  * Now we can set the new menu instance to be the cascade entry
                  * of the parent's instance.
@@ -643,25 +618,25 @@ MenuCmd(clientData, interp, objc, objv)
             cascadeListPtr = nextCascadePtr;
         }
     }
-    
+
     /*
      * If there already exist toplevel widgets that refer to this menu,
      * find them and notify them so that they can reconfigure their
      * geometry to reflect the menu.
      */
- 
+
     if (menuRefPtr->topLevelListPtr != NULL) {
     	TkMenuTopLevelList *topLevelListPtr = menuRefPtr->topLevelListPtr;
     	TkMenuTopLevelList *nextPtr;
     	Tk_Window listtkwin;
    	while (topLevelListPtr != NULL) {
-    	
+
     	    /*
     	     * Need to get the next pointer first. TkSetWindowMenuBar
     	     * changes the list, so that the next pointer is different
     	     * after calling it.
     	     */
-    	
+
     	    nextPtr = topLevelListPtr->nextPtr;
     	    listtkwin = topLevelListPtr->tkwin;
     	    TkSetWindowMenuBar(menuPtr->interp, listtkwin, 
@@ -1186,6 +1161,9 @@ DestroyMenuInstance(menuPtr)
      */
 
     TkpDestroyMenu(menuPtr);
+    if (menuPtr->menuRefPtr == NULL) {
+	return;
+    }
     cascadePtr = menuPtr->menuRefPtr->parentEntryPtr;
     menuPtr->menuRefPtr->menuPtr = NULL;
     if (TkFreeMenuReferences(menuPtr->menuRefPtr)) {
@@ -1384,7 +1362,7 @@ UnhookCascadeEntry(mePtr)
      * Singularly linked list deletion. The two special cases are
      * 1. one element; 2. The first element is the one we want.
      */
- 
+
     if (cascadeEntryPtr == mePtr) {
     	if (cascadeEntryPtr->nextCascadePtr == NULL) {
 
@@ -1393,7 +1371,7 @@ UnhookCascadeEntry(mePtr)
 	     * menu, so we need to clear out the list pointer in the
 	     * cascade itself.
 	     */
-	
+
 	    menuRefPtr->parentEntryPtr = NULL;
 	    /* 
 	     * The original field is set to zero below, after it is
@@ -1448,7 +1426,6 @@ DestroyMenuEntry(memPtr)
     TkMenu *menuPtr = mePtr->menuPtr;
 
     if (menuPtr->postedCascade == mePtr) {
-	
     	/*
 	 * Ignore errors while unposting the menu, since it's possible
 	 * that the menu has already been deleted and the unpost will
@@ -1537,20 +1514,21 @@ DestroyMenuEntry(memPtr)
  *
  *---------------------------------------------------------------------------
  */
- 
+
 static void
 MenuWorldChanged(instanceData)
     ClientData instanceData;	/* Information about widget. */
 {
     TkMenu *menuPtr = (TkMenu *) instanceData;
     int i;
-    
+
     TkMenuConfigureDrawOptions(menuPtr);
     for (i = 0; i < menuPtr->numEntries; i++) {
     	TkMenuConfigureEntryDrawOptions(menuPtr->entries[i],
 		menuPtr->entries[i]->index);
-	TkpConfigureMenuEntry(menuPtr->entries[i]);	
+	TkpConfigureMenuEntry(menuPtr->entries[i]);
     }
+    TkEventuallyRecomputeMenu(menuPtr);
 }
 
 /*
@@ -3511,7 +3489,7 @@ DeleteMenuCloneEntries(menuPtr, first, last)
 {
 
     TkMenu *menuListPtr;
-    int numDeleted, i;
+    int numDeleted, i, j;
 
     numDeleted = last + 1 - first;
     for (menuListPtr = menuPtr->masterMenuPtr; menuListPtr != NULL;
@@ -3521,9 +3499,10 @@ DeleteMenuCloneEntries(menuPtr, first, last)
 		    DestroyMenuEntry);
 	}
 	for (i = last + 1; i < menuListPtr->numEntries; i++) {
-	    menuListPtr->entries[i - numDeleted] = menuListPtr->entries[i];
-	    menuListPtr->entries[i - numDeleted]->index = i - numDeleted;
-	}
+	    j = i - numDeleted;
+	    menuListPtr->entries[j] = menuListPtr->entries[i];
+	    menuListPtr->entries[j]->index = j;
+	  }
 	menuListPtr->numEntries -= numDeleted;
 	if (menuListPtr->numEntries == 0) {
 	    ckfree((char *) menuListPtr->entries);
@@ -3594,7 +3573,7 @@ TkMenuInit()
 	/* 
 	 * Make sure we cleanup on finalize. 
 	 */ 
-	Tcl_CreateExitHandler((Tcl_ExitProc *) TkMenuCleanup, NULL); 
+	TkCreateExitHandler(TkMenuCleanup, NULL); 
 	Tcl_MutexUnlock(&menuMutex);
     }
     if (!tsdPtr->menusInitialized) {

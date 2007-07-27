@@ -3,7 +3,7 @@
 # This file defines the default bindings for Tk panedwindow widgets and
 # provides procedures that help in implementing those bindings.
 #
-# RCS: @(#) $Id: panedwindow.tcl,v 1.6.2.1 2003/07/19 01:22:15 hobbs Exp $
+# RCS: @(#) $Id: panedwindow.tcl,v 1.6.2.4 2006/01/25 18:21:41 dgp Exp $
 #
 
 bind Panedwindow <Button-1> { ::tk::panedwindow::MarkSash %W %x %y 1 }
@@ -35,15 +35,18 @@ namespace eval ::tk::panedwindow {}
 #   None
 #
 proc ::tk::panedwindow::MarkSash {w x y proxy} {
+    if {[$w cget -opaqueresize]} { set proxy 0 }
     set what [$w identify $x $y]
     if { [llength $what] == 2 } {
 	foreach {index which} $what break
-	if { !$::tk_strictMotif || [string equal $which "handle"] } {
+	if { !$::tk_strictMotif || $which eq "handle" } {
 	    if {!$proxy} { $w sash mark $index $x $y }
 	    set ::tk::Priv(sash) $index
 	    foreach {sx sy} [$w sash coord $index] break
 	    set ::tk::Priv(dx) [expr {$sx-$x}]
 	    set ::tk::Priv(dy) [expr {$sy-$y}]
+	    # Do this to init the proxy location
+	    DragSash $w $x $y $proxy
 	}
     }
 }
@@ -61,6 +64,7 @@ proc ::tk::panedwindow::MarkSash {w x y proxy} {
 #   Moves sash
 #
 proc ::tk::panedwindow::DragSash {w x y proxy} {
+    if {[$w cget -opaqueresize]} { set proxy 0 }
     if { [info exists ::tk::Priv(sash)] } {
 	if {$proxy} {
 	    $w proxy place \
@@ -83,6 +87,7 @@ proc ::tk::panedwindow::DragSash {w x y proxy} {
 #   Returns ...
 #
 proc ::tk::panedwindow::ReleaseSash {w proxy} {
+    if {[$w cget -opaqueresize]} { set proxy 0 }
     if { [info exists ::tk::Priv(sash)] } {
 	if {$proxy} {
 	    foreach {x y} [$w proxy coord] break
@@ -110,11 +115,11 @@ proc ::tk::panedwindow::Motion {w x y} {
     variable ::tk::Priv
     set id [$w identify $x $y]
     if {([llength $id] == 2) && \
-	    (!$::tk_strictMotif || [string equal [lindex $id 1] "handle"])} {
+	    (!$::tk_strictMotif || [lindex $id 1] eq "handle")} {
 	if { ![info exists Priv($w,panecursor)] } {
 	    set Priv($w,panecursor) [$w cget -cursor]
-	    if { [string equal [$w cget -sashcursor] ""] } {
-		if { [string equal [$w cget -orient] "horizontal"] } {
+	    if { [$w cget -sashcursor] eq "" } {
+		if { [$w cget -orient] eq "horizontal" } {
 		    $w configure -cursor sb_h_double_arrow
 		} else {
 		    $w configure -cursor sb_v_double_arrow
@@ -150,7 +155,8 @@ proc ::tk::panedwindow::Motion {w x y} {
 #
 proc ::tk::panedwindow::Cursor {w} {
     variable ::tk::Priv
-    if {[info exists Priv($w,panecursor)]} {
+    # Make sure to check window existence in case it is destroyed.
+    if {[info exists Priv($w,panecursor)] && [winfo exists $w]} {
 	if {[winfo containing [winfo pointerx $w] [winfo pointery $w]] eq $w} {
 	    set Priv($w,pwAfterId) [after 150 \
 		    [list ::tk::panedwindow::Cursor $w]]

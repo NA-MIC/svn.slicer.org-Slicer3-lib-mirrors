@@ -13,7 +13,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkTest.c,v 1.21 2002/09/02 19:14:04 hobbs Exp $
+ * RCS: @(#) $Id: tkTest.c,v 1.21.2.2 2005/11/27 02:44:25 das Exp $
  */
 
 #include "tkInt.h"
@@ -179,8 +179,10 @@ static int		TestfontObjCmd _ANSI_ARGS_((ClientData dummy,
 			    Tcl_Obj *CONST objv[]));
 static int		TestmakeexistCmd _ANSI_ARGS_((ClientData dummy,
 			    Tcl_Interp *interp, int argc, CONST char **argv));
+#if !(defined(__WIN32__) || defined(MAC_TCL) || defined(MAC_OSX_TK))
 static int		TestmenubarCmd _ANSI_ARGS_((ClientData dummy,
 			    Tcl_Interp *interp, int argc, CONST char **argv));
+#endif
 #if defined(__WIN32__) || defined(MAC_TCL) || defined(MAC_OSX_TK)
 static int		TestmetricsCmd _ANSI_ARGS_((ClientData dummy,
 			    Tcl_Interp *interp, int argc, CONST char **argv));
@@ -201,8 +203,10 @@ static void	CustomOptionFree _ANSI_ARGS_((ClientData clientData,
 			Tk_Window tkwin, char *internalPtr));
 static int		TestpropCmd _ANSI_ARGS_((ClientData dummy,
 			    Tcl_Interp *interp, int argc, CONST char **argv));
+#if !(defined(__WIN32__) || defined(MAC_TCL) || defined(MAC_OSX_TK))
 static int		TestsendCmd _ANSI_ARGS_((ClientData dummy,
 			    Tcl_Interp *interp, int argc, CONST char **argv));
+#endif
 static int		TesttextCmd _ANSI_ARGS_((ClientData dummy,
 			    Tcl_Interp *interp, int argc, CONST char **argv));
 #if !(defined(__WIN32__) || defined(MAC_TCL) || defined(MAC_OSX_TK))
@@ -281,7 +285,7 @@ Tktest_Init(interp)
 	    (ClientData) Tk_MainWindow(interp), (Tcl_CmdDeleteProc *) NULL);
     Tcl_CreateCommand(interp, "testmakeexist", TestmakeexistCmd,
 	    (ClientData) Tk_MainWindow(interp), (Tcl_CmdDeleteProc *) NULL);
-#if !(defined(__WIN32__) || defined(MAC_TCL))
+#if !(defined(__WIN32__) || defined(MAC_TCL) || defined(MAC_OSX_TK))
     Tcl_CreateCommand(interp, "testmenubar", TestmenubarCmd,
 	    (ClientData) Tk_MainWindow(interp), (Tcl_CmdDeleteProc *) NULL);
 #endif
@@ -291,7 +295,7 @@ Tktest_Init(interp)
 #endif
     Tcl_CreateCommand(interp, "testprop", TestpropCmd,
 	    (ClientData) Tk_MainWindow(interp), (Tcl_CmdDeleteProc *) NULL);
-#if !(defined(__WIN32__) || defined(MAC_TCL))
+#if !(defined(__WIN32__) || defined(MAC_TCL) || defined(MAC_OSX_TK))
     Tcl_CreateCommand(interp, "testsend", TestsendCmd,
 	    (ClientData) Tk_MainWindow(interp), (Tcl_CmdDeleteProc *) NULL);
 #endif
@@ -1959,6 +1963,7 @@ TestmakeexistCmd(clientData, interp, argc, argv)
  */
 
 	/* ARGSUSED */
+#if !(defined(__WIN32__) || defined(MAC_TCL) || defined(MAC_OSX_TK))
 static int
 TestmenubarCmd(clientData, interp, argc, argv)
     ClientData clientData;		/* Main window for application. */
@@ -2008,6 +2013,7 @@ TestmenubarCmd(clientData, interp, argc, argv)
     return TCL_ERROR;
 #endif
 }
+#endif
 
 /*
  *----------------------------------------------------------------------
@@ -2026,7 +2032,7 @@ TestmenubarCmd(clientData, interp, argc, argv)
  *----------------------------------------------------------------------
  */
 
-#ifdef __WIN32__
+#if defined(__WIN32__) || defined(MAC_TCL) || defined(MAC_OSX_TK)
 static int
 TestmetricsCmd(clientData, interp, argc, argv)
     ClientData clientData;		/* Main window for application. */
@@ -2035,38 +2041,17 @@ TestmetricsCmd(clientData, interp, argc, argv)
     CONST char **argv;			/* Argument strings. */
 {
     char buf[TCL_INTEGER_SPACE];
+    int val;
 
+#ifdef __WIN32__
     if (argc < 2) {
 	Tcl_AppendResult(interp, "wrong # args;  must be \"", argv[0],
 		" option ?arg ...?\"", (char *) NULL);
 	return TCL_ERROR;
     }
-
-    if (strcmp(argv[1], "cyvscroll") == 0) {
-	sprintf(buf, "%d", GetSystemMetrics(SM_CYVSCROLL));
-	Tcl_AppendResult(interp, buf, (char *) NULL);
-    } else  if (strcmp(argv[1], "cxhscroll") == 0) {
-	sprintf(buf, "%d", GetSystemMetrics(SM_CXHSCROLL));
-	Tcl_AppendResult(interp, buf, (char *) NULL);
-    } else {
-	Tcl_AppendResult(interp, "bad option \"", argv[1],
-		"\": must be cxhscroll or cyvscroll", (char *) NULL);
-	return TCL_ERROR;
-    }
-    return TCL_OK;
-}
-#endif
-#if defined(MAC_TCL) || defined(MAC_OSX_TK)
-static int
-TestmetricsCmd(clientData, interp, argc, argv)
-    ClientData clientData;		/* Main window for application. */
-    Tcl_Interp *interp;			/* Current interpreter. */
-    int argc;				/* Number of arguments. */
-    CONST char **argv;			/* Argument strings. */
-{
+#else
     Tk_Window tkwin = (Tk_Window) clientData;
     TkWindow *winPtr;
-    char buf[TCL_INTEGER_SPACE];
 
     if (argc != 3) {
 	Tcl_AppendResult(interp, "wrong # args;  must be \"", argv[0],
@@ -2078,18 +2063,27 @@ TestmetricsCmd(clientData, interp, argc, argv)
     if (winPtr == NULL) {
 	return TCL_ERROR;
     }
-    
+#endif
+
     if (strcmp(argv[1], "cyvscroll") == 0) {
-	sprintf(buf, "%d", ((TkScrollbar *) winPtr->instanceData)->width);
-	Tcl_AppendResult(interp, buf, (char *) NULL);
+#ifdef __WIN32__
+	val = GetSystemMetrics(SM_CYVSCROLL);
+#else
+	val = ((TkScrollbar *) winPtr->instanceData)->width;
+#endif
     } else  if (strcmp(argv[1], "cxhscroll") == 0) {
-	sprintf(buf, "%d", ((TkScrollbar *) winPtr->instanceData)->width);
-	Tcl_AppendResult(interp, buf, (char *) NULL);
+#ifdef __WIN32__
+	val = GetSystemMetrics(SM_CXHSCROLL);
+#else
+	val = ((TkScrollbar *) winPtr->instanceData)->width;
+#endif
     } else {
 	Tcl_AppendResult(interp, "bad option \"", argv[1],
 		"\": must be cxhscroll or cyvscroll", (char *) NULL);
 	return TCL_ERROR;
     }
+    sprintf(buf, "%d", val);
+    Tcl_AppendResult(interp, buf, (char *) NULL);
     return TCL_OK;
 }
 #endif
@@ -2190,7 +2184,7 @@ TestpropCmd(clientData, interp, argc, argv)
  */
 
 	/* ARGSUSED */
-#if !(defined(__WIN32__) || defined(MAC_TCL))
+#if !(defined(__WIN32__) || defined(MAC_TCL) || defined(MAC_OSX_TK))
 static int
 TestsendCmd(clientData, interp, argc, argv)
     ClientData clientData;		/* Main window for application. */

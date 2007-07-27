@@ -9,7 +9,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkCanvText.c,v 1.15 2003/02/09 07:48:22 hobbs Exp $
+ * RCS: @(#) $Id: tkCanvText.c,v 1.15.2.3 2007/04/29 02:24:01 das Exp $
  */
 
 #include <stdio.h>
@@ -466,7 +466,9 @@ ConfigureText(interp, canvas, itemPtr, objc, objv, flags)
 	    gcValues.fill_style = FillStippled;
 	    mask |= GCStipple|GCFillStyle;
 	}
-	gcValues.foreground = textInfoPtr->selFgColorPtr->pixel;
+	if (textInfoPtr->selFgColorPtr != NULL) {
+	    gcValues.foreground = textInfoPtr->selFgColorPtr->pixel;
+	}
 	newSelGC = Tk_GetGC(tkwin, mask|GCForeground, &gcValues);
     }
     if (textPtr->gc != None) {
@@ -853,21 +855,30 @@ DisplayCanvText(canvas, itemPtr, display, drawable, x, y, width, height)
 
 
     /*
-     * Display the text in two pieces: draw the entire text item, then
-     * draw the selected text on top of it.  The selected text then
-     * will only need to be drawn if it has different attributes (such
-     * as foreground color) than regular text.
+     * If there is no selected text or the selected text foreground
+     * is the same as the regular text foreground, then draw one
+     * text string. If there is selected text and the foregrounds
+     * differ, draw the regular text up to the selection, draw
+     * the selection, then draw the rest of the regular text.
+     * Drawing the regular text and then the selected text over
+     * it would causes problems with anti-aliased text because the
+     * two anti-aliasing colors would blend together.
      */
 
     Tk_CanvasDrawableCoords(canvas, (double) textPtr->leftEdge,
 	    (double) textPtr->header.y1, &drawableX, &drawableY);
-    Tk_DrawTextLayout(display, drawable, textPtr->gc, textPtr->textLayout,
-	    drawableX, drawableY, 0, -1);
 
     if ((selFirstChar >= 0) && (textPtr->selTextGC != textPtr->gc)) {
+	Tk_DrawTextLayout(display, drawable, textPtr->gc, textPtr->textLayout,
+	    drawableX, drawableY, 0, selFirstChar);
 	Tk_DrawTextLayout(display, drawable, textPtr->selTextGC,
 	    textPtr->textLayout, drawableX, drawableY, selFirstChar,
 	    selLastChar + 1);
+	Tk_DrawTextLayout(display, drawable, textPtr->gc, textPtr->textLayout,
+	    drawableX, drawableY, selLastChar + 1, -1);
+    } else {
+	Tk_DrawTextLayout(display, drawable, textPtr->gc, textPtr->textLayout,
+	    drawableX, drawableY, 0, -1);
     }
 
     if (stipple != None) {
@@ -1238,27 +1249,25 @@ GetTextIndex(interp, canvas, itemPtr, obj, indexPtr)
 				 * index. */
 {
     TextItem *textPtr = (TextItem *) itemPtr;
-    size_t length;
-    int c;
+    int c, length;
     TkCanvas *canvasPtr = (TkCanvas *) canvas;
     Tk_CanvasTextInfo *textInfoPtr = textPtr->textInfoPtr;
-    char *string = Tcl_GetStringFromObj(obj, (int *) &length);
+    char *string = Tcl_GetStringFromObj(obj, &length);
 
     c = string[0];
-    length = strlen(string);
 
-    if ((c == 'e') && (strncmp(string, "end", length) == 0)) {
+    if ((c == 'e') && (strncmp(string, "end", (unsigned) length) == 0)) {
 	*indexPtr = textPtr->numChars;
-    } else if ((c == 'i') && (strncmp(string, "insert", length) == 0)) {
+    } else if ((c=='i') && (strncmp(string, "insert", (unsigned) length)==0)) {
 	*indexPtr = textPtr->insertPos;
-    } else if ((c == 's') && (strncmp(string, "sel.first", length) == 0)
+    } else if ((c=='s') && (strncmp(string, "sel.first", (unsigned) length)==0)
 	    && (length >= 5)) {
 	if (textInfoPtr->selItemPtr != itemPtr) {
 	    Tcl_SetResult(interp, "selection isn't in item", TCL_STATIC);
 	    return TCL_ERROR;
 	}
 	*indexPtr = textInfoPtr->selectFirst;
-    } else if ((c == 's') && (strncmp(string, "sel.last", length) == 0)
+    } else if ((c=='s') && (strncmp(string, "sel.last", (unsigned) length)==0)
 	    && (length >= 5)) {
 	if (textInfoPtr->selItemPtr != itemPtr) {
 	    Tcl_SetResult(interp, "selection isn't in item", TCL_STATIC);

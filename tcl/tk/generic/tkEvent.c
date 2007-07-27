@@ -11,7 +11,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkEvent.c,v 1.17.2.2 2004/02/16 23:09:25 wolfsuit Exp $
+ * RCS: @(#) $Id: tkEvent.c,v 1.17.2.8 2006/01/20 18:42:04 jenglish Exp $
  */
 
 #include "tkPort.h"
@@ -882,6 +882,7 @@ Tk_HandleEvent(eventPtr)
      */
     dispPtr = winPtr->dispPtr;
     if ((dispPtr->flags & TK_DISPLAY_USE_IM)) {
+	long im_event_mask = 0L;
 	if (!(winPtr->flags & (TK_CHECKED_IC|TK_ALREADY_DEAD))) {
 	    winPtr->flags |= TK_CHECKED_IC;
 	    if (dispPtr->inputMethod != NULL) {
@@ -937,8 +938,20 @@ Tk_HandleEvent(eventPtr)
 #endif
 	    }
 	}
-	if (XFilterEvent(eventPtr, None)) {
-	    goto done;
+	if (winPtr->inputContext != NULL &&
+	    (eventPtr->xany.type == FocusIn)) {
+	    XGetICValues(winPtr->inputContext,
+			 XNFilterEvents, &im_event_mask, NULL);
+	    if (im_event_mask != 0L) {
+		XSelectInput(winPtr->display, winPtr->window,
+			     winPtr->atts.event_mask | im_event_mask);
+		XSetICFocus(winPtr->inputContext);
+	    }
+	}
+	if (eventPtr->type == KeyPress || eventPtr->type == KeyRelease) {
+	    if (XFilterEvent(eventPtr, None)) {
+		goto done;
+	    }
 	}
     }
 #endif /* TK_USE_INPUT_METHODS */
@@ -972,11 +985,11 @@ Tk_HandleEvent(eventPtr)
 		    Tk_InternAtom((Tk_Window) winPtr, "WM_PROTOCOLS")) {
 		TkWmProtocolEventProc(winPtr, eventPtr);
 	    } else {
-		/* 
+		/*
 		 * Finally, invoke any ClientMessage event handlers.
 		 */
 
-		for (genPrevPtr = NULL, genericPtr = tsdPtr->cmList;  
+		for (genPrevPtr = NULL, genericPtr = tsdPtr->cmList;
 		     genericPtr != NULL; ) {
 		    if (genericPtr->deleteFlag) {
 			if (!tsdPtr->handlersActive) {
@@ -995,7 +1008,7 @@ Tk_HandleEvent(eventPtr)
 				genPrevPtr->nextPtr = tmpPtr;
 			    }
 			    if (tmpPtr == NULL) {
-				tsdPtr->lastGenericPtr = genPrevPtr;
+				tsdPtr->lastCmPtr = genPrevPtr;
 			    }
 			    (void) ckfree((char *) genericPtr);
 			    genericPtr = tmpPtr;
@@ -1363,6 +1376,10 @@ TkQueueEventForAllChildren(winPtr, eventPtr)
 {
     TkWindow *childPtr;
 
+    if (!Tk_IsMapped(winPtr)) {
+        return;
+    }
+    
     eventPtr->xany.window = winPtr->window;
     Tk_QueueWindowEvent(eventPtr, TCL_QUEUE_TAIL);
     

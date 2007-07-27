@@ -1,7 +1,7 @@
-/xbytes.h/1.2/Mon Sep 14 18:24:02 1998//Tcore-8-4-6
-/xcolors.c/1.5/Sat Aug 31 06:12:31 2002//Tcore-8-4-6
-/xdraw.c/1.4/Fri Apr 16 01:51:55 1999//Tcore-8-4-6
-/xgc.c/1.6/Sat Aug 31 06:12:31 2002//Tcore-8-4-6
-/ximage.c/1.4.8.1/Mon Feb 23 10:49:29 2004//Tcore-8-4-6
-/xutil.c/1.2/Mon Sep 14 18:24:03 1998//Tcore-8-4-6
 D/X11////
+/xbytes.h/1.2/Fri Jul 27 21:10:32 2007//Tcore-8-4-15
+/xcolors.c/1.5.2.1/Fri Jul 27 22:21:18 2007//Tcore-8-4-15
+/xdraw.c/1.4/Fri Jul 27 21:10:32 2007//Tcore-8-4-15
+/xgc.c/1.6.2.2/Fri Jul 27 22:21:18 2007//Tcore-8-4-15
+/ximage.c/1.4.8.1/Fri Jul 27 21:10:32 2007//Tcore-8-4-15
+/xutil.c/1.2/Fri Jul 27 21:10:32 2007//Tcore-8-4-15

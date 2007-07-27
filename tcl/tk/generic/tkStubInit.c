@@ -8,7 +8,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkStubInit.c,v 1.41.2.1 2003/10/13 03:30:05 hobbs Exp $
+ * RCS: @(#) $Id: tkStubInit.c,v 1.41.2.4 2005/11/27 02:44:25 das Exp $
  */
 
 #include "tkInt.h"
@@ -330,6 +330,9 @@ TkIntStubs tkIntStubs = {
     TkStylePkgFree, /* 147 */
     TkToplevelWindowForCommand, /* 148 */
     TkGetOptionSpec, /* 149 */
+    NULL, /* 150 */
+    NULL, /* 151 */
+    TkpDrawFrame, /* 152 */
 };
 
 TkIntPlatStubs tkIntPlatStubs = {
@@ -371,6 +374,7 @@ TkIntPlatStubs tkIntPlatStubs = {
     TkWinGetMenuSystemDefault, /* 32 */
     TkWinGetPlatformId, /* 33 */
     TkWinSetHINSTANCE, /* 34 */
+    TkWinGetPlatformTheme, /* 35 */
 #endif /* __WIN32__ */
 #ifdef MAC_TCL
     TkGenerateActivateEvents, /* 0 */
@@ -811,6 +815,7 @@ TkIntXlibStubs tkIntXlibStubs = {
     XQueryColor, /* 88 */
     XQueryColors, /* 89 */
     XQueryTree, /* 90 */
+    XSync, /* 91 */
 #endif /* MAC_OSX_TK */
 };
 

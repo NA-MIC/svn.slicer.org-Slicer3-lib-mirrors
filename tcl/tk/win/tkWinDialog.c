@@ -8,7 +8,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkWinDialog.c,v 1.30.2.2 2004/02/13 01:26:41 hobbs Exp $
+ * RCS: @(#) $Id: tkWinDialog.c,v 1.30.2.5 2005/10/05 03:51:09 hobbs Exp $
  *
  */
 
@@ -62,6 +62,9 @@ typedef struct ThreadSpecificData {
     UINT WM_LBSELCHANGED;     /* Holds a registered windows event used for
 			       * communicating between the Directory
 			       * Chooser dialog and its hook proc. */
+    HHOOK hMsgBoxHook;        /* Hook proc for tk_messageBox and the */
+    HICON hSmallIcon;         /* icons used by a parent to be used in */
+    HICON hBigIcon;           /* the message box */
 } ThreadSpecificData;
 static Tcl_ThreadDataKey dataKey;
 
@@ -172,8 +175,55 @@ static UINT APIENTRY	OFNHookProc(HWND hdlg, UINT uMsg, WPARAM wParam,
 			    LPARAM lParam);
 static UINT APIENTRY	OFNHookProcW(HWND hdlg, UINT uMsg, WPARAM wParam, 
 			    LPARAM lParam);
+static LRESULT CALLBACK MsgBoxCBTProc(int nCode, WPARAM wParam, LPARAM lParam);
 static void		SetTkDialog(ClientData clientData);
+
+/*
+ *-------------------------------------------------------------------------
+ *
+ * EatSpuriousMessageBugFix --
+ *
+ *	In the file open/save dialog, double clicking on a list item
+ *	causes the dialog box to close, but an unwanted WM_LBUTTONUP
+ * 	message is sent to the window underneath. If the window underneath
+ * 	happens to be a windows control (eg a button) then it will be
+ * 	activated by accident.
+ *
+ * 	This problem does not occur in dialog boxes, because windows
+ * 	must do some special processing to solve the problem. (separate
+ * 	message processing functions are used to cope with keyboard
+ * 	navigation of controls.)
+ *
+ * 	Here is one solution. After returning, we poll the message queue
+ * 	for 200ms looking for WM_LBUTTON up messages. If we see one it's
+ * 	consumed. If we get a WM_LBUTTONDOWN message, then we exit early,
+ * 	since the user must be doing something new. This fix only works
+ * 	for the current application, so the problem will still occur if
+ * 	the open dialog happens to be over another applications button.
+ * 	However this is a fairly rare occurrance.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	Consumes an unwanted BUTTON messages.
+ *
+ *-------------------------------------------------------------------------
+ */
 
+static void
+EatSpuriousMessageBugFix(void)
+{
+    MSG msg;
+    DWORD nTime = GetTickCount() + 200;
+    while (GetTickCount() < nTime) {
+	if (PeekMessage(&msg,0,WM_LBUTTONDOWN,WM_LBUTTONDOWN,PM_NOREMOVE)) {
+	    break;
+	}
+	PeekMessage(&msg,0,WM_LBUTTONUP,WM_LBUTTONUP,PM_REMOVE);
+    }
+}
+
 /*
  *-------------------------------------------------------------------------
  *
@@ -733,6 +783,7 @@ GetFileNameW(clientData, interp, objc, objv, open)
 	winCode = GetSaveFileNameW(&ofn);
     }
     Tcl_SetServiceMode(oldMode);
+    EatSpuriousMessageBugFix();
 
     /*
      * Ensure that hWnd is enabled, because it can happen that we
@@ -1217,6 +1268,7 @@ GetFileNameA(clientData, interp, objc, objv, open)
 	winCode = GetSaveFileName(&ofn);
     }
     Tcl_SetServiceMode(oldMode);
+    EatSpuriousMessageBugFix();
     SetCurrentDirectory(savePath);
 
     /*
@@ -1902,6 +1954,7 @@ ChooseDirectoryValidateProc (
 
             if (SetCurrentDirectory((char *)string) == 0) {
                 LPTSTR lpFilePart[MAX_PATH];
+
                 /*
                  * Get the full path name to the user entry,
                  * at this point it doesn't exist so see if
@@ -1915,6 +1968,7 @@ ChooseDirectoryValidateProc (
                      */
                     wsprintf(selDir, TEXT("Directory '%.200s' does not exist,\nplease select or enter an existing directory."), chooseDirSharedData->utfRetDir);
                     MessageBox(NULL, selDir, NULL, MB_ICONEXCLAMATION|MB_OK);
+		    chooseDirSharedData->utfRetDir[0] = '\0';
                     return 1;
                 }
             } else {
@@ -2487,6 +2541,8 @@ Tk_MessageBoxObjCmd(clientData, interp, objc, objv)
 	MSG_DEFAULT,	MSG_ICON,	MSG_MESSAGE,	MSG_PARENT,
 	MSG_TITLE,	MSG_TYPE
     };
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+            Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     tkwin = (Tk_Window) clientData;
 
@@ -2594,12 +2650,22 @@ Tk_MessageBoxObjCmd(clientData, interp, objc, objv)
     Tcl_UtfToExternalDString(unicodeEncoding, title, -1, &titleString);
 
     oldMode = Tcl_SetServiceMode(TCL_SERVICE_ALL);
+
     /*
      * MessageBoxW exists for all platforms.  Use it to allow unicode
      * error message to be displayed correctly where possible by the OS.
+     *
+     * In order to have the parent window icon reflected in a MessageBox,
+     * we have to create a hook that will trigger when the MessageBox is
+     * being created.
      */
+    tsdPtr->hSmallIcon = TkWinGetIcon(parent, ICON_SMALL);
+    tsdPtr->hBigIcon   = TkWinGetIcon(parent, ICON_BIG);
+    tsdPtr->hMsgBoxHook = SetWindowsHookEx(WH_CBT, MsgBoxCBTProc, NULL,
+	    GetCurrentThreadId());
     winCode = MessageBoxW(hWnd, (WCHAR *) Tcl_DStringValue(&messageString),
 		(WCHAR *) Tcl_DStringValue(&titleString), flags);
+    UnhookWindowsHookEx(tsdPtr->hMsgBoxHook);
     (void) Tcl_SetServiceMode(oldMode);
 
     /*
@@ -2614,6 +2680,37 @@ Tk_MessageBoxObjCmd(clientData, interp, objc, objv)
 
     Tcl_SetResult(interp, TkFindStateString(buttonMap, winCode), TCL_STATIC);
     return TCL_OK;
+}
+
+static LRESULT CALLBACK
+MsgBoxCBTProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+	Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
+
+    if (nCode == HCBT_CREATEWND) {
+	/*
+	 * Window owned by our task is being created.  Since the hook is
+	 * installed just before the MessageBox call and removed after the
+	 * MessageBox call, the window being created is either the message
+	 * box or one of its controls.  Check that the class is WC_DIALOG
+	 * to ensure that it's the one we want.
+	 */
+	LPCBT_CREATEWND lpcbtcreate = (LPCBT_CREATEWND)lParam;
+
+	if (WC_DIALOG == lpcbtcreate->lpcs->lpszClass) {
+	    HWND hwnd = (HWND) wParam;
+	    SendMessage(hwnd, WM_SETICON, ICON_SMALL,
+		    (LPARAM) tsdPtr->hSmallIcon);
+	    SendMessage(hwnd, WM_SETICON, ICON_BIG,
+		    (LPARAM) tsdPtr->hBigIcon);
+	}
+    }
+
+    /*
+     * Call the next hook proc, if there is one
+     */
+    return CallNextHookEx(tsdPtr->hMsgBoxHook, nCode, wParam, lParam);
 }
 
 static void 

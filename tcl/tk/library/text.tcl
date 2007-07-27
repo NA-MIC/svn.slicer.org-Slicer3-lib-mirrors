@@ -3,7 +3,7 @@
 # This file defines the default bindings for Tk text widgets and provides
 # procedures that help in implementing the bindings.
 #
-# RCS: @(#) $Id: text.tcl,v 1.24.2.2 2004/02/17 07:17:17 das Exp $
+# RCS: @(#) $Id: text.tcl,v 1.24.2.9 2006/09/10 17:07:36 das Exp $
 #
 # Copyright (c) 1992-1994 The Regents of the University of California.
 # Copyright (c) 1994-1997 Sun Microsystems, Inc.
@@ -180,7 +180,7 @@ bind Text <Control-Shift-End> {
 }
 
 bind Text <Tab> {
-    if { [string equal [%W cget -state] "normal"] } {
+    if { [%W cget -state] eq "normal" } {
 	tk::TextInsert %W \t
 	focus %W
 	break
@@ -205,7 +205,7 @@ bind Text <Return> {
     if {[%W cget -autoseparators]} {%W edit separator}
 }
 bind Text <Delete> {
-    if {[string compare [%W tag nextrange sel 1.0 end] ""]} {
+    if {[%W tag nextrange sel 1.0 end] ne ""} {
 	%W delete sel.first sel.last
     } else {
 	%W delete insert
@@ -213,7 +213,7 @@ bind Text <Delete> {
     }
 }
 bind Text <BackSpace> {
-    if {[string compare [%W tag nextrange sel 1.0 end] ""]} {
+    if {[%W tag nextrange sel 1.0 end] ne ""} {
 	%W delete sel.first sel.last
     } elseif {[%W compare insert != 1.0]} {
 	%W delete insert-1c
@@ -276,8 +276,8 @@ bind Text <Meta-KeyPress> {# nothing}
 bind Text <Control-KeyPress> {# nothing}
 bind Text <Escape> {# nothing}
 bind Text <KP_Enter> {# nothing}
-if {[string equal [tk windowingsystem] "classic"]
-	|| [string equal [tk windowingsystem] "aqua"]} {
+
+if {[tk windowingsystem] eq "classic" || [tk windowingsystem] eq "aqua"} {
     bind Text <Command-KeyPress> {# nothing}
 }
 
@@ -347,7 +347,7 @@ bind Text <<Redo>> {
     catch { %W edit redo }
 }
 
-if {[string compare $tcl_platform(platform) "windows"]} {
+if {$tcl_platform(platform) ne "windows"} {
 bind Text <Control-v> {
     if {!$tk_strictMotif} {
 	tk::TextScrollPages %W 1
@@ -393,16 +393,12 @@ bind Text <Meta-Delete> {
 
 # Macintosh only bindings:
 
-# if text black & highlight black -> text white, other text the same
-if {[string equal [tk windowingsystem] "classic"]
-	|| [string equal [tk windowingsystem] "aqua"]} {
+if {[tk windowingsystem] eq "classic" || [tk windowingsystem] eq "aqua"} {
 bind Text <FocusIn> {
-    %W tag configure sel -borderwidth 0
     %W configure -selectbackground systemHighlight -selectforeground systemHighlightText
 }
 bind Text <FocusOut> {
-    %W tag configure sel -borderwidth 1
-    %W configure -selectbackground white -selectforeground black
+    %W configure -selectbackground systemHighlightSecondary -selectforeground systemHighlightText
 }
 bind Text <Option-Left> {
     tk::TextSetCursor %W [tk::TextPrevPos %W insert tcl_startOfPreviousWord]
@@ -454,12 +450,11 @@ bind Text <B2-Motion> {
 }
 set ::tk::Priv(prevPos) {}
 
-# The MouseWheel will typically only fire on Windows.  However,
-# someone could use the "event generate" command to produce one
-# on other platforms.
+# The MouseWheel will typically only fire on Windows and MacOS X.
+# However, someone could use the "event generate" command to produce
+# one on other platforms.
 
-if {[string equal [tk windowingsystem] "classic"]
-	|| [string equal [tk windowingsystem] "aqua"]} {
+if {[tk windowingsystem] eq "classic" || [tk windowingsystem] eq "aqua"} {
     bind Text <MouseWheel> {
         %W yview scroll [expr {- (%D)}] units
     }
@@ -478,7 +473,7 @@ if {[string equal [tk windowingsystem] "classic"]
     }
 }
 
-if {[string equal "x11" [tk windowingsystem]]} {
+if {"x11" eq [tk windowingsystem]} {
     # Support for mousewheels on Linux/Unix commonly comes through mapping
     # the wheel to the extended buttons.  If you have a mousewheel, find
     # Linux configuration info at:
@@ -508,7 +503,7 @@ if {[string equal "x11" [tk windowingsystem]]} {
 proc ::tk::TextClosestGap {w x y} {
     set pos [$w index @$x,$y]
     set bbox [$w bbox $pos]
-    if {[string equal $bbox ""]} {
+    if {$bbox eq ""} {
 	return $pos
     }
     if {($x - [lindex $bbox 0]) < ([lindex $bbox 2]/2)} {
@@ -537,8 +532,7 @@ proc ::tk::TextButton1 {w x y} {
     $w mark set anchor insert
     # Allow focus in any case on Windows, because that will let the
     # selection be displayed even for state disabled text widgets.
-    if {[string equal $::tcl_platform(platform) "windows"] \
-	    || [string equal [$w cget -state] "normal"]} {focus $w}
+    if {$::tcl_platform(platform) eq "windows" || [$w cget -state] eq "normal"} {focus $w}
     if {[$w cget -autoseparators]} {$w edit separator}
 }
 
@@ -603,7 +597,7 @@ proc ::tk::TextSelectTo {w x y {extend 0}} {
 	    }
 	}
     }
-    if {$Priv(mouseMoved) || [string compare $Priv(selectMode) "char"]} {
+    if {$Priv(mouseMoved) || $Priv(selectMode) ne "char"} {
 	$w tag remove sel 0.0 end
 	$w mark set insert $cur
 	$w tag add sel $first $last
@@ -662,7 +656,7 @@ proc ::tk::TextPasteSelection {w x y} {
 	    $w configure -autoseparators 1
 	}
     }
-    if {[string equal [$w cget -state] "normal"]} {focus $w}
+    if {[$w cget -state] eq "normal"} {focus $w}
 }
 
 # ::tk::TextAutoScan --
@@ -727,7 +721,7 @@ proc ::tk::TextSetCursor {w pos} {
 
 proc ::tk::TextKeySelect {w new} {
 
-    if {[string equal [$w tag nextrange sel 1.0 end] ""]} {
+    if {[$w tag nextrange sel 1.0 end] eq ""} {
 	if {[$w compare $new < insert]} {
 	    $w tag add sel $new insert
 	} else {
@@ -767,7 +761,7 @@ proc ::tk::TextKeySelect {w new} {
 
 proc ::tk::TextResetAnchor {w index} {
 
-    if {[string equal [$w tag ranges sel] ""]} {
+    if {[$w tag ranges sel] eq ""} {
 	# Don't move the anchor if there is no selection now; this makes
 	# the widget behave "correctly" when the user clicks once, then
 	# shift-clicks somewhere -- ie, the area between the two clicks will be
@@ -817,7 +811,7 @@ proc ::tk::TextResetAnchor {w index} {
 # s -		The string to insert (usually just a single character)
 
 proc ::tk::TextInsert {w s} {
-    if {[string equal $s ""] || [string equal [$w cget -state] "disabled"]} {
+    if {$s eq "" || [$w cget -state] eq "disabled"} {
 	return
     }
     set compound 0
@@ -859,7 +853,7 @@ proc ::tk::TextUpDownLine {w n} {
 
     set i [$w index insert]
     scan $i "%d.%d" line char
-    if {[string compare $Priv(prevPos) $i]} {
+    if {$Priv(prevPos) ne $i} {
 	set Priv(char) $char
     }
     set new [$w index [expr {$line + $n}].$Priv(char)]
@@ -882,14 +876,13 @@ proc ::tk::TextUpDownLine {w n} {
 proc ::tk::TextPrevPara {w pos} {
     set pos [$w index "$pos linestart"]
     while {1} {
-	if {([string equal [$w get "$pos - 1 line"] "\n"] \
-		&& [string compare [$w get $pos] "\n"]) \
-		|| [string equal $pos "1.0"]} {
+	if {([$w get "$pos - 1 line"] eq "\n" \
+		 && [$w get $pos] ne "\n") || $pos eq "1.0"} {
 	    if {[regexp -indices {^[ 	]+(.)} [$w get $pos "$pos lineend"] \
 		    dummy index]} {
 		set pos [$w index "$pos + [lindex $index 0] chars"]
 	    }
-	    if {[$w compare $pos != insert] || [string equal $pos 1.0]} {
+	    if {[$w compare $pos != insert] || [lindex [split $pos .] 0] == 1} {
 		return $pos
 	    }
 	}
@@ -908,13 +901,13 @@ proc ::tk::TextPrevPara {w pos} {
 
 proc ::tk::TextNextPara {w start} {
     set pos [$w index "$start linestart + 1 line"]
-    while {[string compare [$w get $pos] "\n"]} {
+    while {[$w get $pos] ne "\n"} {
 	if {[$w compare $pos == end]} {
 	    return [$w index "end - 1c"]
 	}
 	set pos [$w index "$pos + 1 line"]
     }
-    while {[string equal [$w get $pos] "\n"]} {
+    while {[$w get $pos] eq "\n"} {
 	set pos [$w index "$pos + 1 line"]
 	if {[$w compare $pos == end]} {
 	    return [$w index "end - 1c"]
@@ -942,7 +935,7 @@ proc ::tk::TextNextPara {w start} {
 proc ::tk::TextScrollPages {w count} {
     set bbox [$w bbox insert]
     $w yview scroll $count pages
-    if {[string equal $bbox ""]} {
+    if {$bbox eq ""} {
 	return [$w index @[expr {[winfo height $w]/2}],0]
     }
     return [$w index @[lindex $bbox 0],[lindex $bbox 1]]
@@ -967,9 +960,19 @@ proc ::tk::TextTranspose w {
     if {[$w compare "$pos - 1 char" == 1.0]} {
 	return
     }
+    # ensure this is seen as an atomic op to undo
+    set autosep [$w cget -autoseparators]
+    if {$autosep} {
+	$w configure -autoseparators 0
+	$w edit separator
+    }
     $w delete "$pos - 2 char" $pos
     $w insert insert $new
     $w see insert
+    if {$autosep} {
+	$w edit separator
+	$w configure -autoseparators $autosep
+    }
 }
 
 # ::tk_textCopy --
@@ -1012,12 +1015,13 @@ proc ::tk_textCut w {
 proc ::tk_textPaste w {
     global tcl_platform
     if {![catch {::tk::GetSelection $w CLIPBOARD} sel]} {
+	# ensure this is seen as an atomic op to undo
 	set oldSeparator [$w cget -autoseparators]
 	if { $oldSeparator } {
 	    $w configure -autoseparators 0
 	    $w edit separator
 	}
-	if {[string compare [tk windowingsystem] "x11"]} {
+	if {[tk windowingsystem] ne "x11"} {
 	    catch { $w delete sel.first sel.last }
 	}
 	$w insert insert $sel
@@ -1038,7 +1042,7 @@ proc ::tk_textPaste w {
 # w -		The text window in which the cursor is to move.
 # start -	Position at which to start search.
 
-if {[string equal $tcl_platform(platform) "windows"]}  {
+if {$tcl_platform(platform) eq "windows"}  {
     proc ::tk::TextNextWord {w start} {
 	TextNextPos $w [TextNextPos $w $start tcl_endOfWord] \
 	    tcl_startOfNextWord

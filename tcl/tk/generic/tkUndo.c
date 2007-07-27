@@ -8,7 +8,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkUndo.c,v 1.1 2002/06/21 23:09:55 hobbs Exp $
+ * RCS: @(#) $Id: tkUndo.c,v 1.1.4.2 2006/03/20 22:16:34 dkf Exp $
  */
 
 #include "tkUndo.h"
@@ -190,12 +190,15 @@ void TkUndoSetDepth ( stack, maxdepth )
     stack->maxdepth = maxdepth;
 
     if ((stack->maxdepth > 0) && (stack->depth > stack->maxdepth)) {
-        /* Maximum stack depth exceeded. We have to remove the last compound
-           elements on the stack */
+        /*
+	 * Maximum stack depth exceeded. We have to remove the last compound
+	 * elements on the stack.
+	 */
+
         elem = stack->undoStack;
         prevelem = NULL;
-        while ( sepNumber <= stack->maxdepth ) {
-            if (elem != NULL && (elem->type == TK_UNDO_SEPARATOR) ) {
+        while (elem && (sepNumber <= stack->maxdepth)) {
+            if (elem->type == TK_UNDO_SEPARATOR) {
                 sepNumber++;
             }
             prevelem = elem;
@@ -205,7 +208,7 @@ void TkUndoSetDepth ( stack, maxdepth )
         while ( elem ) {
            prevelem = elem;
            elem = elem->next;
-           ckfree((char *) elem);
+           ckfree((char *) prevelem);
         }
         stack->depth = stack->maxdepth;
     }
@@ -268,32 +271,9 @@ void TkUndoFreeStack ( stack )
 void TkUndoInsertUndoSeparator ( stack )
     TkUndoRedoStack * stack;
 {
-/*    TkUndoAtom * elem;
-    TkUndoAtom * prevelem;
-    int sepNumber = 0;
-*/
-    
     if ( TkUndoInsertSeparator(&(stack->undoStack)) ) {
         ++(stack->depth);
         TkUndoSetDepth(stack,stack->maxdepth);
-/*        if ((stack->maxdepth > 0) && (stack->depth > stack->maxdepth)) {
-            elem = stack->undoStack;
-            prevelem = NULL;
-            while ( sepNumber < stack->depth ) {
-                if (elem != NULL && (elem->type == TK_UNDO_SEPARATOR) ) {
-                    sepNumber++;
-                }
-                prevelem = elem;
-                elem = elem->next;
-            }
-            prevelem->next = NULL;
-            while ( elem ) {
-               prevelem = elem;
-               elem = elem->next;
-               ckfree((char *) elem);
-            }
-            stack->depth;
-        } */
     }
 }
 

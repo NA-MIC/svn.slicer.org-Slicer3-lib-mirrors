@@ -9,7 +9,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkWinMenu.c,v 1.21 2002/08/08 01:42:57 hobbs Exp $
+ * RCS: @(#) $Id: tkWinMenu.c,v 1.21.2.8 2006/11/24 18:11:54 hobbs Exp $
  */
 
 #define OEMRESOURCE
@@ -33,6 +33,10 @@
 #define ALIGN_BITMAP_TOP    0x00000004
 #define ALIGN_BITMAP_BOTTOM 0x00000008
 
+#ifndef TPM_NOANIMATION
+#define TPM_NOANIMATION 0x4000L
+#endif
+
 /*
  * Platform-specific menu flags:
  *
@@ -54,8 +58,6 @@ static int indicatorDimensions[2];
 				 * time to save time. */
 
 typedef struct ThreadSpecificData {
-    Tcl_HashTable commandTable;
-				/* A map of command ids to menu entries */
     int inPostMenu;		/* We cannot be re-entrant like X Windows. */
     WORD lastCommandID;	        /* The last command ID we allocated. */
     HWND menuHWND;		/* A window to service popup-menu messages
@@ -69,8 +71,8 @@ typedef struct ThreadSpecificData {
 				 * active items when menus go away since
 				 * Windows does not see fit to give this
 				 * to us when it sends its WM_MENUSELECT. */
-    Tcl_HashTable winMenuTable;
-				/* Need this to map HMENUs back to menuPtrs */
+    Tcl_HashTable commandTable;	/* A map of command ids to menu entries */
+    Tcl_HashTable winMenuTable;	/* Need this to map HMENUs back to menuPtrs */
 } ThreadSpecificData;
 static Tcl_ThreadDataKey dataKey;
 
@@ -90,6 +92,11 @@ static void		DrawMenuEntryAccelerator _ANSI_ARGS_((
 			    TkMenu *menuPtr, TkMenuEntry *mePtr, 
 			    Drawable d, GC gc, Tk_Font tkfont,
 			    CONST Tk_FontMetrics *fmPtr,
+			    Tk_3DBorder activeBorder, int x, int y,
+			    int width, int height));
+static void		DrawMenuEntryArrow _ANSI_ARGS_((
+			    TkMenu *menuPtr, TkMenuEntry *mePtr, 
+			    Drawable d, GC gc,
 			    Tk_3DBorder activeBorder, int x, int y,
 			    int width, int height, int drawArrow));
 static void		DrawMenuEntryBackground _ANSI_ARGS_((
@@ -124,7 +131,7 @@ static void		DrawWindowsSystemBitmap _ANSI_ARGS_((
 			    Display *display, Drawable drawable, 
 			    GC gc, CONST RECT *rectPtr, int bitmapID,
 			    int alignFlags));
-static void		FreeID _ANSI_ARGS_((int commandID));
+static void		FreeID _ANSI_ARGS_((WORD commandID));
 static TCHAR *		GetEntryText _ANSI_ARGS_((TkMenuEntry *mePtr));
 static void		GetMenuAccelGeometry _ANSI_ARGS_((TkMenu *menuPtr,
 			    TkMenuEntry *mePtr, Tk_Font tkfont,
@@ -146,7 +153,7 @@ static void		GetTearoffEntryGeometry _ANSI_ARGS_((TkMenu *menuPtr,
 			    CONST Tk_FontMetrics *fmPtr, int *widthPtr,
 			    int *heightPtr));
 static int		GetNewID _ANSI_ARGS_((TkMenuEntry *mePtr,
-			    int *menuIDPtr));
+			    WORD *menuIDPtr));
 static int		MenuKeyBindProc _ANSI_ARGS_((
 			    ClientData clientData, 
 			    Tcl_Interp *interp, XEvent *eventPtr,
@@ -186,7 +193,7 @@ static LRESULT CALLBACK	TkWinMenuProc _ANSI_ARGS_((HWND hwnd,
 static int
 GetNewID(mePtr, menuIDPtr)
     TkMenuEntry *mePtr;		/* The menu we are working with */
-    int *menuIDPtr;		/* The resulting id */
+    WORD *menuIDPtr;		/* The resulting id */
 {
     int found = 0;
     int newEntry;
@@ -215,7 +222,7 @@ GetNewID(mePtr, menuIDPtr)
 
     if (found) {
     	Tcl_SetHashValue(commandEntryPtr, (char *) mePtr);
-    	*menuIDPtr = (int) returnID;
+    	*menuIDPtr = returnID;
     	tsdPtr->lastCommandID = returnID;
     	return TCL_OK;
     } else {
@@ -241,16 +248,21 @@ GetNewID(mePtr, menuIDPtr)
 
 static void
 FreeID(commandID)
-    int commandID;
+    WORD commandID;
 {
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
-    Tcl_HashEntry *entryPtr = Tcl_FindHashEntry(&tsdPtr->commandTable,
-	    (char *) commandID);
-    
-    if (entryPtr != NULL) {
-    	 Tcl_DeleteHashEntry(entryPtr);
+    /*
+     * If the menuHWND is NULL, this table has been finalized already.
+     */
+
+    if (tsdPtr->menuHWND != NULL) {
+	Tcl_HashEntry *entryPtr = Tcl_FindHashEntry(&tsdPtr->commandTable,
+		(char *) commandID);
+	if (entryPtr != NULL) {
+	    Tcl_DeleteHashEntry(entryPtr);
+	}
     }
 }
 
@@ -284,7 +296,7 @@ TkpNewMenu(menuPtr)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     winMenuHdl = CreatePopupMenu();
-    
+
     if (winMenuHdl == NULL) {
     	Tcl_AppendResult(menuPtr->interp, "No more menus can be allocated.",
     		(char *) NULL);
@@ -296,8 +308,8 @@ TkpNewMenu(menuPtr)
      * back when dispatch messages.
      */
 
-    hashEntryPtr = Tcl_CreateHashEntry(&tsdPtr->winMenuTable, (char *) winMenuHdl,
-	    &newEntry);
+    hashEntryPtr = Tcl_CreateHashEntry(&tsdPtr->winMenuTable,
+	    (char *) winMenuHdl, &newEntry);
     Tcl_SetHashValue(hashEntryPtr, (char *) menuPtr);
 
     menuPtr->platformData = (TkMenuPlatformData) winMenuHdl;
@@ -365,16 +377,17 @@ TkpDestroyMenu(menuPtr)
 	    }
 	}
     } else {
-	Tcl_HashEntry *hashEntryPtr;
- 
 	/*
 	 * Remove the menu from the menu hash table, then destroy the handle.
+	 * If the menuHWND is NULL, this table has been finalized already.
 	 */
 
-	hashEntryPtr = Tcl_FindHashEntry(&tsdPtr->winMenuTable, 
-                (char *) winMenuHdl);
-	if (hashEntryPtr != NULL) {
-	    Tcl_DeleteHashEntry(hashEntryPtr);
+	if (tsdPtr->menuHWND != NULL) {
+	    Tcl_HashEntry *hashEntryPtr =
+		Tcl_FindHashEntry(&tsdPtr->winMenuTable, (char *) winMenuHdl);
+	    if (hashEntryPtr != NULL) {
+		Tcl_DeleteHashEntry(hashEntryPtr);
+	    }
 	}
  	DestroyMenu(winMenuHdl);
     }
@@ -414,7 +427,7 @@ TkpDestroyMenuEntry(mePtr)
 	    Tcl_DoWhenIdle(ReconfigureWindowsMenu, (ClientData) menuPtr);
 	}
     }
-    FreeID((int) mePtr->platformEntryData);
+    FreeID((WORD) mePtr->platformEntryData);
     mePtr->platformEntryData = NULL;
 }
 
@@ -492,7 +505,7 @@ GetEntryText(mePtr)
 		next = Tcl_UtfNext(p);
 		Tcl_DStringAppend(&itemString, p, (int) (next - p));
 	    }
-	} 	    
+	}
 
 	itemText = ckalloc(Tcl_DStringLength(&itemString) + 1);
 	strcpy(itemText, Tcl_DStringValue(&itemString));
@@ -570,8 +583,9 @@ ReconfigureWindowsMenu(
 	itemText = GetEntryText(mePtr);
 	if ((menuPtr->menuType == MENUBAR)
 		|| (menuPtr->menuFlags & MENU_SYSTEM_MENU)) {
-	    Tcl_UtfToExternalDString(NULL, itemText, -1, &translatedText);
+	    Tcl_WinUtfToTChar(itemText, -1, &translatedText);
 	    lpNewItem = Tcl_DStringValue(&translatedText);
+	    flags |= MF_STRING;
 	} else {
 	    lpNewItem = (LPCTSTR) mePtr;
 	    flags |= MF_OWNERDRAW;
@@ -611,15 +625,27 @@ ReconfigureWindowsMenu(
 	    flags |= MF_MENUBREAK;
 	}
 	
-	itemID = (int) mePtr->platformEntryData;
+	itemID = (UINT) mePtr->platformEntryData;
 	if ((mePtr->type == CASCADE_ENTRY)
 		&& (mePtr->childMenuRefPtr != NULL)
 		&& (mePtr->childMenuRefPtr->menuPtr != NULL)) {
 	    HMENU childMenuHdl = (HMENU) mePtr->childMenuRefPtr->menuPtr
 		->platformData;
 	    if (childMenuHdl != NULL) {
-		itemID = (UINT) childMenuHdl;
-		flags |= MF_POPUP;
+		/* 
+		 * Win32 draws the popup arrow in the wrong color 
+		 * for a disabled cascade menu, so do it by hand.
+		 * Given it is disabled, there's no need for it to
+		 * be connected to its child.
+		 */
+		if (mePtr->state != ENTRY_DISABLED) {
+		    flags |= MF_POPUP;
+		    /*
+		     * If the MF_POPUP flag is set, then the id
+		     * is interpreted as the handle of a submenu.
+		     */
+		    itemID = (UINT) childMenuHdl;
+		}	
 	    }
 	    if ((menuPtr->menuType == MENUBAR) 
 		    && !(mePtr->childMenuRefPtr->menuPtr->menuFlags
@@ -669,7 +695,8 @@ ReconfigureWindowsMenu(
 	    }
 	}
 	if (!systemMenu) {
-	    InsertMenu(winMenuHdl, 0xFFFFFFFF, flags, itemID, lpNewItem);
+	    (*tkWinProcs->insertMenu)(winMenuHdl, 0xFFFFFFFF, flags,
+		    itemID, lpNewItem);
 	}
 	Tcl_DStringFree(&translatedText);
 	if (itemText != NULL) {
@@ -712,11 +739,12 @@ TkpPostMenu(interp, menuPtr, x, y)
     int y;
 {
     HMENU winMenuHdl = (HMENU) menuPtr->platformData;
-    int result, flags;
+    int i, result, flags;
     RECT noGoawayRect;
     POINT point;
     Tk_Window parentWindow = Tk_Parent(menuPtr->tkwin);
     int oldServiceMode = Tcl_GetServiceMode();
+    TkMenuEntry *mePtr;
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
@@ -737,7 +765,7 @@ TkpPostMenu(interp, menuPtr, x, y)
      * The post commands could have deleted the menu, which means
      * we are dead and should go away.
      */
-    
+
     if (menuPtr->tkwin == NULL) {
 	tsdPtr->inPostMenu--;
     	return TCL_OK;
@@ -758,7 +786,7 @@ TkpPostMenu(interp, menuPtr, x, y)
     }
 
     Tcl_SetServiceMode(TCL_SERVICE_NONE);
-    
+
     /*
      * Make an assumption here. If the right button is down,
      * then we want to track it. Otherwise, track the left mouse button.
@@ -776,6 +804,18 @@ TkpPostMenu(interp, menuPtr, x, y)
 	    flags |= TPM_RIGHTBUTTON;
 	} else {
 	    flags |= TPM_LEFTBUTTON;
+	}
+    }
+
+    /*
+     * Disable menu animation if an image is present, as clipping isn't
+     * handled correctly with temp DCs.  [Bug 1329198]
+     */
+    for (i = 0; i < menuPtr->numEntries; i++) {
+	mePtr = menuPtr->entries[i];
+	if (mePtr->image != NULL) {
+	    flags |= TPM_NOANIMATION;
+	    break;
 	}
     }
 
@@ -814,7 +854,7 @@ int
 TkpMenuNewEntry(mePtr)
     TkMenuEntry *mePtr;
 {
-    int commandID;
+    WORD commandID;
     TkMenu *menuPtr = mePtr->menuPtr;
 
     if (GetNewID(mePtr, &commandID) != TCL_OK) {
@@ -1006,27 +1046,28 @@ TkWinHandleMenuEvent(phwnd, pMessage, pwParam, plParam, plResult)
 	    hashEntryPtr = Tcl_FindHashEntry(&tsdPtr->winMenuTable, 
                     (char *) *plParam);
 	    if (hashEntryPtr != NULL) {
-		int i;
+		int i, len, underline;
+		Tcl_Obj *labelPtr;
 
 		*plResult = 0;
 		menuPtr = (TkMenu *) Tcl_GetHashValue(hashEntryPtr);
 		for (i = 0; i < menuPtr->numEntries; i++) {
-		    int underline;
-		    char *label;
-
 		    underline = menuPtr->entries[i]->underline;
-		    if (menuPtr->entries[i]->labelPtr != NULL) {
-			label = Tcl_GetStringFromObj(
-				menuPtr->entries[i]->labelPtr, NULL);
-		    }
-		    if ((-1 != underline) 
-			    && (NULL != menuPtr->entries[i]->labelPtr)
-			    && (CharUpper((LPTSTR) menuChar) 
-			    == CharUpper((LPTSTR) (unsigned char) 
-			    label[underline]))) {
-			*plResult = (2 << 16) | i;
-			returnResult = 1;
-			break;
+		    labelPtr = menuPtr->entries[i]->labelPtr;
+		    if ((underline >= 0) && (labelPtr != NULL)) {
+			/* do the unicode call just to prevent overruns */
+			Tcl_GetUnicodeFromObj(labelPtr, &len);
+			if (underline < len) {
+			    char *label;
+			    label = Tcl_GetStringFromObj(labelPtr, NULL);
+			    if (CharUpper((LPTSTR) menuChar)
+				    == CharUpper((LPTSTR)
+					*Tcl_UtfAtIndex(label, underline))) {
+				*plResult = (2 << 16) | i;
+				returnResult = 1;
+				break;
+			    }
+			}
 		    }
 		}
 	    }
@@ -1035,7 +1076,7 @@ TkWinHandleMenuEvent(phwnd, pMessage, pwParam, plParam, plResult)
 
 	case WM_MEASUREITEM: {
 	    LPMEASUREITEMSTRUCT itemPtr = (LPMEASUREITEMSTRUCT) *plParam;
-    
+
 	    if (itemPtr != NULL) {
 		mePtr = (TkMenuEntry *) itemPtr->itemData;
 		menuPtr = mePtr->menuPtr;
@@ -1047,7 +1088,7 @@ TkWinHandleMenuEvent(phwnd, pMessage, pwParam, plParam, plResult)
 		    itemPtr->itemWidth += 2 - indicatorDimensions[1];
 		} else {
 		    int activeBorderWidth;
-		    
+
 		    Tk_GetPixelsFromObj(menuPtr->interp, menuPtr->tkwin,
 			    menuPtr->activeBorderWidthPtr, 
 			    &activeBorderWidth);
@@ -1058,11 +1099,12 @@ TkWinHandleMenuEvent(phwnd, pMessage, pwParam, plParam, plResult)
 	    }
 	    break;
 	}
-	
+
 	case WM_DRAWITEM: {
 	    TkWinDrawable *twdPtr;
 	    LPDRAWITEMSTRUCT itemPtr = (LPDRAWITEMSTRUCT) *plParam;
 	    Tk_FontMetrics fontMetrics;
+	    int drawArrow = 0;
 
 	    if (itemPtr != NULL) {
 		Tk_Font tkfont;
@@ -1091,6 +1133,12 @@ TkWinHandleMenuEvent(phwnd, pMessage, pwParam, plParam, plResult)
 		    } else {
 			mePtr->entryFlags &= ~ENTRY_PLATFORM_FLAG1;
 		    }
+		    /* Also, set the drawArrow flag for a disabled cascade
+		    ** menu since we need to draw the arrow ourselves.
+		    */
+		    if (mePtr->type == CASCADE_ENTRY) {
+		        drawArrow = 1;
+		    }
 		}
 
 		tkfont = Tk_GetFontFromObj(menuPtr->tkwin, menuPtr->fontPtr);
@@ -1099,7 +1147,7 @@ TkWinHandleMenuEvent(phwnd, pMessage, pwParam, plParam, plResult)
 			&fontMetrics, itemPtr->rcItem.left,
 			itemPtr->rcItem.top, itemPtr->rcItem.right
 			- itemPtr->rcItem.left, itemPtr->rcItem.bottom
-			- itemPtr->rcItem.top, 0, 0);
+			- itemPtr->rcItem.top, 0, drawArrow);
 
 		ckfree((char *) twdPtr);
 		*plResult = 1;
@@ -1135,11 +1183,11 @@ TkWinHandleMenuEvent(phwnd, pMessage, pwParam, plParam, plResult)
 			    mePtr = menuPtr->entries[LOWORD(*pwParam)];
 			} else {
 			    hashEntryPtr = Tcl_FindHashEntry(
-                                    &tsdPtr->commandTable,
-				    (char *) LOWORD(*pwParam));
+				&tsdPtr->commandTable,
+				(char *) LOWORD(*pwParam));
 			    if (hashEntryPtr != NULL) {
 				mePtr = (TkMenuEntry *) 
-					Tcl_GetHashValue(hashEntryPtr);
+				    Tcl_GetHashValue(hashEntryPtr);
 			    }
 			}
 		    }	 
@@ -1147,6 +1195,9 @@ TkWinHandleMenuEvent(phwnd, pMessage, pwParam, plParam, plResult)
 		    if ((mePtr == NULL) || (mePtr->state == ENTRY_DISABLED)) {
 			TkActivateMenuEntry(menuPtr, -1);
 		    } else {
+			if (mePtr->index >= menuPtr->numEntries) {
+			    Tcl_Panic("Trying to activate an entry which doesn't exist.");
+			}
 			TkActivateMenuEntry(menuPtr, mePtr->index);
 		    }
 		    MenuSelectEvent(menuPtr);
@@ -1223,7 +1274,7 @@ TkpSetWindowMenuBar(tkwin, menuPtr)
 {
     HMENU winMenuHdl;
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
-            Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
+	Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     if (menuPtr != NULL) {
 	Tcl_HashEntry *hashEntryPtr;
@@ -1463,7 +1514,7 @@ DrawWindowsSystemBitmap(display, drawable, gc, rectPtr, bitmapID, alignFlags)
     GetObject(bitmap, sizeof(BITMAP), &bm);
     ptSize.x = bm.bmWidth;
     ptSize.y = bm.bmHeight;
-    DPtoLP(hdc, &ptSize, 1);
+    DPtoLP(scratchDC, &ptSize, 1);
 
     ptOrg.y = ptOrg.x = 0;
     DPtoLP(scratchDC, &ptOrg, 1);
@@ -1570,15 +1621,17 @@ DrawMenuEntryIndicator(menuPtr, mePtr, d, gc, indicatorGC, tkfont, fmPtr, x,
  *
  * DrawMenuEntryAccelerator --
  *
- *	This procedure draws the accelerator part of a menu. We
- *	need to decide what to draw here. Should we replace strings
+ *	This procedure draws the accelerator part of a menu.
+ *	For example, the string "CTRL-Z" could be drawn to
+ *	to the right of the label text for an Undo menu entry.
+ *	Need to decide what to draw here. Should we replace strings
  *	like "Control", "Command", etc?
  *
  * Results:
  *	None.
  *
  * Side effects:
- *	Commands are output to X to display the menu in its
+ *	Commands are output to display the menu in its
  *	current mode.
  *
  *----------------------------------------------------------------------
@@ -1586,7 +1639,7 @@ DrawMenuEntryIndicator(menuPtr, mePtr, d, gc, indicatorGC, tkfont, fmPtr, x,
 
 void
 DrawMenuEntryAccelerator(menuPtr, mePtr, d, gc, tkfont, fmPtr,
-	activeBorder, x, y, width, height, drawArrow)
+	activeBorder, x, y, width, height)
     TkMenu *menuPtr;			/* The menu we are drawing */
     TkMenuEntry *mePtr;			/* The entry we are drawing */
     Drawable d;				/* What we are drawing into */
@@ -1598,10 +1651,6 @@ DrawMenuEntryAccelerator(menuPtr, mePtr, d, gc, tkfont, fmPtr,
     int y;				/* top edge */
     int width;				/* Width of menu entry */
     int height;				/* Height of menu entry */
-    int drawArrow;			/* For cascade menus, whether of not
-					 * to draw the arraw. I cannot figure
-					 * out Windows' algorithm for where
-					 * to draw this. */
 {
     int baseline;
     int leftEdge = x + mePtr->indicatorSpace + mePtr->labelWidth;
@@ -1613,45 +1662,97 @@ DrawMenuEntryAccelerator(menuPtr, mePtr, d, gc, tkfont, fmPtr,
 
     baseline = y + (height + fmPtr->ascent - fmPtr->descent) / 2;
 
-    if ((mePtr->state == ENTRY_DISABLED) && (menuPtr->disabledFgPtr != NULL)
-	    && ((mePtr->accelPtr != NULL)
-		    || ((mePtr->type == CASCADE_ENTRY) && drawArrow))) {
-	COLORREF oldFgColor = gc->foreground;
+    /* Draw disabled 3D text highlight only with the Win95/98 look. */
 
-	gc->foreground = GetSysColor(COLOR_3DHILIGHT);
-	if (mePtr->accelPtr != NULL) {
-	    Tk_DrawChars(menuPtr->display, d, gc, tkfont, accel,
-		    mePtr->accelLength, leftEdge + 1, baseline + 1);
+    if (TkWinGetPlatformTheme() == TK_THEME_WIN_CLASSIC) {
+	if ((mePtr->state == ENTRY_DISABLED) && (menuPtr->disabledFgPtr != NULL)
+	        && (mePtr->accelPtr != NULL)) {
+	    COLORREF oldFgColor = gc->foreground;
+
+	    gc->foreground = GetSysColor(COLOR_3DHILIGHT);
+	    if ((mePtr->accelPtr != NULL) &&
+	            ((mePtr->entryFlags & ENTRY_PLATFORM_FLAG1) == 0)) {
+	        Tk_DrawChars(menuPtr->display, d, gc, tkfont, accel,
+		        mePtr->accelLength, leftEdge + 1, baseline + 1);
+	    }
+	    gc->foreground = oldFgColor;
 	}
-
-	if (mePtr->type == CASCADE_ENTRY) {
-	    RECT rect;
-
-	    rect.top = y + GetSystemMetrics(SM_CYBORDER) + 1;
-	    rect.bottom = y + height - GetSystemMetrics(SM_CYBORDER) + 1;
-	    rect.left = x + mePtr->indicatorSpace + mePtr->labelWidth + 1;
-	    rect.right = x + width;
-	    DrawWindowsSystemBitmap(menuPtr->display, d, gc, &rect, 
-		    OBM_MNARROW, ALIGN_BITMAP_RIGHT);
-	}
-	gc->foreground = oldFgColor;
     }
 
     if (mePtr->accelPtr != NULL) {
 	Tk_DrawChars(menuPtr->display, d, gc, tkfont, accel, 
 		mePtr->accelLength, leftEdge, baseline);
     }
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * DrawMenuEntryArrow --
+ *
+ *	This function draws the arrow bitmap on the right side of a
+ *	a menu entry. This function is currently unused.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	None.
+ *
+ *----------------------------------------------------------------------
+ */
 
-    if ((mePtr->type == CASCADE_ENTRY) && drawArrow) {
-	RECT rect;
+void
+DrawMenuEntryArrow(menuPtr, mePtr, d, gc,
+	activeBorder, x, y, width, height, drawArrow)
+    TkMenu *menuPtr;			/* The menu we are drawing */
+    TkMenuEntry *mePtr;			/* The entry we are drawing */
+    Drawable d;				/* What we are drawing into */
+    GC gc;				/* The gc we are drawing with */
+    Tk_3DBorder activeBorder;		/* The border when an item is active */
+    int x;				/* left edge */
+    int y;				/* top edge */
+    int width;				/* Width of menu entry */
+    int height;				/* Height of menu entry */
+    int drawArrow;			/* For cascade menus, whether of not
+					 * to draw the arraw. I cannot figure
+					 * out Windows' algorithm for where
+					 * to draw this. */
+{
+    COLORREF oldFgColor;
+    COLORREF oldBgColor;
+    RECT rect;
 
-	rect.top = y + GetSystemMetrics(SM_CYBORDER);
-	rect.bottom = y + height - GetSystemMetrics(SM_CYBORDER);
-	rect.left = x + mePtr->indicatorSpace + mePtr->labelWidth;
-	rect.right = x + width - 1;
-	DrawWindowsSystemBitmap(menuPtr->display, d, gc, &rect, OBM_MNARROW, 
-		ALIGN_BITMAP_RIGHT);
+    if (!drawArrow || (mePtr->type != CASCADE_ENTRY) ||
+            (mePtr->state != ENTRY_DISABLED))
+        return;
+
+    oldFgColor = gc->foreground;
+    oldBgColor = gc->background;
+
+    /* Set bitmap bg to highlight color if the menu is highlighted */
+    if (mePtr->entryFlags & ENTRY_PLATFORM_FLAG1) {
+        XColor *activeBgColor = Tk_3DBorderColor(Tk_Get3DBorderFromObj(
+						     mePtr->menuPtr->tkwin,
+						     (mePtr->activeBorderPtr == NULL) ?
+						     mePtr->menuPtr->activeBorderPtr :
+						     mePtr->activeBorderPtr));
+        gc->background = activeBgColor->pixel;
     }
+
+    gc->foreground = GetSysColor(COLOR_GRAYTEXT);
+
+    rect.top = y + GetSystemMetrics(SM_CYBORDER);
+    rect.bottom = y + height - GetSystemMetrics(SM_CYBORDER);
+    rect.left = x + mePtr->indicatorSpace + mePtr->labelWidth;
+    rect.right = x + width;
+
+    DrawWindowsSystemBitmap(menuPtr->display, d, gc, &rect, OBM_MNARROW,
+            ALIGN_BITMAP_RIGHT);
+
+    gc->foreground = oldFgColor;
+    gc->background = oldBgColor;
+    return;
 }
 
 /*
@@ -1700,8 +1801,7 @@ DrawMenuSeparator(menuPtr, mePtr, d, gc, tkfont, fmPtr, x, y, width, height)
  *
  * DrawMenuUnderline --
  *
- *	On appropriate platforms, draw the underline character for the
- *	menu.
+ *	On appropriate platforms, draw the underline character for the menu.
  *
  * Results:
  *	None.
@@ -1725,16 +1825,23 @@ DrawMenuUnderline(
     int width,				/* Width of entry */
     int height)				/* Height of entry */
 {
-    if (mePtr->underline >= 0) {
-	char *label = Tcl_GetStringFromObj(mePtr->labelPtr, NULL);
-	CONST char *start = Tcl_UtfAtIndex(label, mePtr->underline);
-	CONST char *end = Tcl_UtfNext(start);
+    if ((mePtr->underline >= 0) && (mePtr->labelPtr != NULL)) {
+	int len;
 
-    	Tk_UnderlineChars(menuPtr->display, d,
-    		gc, tkfont, label, x + mePtr->indicatorSpace,
-    		y + (height + fmPtr->ascent - fmPtr->descent) / 2, 
-		(int) (start - label), (int) (end - label));
-    }		
+	/* do the unicode call just to prevent overruns */
+	Tcl_GetUnicodeFromObj(mePtr->labelPtr, &len);
+	if (mePtr->underline < len) {
+	    CONST char *label, *start, *end;
+
+	    label = Tcl_GetStringFromObj(mePtr->labelPtr, NULL);
+	    start = Tcl_UtfAtIndex(label, mePtr->underline);
+	    end = Tcl_UtfNext(start);
+	    Tk_UnderlineChars(menuPtr->display, d,
+		    gc, tkfont, label, x + mePtr->indicatorSpace,
+		    y + (height + fmPtr->ascent - fmPtr->descent) / 2,
+		    (int) (start - label), (int) (end - label));
+	}
+    }
 }
 
 /*
@@ -1975,10 +2082,24 @@ DrawMenuEntryLabel(
 		break;
 	    }
 	    case COMPOUND_LEFT: {
+		/*
+		 * The standard image position on Windows is in the indicator
+		 * space to the left of the entries, unless this entry is a
+		 * radio|check button because then the indicator space will
+		 * be used.
+		 */
 		textXOffset = imageWidth + 2;
 		textYOffset = 0;
 		imageXOffset = 0;
 		imageYOffset = 0;
+		if ((mePtr->type != CHECK_BUTTON_ENTRY) 
+			&& (mePtr->type != RADIO_BUTTON_ENTRY)) {
+		    textXOffset -= indicatorSpace;
+		    if (textXOffset < 0) {
+			textXOffset = 0;
+		    }
+		    imageXOffset = -indicatorSpace;
+		}
 		break;
 	    }
 	    case COMPOUND_RIGHT: {
@@ -2030,13 +2151,26 @@ DrawMenuEntryLabel(
     	if (mePtr->labelLength > 0) {
 	    int baseline = y + (height + fmPtr->ascent - fmPtr->descent) / 2;
 	    char *label = Tcl_GetStringFromObj(mePtr->labelPtr, NULL);
+	    if (TkWinGetPlatformTheme() == TK_THEME_WIN_CLASSIC) {
+	        /* Win 95/98 systems draw disabled menu text with a
+	         * 3D highlight, unless the menu item is highlighted */
+	        if ((mePtr->state == ENTRY_DISABLED) &&
+	                ((mePtr->entryFlags & ENTRY_PLATFORM_FLAG1) == 0)) {
+	            COLORREF oldFgColor = gc->foreground;
+		    gc->foreground = GetSysColor(COLOR_3DHILIGHT);
+	            Tk_DrawChars(menuPtr->display, d, gc, tkfont, label, 
+		            mePtr->labelLength, leftEdge + textXOffset + 1, 
+		            baseline + textYOffset + 1);
+		    gc->foreground = oldFgColor;
+	        }
+	    }
 	    Tk_DrawChars(menuPtr->display, d, gc, tkfont, label, 
 		    mePtr->labelLength, leftEdge + textXOffset, 
 		    baseline + textYOffset);
 	    DrawMenuUnderline(menuPtr, mePtr, d, gc, tkfont, fmPtr, 
 	            x + textXOffset, y + textYOffset,
 		    width, height);
-    	}
+	}
     }
 
     if (mePtr->state == ENTRY_DISABLED) {
@@ -2293,6 +2427,8 @@ TkpDrawMenuEntry(mePtr, d, tkfont, menuMetricsPtr, x, y, width, height,
 	DrawMenuEntryLabel(menuPtr, mePtr, d, gc, tkfont, fmPtr, x, adjustedY,
 		width, adjustedHeight);
 	DrawMenuEntryAccelerator(menuPtr, mePtr, d, gc, tkfont, fmPtr,
+		activeBorder, x, adjustedY, width, adjustedHeight);
+	DrawMenuEntryArrow(menuPtr, mePtr, d, gc,
 		activeBorder, x, adjustedY, width, adjustedHeight, drawArrow);
 	if (!mePtr->hideMargin) {
 	    DrawMenuEntryIndicator(menuPtr, mePtr, d, gc, indicatorGC, tkfont,
@@ -2698,8 +2834,7 @@ TkpMenuNotifyToplevelCreate(
  *
  * MenuExitHandler --
  *
- *	Throws away the utility window needed for menus and unregisters
- *	the class.
+ *	Unregisters the class of utility windows.
  *
  * Results:
  *	None.
@@ -2714,11 +2849,38 @@ static void
 MenuExitHandler(
     ClientData clientData)	    /* Not used */
 {
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
-            Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
+    UnregisterClass(MENU_CLASS_NAME, Tk_GetHINSTANCE());
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * MenuExitHandler --
+ *
+ *	Throws away the utility window needed for menus and delete hash
+ *	tables.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	Menus have to be reinitialized next time.
+ *
+ *----------------------------------------------------------------------
+ */
+
+static void
+MenuThreadExitHandler(
+    ClientData clientData)	    /* Not used */
+{
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
+	    Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     DestroyWindow(tsdPtr->menuHWND);
-    UnregisterClass(MENU_CLASS_NAME, Tk_GetHINSTANCE());
+    tsdPtr->menuHWND = NULL;
+
+    Tcl_DeleteHashTable(&tsdPtr->winMenuTable);
+    Tcl_DeleteHashTable(&tsdPtr->commandTable);
 }
 
 /*
@@ -2888,8 +3050,6 @@ void
 TkpMenuInit()
 {
     WNDCLASS wndClass;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
-            Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     wndClass.style = CS_OWNDC;
     wndClass.lpfnWndProc = TkWinMenuProc;
@@ -2903,10 +3063,7 @@ TkpMenuInit()
     wndClass.lpszClassName = MENU_CLASS_NAME;
     RegisterClass(&wndClass);
 
-    tsdPtr->menuHWND = CreateWindow(MENU_CLASS_NAME, "MenuWindow", WS_POPUP,
-	0, 0, 10, 10, NULL, NULL, Tk_GetHINSTANCE(), NULL);
-
-    Tcl_CreateExitHandler(MenuExitHandler, (ClientData) NULL);
+    TkCreateExitHandler(MenuExitHandler, (ClientData) NULL);
     SetDefaults(1);
 }
 
@@ -2932,6 +3089,11 @@ TkpMenuThreadInit()
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
+    tsdPtr->menuHWND = CreateWindow(MENU_CLASS_NAME, "MenuWindow", WS_POPUP,
+	0, 0, 10, 10, NULL, NULL, Tk_GetHINSTANCE(), NULL);
+
     Tcl_InitHashTable(&tsdPtr->winMenuTable, TCL_ONE_WORD_KEYS);
     Tcl_InitHashTable(&tsdPtr->commandTable, TCL_ONE_WORD_KEYS);
+
+    Tcl_CreateThreadExitHandler(MenuThreadExitHandler, (ClientData) NULL);
 }
