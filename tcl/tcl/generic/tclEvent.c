@@ -11,7 +11,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclEvent.c,v 1.28.2.1 2003/05/13 12:44:07 dkf Exp $
+ * RCS: @(#) $Id: tclEvent.c,v 1.28.2.15 2007/03/19 17:06:25 dgp Exp $
  */
 
 #include "tclInt.h"
@@ -100,8 +100,20 @@ static Tcl_ThreadDataKey dataKey;
 
 /*
  * Common string for the library path for sharing across threads.
+ * This is ckalloc'd and cleared in Tcl_Finalize.
  */
-char *tclLibraryPathStr;
+static char *tclLibraryPathStr = NULL;
+
+
+#ifdef TCL_THREADS
+
+typedef struct {
+    Tcl_ThreadCreateProc *proc;	/* Main() function of the thread */
+    ClientData clientData;	/* The one argument to Main() */
+} ThreadClientData;
+static Tcl_ThreadCreateType NewThreadProc _ANSI_ARGS_((
+           ClientData clientData));
+#endif
 
 /*
  * Prototypes for procedures referenced only in this file:
@@ -593,6 +605,8 @@ TclSetLibraryPath(pathPtr)
 				 * the new library path. */
 {
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
+    const char *toDupe;
+    int size;
 
     if (pathPtr != NULL) {
 	Tcl_IncrRefCount(pathPtr);
@@ -606,7 +620,12 @@ TclSetLibraryPath(pathPtr)
      *  No mutex locking is needed here as up the stack we're within
      *  TclpInitLock().
      */
-    tclLibraryPathStr = Tcl_GetStringFromObj(pathPtr, NULL);
+    if (tclLibraryPathStr != NULL) {
+	ckfree(tclLibraryPathStr);
+    }
+    toDupe = Tcl_GetStringFromObj(pathPtr, &size);
+    tclLibraryPathStr = ckalloc((unsigned)size+1);
+    memcpy(tclLibraryPathStr, toDupe, (unsigned)size+1);
 }
 
 /*
@@ -712,6 +731,7 @@ TclInitSubsystems(argv0)
 	     * interesting happens so we can use the allocators in the
 	     * implementation of self-initializing locks.
 	     */
+
 #if USE_TCLALLOC
 	    TclInitAlloc(); /* process wide mutex init */
 #endif
@@ -720,10 +740,10 @@ TclInitSubsystems(argv0)
 #endif
 
 	    TclpInitPlatform(); /* creates signal handler(s) */
-    	    TclInitObjSubsystem(); /* register obj types, create mutexes */
+	    TclInitObjSubsystem(); /* register obj types, create mutexes */
 	    TclInitIOSubsystem(); /* inits a tsd key (noop) */
 	    TclInitEncodingSubsystem(); /* process wide encoding init */
-    	    TclInitNamespaceSubsystem(); /* register ns obj type (mutexed) */
+	    TclInitNamespaceSubsystem(); /* register ns obj type (mutexed) */
 	}
 	TclpInitUnlock();
     }
@@ -763,6 +783,29 @@ void
 Tcl_Finalize()
 {
     ExitHandler *exitPtr;
+    
+    /*
+     * Invoke exit handlers first.
+     */
+
+    Tcl_MutexLock(&exitMutex);
+    inFinalize = 1;
+    for (exitPtr = firstExitPtr; exitPtr != NULL; exitPtr = firstExitPtr) {
+	/*
+	 * Be careful to remove the handler from the list before
+	 * invoking its callback.  This protects us against
+	 * double-freeing if the callback should call
+	 * Tcl_DeleteExitHandler on itself.
+	 */
+
+	firstExitPtr = exitPtr->nextPtr;
+	Tcl_MutexUnlock(&exitMutex);
+	(*exitPtr->proc)(exitPtr->clientData);
+	ckfree((char *) exitPtr);
+	Tcl_MutexLock(&exitMutex);
+    }    
+    firstExitPtr = NULL;
+    Tcl_MutexUnlock(&exitMutex);
 
     TclpInitLock();
     if (subsystemsInitialized != 0) {
@@ -774,29 +817,6 @@ Tcl_Finalize()
 	 */
 
 	(void) TCL_TSD_INIT(&dataKey);
-
-	/*
-	 * Invoke exit handlers first.
-	 */
-
-	Tcl_MutexLock(&exitMutex);
-	inFinalize = 1;
-	for (exitPtr = firstExitPtr; exitPtr != NULL; exitPtr = firstExitPtr) {
-	    /*
-	     * Be careful to remove the handler from the list before
-	     * invoking its callback.  This protects us against
-	     * double-freeing if the callback should call
-	     * Tcl_DeleteExitHandler on itself.
-	     */
-
-	    firstExitPtr = exitPtr->nextPtr;
-	    Tcl_MutexUnlock(&exitMutex);
-	    (*exitPtr->proc)(exitPtr->clientData);
-	    ckfree((char *) exitPtr);
-	    Tcl_MutexLock(&exitMutex);
-	}    
-	firstExitPtr = NULL;
-	Tcl_MutexUnlock(&exitMutex);
 
 	/*
 	 * Clean up after the current thread now, after exit handlers.
@@ -813,14 +833,28 @@ Tcl_Finalize()
 	 * order dependencies.
 	 */
 
-	TclFinalizeCompExecEnv();
+	TclFinalizeCompilation();
+	TclFinalizeExecution();
 	TclFinalizeEnvironment();
 
 	/* 
 	 * Finalizing the filesystem must come after anything which
 	 * might conceivably interact with the 'Tcl_FS' API. 
 	 */
+
 	TclFinalizeFilesystem();
+
+	/*
+	 * Undo all the Tcl_ObjType registrations, and reset the master list
+	 * of free Tcl_Obj's.  After this returns, no more Tcl_Obj's should
+	 * be allocated or freed.
+	 *
+	 * Note in particular that TclFinalizeObjects() must follow
+	 * TclFinalizeFilesystem() because TclFinalizeFilesystem free's
+	 * the Tcl_Obj that holds the path of the current working directory.
+	 */
+
+	TclFinalizeObjects();
 
 	/* 
 	 * We must be sure the encoding finalization doesn't need
@@ -842,8 +876,30 @@ Tcl_Finalize()
 	    ckfree(tclDefaultEncodingDir);
 	    tclDefaultEncodingDir = NULL;
 	}
+	if (tclLibraryPathStr != NULL) {
+	    ckfree(tclLibraryPathStr);
+	    tclLibraryPathStr = NULL;
+	}
 	
 	Tcl_SetPanicProc(NULL);
+
+	/*
+	 * There have been several bugs in the past that cause
+	 * exit handlers to be established during Tcl_Finalize
+	 * processing.  Such exit handlers leave malloc'ed memory,
+	 * and Tcl_FinalizeThreadAlloc or Tcl_FinalizeMemorySubsystem
+	 * will result in a corrupted heap.  The result can be a
+	 * mysterious crash on process exit.  Check here that
+	 * nobody's done this.
+	 */
+
+#ifdef TCL_MEM_DEBUG
+	if ( firstExitPtr != NULL ) {
+	    Tcl_Panic( "exit handlers were created during Tcl_Finalize" );
+	}
+#endif
+
+	TclFinalizePreserve();
 
 	/*
 	 * Free synchronization objects.  There really should only be one
@@ -851,6 +907,10 @@ Tcl_Finalize()
 	 */
 
 	TclFinalizeSynchronization();
+
+#if defined(TCL_THREADS) && defined(USE_THREAD_ALLOC) && !defined(TCL_MEM_DEBUG) && !defined(PURIFY)
+	TclFinalizeThreadAlloc();
+#endif
 
 	/*
 	 * We defer unloading of packages until very late 
@@ -871,13 +931,13 @@ Tcl_Finalize()
 	TclResetFilesystem();
 	
 	/*
-	 * There shouldn't be any malloc'ed memory after this.
+	 * At this point, there should no longer be any ckalloc'ed memory.
 	 */
 
 	TclFinalizeMemorySubsystem();
 	inFinalize = 0;
     }
-    TclpInitUnlock();
+    TclFinalizeLock();
 }
 
 /*
@@ -901,9 +961,9 @@ void
 Tcl_FinalizeThread()
 {
     ExitHandler *exitPtr;
-    ThreadSpecificData *tsdPtr =
-	    (ThreadSpecificData *)TclThreadDataKeyGet(&dataKey);
+    ThreadSpecificData *tsdPtr;
 
+    tsdPtr = (ThreadSpecificData *)TclThreadDataKeyGet(&dataKey);
     if (tsdPtr != NULL) {
 	tsdPtr->inExit = 1;
 
@@ -934,17 +994,17 @@ Tcl_FinalizeThread()
 	TclFinalizeAsync();
     }
 
-	/*
-	 * Blow away all thread local storage blocks.
+    /*
+     * Blow away all thread local storage blocks.
      *
      * Note that Tcl API allows creation of threads which do not use any
      * Tcl interp or other Tcl subsytems. Those threads might, however,
      * use thread local storage, so we must unconditionally finalize it.
      *
      * Fix [Bug #571002]
-	 */
+     */
 
-	TclFinalizeThreadData();
+    TclFinalizeThreadData();
 }
 
 /*
@@ -1135,4 +1195,80 @@ Tcl_UpdateObjCmd(clientData, interp, objc, objv)
 
     Tcl_ResetResult(interp);
     return TCL_OK;
+}
+
+#ifdef TCL_THREADS
+/*
+ *-----------------------------------------------------------------------------
+ *
+ *  NewThreadProc --
+ *
+ * 	Bootstrap function of a new Tcl thread.
+ *
+ * Results:
+ *	None.
+ *
+ * Side Effects:
+ *	Initializes Tcl notifier for the current thread.
+ *
+ *-----------------------------------------------------------------------------
+ */
+
+static Tcl_ThreadCreateType
+NewThreadProc(ClientData clientData)
+{
+    ThreadClientData *cdPtr;
+    ClientData threadClientData;
+    Tcl_ThreadCreateProc *threadProc;
+
+    cdPtr = (ThreadClientData*)clientData;
+    threadProc = cdPtr->proc;
+    threadClientData = cdPtr->clientData;
+    ckfree((char*)clientData); /* Allocated in Tcl_CreateThread() */
+
+    (*threadProc)(threadClientData);
+
+    TCL_THREAD_CREATE_RETURN;
+}
+#endif
+/*
+ *----------------------------------------------------------------------
+ *
+ * Tcl_CreateThread --
+ *
+ *	This procedure creates a new thread. This actually belongs
+ *	to the tclThread.c file but since we use some private 
+ *	data structures local to this file, it is placed here.
+ *
+ * Results:
+ *	TCL_OK if the thread could be created.  The thread ID is
+ *	returned in a parameter.
+ *
+ * Side effects:
+ *	A new thread is created.
+ *
+ *----------------------------------------------------------------------
+ */
+
+int
+Tcl_CreateThread(idPtr, proc, clientData, stackSize, flags)
+    Tcl_ThreadId *idPtr;		/* Return, the ID of the thread */
+    Tcl_ThreadCreateProc proc;		/* Main() function of the thread */
+    ClientData clientData;		/* The one argument to Main() */
+    int stackSize;			/* Size of stack for the new thread */
+    int flags;				/* Flags controlling behaviour of
+					 * the new thread */
+{
+#ifdef TCL_THREADS
+    ThreadClientData *cdPtr;
+
+    cdPtr = (ThreadClientData*)ckalloc(sizeof(ThreadClientData));
+    cdPtr->proc = proc;
+    cdPtr->clientData = clientData;
+
+    return TclpThreadCreate(idPtr, NewThreadProc, (ClientData)cdPtr,
+                           stackSize, flags);
+#else
+    return TCL_ERROR;
+#endif /* TCL_THREADS */
 }

@@ -15,7 +15,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: basic.test,v 1.25.2.3 2004/03/01 17:33:22 dgp Exp $
+# RCS: @(#) $Id: basic.test,v 1.25.2.7 2005/03/18 16:33:43 dgp Exp $
 #
 
 package require tcltest 2
@@ -24,6 +24,7 @@ namespace import -force ::tcltest::*
 testConstraint testcmdtoken [llength [info commands testcmdtoken]]
 testConstraint testcmdtrace [llength [info commands testcmdtrace]]
 testConstraint testcreatecommand [llength [info commands testcreatecommand]]
+testConstraint testevalex [llength [info commands testevalex]]
 testConstraint exec [llength [info commands exec]]
 
 # This variable needs to be changed when the major or minor version number for
@@ -431,6 +432,24 @@ test basic-26.1 {Tcl_EvalObj: preserve object while evaling it} {
     set x
 } "foo\n    while executing\n\"error foo\""
 
+test basic-26.2 {Tcl_EvalObjEx, pure-list branch: preserve "objv"} {
+    #
+    # Follow the pure-list branch in a manner that
+    #   a - the pure-list internal rep is destroyed by shimmering
+    #   b - the command returns an error
+    # As the error code in Tcl_EvalObjv accesses the list elements, this will
+    # cause a segfault if [Bug 1119369] has not been fixed.
+    #
+
+    set SRC [list foo 1] ;# pure-list command 
+    proc foo str {
+	# Shimmer pure-list to cmdName, cleanup and error
+	proc $::SRC {} {}; $::SRC
+	error "BAD CALL"
+    }
+    catch {eval $SRC}
+} 1
+
 test basic-27.1 {Tcl_ExprLong} {emptyTest} {
 } {}
 
@@ -584,8 +603,7 @@ test basic-46.1 {Tcl_AllowExceptions: exception return not allowed} {stdio} {
     list $res $msg
 } {1 {invoked "continue" outside of a loop
     while executing
-"continue
-"
+"continue"
 DONE
 }}
 
@@ -634,9 +652,7 @@ test basic-46.4 {Tcl_AllowExceptions: exception return not allowed} -setup {
 } -cleanup {
     removeFile BREAKtest
 } -returnCodes error -match glob -result {invoked "break" outside of a loop
-    while executing
-"break"
-    invoked from within
+    while executing*
 "foo \[set a 1] \[break]"
     (file "*BREAKtest" line 2)}
 
@@ -659,6 +675,25 @@ test basic-47.1 {Tcl_EvalEx: check for missing close-bracket} -body {
     subst {a[set b [format cd]}
 } -returnCodes error -result {missing close-bracket}
 
+test basic-49.1 {Tcl_EvalEx: verify TCL_EVAL_GLOBAL operation} testevalex {
+    set ::x global
+    namespace eval ns {
+        variable x namespace
+        testevalex {set x changed} global
+        set ::result [list $::x $x]
+    } 
+    namespace delete ns
+    set ::result
+} {changed namespace}
+test basic-49.2 {Tcl_EvalEx: verify TCL_EVAL_GLOBAL operation} testevalex {
+    set ::x global
+    namespace eval ns {
+        variable x namespace
+        testevalex {set ::context $x} global
+    }
+    namespace delete ns
+    set ::context
+} {global}
 
 # cleanup
 catch {eval namespace delete [namespace children :: test_ns_*]}

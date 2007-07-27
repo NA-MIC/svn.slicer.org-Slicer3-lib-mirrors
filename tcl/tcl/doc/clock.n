@@ -10,7 +10,7 @@
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
-'\" RCS: @(#) $Id: clock.n,v 1.11.2.1 2004/02/06 16:47:53 dgp Exp $
+'\" RCS: @(#) $Id: clock.n,v 1.11.2.6 2004/12/13 15:52:21 kennykb Exp $
 '\" 
 .so man.macros
 .TH clock n 8.4 Tcl "Tcl Built-In Commands"
@@ -29,8 +29,8 @@ or manipulate strings or values that represent some notion of
 time.  The \fIoption\fR argument determines what action is carried
 out by the command.  The legal \fIoptions\fR (which may be
 abbreviated) are:
-.TP
 .VS 8.3
+.TP
 \fBclock clicks\fR ?\fB\-milliseconds\fR?
 Return a high-resolution time value as a system-dependent integer
 value.  The unit of the value is system-dependent but should be the
@@ -79,6 +79,12 @@ Day of month (01 - 31).
 Date as %m/%d/%y.
 .IP \fB%e\fR
 Day of month (1 - 31), no leading zeros.
+.IP \fB%g\fR
+The ISO8601 year number corresponding to the ISO8601 week (%V), expressed
+as a two-digit year-of-the-century, with leading zero if necessary.
+.IP \fB%G\fR
+The ISO8601 year number corresponding to the ISO8601 week (%V), expressed
+as a four-digit number.
 .IP \fB%h\fR
 Abbreviated month name.
 .VE 8.4
@@ -232,7 +238,11 @@ an error may result if these years are used.
 \fIISO 8601 point-in-time\fR
 An ISO 8601 point-in-time specification, such as \fICCyymmddThhmmss\fR, where
 T is the literal T, \fICCyymmdd hhmmss\fR, or 
-\fICCyymmddThh:mm:ss\fR.
+\fICCyymmddThh:mm:ss\fR.  Note that only these three formats are accepted.
+The command does \fInot\fR accept the full range of point-in-time
+specifications specified in ISO8601.  Other formats can be recognized by
+using commands such as \fBregexp\fR to extract their fields and reorganize
+them into a form accepted by the \fBclock scan\fR command.
 .TP
 \fIrelative time\fR
 A specification relative to the current time.  The format is \fInumber
@@ -262,10 +272,10 @@ different results will be given for \fBclock scan "1 day"\fR and
 \fBclock scan "24 hours"\fR:
 .CS
 .ta 6c
-\fB% clock scan "1 day" -base [clock scan 1999-10-31]
+% \fBclock scan\fR "1 day" -base [\fBclock scan\fR 1999-10-31]
 941443200
-% clock scan "24 hours" -base [clock scan 1999-10-31]
-941439600\fR
+% \fBclock scan\fR "24 hours" -base [\fBclock scan\fR 1999-10-31]
+941439600
 .CE
 .RE
 .TP

@@ -11,7 +11,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- *  RCS: @(#) $Id: tclUtil.c,v 1.36.2.4 2003/08/27 21:31:53 dgp Exp $
+ *  RCS: @(#) $Id: tclUtil.c,v 1.36.2.8 2007/05/10 18:23:58 dgp Exp $
  */
 
 #include "tclInt.h"
@@ -436,15 +436,26 @@ Tcl_SplitList(interp, list, argcPtr, argvPtr)
      * the number of space characters in the list.
      */
 
-    for (size = 1, l = list; *l != 0; l++) {
+    for (size = 2, l = list; *l != 0; l++) {
 	if (isspace(UCHAR(*l))) { /* INTL: ISO space. */
 	    size++;
+	    /* Consecutive space can only count as a single list delimiter */
+	    while (1) {
+		char next = *(l + 1);
+		if (next == '\0') {
+		    break;
+		}
+		++l;
+		if (isspace(UCHAR(next))) {
+		    continue;
+		}
+		break;
+	    }
 	}
     }
-    size++;			/* Leave space for final NULL pointer. */
+    length = l - list;
     argv = (CONST char **) ckalloc((unsigned)
-	    ((size * sizeof(char *)) + (l - list) + 1));
-    length = strlen(list);
+	    ((size * sizeof(char *)) + length + 1));
     for (i = 0, p = ((char *) argv) + size*sizeof(char *);
 	    *list != 0;  i++) {
 	CONST char *prevList = list;
@@ -1395,6 +1406,43 @@ Tcl_StringCaseMatch(string, pattern, nocase)
 /*
  *----------------------------------------------------------------------
  *
+ * TclMatchIsTrivial --
+ *
+ *	Test whether a particular glob pattern is a trivial pattern.
+ *	(i.e. where matching is the same as equality testing).
+ *
+ * Results:
+ *	A boolean indicating whether the pattern is free of all of the
+ *	glob special chars.
+ *
+ * Side effects:
+ *	None.
+ *
+ *----------------------------------------------------------------------
+ */
+
+int
+TclMatchIsTrivial(pattern)
+    CONST char *pattern;
+{
+    CONST char *p = pattern;
+
+    while (1) {
+	switch (*p++) {
+	case '\0':
+	    return 1;
+	case '*':
+	case '?':
+	case '[':
+	case '\\':
+	    return 0;
+	}
+    }
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
  * Tcl_DStringInit --
  *
  *	Initializes a dynamic string, discarding any previous contents
@@ -1922,7 +1970,7 @@ TclPrecTraceProc(clientData, interp, name1, name2, flags)
      */
 
     if (flags & TCL_TRACE_UNSETS) {
-	if ((flags & TCL_TRACE_DESTROYED) && !(flags & TCL_INTERP_DESTROYED)) {
+	if ((flags & TCL_TRACE_DESTROYED) && !Tcl_InterpDeleted(interp)) {
 	    Tcl_TraceVar2(interp, name1, name2,
 		    TCL_GLOBAL_ONLY|TCL_TRACE_READS|TCL_TRACE_WRITES
 		    |TCL_TRACE_UNSETS, TclPrecTraceProc, clientData);
@@ -2239,30 +2287,8 @@ TclGetIntForIndex(interp, objPtr, endValue, indexPtr)
     int *indexPtr;		/* Location filled in with an integer
 				 * representing an index. */
 {
-    char *bytes;
-    int offset;
-    Tcl_WideInt wideOffset;
-
-    /*
-     * If the object is already an integer, use it.
-     */
-
-    if (objPtr->typePtr == &tclIntType) {
-	*indexPtr = (int)objPtr->internalRep.longValue;
+    if (Tcl_GetIntFromObj(NULL, objPtr, indexPtr) == TCL_OK) {
 	return TCL_OK;
-    }
-
-    /*
-     * If the object is already a wide-int, and it is not out of range
-     * for an integer, use it. [Bug #526717]
-     */
-    if (objPtr->typePtr == &tclWideIntType) {
-	TclGetWide(wideOffset,objPtr);
-	if (wideOffset >= Tcl_LongAsWide(INT_MIN)
-	    && wideOffset <= Tcl_LongAsWide(INT_MAX)) {
-	    *indexPtr = (int) Tcl_WideAsLong(wideOffset);
-	    return TCL_OK;
-	}
     }
 
     if (SetEndOffsetFromAny(NULL, objPtr) == TCL_OK) {
@@ -2273,31 +2299,13 @@ TclGetIntForIndex(interp, objPtr, endValue, indexPtr)
 
 	*indexPtr = endValue + objPtr->internalRep.longValue;
 
-    } else if (Tcl_GetWideIntFromObj(NULL, objPtr, &wideOffset) == TCL_OK) {
-	/*
-	 * If the object can be converted to a wide integer, use
-	 * that. [Bug #526717]
-	 */
-
-	offset = (int) Tcl_WideAsLong(wideOffset);
-	if (Tcl_LongAsWide(offset) == wideOffset) {
-	    /*
-	     * But it is representable as a narrow integer, so we
-	     * prefer that (so preserving old behaviour in the
-	     * majority of cases.)
-	     */
-	    objPtr->typePtr = &tclIntType;
-	    objPtr->internalRep.longValue = offset;
-	}
-	*indexPtr = offset;
-
     } else {
 	/*
 	 * Report a parse error.
 	 */
 
 	if (interp != NULL) {
-	    bytes = Tcl_GetString(objPtr);
+	    char *bytes = Tcl_GetString(objPtr);
 	    /*
 	     * The result might not be empty; this resets it which
 	     * should be both a cheap operation, and of little problem

@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * CVS: $Id: tclIOGT.c,v 1.7 2002/05/24 21:19:06 dkf Exp $
+ * CVS: $Id: tclIOGT.c,v 1.7.2.2 2006/08/30 17:24:07 hobbs Exp $
  */
 
 #include "tclInt.h"
@@ -131,7 +131,7 @@ static void		ResultAdd    _ANSI_ARGS_ ((ResultBuffer* r,
 
 static Tcl_ChannelType transformChannelType = {
     "transform",			/* Type name. */
-    TCL_CHANNEL_VERSION_2,
+    TCL_CHANNEL_VERSION_3,
     TransformCloseProc,			/* Close proc. */
     TransformInputProc,			/* Input proc. */
     TransformOutputProc,		/* Output proc. */
@@ -440,7 +440,7 @@ ExecuteCallback (dataPtr, interp, op, buf, bufLen, transmit, preserve)
      * message into current interpreter. Don't copy if in preservation mode.
      */
 
-    res = Tcl_GlobalEvalObj (dataPtr->interp, command);
+    res = Tcl_EvalObjEx(dataPtr->interp, command, TCL_EVAL_GLOBAL);
     Tcl_DecrRefCount (command);
     command = (Tcl_Obj*) NULL;
 

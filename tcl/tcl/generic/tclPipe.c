@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclPipe.c,v 1.7 2002/12/17 02:47:39 davygrvy Exp $
+ * RCS: @(#) $Id: tclPipe.c,v 1.7.2.5 2006/03/16 00:35:58 andreas_kupries Exp $
  */
 
 #include "tclInt.h"
@@ -68,13 +68,13 @@ static TclFile
 FileForRedirect(interp, spec, atOK, arg, nextArg, flags, skipPtr, closePtr,
 	releasePtr)
     Tcl_Interp *interp;		/* Intepreter to use for error reporting. */
-    CONST char *spec;			/* Points to character just after
+    CONST char *spec;		/* Points to character just after
 				 * redirection character. */
-    CONST char *arg;		/* Pointer to entire argument containing 
-				 * spec:  used for error reporting. */
     int atOK;			/* Non-zero means that '@' notation can be 
 				 * used to specify a channel, zero means that
 				 * it isn't. */
+    CONST char *arg;		/* Pointer to entire argument containing 
+				 * spec:  used for error reporting. */
     CONST char *nextArg;	/* Next argument in argc/argv array, if needed 
 				 * for file name or channel name.  May be 
 				 * NULL. */
@@ -107,9 +107,9 @@ FileForRedirect(interp, spec, atOK, arg, nextArg, flags, skipPtr, closePtr,
         }
 	file = TclpMakeFile(chan, writing ? TCL_WRITABLE : TCL_READABLE);
         if (file == NULL) {
-            Tcl_AppendResult(interp, "channel \"", Tcl_GetChannelName(chan),
-                    "\" wasn't opened for ",
-                    ((writing) ? "writing" : "reading"), (char *) NULL);
+	    Tcl_AppendResult(interp, "channel \"", Tcl_GetChannelName(chan),
+		    "\" wasn't opened for ",
+		    ((writing) ? "writing" : "reading"), (char *) NULL);
             return NULL;
         }
 	*releasePtr = 1;
@@ -135,11 +135,10 @@ FileForRedirect(interp, spec, atOK, arg, nextArg, flags, skipPtr, closePtr,
 	    *skipPtr = 2;
 	}
 	name = Tcl_TranslateFileName(interp, spec, &nameString);
-	if (name != NULL) {
-	    file = TclpOpenFile(name, flags);
-	} else {
-	    file = NULL;
+	if (name == NULL) {
+	    return NULL;
 	}
+	file = TclpOpenFile(name, flags);
 	Tcl_DStringFree(&nameString);
 	if (file == NULL) {
 	    Tcl_AppendResult(interp, "couldn't ",
@@ -508,7 +507,8 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
     				 * closed when cleaning up. */
     int errorRelease = 0;
     CONST char *p;
-    int skip, lastBar, lastArg, i, j, atOK, flags, errorToOutput;
+    CONST char *nextArg;
+    int skip, lastBar, lastArg, i, j, atOK, flags, needCmd, errorToOutput = 0;
     Tcl_DString execBuffer;
     TclFile pipeIn;
     TclFile curInFile, curOutFile, curErrFile;
@@ -546,8 +546,10 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
 
     lastBar = -1;
     cmdCount = 1;
+    needCmd = 1;
     for (i = 0; i < argc; i++) {
-        skip = 0;
+	errorToOutput = 0;
+	skip = 0;
 	p = argv[i];
 	switch (*p++) {
 	case '|':
@@ -564,6 +566,7 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
 	    }
 	    lastBar = i;
 	    cmdCount++;
+	    needCmd = 1;
 	    break;
 
 	case '<':
@@ -580,7 +583,7 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
 		inputLiteral = p + 1;
 		skip = 1;
 		if (*inputLiteral == '\0') {
-		    inputLiteral = argv[i + 1];
+		    inputLiteral = ((i + 1) == argc) ? NULL : argv[i + 1];
 		    if (inputLiteral == NULL) {
 			Tcl_AppendResult(interp, "can't specify \"", argv[i],
 				"\" as last word in command", (char *) NULL);
@@ -589,9 +592,10 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
 		    skip = 2;
 		}
 	    } else {
+		nextArg = ((i + 1) == argc) ? NULL : argv[i + 1];
 		inputLiteral = NULL;
 		inputFile = FileForRedirect(interp, p, 1, argv[i], 
-			argv[i + 1], O_RDONLY, &skip, &inputClose, &inputRelease);
+			nextArg, O_RDONLY, &skip, &inputClose, &inputRelease);
 		if (inputFile == NULL) {
 		    goto error;
 		}
@@ -601,11 +605,16 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
 	case '>':
 	    atOK = 1;
 	    flags = O_WRONLY | O_CREAT | O_TRUNC;
-	    errorToOutput = 0;
 	    if (*p == '>') {
 		p++;
 		atOK = 0;
-		flags = O_WRONLY | O_CREAT;
+
+		/*
+		 * Note that the O_APPEND flag only has an effect on POSIX
+		 * platforms. On Windows, we just have to carry on regardless.
+		 */
+
+		flags = O_WRONLY | O_CREAT | O_APPEND;
 	    }
 	    if (*p == '&') {
 		if (errorClose != 0) {
@@ -637,8 +646,9 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
 		    TclpReleaseFile(outputFile);
 		}
 	    }
+	    nextArg = ((i + 1) == argc) ? NULL : argv[i + 1];
 	    outputFile = FileForRedirect(interp, p, atOK, argv[i], 
-		    argv[i + 1], flags, &skip, &outputClose, &outputRelease);
+		    nextArg, flags, &skip, &outputClose, &outputRelease);
 	    if (outputFile == NULL) {
 		goto error;
 	    }
@@ -675,12 +685,34 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
 		errorRelease = 0;
 		TclpReleaseFile(errorFile);
 	    }
-	    errorFile = FileForRedirect(interp, p, atOK, argv[i], 
-		    argv[i + 1], flags, &skip, &errorClose, &errorRelease);
-	    if (errorFile == NULL) {
-		goto error;
+	    if (atOK && p[0] == '@' && p[1] == '1' && p[2] == '\0') {
+		/*
+		 * Special case handling of 2>@1 to redirect stderr to the
+		 * exec/open output pipe as well.  This is meant for the end
+		 * of the command string, otherwise use |& between commands.
+		 */
+		if (i != argc - 1) {
+		    Tcl_AppendResult(interp, "must specify \"", argv[i],
+			    "\" as last word in command", (char *) NULL);
+		    goto error;
+		}
+		errorFile = outputFile;
+		errorToOutput = 2;
+		skip = 1;
+	    } else {
+		nextArg = ((i + 1) == argc) ? NULL : argv[i + 1];
+		errorFile = FileForRedirect(interp, p, atOK, argv[i], 
+			nextArg, flags, &skip, &errorClose, &errorRelease);
+		if (errorFile == NULL) {
+		    goto error;
+		}
 	    }
 	    break;
+
+	default:
+	  /* Got a command word, not a redirection */
+	  needCmd = 0;
+	  break;
 	}
 
 	if (skip != 0) {
@@ -690,6 +722,15 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
 	    argc -= skip;
 	    i -= 1;
 	}
+    }
+
+    if (needCmd) {
+        /* We had a bar followed only by redirections. */
+
+        Tcl_SetResult(interp,
+		      "illegal use of | or |& in command",
+		      TCL_STATIC);
+	goto error;
     }
 
     if (inputFile == NULL) {
@@ -765,7 +806,12 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
     }
 
     if (errorFile == NULL) {
-	if (errFilePtr != NULL) {
+	if (errorToOutput == 2) {
+	    /*
+	     * Handle 2>@1 special case at end of cmd line
+	     */
+	    errorFile = outputFile;
+	} else if (errFilePtr != NULL) {
 	    /*
 	     * Set up the standard error output sink for the pipeline, if
 	     * requested.  Use a temporary file which is opened, then deleted.
@@ -837,7 +883,6 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
 		}
 	    }
 	}
-	argv[lastArg] = NULL;
 
 	/*
 	 * If this is the last segment, use the specified outputFile.
@@ -845,9 +890,10 @@ TclCreatePipeline(interp, argc, argv, pidArrayPtr, inPipePtr,
 	 * curInFile for the next segment of the pipe.
 	 */
 
-	if (lastArg == argc) { 
+	if (lastArg == argc) {
 	    curOutFile = outputFile;
 	} else {
+	    argv[lastArg] = NULL;
 	    if (TclpCreatePipe(&pipeIn, &curOutFile) == 0) {
 		Tcl_AppendResult(interp, "couldn't create pipe: ",
 			Tcl_PosixError(interp), (char *) NULL);

@@ -11,7 +11,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclObj.c,v 1.42.2.4 2003/05/23 21:29:11 dgp Exp $
+ * RCS: @(#) $Id: tclObj.c,v 1.42.2.14 2005/11/29 14:02:04 dkf Exp $
  */
 
 #include "tclInt.h"
@@ -60,11 +60,14 @@ static int		SetDoubleFromAny _ANSI_ARGS_((Tcl_Interp *interp,
 			    Tcl_Obj *objPtr));
 static int		SetIntFromAny _ANSI_ARGS_((Tcl_Interp *interp,
 			    Tcl_Obj *objPtr));
+static int		SetIntOrWideFromAny _ANSI_ARGS_((Tcl_Interp* interp,
+							 Tcl_Obj *objPtr));
 static void		UpdateStringOfBoolean _ANSI_ARGS_((Tcl_Obj *objPtr));
 static void		UpdateStringOfDouble _ANSI_ARGS_((Tcl_Obj *objPtr));
 static void		UpdateStringOfInt _ANSI_ARGS_((Tcl_Obj *objPtr));
 static int		SetWideIntFromAny _ANSI_ARGS_((Tcl_Interp *interp,
 			    Tcl_Obj *objPtr));
+
 #ifndef TCL_WIDE_INT_IS_LONG
 static void		UpdateStringOfWideInt _ANSI_ARGS_((Tcl_Obj *objPtr));
 #endif
@@ -269,23 +272,22 @@ TclInitObjSubsystem()
 /*
  *----------------------------------------------------------------------
  *
- * TclFinalizeCompExecEnv --
+ * TclFinalizeObjects --
  *
- *	This procedure is called by Tcl_Finalize to clean up the Tcl
- *	compilation and execution environment so it can later be properly
- *	reinitialized.
+ *	This procedure is called by Tcl_Finalize to clean up all
+ *	registered Tcl_ObjType's and to reset the tclFreeObjList.
  *
  * Results:
  *	None.
  *
  * Side effects:
- *	Cleans up the compilation and execution environment
+ *	None.
  *
  *----------------------------------------------------------------------
  */
 
 void
-TclFinalizeCompExecEnv()
+TclFinalizeObjects()
 {
     Tcl_MutexLock(&tableMutex);
     if (typeTableInitialized) {
@@ -293,12 +295,15 @@ TclFinalizeCompExecEnv()
         typeTableInitialized = 0;
     }
     Tcl_MutexUnlock(&tableMutex);
+
+    /* 
+     * All we do here is reset the head pointer of the linked list of
+     * free Tcl_Obj's to NULL;  the memory finalization will take care
+     * of releasing memory for us.
+     */
     Tcl_MutexLock(&tclObjMutex);
     tclFreeObjList = NULL;
     Tcl_MutexUnlock(&tclObjMutex);
-
-    TclFinalizeCompilation();
-    TclFinalizeExecution();
 }
 
 /*
@@ -326,26 +331,10 @@ Tcl_RegisterObjType(typePtr)
 				 * storage must be statically
 				 * allocated (must live forever). */
 {
-    register Tcl_HashEntry *hPtr;
     int new;
-
-    /*
-     * If there's already an object type with the given name, remove it.
-     */
     Tcl_MutexLock(&tableMutex);
-    hPtr = Tcl_FindHashEntry(&typeTable, typePtr->name);
-    if (hPtr != (Tcl_HashEntry *) NULL) {
-        Tcl_DeleteHashEntry(hPtr);
-    }
-
-    /*
-     * Now insert the new object type.
-     */
-
-    hPtr = Tcl_CreateHashEntry(&typeTable, typePtr->name, &new);
-    if (new) {
-	Tcl_SetHashValue(hPtr, typePtr);
-    }
+    Tcl_SetHashValue(
+	    Tcl_CreateHashEntry(&typeTable, typePtr->name, &new), typePtr);
     Tcl_MutexUnlock(&tableMutex);
 }
 
@@ -383,23 +372,27 @@ Tcl_AppendAllObjTypes(interp, objPtr)
 {
     register Tcl_HashEntry *hPtr;
     Tcl_HashSearch search;
-    Tcl_ObjType *typePtr;
-    int result;
- 
+    int objc;
+    Tcl_Obj **objv;
+
     /*
-     * This code assumes that types names do not contain embedded NULLs.
+     * Get the test for a valid list out of the way first.
+     */
+
+    if (Tcl_ListObjGetElements(interp, objPtr, &objc, &objv) != TCL_OK) {
+	return TCL_ERROR;
+    }
+
+    /*
+     * Type names are NUL-terminated, not counted strings.
+     * This code relies on that.
      */
 
     Tcl_MutexLock(&tableMutex);
     for (hPtr = Tcl_FirstHashEntry(&typeTable, &search);
 	    hPtr != NULL;  hPtr = Tcl_NextHashEntry(&search)) {
-        typePtr = (Tcl_ObjType *) Tcl_GetHashValue(hPtr);
-	result = Tcl_ListObjAppendElement(interp, objPtr,
-	        Tcl_NewStringObj(typePtr->name, -1));
-	if (result == TCL_ERROR) {
-	    Tcl_MutexUnlock(&tableMutex);
-	    return result;
-	}
+	Tcl_ListObjAppendElement(NULL, objPtr,
+	        Tcl_NewStringObj(Tcl_GetHashKey(&typeTable, hPtr), -1));
     }
     Tcl_MutexUnlock(&tableMutex);
     return TCL_OK;
@@ -428,17 +421,15 @@ Tcl_GetObjType(typeName)
     CONST char *typeName;	/* Name of Tcl object type to look up. */
 {
     register Tcl_HashEntry *hPtr;
-    Tcl_ObjType *typePtr;
+    Tcl_ObjType *typePtr = NULL;
 
     Tcl_MutexLock(&tableMutex);
     hPtr = Tcl_FindHashEntry(&typeTable, typeName);
     if (hPtr != (Tcl_HashEntry *) NULL) {
         typePtr = (Tcl_ObjType *) Tcl_GetHashValue(hPtr);
-	Tcl_MutexUnlock(&tableMutex);
-	return typePtr;
     }
     Tcl_MutexUnlock(&tableMutex);
-    return NULL;
+    return typePtr;
 }
 
 /*
@@ -626,7 +617,10 @@ TclAllocateFreeObjects()
      * This has been noted by Purify to be a potential leak.  The problem is
      * that Tcl, when not TCL_MEM_DEBUG compiled, keeps around all allocated
      * Tcl_Obj's, pointed to by tclFreeObjList, when freed instead of
-     * actually freeing the memory.  These never do get freed properly.
+     * actually freeing the memory.  TclFinalizeObjects() does not ckfree()
+     * this memory, but leaves it to Tcl's memory subsystem finalziation to
+     * release it.  Purify apparently can't figure that out, and fires a
+     * false alarm.
      */
 
     basePtr = (char *) ckalloc(bytesToAlloc);
@@ -884,7 +878,7 @@ Tcl_InvalidateStringRep(objPtr)
  * Tcl_NewBooleanObj --
  *
  *	This procedure is normally called when not debugging: i.e., when
- *	TCL_MEM_DEBUG is not defined. It creates a new boolean object and
+ *	TCL_MEM_DEBUG is not defined. It creates a new Tcl_Obj and
  *	initializes it from the argument boolean value. A nonzero
  *	"boolValue" is coerced to 1.
  *
@@ -1115,11 +1109,7 @@ SetBooleanFromAny(interp, objPtr)
     } else if (objPtr->typePtr == &tclDoubleType) {
 	newBool = (objPtr->internalRep.doubleValue != 0.0);
     } else if (objPtr->typePtr == &tclWideIntType) {
-#ifdef TCL_WIDE_INT_IS_LONG
-	newBool = (objPtr->internalRep.longValue != 0);
-#else /* !TCL_WIDE_INT_IS_LONG */
-	newBool = (objPtr->internalRep.wideValue != Tcl_LongAsWide(0));
-#endif /* TCL_WIDE_INT_IS_LONG */
+	newBool = (objPtr->internalRep.wideValue != 0);
     } else {
 	/*
 	 * Copy the string converting its characters to lower case.
@@ -1746,32 +1736,91 @@ Tcl_GetIntFromObj(interp, objPtr, intPtr)
     register Tcl_Obj *objPtr;	/* The object from which to get a int. */
     register int *intPtr;	/* Place to store resulting int. */
 {
-    register long l;
     int result;
-    
-    if (objPtr->typePtr != &tclIntType) {
-	result = SetIntFromAny(interp, objPtr);
+    Tcl_WideInt w = 0;
+
+    /*
+     * If the object isn't already an integer of any width, try to
+     * convert it to one.
+     */
+
+    if (objPtr->typePtr != &tclIntType && objPtr->typePtr != &tclWideIntType) {
+	result = SetIntOrWideFromAny(interp, objPtr);
 	if (result != TCL_OK) {
 	    return result;
 	}
     }
-    l = objPtr->internalRep.longValue;
-    if (((long)((int)l)) == l) {
-	*intPtr = (int)objPtr->internalRep.longValue;
-	return TCL_OK;
+
+    /*
+     * Object should now be either int or wide. Get its value.
+     */
+
+#ifndef TCL_WIDE_INT_IS_LONG
+    if (objPtr->typePtr == &tclWideIntType) {
+	w = objPtr->internalRep.wideValue;
+    } else
+#endif
+    {
+	w = Tcl_LongAsWide(objPtr->internalRep.longValue);
     }
-    if (interp != NULL) {
-	Tcl_ResetResult(interp);
-	Tcl_AppendToObj(Tcl_GetObjResult(interp),
-		"integer value too large to represent as non-long integer", -1);
+
+    if ((LLONG_MAX > UINT_MAX)
+	    && ((w > UINT_MAX) || (w < -(Tcl_WideInt)UINT_MAX))) {
+	if (interp != NULL) {
+	    Tcl_SetObjResult(interp, Tcl_NewStringObj(
+		"integer value too large to represent as non-long integer",
+		-1));
+	}
+	return TCL_ERROR;
     }
-    return TCL_ERROR;
+    *intPtr = (int)w;
+    return TCL_OK;
 }
 
 /*
  *----------------------------------------------------------------------
  *
  * SetIntFromAny --
+ *
+ *	Attempts to force the internal representation for a Tcl object
+ *	to tclIntType, specifically.
+ *
+ * Results:
+ *	The return value is a standard object Tcl result.  If an
+ *	error occurs during conversion, an error message is left in
+ *	the interpreter's result unless "interp" is NULL.
+ *
+ *----------------------------------------------------------------------
+ */
+
+static int
+SetIntFromAny( Tcl_Interp* interp, 
+				/* Tcl interpreter */
+	       Tcl_Obj* objPtr )
+				/* Pointer to the object to convert */
+{
+    int result;
+
+    result = SetIntOrWideFromAny( interp, objPtr );
+    if ( result != TCL_OK ) {
+	return result;
+    }
+    if ( objPtr->typePtr != &tclIntType ) {
+	if ( interp != NULL ) {
+	    char *s = "integer value too large to represent";
+	    Tcl_ResetResult(interp);
+	    Tcl_AppendToObj(Tcl_GetObjResult(interp), s, -1);
+	    Tcl_SetErrorCode(interp, "ARITH", "IOVERFLOW", s, (char *) NULL);
+	}
+	return TCL_ERROR;
+    }
+    return TCL_OK;
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * SetIntOrWideFromAny --
  *
  *	Attempt to generate an integer internal form for the Tcl object
  *	"objPtr".
@@ -1789,7 +1838,7 @@ Tcl_GetIntFromObj(interp, objPtr, intPtr)
  */
 
 static int
-SetIntFromAny(interp, objPtr)
+SetIntOrWideFromAny(interp, objPtr)
     Tcl_Interp *interp;		/* Used for error reporting if not NULL. */
     register Tcl_Obj *objPtr;	/* The object to convert. */
 {
@@ -1797,7 +1846,9 @@ SetIntFromAny(interp, objPtr)
     char *string, *end;
     int length;
     register char *p;
-    long newLong;
+    unsigned long newLong;
+    int isNegative = 0;
+    int isWide = 0;
 
     /*
      * Get the string representation. Make it up-to-date if necessary.
@@ -1814,21 +1865,16 @@ SetIntFromAny(interp, objPtr)
      */
 
     errno = 0;
-#ifdef TCL_STRTOUL_SIGN_CHECK
     for ( ;  isspace(UCHAR(*p));  p++) { /* INTL: ISO space. */
 	/* Empty loop body. */
     }
     if (*p == '-') {
 	p++;
-	newLong = -((long)strtoul(p, &end, 0));
+	isNegative = 1;
     } else if (*p == '+') {
 	p++;
-	newLong = strtoul(p, &end, 0);
-    } else
-#else
-	newLong = strtoul(p, &end, 0);
-#endif
-    if (end == p) {
+    }
+    if (!isdigit(UCHAR(*p))) {
 	badInteger:
 	if (interp != NULL) {
 	    /*
@@ -1843,6 +1889,10 @@ SetIntFromAny(interp, objPtr)
 	    TclCheckBadOctal(interp, string);
 	}
 	return TCL_ERROR;
+    }
+    newLong = strtoul(p, &end, 0);
+    if (end == p) {
+	goto badInteger;
     }
     if (errno == ERANGE) {
 	if (interp != NULL) {
@@ -1867,6 +1917,18 @@ SetIntFromAny(interp, objPtr)
     }
 
     /*
+     * If the resulting integer will exceed the range of a long,
+     * put it into a wide instead.  (Tcl Bug #868489)
+     */
+
+#ifndef TCL_WIDE_INT_IS_LONG
+    if ((isNegative && newLong > (unsigned long) (LONG_MAX) + 1)
+	    || (!isNegative && newLong > LONG_MAX)) {
+	isWide = 1;
+    }
+#endif
+
+    /*
      * The conversion to int succeeded. Free the old internalRep before
      * setting the new one. We do this as late as possible to allow the
      * conversion code, in particular Tcl_GetStringFromObj, to use that old
@@ -1877,8 +1939,15 @@ SetIntFromAny(interp, objPtr)
 	oldTypePtr->freeIntRepProc(objPtr);
     }
 
-    objPtr->internalRep.longValue = newLong;
-    objPtr->typePtr = &tclIntType;
+    if (isWide) {
+	objPtr->internalRep.wideValue =
+		(isNegative ? -(Tcl_WideInt)newLong : (Tcl_WideInt)newLong);
+	objPtr->typePtr = &tclWideIntType;
+    } else {
+	objPtr->internalRep.longValue =
+		(isNegative ? -(long)newLong : (long)newLong);
+	objPtr->typePtr = &tclIntType;
+    }
     return TCL_OK;
 }
 
@@ -2111,15 +2180,41 @@ Tcl_GetLongFromObj(interp, objPtr, longPtr)
 {
     register int result;
     
-    if (objPtr->typePtr == &tclIntType) {
-	*longPtr = objPtr->internalRep.longValue;
-	return TCL_OK;
+    if (objPtr->typePtr != &tclIntType && objPtr->typePtr != &tclWideIntType) {
+	result = SetIntOrWideFromAny(interp, objPtr);
+	if (result != TCL_OK) {
+	    return result;
+	}
     }
-    result = SetIntFromAny(interp, objPtr);
-    if (result == TCL_OK) {
-	*longPtr = objPtr->internalRep.longValue;
+
+#ifndef TCL_WIDE_INT_IS_LONG
+    if (objPtr->typePtr == &tclWideIntType) {
+	/*
+	 * If the object is already a wide integer, don't convert it.
+	 * This code allows for any integer in the range -ULONG_MAX to
+	 * ULONG_MAX to be converted to a long, ignoring overflow.
+	 * The rule preserves existing semantics for conversion of
+	 * integers on input, but avoids inadvertent demotion of
+	 * wide integers to 32-bit ones in the internal rep.
+	 */
+
+	Tcl_WideInt w = objPtr->internalRep.wideValue;
+	if (w >= -(Tcl_WideInt)(ULONG_MAX) && w <= (Tcl_WideInt)(ULONG_MAX)) {
+	    *longPtr = Tcl_WideAsLong(w);
+	    return TCL_OK;
+	} else {
+	    if (interp != NULL) {
+		Tcl_ResetResult(interp);
+		Tcl_AppendToObj(Tcl_GetObjResult(interp),
+			"integer value too large to represent", -1);
+	    }
+	    return TCL_ERROR;
+	}
     }
-    return result;
+#endif
+
+    *longPtr = objPtr->internalRep.longValue;
+    return TCL_OK;
 }
 
 /*
@@ -2479,8 +2574,19 @@ Tcl_GetWideIntFromObj(interp, objPtr, wideIntPtr)
     register int result;
 
     if (objPtr->typePtr == &tclWideIntType) {
+    gotWide:
 	*wideIntPtr = objPtr->internalRep.wideValue;
 	return TCL_OK;
+    }
+    if (objPtr->typePtr == &tclIntType) {
+	/*
+	 * This cast is safe; all valid ints/longs are wides.
+	 */
+
+	objPtr->internalRep.wideValue =
+		Tcl_LongAsWide(objPtr->internalRep.longValue);
+	objPtr->typePtr = &tclWideIntType;
+	goto gotWide;
     }
     result = SetWideIntFromAny(interp, objPtr);
     if (result == TCL_OK) {
@@ -2717,9 +2823,9 @@ CompareObjKeys(keyPtr, hPtr)
      * Don't use Tcl_GetStringFromObj as it would prevent l1 and l2 being
      * in a register.
      */
-    p1 = Tcl_GetString (objPtr1);
+    p1 = TclGetString(objPtr1);
     l1 = objPtr1->length;
-    p2 = Tcl_GetString (objPtr2);
+    p2 = TclGetString(objPtr2);
     l2 = objPtr2->length;
     
     /*
@@ -2789,14 +2895,11 @@ HashObjKey(tablePtr, keyPtr)
     VOID *keyPtr;		/* Key from which to compute hash value. */
 {
     Tcl_Obj *objPtr = (Tcl_Obj *) keyPtr;
-    register CONST char *string;
-    register int length;
-    register unsigned int result;
-    register int c;
+    CONST char *string = TclGetString(objPtr);
+    int length = objPtr->length;
+    unsigned int result;
+    int i;
 
-    string = Tcl_GetString (objPtr);
-    length = objPtr->length;
-    
     /*
      * I tried a zillion different hash functions and asked many other
      * people for advice.  Many people had their own favorite functions,
@@ -2814,14 +2917,8 @@ HashObjKey(tablePtr, keyPtr)
      */
 
     result = 0;
-    while (length) {
-	c = *string;
-	string++;
-	length--;
-	if (length == 0) {
-	    break;
-	}
-	result += (result<<3) + c;
+    for (i=0 ; i<length ; i++) {
+	result += (result<<3) + string[i];
     }
     return result;
 }

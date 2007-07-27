@@ -12,7 +12,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tclInt.decls,v 1.59 2003/02/18 02:25:45 hobbs Exp $
+# RCS: @(#) $Id: tclInt.decls,v 1.59.2.7 2007/04/21 19:52:14 kennykb Exp $
 
 library tcl
 
@@ -124,8 +124,8 @@ declare 25 generic {
 #      char * TclGetCwd(Tcl_Interp *interp)
 #  }
 declare 27 generic {
-    int TclGetDate(char *p, unsigned long now, long zone,
-	    unsigned long *timePtr)
+    int TclGetDate(char *p, Tcl_WideInt now, long zone,
+	    Tcl_WideInt *timePtr)
 }
 declare 28 generic {
     Tcl_Channel TclpGetDefaultStdChannel(int type)
@@ -312,7 +312,7 @@ declare 77 generic {
 }
 
 declare 78 generic {
-    int TclpGetTimeZone(unsigned long time)
+    int TclpGetTimeZone(Tcl_WideInt time)
 }
 # Replaced by Tcl_FSListVolumes in 8.4:
 #declare 79 generic {
@@ -697,6 +697,19 @@ declare 173 generic {
 	    CONST Tcl_UniChar *pattern, int ptnLen, int nocase)
 }
 
+# TclpGmtime and TclpLocaltime promoted to the generic interface from unix
+
+declare 182 generic {
+     struct tm *TclpLocaltime(TclpTime_t_CONST clock)
+}
+declare 183 generic {
+     struct tm *TclpGmtime(TclpTime_t_CONST clock)
+}
+
+declare 199 generic {
+    int TclMatchIsTrivial(CONST char *pattern)
+}
+
 ##############################################################################
 
 # Define the platform specific internal Tcl interface. These functions are
@@ -928,6 +941,10 @@ declare 28 win {
     void TclWinResetInterfaces(void)
 }
 
+declare 29 win {
+    int TclWinCPUID( unsigned int index, unsigned int *regs )
+}
+
 #########################
 # Unix specific internals
 
@@ -977,12 +994,15 @@ declare 10 unix {
     Tcl_DirEntry * TclpReaddir(DIR * dir)
 }
 
+# Slots 11 and 12 are forwarders for functions that were promoted to
+# generic Stubs
+
 declare 11 unix {
-    struct tm * TclpLocaltime(time_t * clock)
+    struct tm * TclpLocaltime_unix(TclpTime_t_CONST clock)
 }
 
 declare 12 unix {
-    struct tm * TclpGmtime(time_t * clock)
+    struct tm * TclpGmtime_unix(TclpTime_t_CONST clock)
 }
 
 declare 13 unix {

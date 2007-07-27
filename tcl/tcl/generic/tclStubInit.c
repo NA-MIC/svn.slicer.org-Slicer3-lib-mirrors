@@ -8,7 +8,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclStubInit.c,v 1.79.2.2 2003/05/13 08:41:26 das Exp $
+ * RCS: @(#) $Id: tclStubInit.c,v 1.79.2.10 2006/09/22 01:26:23 andreas_kupries Exp $
  */
 
 #include "tclInt.h"
@@ -268,6 +268,32 @@ TclIntStubs tclIntStubs = {
     TclCheckExecutionTraces, /* 171 */
     TclInThreadExit, /* 172 */
     TclUniCharMatch, /* 173 */
+    NULL, /* 174 */
+    NULL, /* 175 */
+    NULL, /* 176 */
+    NULL, /* 177 */
+    NULL, /* 178 */
+    NULL, /* 179 */
+    NULL, /* 180 */
+    NULL, /* 181 */
+    TclpLocaltime, /* 182 */
+    TclpGmtime, /* 183 */
+    NULL, /* 184 */
+    NULL, /* 185 */
+    NULL, /* 186 */
+    NULL, /* 187 */
+    NULL, /* 188 */
+    NULL, /* 189 */
+    NULL, /* 190 */
+    NULL, /* 191 */
+    NULL, /* 192 */
+    NULL, /* 193 */
+    NULL, /* 194 */
+    NULL, /* 195 */
+    NULL, /* 196 */
+    NULL, /* 197 */
+    NULL, /* 198 */
+    TclMatchIsTrivial, /* 199 */
 };
 
 TclIntPlatStubs tclIntPlatStubs = {
@@ -285,8 +311,8 @@ TclIntPlatStubs tclIntPlatStubs = {
     TclUnixWaitForFile, /* 8 */
     TclpCreateTempFile, /* 9 */
     TclpReaddir, /* 10 */
-    TclpLocaltime, /* 11 */
-    TclpGmtime, /* 12 */
+    TclpLocaltime_unix, /* 11 */
+    TclpGmtime_unix, /* 12 */
     TclpInetNtoa, /* 13 */
 #endif /* UNIX */
 #ifdef __WIN32__
@@ -319,6 +345,7 @@ TclIntPlatStubs tclIntPlatStubs = {
     TclWinSetInterfaces, /* 26 */
     TclWinFlushDirtyChannels, /* 27 */
     TclWinResetInterfaces, /* 28 */
+    TclWinCPUID, /* 29 */
 #endif /* __WIN32__ */
 #ifdef MAC_TCL
     TclpSysAlloc, /* 0 */
@@ -926,6 +953,86 @@ TclStubs tclStubs = {
     Tcl_Seek, /* 491 */
     Tcl_Tell, /* 492 */
     Tcl_ChannelWideSeekProc, /* 493 */
+    NULL, /* 494 */
+    NULL, /* 495 */
+    NULL, /* 496 */
+    NULL, /* 497 */
+    NULL, /* 498 */
+    NULL, /* 499 */
+    NULL, /* 500 */
+    NULL, /* 501 */
+    NULL, /* 502 */
+    NULL, /* 503 */
+    NULL, /* 504 */
+    NULL, /* 505 */
+    NULL, /* 506 */
+    NULL, /* 507 */
+    NULL, /* 508 */
+    NULL, /* 509 */
+    NULL, /* 510 */
+    NULL, /* 511 */
+    NULL, /* 512 */
+    NULL, /* 513 */
+    NULL, /* 514 */
+    NULL, /* 515 */
+    NULL, /* 516 */
+    NULL, /* 517 */
+    NULL, /* 518 */
+    NULL, /* 519 */
+    NULL, /* 520 */
+    NULL, /* 521 */
+    NULL, /* 522 */
+    NULL, /* 523 */
+    NULL, /* 524 */
+    NULL, /* 525 */
+    NULL, /* 526 */
+    NULL, /* 527 */
+    NULL, /* 528 */
+    NULL, /* 529 */
+    NULL, /* 530 */
+    NULL, /* 531 */
+    NULL, /* 532 */
+    NULL, /* 533 */
+    NULL, /* 534 */
+    NULL, /* 535 */
+    NULL, /* 536 */
+    NULL, /* 537 */
+    NULL, /* 538 */
+    NULL, /* 539 */
+    NULL, /* 540 */
+    NULL, /* 541 */
+    NULL, /* 542 */
+    NULL, /* 543 */
+    NULL, /* 544 */
+    NULL, /* 545 */
+    NULL, /* 546 */
+    NULL, /* 547 */
+    NULL, /* 548 */
+    NULL, /* 549 */
+    NULL, /* 550 */
+    NULL, /* 551 */
+    NULL, /* 552 */
+    NULL, /* 553 */
+    Tcl_ChannelThreadActionProc, /* 554 */
+    NULL, /* 555 */
+    NULL, /* 556 */
+    NULL, /* 557 */
+    NULL, /* 558 */
+    NULL, /* 559 */
+    NULL, /* 560 */
+    NULL, /* 561 */
+    NULL, /* 562 */
+    NULL, /* 563 */
+    NULL, /* 564 */
+    NULL, /* 565 */
+    NULL, /* 566 */
+    NULL, /* 567 */
+    NULL, /* 568 */
+    NULL, /* 569 */
+    NULL, /* 570 */
+    NULL, /* 571 */
+    NULL, /* 572 */
+    Tcl_PkgRequireProc, /* 573 */
 };
 
 /* !END!: Do not edit above this line. */

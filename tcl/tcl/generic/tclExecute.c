@@ -11,7 +11,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclExecute.c,v 1.94.2.5 2003/09/19 18:43:00 msofer Exp $
+ * RCS: @(#) $Id: tclExecute.c,v 1.94.2.21 2007/03/13 16:26:32 dgp Exp $
  */
 
 #include "tclInt.h"
@@ -747,7 +747,12 @@ Tcl_ExprObj(interp, objPtr, resultPtrPtr)
 	}
     }
     if (objPtr->typePtr != &tclByteCodeType) {
+#ifndef TCL_TIP280
 	TclInitCompileEnv(interp, &compEnv, string, length);
+#else
+	/* TIP #280 : No invoker (yet) - Expression compilation */
+	TclInitCompileEnv(interp, &compEnv, string, length, NULL, 0);
+#endif
 	result = TclCompileExpr(interp, string, length, &compEnv);
 
 	/*
@@ -877,9 +882,17 @@ Tcl_ExprObj(interp, objPtr, resultPtrPtr)
  */
 
 int
+#ifndef TCL_TIP280
 TclCompEvalObj(interp, objPtr)
+#else
+TclCompEvalObj(interp, objPtr, invoker, word)
+#endif
     Tcl_Interp *interp;
     Tcl_Obj *objPtr;
+#ifdef TCL_TIP280
+    CONST CmdFrame* invoker; /* Frame of the command doing the eval  */
+    int             word;    /* Index of the word which is in objPtr */
+#endif
 {
     register Interp *iPtr = (Interp *) interp;
     register ByteCode* codePtr;		/* Tcl Internal type of bytecode. */
@@ -917,12 +930,26 @@ TclCompEvalObj(interp, objPtr)
     if (objPtr->typePtr != &tclByteCodeType) {
         recompileObj:
 	iPtr->errorLine = 1; 
+
+#ifdef TCL_TIP280
+	/* TIP #280. Remember the invoker for a moment in the interpreter
+	 * structures so that the byte code compiler can pick it up when
+	 * initializing the compilation environment, i.e. the extended
+	 * location information.
+	 */
+
+	iPtr->invokeCmdFramePtr = invoker;
+	iPtr->invokeWord        = word;
+#endif
 	result = tclByteCodeType.setFromAnyProc(interp, objPtr);
+#ifdef TCL_TIP280
+	iPtr->invokeCmdFramePtr = NULL;
+#endif
+
 	if (result != TCL_OK) {
 	    iPtr->numLevels--;
 	    return result;
 	}
-	iPtr->evalFlags = 0;
 	codePtr = (ByteCode *) objPtr->internalRep.otherValuePtr;
     } else {
 	/*
@@ -1078,6 +1105,12 @@ TclExecuteByteCode(interp, codePtr)
     char *part1, *part2;
     Var *varPtr, *arrayPtr;
     CallFrame *varFramePtr = iPtr->varFramePtr;
+
+#ifdef TCL_TIP280
+    /* TIP #280 : Structures for tracking lines */
+    CmdFrame bcFrame;
+#endif
+
 #ifdef TCL_COMPILE_DEBUG
     int traceInstructions = (tclTraceExec == 3);
     char cmdNameBuf[21];
@@ -1094,6 +1127,26 @@ TclExecuteByteCode(interp, codePtr)
     int (catchStackStorage[STATIC_CATCH_STACK_SIZE]);
     int *catchStackPtr = catchStackStorage;
     int catchTop = -1;
+
+#ifdef TCL_TIP280
+    /* TIP #280 : Initialize the frame. Do not push it yet. */
+
+    bcFrame.type      = ((codePtr->flags & TCL_BYTECODE_PRECOMPILED)
+			 ? TCL_LOCATION_PREBC
+			 : TCL_LOCATION_BC);
+    bcFrame.level     = (iPtr->cmdFramePtr == NULL ?
+			 1 :
+			 iPtr->cmdFramePtr->level + 1);
+    bcFrame.framePtr  = iPtr->framePtr;
+    bcFrame.nextPtr   = iPtr->cmdFramePtr;
+    bcFrame.nline     = 0;
+    bcFrame.line      = NULL;
+
+    bcFrame.data.tebc.codePtr  = codePtr;
+    bcFrame.data.tebc.pc       = NULL;
+    bcFrame.cmd.str.cmd        = NULL;
+    bcFrame.cmd.str.len        = 0;
+#endif
 
 #ifdef TCL_COMPILE_DEBUG
     if (tclTraceExec >= 2) {
@@ -1264,6 +1317,22 @@ TclExecuteByteCode(interp, codePtr)
 	    int totalLen = 0;
 	    
 	    /*
+	     * Peephole optimisation for appending an empty string.
+	     * This enables replacing 'K $x [set x{}]' by '$x[set x{}]'
+	     * for fastest execution. Avoid doing the optimisation for wide
+	     * ints - a case where equal strings may refer to different values
+	     * (see [Bug 1251791]).
+	     */
+
+	    if ((opnd == 2) && (stackPtr[stackTop-1]->typePtr != &tclWideIntType)) {
+		Tcl_GetStringFromObj(stackPtr[stackTop], &length);
+		if (length == 0) {
+		    /* Just drop the top item from the stack */
+		    NEXT_INST_F(2, 1, 0);
+		}
+	    }
+
+	    /*
 	     * Concatenate strings (with no separators) from the top
 	     * opnd items on the stack starting with the deepest item.
 	     * First, determine how many characters are needed.
@@ -1396,13 +1465,23 @@ TclExecuteByteCode(interp, codePtr)
 	    ++*preservedStackRefCountPtr;
 
 	    /*
-	     * Finally, let TclEvalObjvInternal handle the command. 
+	     * Finally, let TclEvalObjvInternal handle the command.
+	     *
+	     * TIP #280 : Record the last piece of info needed by
+	     * 'TclGetSrcInfoForPc', and push the frame.
 	     */
 
+#ifdef TCL_TIP280
+	    bcFrame.data.tebc.pc = pc;
+	    iPtr->cmdFramePtr = &bcFrame;
+#endif
 	    DECACHE_STACK_INFO();
 	    Tcl_ResetResult(interp);
 	    result = TclEvalObjvInternal(interp, objc, objv, bytes, length, 0);
 	    CACHE_STACK_INFO();
+#ifdef TCL_TIP280
+	    iPtr->cmdFramePtr = iPtr->cmdFramePtr->nextPtr;
+#endif
 
 	    /*
 	     * If the old stack is going to be released, it is
@@ -1460,7 +1539,16 @@ TclExecuteByteCode(interp, codePtr)
 
 	objPtr = stackPtr[stackTop];
 	DECACHE_STACK_INFO();
+#ifndef TCL_TIP280
 	result = TclCompEvalObj(interp, objPtr);
+#else
+	/* TIP #280: The invoking context is left NULL for a dynamically
+	 * constructed command. We cannot match its lines to the outer
+	 * context.
+	 */
+
+	result = TclCompEvalObj(interp, objPtr, NULL,0);
+#endif
 	CACHE_STACK_INFO();
 	if (result == TCL_OK) {
 	    /*
@@ -2705,26 +2793,67 @@ TclExecuteByteCode(interp, codePtr)
 	value2Ptr = stackPtr[stackTop];
 	valuePtr  = stackPtr[stackTop - 1];
 
+	/*
+	 * Be careful in the equal-object case; 'NaN' isn't supposed
+	 * to be equal to even itself. [Bug 761471]
+	 */
+
+	t1Ptr = valuePtr->typePtr;
 	if (valuePtr == value2Ptr) {
 	    /*
-	     * Optimize the equal object case.
+	     * If we are numeric already, we can proceed to the main
+	     * equality check right now.  Otherwise, we need to try to
+	     * coerce to a numeric type so we can see if we've got a
+	     * NaN but haven't parsed it as numeric.
 	     */
+	    if (!IS_NUMERIC_TYPE(t1Ptr)) {
+		if (t1Ptr == &tclListType) {
+		    int length;
+		    /*
+		     * Only a list of length 1 can be NaN or such
+		     * things.
+		     */
+		    (void) Tcl_ListObjLength(NULL, valuePtr, &length);
+		    if (length == 1) {
+			goto mustConvertForNaNCheck;
+		    }
+		} else {
+		    /*
+		     * Too bad, we'll have to compute the string and
+		     * try the conversion
+		     */
+
+		  mustConvertForNaNCheck:
+		    s1 = Tcl_GetStringFromObj(valuePtr, &length);
+		    if (TclLooksLikeInt(s1, length)) {
+			GET_WIDE_OR_INT(iResult, valuePtr, i, w);
+		    } else {
+			(void) Tcl_GetDoubleFromObj((Tcl_Interp *) NULL,
+				valuePtr, &d1);
+		    }
+		    t1Ptr = valuePtr->typePtr;
+		}
+	    }
+
 	    switch (*pc) {
-	        case INST_EQ:
-	        case INST_LE:
-	        case INST_GE:
-		    iResult = 1;
-		    break;
-	        case INST_NEQ:
-	        case INST_LT:
-	        case INST_GT:
-		    iResult = 0;
-		    break;
+	    case INST_EQ:
+	    case INST_LE:
+	    case INST_GE:
+		iResult = !((t1Ptr == &tclDoubleType)
+			&& IS_NAN(valuePtr->internalRep.doubleValue));
+		break;
+	    case INST_LT:
+	    case INST_GT:
+		iResult = 0;
+		break;
+	    case INST_NEQ:
+		iResult = ((t1Ptr == &tclDoubleType)
+			&& IS_NAN(valuePtr->internalRep.doubleValue));
+		break;
 	    }
 	    goto foundResult;
 	}
 
-	t1Ptr = valuePtr->typePtr;
 	t2Ptr = value2Ptr->typePtr;
 
 	/*
@@ -3044,11 +3173,42 @@ TclExecuteByteCode(interp, codePtr)
 #ifdef TCL_COMPILE_DEBUG
 		w2 = Tcl_LongAsWide(i2);
 #endif /* TCL_COMPILE_DEBUG */
-		wResult = w << i2;
+		wResult = w;
+		/*
+		 * Shift in steps when the shift gets large to prevent
+		 * annoying compiler/processor bugs. [Bug 868467]
+		 */
+		if (i2 >= 64) {
+		    wResult = Tcl_LongAsWide(0);
+		} else if (i2 > 60) {
+		    wResult = w << 30;
+		    wResult <<= 30;
+		    wResult <<= i2-60;
+		} else if (i2 > 30) {
+		    wResult = w << 30;
+		    wResult <<= i2-30;
+		} else {
+		    wResult = w << i2;
+		}
 		doWide = 1;
 		break;
 	    }
-	    iResult = i << i2;
+	    /*
+	     * Shift in steps when the shift gets large to prevent
+	     * annoying compiler/processor bugs. [Bug 868467]
+	     */
+	    if (i2 >= 64) {
+		iResult = 0;
+	    } else if (i2 > 60) {
+		iResult = i << 30;
+		iResult <<= 30;
+		iResult <<= i2-60;
+	    } else if (i2 > 30) {
+		iResult = i << 30;
+		iResult <<= i2-30;
+	    } else {
+		iResult = i << i2;
+	    }
 	    break;
 	case INST_RSHIFT:
 	    /*
@@ -3065,17 +3225,55 @@ TclExecuteByteCode(interp, codePtr)
 		w2 = Tcl_LongAsWide(i2);
 #endif /* TCL_COMPILE_DEBUG */
 		if (w < 0) {
-		    wResult = ~((~w) >> i2);
+		    wResult = ~w;
 		} else {
-		    wResult = w >> i2;
+		    wResult = w;
+		}
+		/*
+		 * Shift in steps when the shift gets large to prevent
+		 * annoying compiler/processor bugs. [Bug 868467]
+		 */
+		if (i2 >= 64) {
+		    wResult = Tcl_LongAsWide(0);
+		} else if (i2 > 60) {
+		    wResult >>= 30;
+		    wResult >>= 30;
+		    wResult >>= i2-60;
+		} else if (i2 > 30) {
+		    wResult >>= 30;
+		    wResult >>= i2-30;
+		} else {
+		    wResult >>= i2;
+		}
+		if (w < 0) {
+		    wResult = ~wResult;
 		}
 		doWide = 1;
 		break;
 	    }
 	    if (i < 0) {
-		iResult = ~((~i) >> i2);
+		iResult = ~i;
 	    } else {
-		iResult = i >> i2;
+		iResult = i;
+	    }
+	    /*
+	     * Shift in steps when the shift gets large to prevent
+	     * annoying compiler/processor bugs. [Bug 868467]
+	     */
+	    if (i2 >= 64) {
+		iResult = 0;
+	    } else if (i2 > 60) {
+		iResult >>= 30;
+		iResult >>= 30;
+		iResult >>= i2-60;
+	    } else if (i2 > 30) {
+		iResult >>= 30;
+		iResult >>= i2-30;
+	    } else {
+		iResult >>= i2;
+	    }
+	    if (i < 0) {
+		iResult = ~iResult;
 	    }
 	    break;
 	case INST_BITOR:
@@ -3854,7 +4052,6 @@ TclExecuteByteCode(interp, codePtr)
 	    int numLists = infoPtr->numLists;
 	    Var *compiledLocals = iPtr->varFramePtr->compiledLocals;
 	    Tcl_Obj *listPtr;
-	    List *listRepPtr;
 	    Var *iterVarPtr, *listVarPtr;
 	    int iterNum, listTmpIndex, listLen, numVars;
 	    int varIndex, valIndex, continueLoop, j;
@@ -3908,17 +4105,23 @@ TclExecuteByteCode(interp, codePtr)
 
 		    listVarPtr = &(compiledLocals[listTmpIndex]);
 		    listPtr = listVarPtr->value.objPtr;
-		    listRepPtr = (List *) listPtr->internalRep.twoPtrValue.ptr1;
-		    listLen = listRepPtr->elemCount;
-			
+
 		    valIndex = (iterNum * numVars);
 		    for (j = 0;  j < numVars;  j++) {
-			int setEmptyStr = 0;
+			Tcl_Obj **elements;
+
+			/*
+			 * The call to TclPtrSetVar might shimmer listPtr,
+			 * so re-fetch pointers every iteration for safety.
+			 * See test foreach-10.1.
+			 */
+
+			Tcl_ListObjGetElements(NULL, listPtr,
+				&listLen, &elements);
 			if (valIndex >= listLen) {
-			    setEmptyStr = 1;
 			    TclNewObj(valuePtr);
 			} else {
-			    valuePtr = listRepPtr->elements[valIndex];
+			    valuePtr = elements[valIndex];
 			}
 			    
 			varIndex = varListPtr->varIndexes[j];
@@ -3943,16 +4146,15 @@ TclExecuteByteCode(interp, codePtr)
 			    }
 			} else {
 			    DECACHE_STACK_INFO();
+			    Tcl_IncrRefCount(valuePtr);
 			    value2Ptr = TclPtrSetVar(interp, varPtr, NULL, part1, 
 						     NULL, valuePtr, TCL_LEAVE_ERR_MSG);
+			    TclDecrRefCount(valuePtr);
 			    CACHE_STACK_INFO();
 			    if (value2Ptr == NULL) {
 				TRACE_WITH_OBJ(("%u => ERROR init. index temp %d: ",
 						opnd, varIndex),
 					       Tcl_GetObjResult(interp));
-				if (setEmptyStr) {
-				    TclDecrRefCount(valuePtr);
-				}
 				result = TCL_ERROR;
 				goto checkForCatch;
 			    }
@@ -4487,7 +4689,7 @@ IllegalExprOperandType(interp, pc, opndPtr)
 /*
  *----------------------------------------------------------------------
  *
- * GetSrcInfoForPc --
+ * TclGetSrcInfoForPc, GetSrcInfoForPc --
  *
  *	Given a program counter value, finds the closest command in the
  *	bytecode code unit's CmdLocation array and returns information about
@@ -4507,6 +4709,63 @@ IllegalExprOperandType(interp, pc, opndPtr)
  *
  *----------------------------------------------------------------------
  */
+
+#ifdef TCL_TIP280
+void
+TclGetSrcInfoForPc (cfPtr)
+     CmdFrame* cfPtr;
+{
+    ByteCode* codePtr = (ByteCode*) cfPtr->data.tebc.codePtr;
+
+    if (cfPtr->cmd.str.cmd == NULL) {
+        cfPtr->cmd.str.cmd = GetSrcInfoForPc((char*) cfPtr->data.tebc.pc,
+					     codePtr,
+					     &cfPtr->cmd.str.len);
+    }
+
+    if (cfPtr->cmd.str.cmd != NULL) {
+        /* We now have the command. We can get the srcOffset back and
+	 * from there find the list of word locations for this command
+	 */
+
+	ExtCmdLoc*     eclPtr;
+	ECL*           locPtr = NULL;
+	int            srcOffset;
+
+        Interp*        iPtr  = (Interp*) *codePtr->interpHandle;
+	Tcl_HashEntry* hePtr = Tcl_FindHashEntry (iPtr->lineBCPtr, (char *) codePtr);
+
+	if (!hePtr) return;
+
+	srcOffset = cfPtr->cmd.str.cmd - codePtr->source;
+	eclPtr    = (ExtCmdLoc*) Tcl_GetHashValue (hePtr);
+
+	{
+	    int i;
+	    for (i=0; i < eclPtr->nuloc; i++) {
+		if (eclPtr->loc [i].srcOffset == srcOffset) {
+		    locPtr = &(eclPtr->loc [i]);
+		    break;
+		}
+	    }
+	}
+
+	if (locPtr == NULL) {Tcl_Panic ("LocSearch failure");}
+
+	cfPtr->line           = locPtr->line;
+	cfPtr->nline          = locPtr->nline;
+	cfPtr->type           = eclPtr->type;
+
+	if (eclPtr->type == TCL_LOCATION_SOURCE) {
+	    cfPtr->data.eval.path = eclPtr->path;
+	    Tcl_IncrRefCount (cfPtr->data.eval.path);
+	}
+	/* Do not set cfPtr->data.eval.path NULL for non-SOURCE
+	 * Needed for cfPtr->data.tebc.codePtr.
+	 */
+    }
+}
+#endif
 
 static char *
 GetSrcInfoForPc(pc, codePtr, lengthPtr)
@@ -4739,8 +4998,9 @@ VerifyExprObjType(interp, objPtr)
 	char *s = Tcl_GetStringFromObj(objPtr, &length);
 	
 	if (TclLooksLikeInt(s, length)) {
+	    long i;
 	    Tcl_WideInt w;
-	    result = Tcl_GetWideIntFromObj((Tcl_Interp *) NULL, objPtr, &w);
+	    GET_WIDE_OR_INT(result, objPtr, i, w);
 	} else {
 	    double d;
 	    result = Tcl_GetDoubleFromObj((Tcl_Interp *) NULL, objPtr, &d);
@@ -4951,16 +5211,26 @@ ExprAbsFunc(interp, eePtr, clientData)
     if (valuePtr->typePtr == &tclIntType) {
 	i = valuePtr->internalRep.longValue;
 	if (i < 0) {
-	    iResult = -i;
-	    if (iResult < 0) {
-		Tcl_ResetResult(interp);
-		Tcl_AppendToObj(Tcl_GetObjResult(interp),
-		        "integer value too large to represent", -1);
+	    if (i == LONG_MIN) {
+#ifdef TCL_WIDE_INT_IS_LONG
+		Tcl_SetObjResult(interp, Tcl_NewStringObj(
+			"integer value too large to represent", -1));
 		Tcl_SetErrorCode(interp, "ARITH", "IOVERFLOW",
 			"integer value too large to represent", (char *) NULL);
 		result = TCL_ERROR;
 		goto done;
+#else 
+		/*
+		 * Special case: abs(MIN_INT) must promote to wide.
+		 */
+
+		PUSH_OBJECT( Tcl_NewWideIntObj(-(Tcl_WideInt) i) );
+		result = TCL_OK;
+		goto done;
+#endif
+
 	    }
+	    iResult = -i;
 	} else {
 	    iResult = i;
 	}	    
@@ -5327,9 +5597,8 @@ ExprRoundFunc(interp, eePtr, clientData)
 {
     Tcl_Obj **stackPtr;        /* Cached evaluation stack base pointer. */
     register int stackTop;	/* Cached top index of evaluation stack. */
-    Tcl_Obj *valuePtr;
-    long iResult;
-    double d, temp;
+    Tcl_Obj *valuePtr, *resPtr;
+    double d, f, i;
     int result;
 
     /*
@@ -5349,57 +5618,69 @@ ExprRoundFunc(interp, eePtr, clientData)
 	result = TCL_ERROR;
 	goto done;
     }
-    
-    if (valuePtr->typePtr == &tclIntType) {
-	iResult = valuePtr->internalRep.longValue;
-    } else if (valuePtr->typePtr == &tclWideIntType) {
-	Tcl_WideInt w;
-	TclGetWide(w,valuePtr);
-	PUSH_OBJECT(Tcl_NewWideIntObj(w));
-	goto done;
+
+    if ((valuePtr->typePtr == &tclIntType) ||
+	    (valuePtr->typePtr == &tclWideIntType)) {
+	result = TCL_OK;
+	resPtr = valuePtr;
     } else {
+
+	/* 
+	 * Round the number to the nearest integer.  I'd like to use round(),
+	 * but it's C99 (or BSD), and not yet universal.
+	 */
+	
 	d = valuePtr->internalRep.doubleValue;
+	f = modf(d, &i);
 	if (d < 0.0) {
-	    if (d <= (((double) (long) LONG_MIN) - 0.5)) {
-		tooLarge:
-		Tcl_ResetResult(interp);
-		Tcl_AppendToObj(Tcl_GetObjResult(interp),
-		        "integer value too large to represent", -1);
-		Tcl_SetErrorCode(interp, "ARITH", "IOVERFLOW",
-			"integer value too large to represent",
-			(char *) NULL);
-		result = TCL_ERROR;
-		goto done;
+	    if (f <= -0.5) {
+		i += -1.0;
 	    }
-	    temp = (long) (d - 0.5);
-	} else {
-	    if (d >= (((double) LONG_MAX + 0.5))) {
+	    if (i <= Tcl_WideAsDouble(LLONG_MIN)) {
 		goto tooLarge;
+	    } else if (i <= (double) LONG_MIN) {
+		resPtr = Tcl_NewWideIntObj(Tcl_DoubleAsWide(i));
+	    } else {
+		resPtr = Tcl_NewLongObj((long) i);
+	    }			    
+	} else {
+	    if (f >= 0.5) {
+		i += 1.0;
 	    }
-	    temp = (long) (d + 0.5);
+	    if (i >= Tcl_WideAsDouble(LLONG_MAX)) {
+		goto tooLarge;
+	    } else if (i >= (double) LONG_MAX) {
+		resPtr = Tcl_NewWideIntObj(Tcl_DoubleAsWide(i));
+	    } else {
+		resPtr = Tcl_NewLongObj((long) i);
+	    }
 	}
-	if (IS_NAN(temp) || IS_INF(temp)) {
-	    TclExprFloatError(interp, temp);
-	    result = TCL_ERROR;
-	    goto done;
-	}
-	iResult = (long) temp;
     }
 
     /*
-     * Push a Tcl object with the result.
+     * Push the result object and free the argument Tcl_Obj.
      */
+
+    PUSH_OBJECT(resPtr);
     
-    PUSH_OBJECT(Tcl_NewLongObj(iResult));
-
-    /*
-     * Reflect the change to stackTop back in eePtr.
-     */
-
     done:
     TclDecrRefCount(valuePtr);
     DECACHE_STACK_INFO();
     return result;
+
+    /*
+     * Error return: result cannot be represented as an integer.
+     */
+    
+    tooLarge:
+    Tcl_ResetResult(interp);
+    Tcl_AppendToObj(Tcl_GetObjResult(interp),
+	    "integer value too large to represent", -1);
+    Tcl_SetErrorCode(interp, "ARITH", "IOVERFLOW",
+	    "integer value too large to represent",
+	    (char *) NULL);
+    result = TCL_ERROR;
+    goto done;
 }
 
 static int
@@ -5433,22 +5714,18 @@ ExprSrandFunc(interp, eePtr, clientData)
 	goto badValue;
     }
 
-    if (valuePtr->typePtr == &tclIntType) {
-	i = valuePtr->internalRep.longValue;
-    } else if (valuePtr->typePtr == &tclWideIntType) {
-	TclGetLongFromWide(i,valuePtr);
-    } else {
-	/*
-	 * At this point, the only other possible type is double
-	 */
-	Tcl_ResetResult(interp);
-	Tcl_AppendStringsToObj(Tcl_GetObjResult(interp),
-		"can't use floating-point value as argument to srand",
-		(char *) NULL);
+    if (Tcl_GetLongFromObj(NULL, valuePtr, &i) != TCL_OK) {
+	Tcl_WideInt w;
+
+	if (Tcl_GetWideIntFromObj(interp, valuePtr, &w) != TCL_OK) {
 	badValue:
-	TclDecrRefCount(valuePtr);
-	DECACHE_STACK_INFO();
-	return TCL_ERROR;
+	    Tcl_AddErrorInfo(interp, "\n    (argument to \"srand()\")");
+	    TclDecrRefCount(valuePtr);
+	    DECACHE_STACK_INFO();
+	    return TCL_ERROR;
+	}
+
+	i = Tcl_WideAsLong(w);
     }
     
     /*
@@ -6174,3 +6451,12 @@ StringForResultCode(result)
     return buf;
 }
 #endif /* TCL_COMPILE_DEBUG */
+
+/*
+ * Local Variables:
+ * mode: c
+ * c-basic-offset: 4
+ * fill-column: 78
+ * End:
+ */
+

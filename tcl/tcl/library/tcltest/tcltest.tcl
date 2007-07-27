@@ -16,7 +16,7 @@
 # Contributions from Don Porter, NIST, 2002.  (not subject to US copyright)
 # All rights reserved.
 #
-# RCS: @(#) $Id: tcltest.tcl,v 1.78.2.8 2004/02/18 01:43:49 dgp Exp $
+# RCS: @(#) $Id: tcltest.tcl,v 1.78.2.13 2005/02/24 18:03:36 dgp Exp $
 
 package require Tcl 8.3		;# uses [glob -directory]
 namespace eval tcltest {
@@ -24,7 +24,7 @@ namespace eval tcltest {
     # When the version number changes, be sure to update the pkgIndex.tcl file,
     # and the install directory in the Makefiles.  When the minor version
     # changes (new feature) be sure to update the man page as well.
-    variable Version 2.2.5
+    variable Version 2.2.8
 
     # Compatibility support for dumb variables defined in tcltest 1
     # Do not use these.  Call [package provide Tcl] and [info patchlevel]
@@ -1458,8 +1458,10 @@ proc tcltest::ProcessFlags {flagArray} {
     }
 
     # Call the hook
-    array set flag $flagArray
-    processCmdLineArgsHook [array get flag]
+    catch {
+        array set flag $flagArray
+        processCmdLineArgsHook [array get flag]
+    }
     return
 }
 
@@ -1499,8 +1501,8 @@ proc tcltest::ProcessCmdLineArgs {} {
 	DebugPuts 2 \
 		"    ::env(TCLTEST_OPTIONS): $::env(TCLTEST_OPTIONS)"
     }
-    if {[info exists argv]} {
-	DebugPuts 2 "    argv: $argv"
+    if {[info exists ::argv]} {
+	DebugPuts 2 "    argv: $::argv"
     }
     DebugPuts    2 "tcltest::debug              = [debug]"
     DebugPuts    2 "tcltest::testsDirectory     = [testsDirectory]"
@@ -1947,6 +1949,10 @@ proc tcltest::test {name description args} {
 
     # First, run the setup script
     set code [catch {uplevel 1 $setup} setupMsg]
+    if {$code == 1} {
+	set errorInfo(setup) $::errorInfo
+	set errorCode(setup) $::errorCode
+    }
     set setupFailure [expr {$code != 0}]
 
     # Only run the test body if the setup was successful
@@ -1965,10 +1971,18 @@ proc tcltest::test {name description args} {
 	    set testResult [uplevel 1 [list [namespace origin Eval] $command 1]]
 	}
 	foreach {actualAnswer returnCode} $testResult break
+	if {$returnCode == 1} {
+	    set errorInfo(body) $::errorInfo
+	    set errorCode(body) $::errorCode
+	}
     }
 
     # Always run the cleanup script
     set code [catch {uplevel 1 $cleanup} cleanupMsg]
+    if {$code == 1} {
+	set errorInfo(cleanup) $::errorInfo
+	set errorCode(cleanup) $::errorCode
+    }
     set cleanupFailure [expr {$code != 0}]
 
     set coreFailure 0
@@ -2082,6 +2096,10 @@ proc tcltest::test {name description args} {
     if {$setupFailure} {
 	puts [outputChannel] "---- Test setup\
 		failed:\n$setupMsg"
+	if {[info exists errorInfo(setup)]} {
+	    puts [outputChannel] "---- errorInfo(setup): $errorInfo(setup)"
+	    puts [outputChannel] "---- errorCode(setup): $errorCode(setup)"
+	}
     }
     if {$scriptFailure} {
 	if {$scriptCompare} {
@@ -2105,9 +2123,9 @@ proc tcltest::test {name description args} {
 	puts [outputChannel] "---- Return code should have been\
 		one of: $returnCodes"
 	if {[IsVerbose error]} {
-	    if {[info exists ::errorInfo]} {
-		puts [outputChannel] "---- errorInfo: $::errorInfo"
-		puts [outputChannel] "---- errorCode: $::errorCode"
+	    if {[info exists errorInfo(body)] && ([lsearch $returnCodes 1]<0)} {
+		puts [outputChannel] "---- errorInfo: $errorInfo(body)"
+		puts [outputChannel] "---- errorCode: $errorCode(body)"
 	    }
 	}
     }
@@ -2131,6 +2149,10 @@ proc tcltest::test {name description args} {
     }
     if {$cleanupFailure} {
 	puts [outputChannel] "---- Test cleanup failed:\n$cleanupMsg"
+	if {[info exists errorInfo(cleanup)]} {
+	    puts [outputChannel] "---- errorInfo(cleanup): $errorInfo(cleanup)"
+	    puts [outputChannel] "---- errorCode(cleanup): $errorCode(cleanup)"
+	}
     }
     if {$coreFailure} {
 	puts [outputChannel] "---- Core file produced while running\
@@ -2418,7 +2440,6 @@ proc tcltest::cleanupTests {{calledFromAllFile 0}} {
 	# then add current file to failFile list if any tests in this
 	# file failed
 
-	incr numTestFiles
 	if {$currentFailure \
 		&& ([lsearch -exact $failFiles $testFileName] == -1)} {
 	    lappend failFiles $testFileName
@@ -2548,14 +2569,16 @@ proc tcltest::GetMatchingFiles { args } {
 	set matchFileList [list]
 	foreach match [matchFiles] {
 	    set matchFileList [concat $matchFileList \
-		    [glob -directory $directory -nocomplain -- $match]]
+		    [glob -directory $directory -types {b c f p s} \
+		    -nocomplain -- $match]]
 	}
 
 	# List files in $directory that match patterns to skip.
 	set skipFileList [list]
 	foreach skip [skipFiles] {
 	    set skipFileList [concat $skipFileList \
-		    [glob -directory $directory -nocomplain -- $skip]]
+		    [glob -directory $directory -types {b c f p s} \
+		    -nocomplain -- $skip]]
 	}
 
 	# Add to result list all files in match list and not in skip list
@@ -2597,25 +2620,20 @@ proc tcltest::GetMatchingDirectories {rootdir} {
     # comes up to avoid infinite loops.
     set skipDirs [list $rootdir]
     foreach pattern [skipDirectories] {
-	foreach path [glob -directory $rootdir -nocomplain -- $pattern] {
-	    if {[file isdirectory $path]} {
-		lappend skipDirs $path
-	    }
-	}
+	set skipDirs [concat $skipDirs [glob -directory $rootdir -types d \
+		-nocomplain -- $pattern]]
     }
 
     # Now step through the matching directories, prune out the skipped ones
     # as you go.
     set matchDirs [list]
     foreach pattern [matchDirectories] {
-	foreach path [glob -directory $rootdir -nocomplain -- $pattern] {
-	    if {[file isdirectory $path]} {
-		if {[lsearch -exact $skipDirs $path] == -1} {
-		    set matchDirs [concat $matchDirs \
-			    [GetMatchingDirectories $path]]
-		    if {[file exists [file join $path all.tcl]]} {
-			lappend matchDirs $path
-		    }
+	foreach path [glob -directory $rootdir -types d -nocomplain -- \
+		$pattern] {
+	    if {[lsearch -exact $skipDirs $path] == -1} {
+		set matchDirs [concat $matchDirs [GetMatchingDirectories $path]]
+		if {[file exists [file join $path all.tcl]]} {
+		    lappend matchDirs $path
 		}
 	    }
 	}
@@ -3287,7 +3305,7 @@ namespace eval tcltest {
 		    Tcl list: $msg"
 	    return
 	}
-	if {[llength $::env(TCLTEST_OPTIONS)] < 2} {
+	if {[llength $::env(TCLTEST_OPTIONS)] % 2} {
 	    Warn "invalid TCLTEST_OPTIONS: \"$options\":\n  should be\
 		    -option value ?-option value ...?"
 	    return

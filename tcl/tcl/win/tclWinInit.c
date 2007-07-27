@@ -7,7 +7,7 @@
  * Copyright (c) 1998-1999 by Scriptics Corporation.
  * All rights reserved.
  *
- * RCS: @(#) $Id: tclWinInit.c,v 1.40.2.3 2004/02/20 05:27:17 mdejong Exp $
+ * RCS: @(#) $Id: tclWinInit.c,v 1.40.2.6 2005/10/23 22:01:31 msofer Exp $
  */
 
 #include "tclWinInt.h"
@@ -165,7 +165,7 @@ TclpInitPlatform()
  *	Called at process initialization time.
  *
  * Results:
- *	None.
+ *	Return 0, indicating that the UTF is clean.
  *
  * Side effects:
  *	None.
@@ -173,7 +173,7 @@ TclpInitPlatform()
  *---------------------------------------------------------------------------
  */
 
-void
+int
 TclpInitLibraryPath(path)
     CONST char *path;		/* Potentially dirty UTF string that is */
 				/* the path to the executable name.     */
@@ -330,6 +330,8 @@ TclpInitLibraryPath(path)
     }
 
     TclSetLibraryPath(pathPtr);
+
+    return 0; /* 0 indicates that pathPtr is clean (true) utf */
 }
 
 /*
@@ -569,14 +571,17 @@ TclpSetInitialEncodings()
     char buf[4 + TCL_INTEGER_SPACE];
 
     if (libraryPathEncodingFixed == 0) {
-	int platformId;
+	int platformId, useWide;
+
 	platformId = TclWinGetPlatformId();
-	TclWinSetInterfaces(platformId == VER_PLATFORM_WIN32_NT);
-	
+	useWide = ((platformId == VER_PLATFORM_WIN32_NT)
+		|| (platformId == VER_PLATFORM_WIN32_CE));
+	TclWinSetInterfaces(useWide);
+
 	wsprintfA(buf, "cp%d", GetACP());
 	Tcl_SetSystemEncoding(NULL, buf);
 
-	if (platformId != VER_PLATFORM_WIN32_NT) {
+	if (!useWide) {
 	    Tcl_Obj *pathPtr = TclGetLibraryPath();
 	    if (pathPtr != NULL) {
 		int i, objc;
@@ -842,7 +847,9 @@ Tcl_Init(interp)
     if (pathPtr == NULL) {
 	pathPtr = Tcl_NewObj();
     }
+    Tcl_IncrRefCount(pathPtr);    
     Tcl_SetVar2Ex(interp, "tcl_libPath", NULL, pathPtr, TCL_GLOBAL_ONLY);
+    Tcl_DecrRefCount(pathPtr);    
     return Tcl_Eval(interp, initScript);
 }
 

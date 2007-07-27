@@ -1,4 +1,4 @@
-'\"
+'\" 
 '\" Copyright (c) 1993 The Regents of the University of California.
 '\" Copyright (c) 1994-1996 Sun Microsystems, Inc.
 '\" Copyright (c) 2001 Kevin B. Kenny.  All rights reserved.
@@ -6,7 +6,7 @@
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
-'\" RCS: @(#) $Id: lsearch.n,v 1.13.2.1 2003/03/17 14:25:20 dkf Exp $
+'\" RCS: @(#) $Id: lsearch.n,v 1.13.2.4 2005/01/05 21:53:30 dkf Exp $
 '\" 
 .so man.macros
 .TH lsearch n 8.4 Tcl "Tcl Built-In Commands"
@@ -47,8 +47,11 @@ meaningful when used with \fB\-sorted\fR.
 .TP
 \fB\-dictionary\fR
 The list elements are to be compared using dictionary-style
-comparisons.  This option is only meaningful when used with
-\fB\-exact\fR or \fB\-sorted\fR.
+comparisons (see \fBlsort\fR for a fuller description).  This option
+is only meaningful when used with \fB\-exact\fR or \fB\-sorted\fR, and
+it is only distinguishable from the \fB\-ascii\fR option when
+the \fB\-sorted\fR option is given, because values are only
+dictionary-equal when exactly equal.
 .TP
 \fB\-exact\fR
 The list element must contain exactly the same string as \fIpattern\fR.
@@ -116,13 +119,13 @@ precedence.
 .VS 8.4
 .SH EXAMPLES
 .CS
-lsearch {a b c d e} c => 2
-lsearch -all {a b c a b c} c => 2 5
-lsearch -inline {a20 b35 c47} b* => b35
-lsearch -inline -not {a20 b35 c47} b* => a20
-lsearch -all -inline -not {a20 b35 c47} b* => a20 c47
-lsearch -all -not {a20 b35 c47} b* => 0 2
-lsearch -start 3 {a b c a b c} c => 5
+\fBlsearch\fR {a b c d e} c \fI=> 2\fR
+\fBlsearch\fR -all {a b c a b c} c \fI=> 2 5\fR
+\fBlsearch\fR -inline {a20 b35 c47} b* \fI=> b35\fR
+\fBlsearch\fR -inline -not {a20 b35 c47} b* \fI=> a20\fR
+\fBlsearch\fR -all -inline -not {a20 b35 c47} b* \fI=> a20 c47\fR
+\fBlsearch\fR -all -not {a20 b35 c47} b* \fI=> 0 2\fR
+\fBlsearch\fR -start 3 {a b c a b c} c \fI=> 5\fR
 .CE
 .VE 8.4
 
@@ -134,3 +137,7 @@ lset(n), lsort(n), lrange(n), lreplace(n)
 
 .SH KEYWORDS
 list, match, pattern, regular expression, search, string
+
+'\" Local Variables:
+'\" mode: nroff
+'\" End:

@@ -8,7 +8,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclScan.c,v 1.12 2002/02/25 15:23:02 dkf Exp $
+ * RCS: @(#) $Id: tclScan.c,v 1.12.2.2 2005/10/23 22:01:30 msofer Exp $
  */
 
 #include "tclInt.h"
@@ -371,9 +371,7 @@ ValidateFormat(interp, format, numVars, totalSubs)
 	switch (ch) {
 	case 'l':
 	case 'L':
-#ifndef TCL_WIDE_INT_IS_LONG
 	    flags |= SCAN_LONGER;
-#endif
 	case 'h':
 	    format += Tcl_UtfToUniChar(format, &ch);
 	}
@@ -704,9 +702,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	switch (ch) {
 	case 'l':
 	case 'L':
-#ifndef TCL_WIDE_INT_IS_LONG
 	    flags |= SCAN_LONGER;
-#endif
 	    /*
 	     * Fall through so we skip to the next character.
 	     */
@@ -1040,12 +1036,11 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 			if ((flags & SCAN_UNSIGNED) && (value < 0)) {
 			    sprintf(buf, "%lu", value); /* INTL: ISO digit */
 			    objPtr = Tcl_NewStringObj(buf, -1);
+			} else if ((flags & SCAN_LONGER)
+				|| (unsigned long) value > UINT_MAX) {
+			    objPtr = Tcl_NewLongObj(value);
 			} else {
-			    if ((unsigned long) value > UINT_MAX) {
-				objPtr = Tcl_NewLongObj(value);
-			    } else {
-				objPtr = Tcl_NewIntObj(value);
-			    }
+			    objPtr = Tcl_NewIntObj(value);
 			}
 #ifndef TCL_WIDE_INT_IS_LONG
 		    }
@@ -1173,15 +1168,17 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	 */
 	for (i = 0; i < totalVars; i++) {
 	    if (objs[i] != NULL) {
+		Tcl_Obj *tmpPtr;
+		
 		result++;
-		if (Tcl_ObjSetVar2(interp, objv[i+3], NULL,
-			objs[i], 0) == NULL) {
+		tmpPtr = Tcl_ObjSetVar2(interp, objv[i+3], NULL, objs[i], 0);
+		Tcl_DecrRefCount(objs[i]);
+		if (tmpPtr == NULL) {
 		    Tcl_AppendStringsToObj(Tcl_GetObjResult(interp),
 			    "couldn't set variable \"",
 			    Tcl_GetString(objv[i+3]), "\"", (char *) NULL);
 		    code = TCL_ERROR;
 		}
-		Tcl_DecrRefCount(objs[i]);
 	    }
 	}
     } else {

@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclBinary.c,v 1.13.2.2 2003/12/17 18:38:28 das Exp $
+ * RCS: @(#) $Id: tclBinary.c,v 1.13.2.4 2005/10/23 22:01:29 msofer Exp $
  */
 
 #include "tclInt.h"
@@ -53,6 +53,8 @@ static void		DupByteArrayInternalRep _ANSI_ARGS_((Tcl_Obj *srcPtr,
 			    Tcl_Obj *copyPtr));
 static int		FormatNumber _ANSI_ARGS_((Tcl_Interp *interp, int type,
 			    Tcl_Obj *src, unsigned char **cursorPtr));
+static void		CopyNumber _ANSI_ARGS_((CONST VOID *from, VOID *to,
+			    unsigned int length));
 static void		FreeByteArrayInternalRep _ANSI_ARGS_((Tcl_Obj *objPtr));
 static int		GetFormatSpec _ANSI_ARGS_((char **formatPtr,
 			    char *cmdPtr, int *countPtr));
@@ -1081,12 +1083,13 @@ Tcl_BinaryObjCmd(dummy, interp, objc, objv)
 			    }
 			}
 			valuePtr = Tcl_NewByteArrayObj(src, size);
+			Tcl_IncrRefCount(valuePtr);
 			resultPtr = Tcl_ObjSetVar2(interp, objv[arg],
 				NULL, valuePtr, TCL_LEAVE_ERR_MSG);
+			Tcl_DecrRefCount(valuePtr);
 			arg++;
 			if (resultPtr == NULL) {
 			    DeleteScanNumberCache(numberCachePtr);
-			    Tcl_DecrRefCount(valuePtr);	/* unneeded */
 			    return TCL_ERROR;
 			}
 			offset += count;
@@ -1135,13 +1138,14 @@ Tcl_BinaryObjCmd(dummy, interp, objc, objv)
 				*dest++ = (char) ((value & 0x80) ? '1' : '0');
 			    }
 			}
-			
+
+			Tcl_IncrRefCount(valuePtr);			
 			resultPtr = Tcl_ObjSetVar2(interp, objv[arg],
 				NULL, valuePtr, TCL_LEAVE_ERR_MSG);
+			Tcl_DecrRefCount(valuePtr);
 			arg++;
 			if (resultPtr == NULL) {
 			    DeleteScanNumberCache(numberCachePtr);
-			    Tcl_DecrRefCount(valuePtr);	/* unneeded */
 			    return TCL_ERROR;
 			}
 			offset += (count + 7 ) / 8;
@@ -1193,12 +1197,13 @@ Tcl_BinaryObjCmd(dummy, interp, objc, objv)
 			    }
 			}
 			
+			Tcl_IncrRefCount(valuePtr);
 			resultPtr = Tcl_ObjSetVar2(interp, objv[arg],
 				NULL, valuePtr, TCL_LEAVE_ERR_MSG);
+			Tcl_DecrRefCount(valuePtr);
 			arg++;
 			if (resultPtr == NULL) {
 			    DeleteScanNumberCache(numberCachePtr);
-			    Tcl_DecrRefCount(valuePtr);	/* unneeded */
 			    return TCL_ERROR;
 			}
 			offset += (count + 1) / 2;
@@ -1264,12 +1269,13 @@ Tcl_BinaryObjCmd(dummy, interp, objc, objv)
 			    offset += count*size;
 			}
 
+			Tcl_IncrRefCount(valuePtr); 
 			resultPtr = Tcl_ObjSetVar2(interp, objv[arg],
 				NULL, valuePtr, TCL_LEAVE_ERR_MSG);
+			Tcl_DecrRefCount(valuePtr);
 			arg++;
 			if (resultPtr == NULL) {
 			    DeleteScanNumberCache(numberCachePtr);
-			    Tcl_DecrRefCount(valuePtr);	/* unneeded */
 			    return TCL_ERROR;
 			}
 			break;
@@ -1461,7 +1467,11 @@ FormatNumber(interp, type, src, cursorPtr)
 	    return TCL_ERROR;
 	}
 	if (type == 'd') {
-	    memcpy((VOID *) *cursorPtr, (VOID *) &dvalue, sizeof(double));
+	    /*
+	     * Can't just memcpy() here. [Bug 1116542]
+	     */
+
+	    CopyNumber(&dvalue, *cursorPtr, sizeof(double));
 	    *cursorPtr += sizeof(double);
 	} else {
 	    float fvalue;
@@ -1536,6 +1546,16 @@ FormatNumber(interp, type, src, cursorPtr)
 	}
 	return TCL_OK;
     }
+}
+
+/* Ugly workaround for old and broken compiler! */
+static void
+CopyNumber(from, to, length)
+    CONST VOID *from;
+    VOID *to;
+    unsigned int length;
+{
+    memcpy(to, from, length);
 }
 
 /*

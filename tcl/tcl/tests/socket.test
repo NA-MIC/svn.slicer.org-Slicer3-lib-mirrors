@@ -10,7 +10,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: socket.test,v 1.26.2.2 2004/02/25 23:38:17 dgp Exp $
+# RCS: @(#) $Id: socket.test,v 1.26.2.6 2006/03/16 00:35:59 andreas_kupries Exp $
 
 # Running socket tests with a remote server:
 # ------------------------------------------
@@ -242,6 +242,12 @@ socket -server command ?-myaddr addr? port}}
 test socket-1.12 {arg parsing for socket command} {socket} {
     list [catch {socket foo badport} msg] $msg
 } {1 {expected integer but got "badport"}}
+test socket-1.13 {arg parsing for socket command} {socket} {
+list [catch {socket -async -server} msg] $msg
+} {1 {cannot set -async option for server sockets}}
+test socket-1.14 {arg parsing for socket command} {socket} {
+list [catch {socket -server foo -async} msg] $msg
+} {1 {cannot set -async option for server sockets}}
 
 set path(script) [makeFile {} script]
 
@@ -1297,12 +1303,12 @@ test socket-11.11 {testing spurious events} {socket doTestsWithRemoteServer} {
     }
     set c [socket $remoteServerIP 2836]
     fileevent $c readable "readlittle $c"
-    set timer [after 10000 "set done timed_out"]
+    set timer [after 40000 "set done timed_out"]
     vwait done
     after cancel $timer
     sendCommand {close $socket10_13_test_server}
-    list $spurious $len
-} {0 2690}
+    list $spurious $len $done
+} {0 2690 1}
 
 test socket-11.12 {testing EOF stickyness} {socket doTestsWithRemoteServer} {
     set counter 0
@@ -1621,12 +1627,11 @@ test socket-12.3 {testing inheritance of accepted sockets} {socket stdio exec} {
 } {accepted socket was not inherited}
 
 test socket-13.1 {Testing use of shared socket between two threads} \
-	{socket testthread} {
+	-constraints {socket testthread} -setup {
 
-    file delete $path(script1)
     threadReap
 
-    makeFile {
+    set path(script) [makeFile {
 	set f [socket -server accept 0]
 	set listen [lindex [fconfigure $f -sockname] 2]
 	proc accept {s a p} {
@@ -1651,10 +1656,11 @@ test socket-13.1 {Testing use of shared socket between two threads} \
 
 	# thread cleans itself up.
 	testthread exit
-    } script
-    
+    } script]
+
+} -body {
     # create a thread
-    set serverthread [testthread create { source script } ]
+    set serverthread [testthread create [list source $path(script) ] ]
     update
     set port [testthread send $serverthread {set listen}]
     update
@@ -1672,10 +1678,9 @@ test socket-13.1 {Testing use of shared socket between two threads} \
 
     after 2000
     lappend result [threadReap]
-    
-    set result
-
-} {hello 1}
+} -cleanup {
+    removeFile script
+} -result {hello 1}
 
 removeFile script1
 removeFile script2

@@ -12,7 +12,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: safe.tcl,v 1.9.2.1 2003/07/16 22:49:31 hobbs Exp $
+# RCS: @(#) $Id: safe.tcl,v 1.9.2.3 2005/07/22 21:59:41 dgp Exp $
 
 #
 # The implementation is based on namespaces. These naming conventions
@@ -36,6 +36,10 @@ namespace eval ::safe {
     # Setup the arguments parsing
     #
     ####
+
+    # Make sure that our temporary variable is local to this
+    # namespace.  [Bug 981733]
+    variable temp
 
     # Share the descriptions
     set temp [::tcl::OptKeyRegister {
@@ -73,7 +77,7 @@ namespace eval ::safe {
 	    upvar $v $v
 	}
 	set flag [::tcl::OptProcArgGiven -noStatics];
-	if {$flag && ($noStatics == $statics) 
+	if {$flag && (!$noStatics == !$statics) 
 	          && ([::tcl::OptProcArgGiven -statics])} {
 	    return -code error\
 		    "conflicting values given for -statics and -noStatics"
@@ -94,7 +98,7 @@ namespace eval ::safe {
 	set flag [::tcl::OptProcArgGiven -nestedLoadOk];
 	# note that the test here is the opposite of the "InterpStatics"
 	# one (it is not -noNested... because of the wanted default value)
-	if {$flag && ($nestedLoadOk != $nested) 
+	if {$flag && (!$nestedLoadOk != !$nested) 
 	          && ([::tcl::OptProcArgGiven -nested])} {
 	    return -code error\
 		    "conflicting values given for -nested and -nestedLoadOk"
@@ -320,8 +324,8 @@ namespace eval ::safe {
 	    nestedok deletehook} {
 
 	# determine and store the access path if empty
-	if {[string equal "" $access_path]} {
-	    set access_path [uplevel #0 set auto_path]
+	if {$access_path eq ""} {
+	    set access_path [uplevel \#0 set auto_path]
 	    # Make sure that tcl_library is in auto_path
 	    # and at the first position (needed by setAccessPath)
 	    set where [lsearch -exact $access_path [info library]]
@@ -636,15 +640,15 @@ proc ::safe::setLogCmd {args} {
     }
     # set/get values
     proc Set {args} {
-	eval [list Toplevel set] $args
+	eval [linsert $args 0 Toplevel set]
     }
     # lappend on toplevel vars
     proc Lappend {args} {
-	eval [list Toplevel lappend] $args
+	eval [linsert $args 0 Toplevel lappend]
     }
     # unset a var/token (currently just an global level eval)
     proc Unset {args} {
-	eval [list Toplevel unset] $args
+	eval [linsert $args 0 Toplevel unset]
     }
     # test existance 
     proc Exists {varname} {
@@ -774,7 +778,7 @@ proc ::safe::setLogCmd {args} {
 	# Determine where to load. load use a relative interp path
 	# and {} means self, so we can directly and safely use passed arg.
 	set target [lindex $args 1]
-	if {[string length $target]} {
+	if {$target ne ""} {
 	    # we will try to load into a sub sub interp
 	    # check that we want to authorize that.
 	    if {![NestedOk $slave]} {
@@ -786,9 +790,9 @@ proc ::safe::setLogCmd {args} {
 	}
 
 	# Determine what kind of load is requested
-	if {[string length $file] == 0} {
+	if {$file eq ""} {
 	    # static package loading
-	    if {[string length $package] == 0} {
+	    if {$package eq ""} {
 		set msg "load error: empty filename and no package name"
 		Log $slave $msg
 		return -code error $msg
@@ -856,7 +860,7 @@ proc ::safe::setLogCmd {args} {
     proc Subset {slave command okpat args} {
 	set subcommand [lindex $args 0]
 	if {[regexp $okpat $subcommand]} {
-	    return [eval [list $command $subcommand] [lrange $args 1 end]]
+	    return [eval [linsert $args 0 $command]]
 	}
 	set msg "not allowed to invoke subcommand $subcommand of $command"
 	Log $slave $msg
@@ -891,11 +895,11 @@ proc ::safe::setLogCmd {args} {
 	set subcommand [lindex $args 0]
 
 	if {[regexp $okpat $subcommand]} {
-	    return [eval ::interp invokehidden $slave encoding $subcommand \
-		    [lrange $args 1 end]]
+	    return [eval [linsert $args 0 \
+		    ::interp invokehidden $slave encoding]]
 	}
 
-	if {[string match $subcommand system]} {
+	if {[string first $subcommand system] == 0} {
 	    if {$argc == 1} {
 		# passed all the tests , lets source it:
 		if {[catch {::interp invokehidden \

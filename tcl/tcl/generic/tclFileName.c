@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclFileName.c,v 1.40.2.6 2004/01/13 17:26:42 dgp Exp $
+ * RCS: @(#) $Id: tclFileName.c,v 1.40.2.15 2006/10/03 18:20:33 dgp Exp $
  */
 
 #include "tclInt.h"
@@ -244,37 +244,47 @@ ExtractWinRoot(path, resultPtr, offset, typePtr)
 	}
     } else {
 	int abs = 0;
-	if (path[0] == 'c' && path[1] == 'o') {
-	    if (path[2] == 'm' && path[3] >= '1' && path[3] <= '9') {
-		/* May have match for 'com[1-9]:?', which is a serial port */
-	        if (path[4] == '\0') {
-	            abs = 4;
-	        } else if (path [4] == ':' && path[5] == '\0') {
+	if ((path[0] == 'c' || path[0] == 'C') 
+	    && (path[1] == 'o' || path[1] == 'O')) {
+	    if ((path[2] == 'm' || path[2] == 'M')
+		&& path[3] >= '1' && path[3] <= '4') {
+		/* May have match for 'com[1-4]:?', which is a serial port */
+		if (path[4] == '\0') {
+		    abs = 4;
+		} else if (path [4] == ':' && path[5] == '\0') {
 		    abs = 5;
-	        }
-	    } else if (path[2] == 'n' && path[3] == '\0') {
+		}
+	    } else if ((path[2] == 'n' || path[2] == 'N') && path[3] == '\0') {
 		/* Have match for 'con' */
 		abs = 3;
 	    }
-	} else if (path[0] == 'l' && path[1] == 'p' && path[2] == 't') {
-	    if (path[3] >= '1' && path[3] <= '9') {
-		/* May have match for 'lpt[1-9]:?' */
+	} else if ((path[0] == 'l' || path[0] == 'L')
+		   && (path[1] == 'p' || path[1] == 'P')
+		   && (path[2] == 't' || path[2] == 'T')) {
+	    if (path[3] >= '1' && path[3] <= '3') {
+		/* May have match for 'lpt[1-3]:?' */
 		if (path[4] == '\0') {
 		    abs = 4;
 		} else if (path [4] == ':' && path[5] == '\0') {
 		    abs = 5;
 		}
 	    }
-	} else if (path[0] == 'p' && path[1] == 'r' 
-		   && path[2] == 'n' && path[3] == '\0') {
+	} else if ((path[0] == 'p' || path[0] == 'P')
+		   && (path[1] == 'r' || path[1] == 'R')
+		   && (path[2] == 'n' || path[2] == 'N')
+		   && path[3] == '\0') {
 	    /* Have match for 'prn' */
 	    abs = 3;
-	} else if (path[0] == 'n' && path[1] == 'u' 
-		   && path[2] == 'l' && path[3] == '\0') {
+	} else if ((path[0] == 'n' || path[0] == 'N')
+		   && (path[1] == 'u' || path[1] == 'U')
+		   && (path[2] == 'l' || path[2] == 'L')
+		   && path[3] == '\0') {
 	    /* Have match for 'nul' */
 	    abs = 3;
-	} else if (path[0] == 'a' && path[1] == 'u' 
-		   && path[2] == 'x' && path[3] == '\0') {
+	} else if ((path[0] == 'a' || path[0] == 'A')
+		   && (path[1] == 'u' || path[1] == 'U')
+		   && (path[2] == 'x' || path[2] == 'X')
+		   && path[3] == '\0') {
 	    /* Have match for 'aux' */
 	    abs = 3;
 	}
@@ -782,8 +792,9 @@ SplitWinPath(path)
     Tcl_DStringFree(&buf);
     
     /*
-     * Split on slashes.  Embedded elements that start with tilde will be
-     * prefixed with "./" so they are not affected by tilde substitution.
+     * Split on slashes.  Embedded elements that start with tilde 
+     * or a drive letter will be prefixed with "./" so they are not 
+     * affected by tilde substitution.
      */
 
     do {
@@ -794,7 +805,10 @@ SplitWinPath(path)
 	length = p - elementStart;
 	if (length > 0) {
 	    Tcl_Obj *nextElt;
-	    if ((elementStart[0] == '~') && (elementStart != path)) {
+	    if ((elementStart != path)
+		&& ((elementStart[0] == '~')
+		    || (isalpha(UCHAR(elementStart[0]))
+			&& elementStart[1] == ':'))) {
 		nextElt = Tcl_NewStringObj("./",2);
 		Tcl_AppendToObj(nextElt, elementStart, length);
 	    } else {
@@ -1115,22 +1129,24 @@ TclpNativeJoinPath(prefix, joining)
     start = Tcl_GetStringFromObj(prefix, &length);
 
     /*
-     * Remove the ./ from tilde prefixed elements unless
-     * it is the first component.
+     * Remove the ./ from tilde prefixed elements, and drive-letter
+     * prefixed elements on Windows, unless it is the first component.
      */
     
     p = joining;
     
     if (length != 0) {
-	if ((p[0] == '.') && (p[1] == '/') && (p[2] == '~')) {
+	if ((p[0] == '.') && (p[1] == '/')
+	    && ((p[2] == '~')
+		|| ((tclPlatform == TCL_PLATFORM_WINDOWS)
+		    && isalpha(UCHAR(p[2]))
+		    && (p[3] == ':')))) {
 	    p += 2;
 	}
     }
-       
     if (*p == '\0') {
 	return;
     }
-
 
     switch (tclPlatform) {
         case TCL_PLATFORM_UNIX:
@@ -1717,6 +1733,16 @@ Tcl_GlobObjCmd(dummy, interp, objc, objv)
 		/* Have to split off the end */
 		Tcl_DStringAppend(&pref, last, first+pathlength-last);
 		pathOrDir = Tcl_NewStringObj(first, last-first-1);
+		/* 
+		 * We must ensure that we haven't cut off too much,
+		 * and turned a valid path like '/' or 'C:/' into
+		 * an incorrect path like '' or 'C:'.  The way we
+		 * do this is to add a separator if there are none
+		 * presently in the prefix.
+		 */
+		if (strpbrk(Tcl_GetString(pathOrDir), "\\/") == NULL) {
+		    Tcl_AppendToObj(pathOrDir, last-1, 1); 
+		}
 	    }
 	    /* Need to quote 'prefix' */
 	    Tcl_DStringInit(&prefix);
@@ -2104,6 +2130,10 @@ TclGlob(interp, pattern, unquotedPrefix, globFlags, types)
 	     */
 	    if (globFlags & TCL_GLOBMODE_DIR) {
 		Tcl_DStringAppend(&buffer,separators,1);
+		/* Try to borrow that separator from the tail */
+		if (*tail == *separators) {
+		    tail++;
+		}
 	    }
 	    prefixLen++;
 	}
@@ -2320,6 +2350,13 @@ TclDoGlob(interp, separators, headPtr, tail, types)
 	} else if (strchr(separators, *tail) == NULL) {
 	    break;
 	}
+	if (tclPlatform != TCL_PLATFORM_MAC) {
+	    if (*tail == '\\') {
+		Tcl_DStringAppend(headPtr, separators, 1);
+	    } else {
+		Tcl_DStringAppend(headPtr, tail, 1);
+	    }
+	}
 	count++;
     }
 
@@ -2361,7 +2398,6 @@ TclDoGlob(interp, separators, headPtr, tail, types)
 	     * trailing slash if needed.  Otherwise add the slash if
 	     * this is the first absolute element, or a later relative
 	     * element.  Add an extra slash if this is a UNC path.
-	     */
 
 	    if (*name == ':') {
 		Tcl_DStringAppend(headPtr, ":", 1);
@@ -2377,13 +2413,13 @@ TclDoGlob(interp, separators, headPtr, tail, types)
 		    Tcl_DStringAppend(headPtr, "/", 1);
 		}
 	    }
+	     */
 	    
 	    break;
-	case TCL_PLATFORM_UNIX:
+	case TCL_PLATFORM_UNIX: {
 	    /*
 	     * Add a separator if this is the first absolute element, or
 	     * a later relative element.
-	     */
 
 	    if ((*tail != '\0')
 		    && (((length > 0)
@@ -2391,7 +2427,9 @@ TclDoGlob(interp, separators, headPtr, tail, types)
 			    || ((length == 0) && (count > 0)))) {
 		Tcl_DStringAppend(headPtr, "/", 1);
 	    }
+	     */
 	    break;
+	}
     }
 
     /*
@@ -2503,17 +2541,17 @@ TclDoGlob(interp, separators, headPtr, tail, types)
 	    ret = Tcl_FSMatchInDirectory(interp, Tcl_GetObjResult(interp), 
 					 head, tail, types);
 	} else {
-	    Tcl_Obj* resultPtr;
-
 	    /* 
 	     * We do the recursion ourselves.  This makes implementing
 	     * Tcl_FSMatchInDirectory for each filesystem much easier.
 	     */
 	    Tcl_GlobTypeData dirOnly = { TCL_GLOB_TYPE_DIR, 0, NULL, NULL };
 	    char save = *p;
-	    
-	    *p = '\0';
+	    Tcl_Obj *resultPtr;
+
 	    resultPtr = Tcl_NewListObj(0, NULL);
+	    Tcl_IncrRefCount(resultPtr);
+	    *p = '\0';
 	    ret = Tcl_FSMatchInDirectory(interp, resultPtr, 
 					 head, tail, &dirOnly);
 	    *p = save;
@@ -2530,7 +2568,7 @@ TclDoGlob(interp, separators, headPtr, tail, types)
 			Tcl_DStringAppend(&ds, Tcl_GetString(elt), -1);
 			if(tclPlatform == TCL_PLATFORM_MAC) {
 			    Tcl_DStringAppend(&ds, ":",1);
-			} else {			
+			} else {
 			    Tcl_DStringAppend(&ds, "/",1);
 			}
 			ret = TclDoGlob(interp, separators, &ds, p+1, types);

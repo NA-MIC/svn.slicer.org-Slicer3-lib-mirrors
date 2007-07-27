@@ -5,7 +5,7 @@
 # "autoconf" program (constructs like "@foo@" will get replaced in the
 # actual Makefile.
 #
-# RCS: @(#) $Id: Makefile.in,v 1.68.2.1 2003/07/16 19:34:14 mdejong Exp $
+# RCS: @(#) $Id: Makefile.in,v 1.68.2.7 2007/01/30 23:21:12 hobbs Exp $
 
 VERSION = @TCL_VERSION@
 
@@ -56,6 +56,9 @@ SCRIPT_INSTALL_DIR	= $(INSTALL_ROOT)$(TCL_LIBRARY)
 # Directory in which to install the include file tcl.h:
 INCLUDE_INSTALL_DIR	= $(INSTALL_ROOT)$(includedir)
 
+# Directory in which to (optionally) install the private tcl headers:
+PRIVATE_INCLUDE_INSTALL_DIR = $(INSTALL_ROOT)$(includedir)
+
 # Top-level directory in which to install manual entries:
 MAN_INSTALL_DIR		= $(INSTALL_ROOT)$(mandir)
 
@@ -94,7 +97,7 @@ COMPILE_DEBUG_FLAGS =
 #COMPILE_DEBUG_FLAGS = -DTCL_COMPILE_DEBUG -DTCL_COMPILE_STATS
 
 # Special compiler flags to use when building man2tcl on Windows.
-MAN2TCLFLAGS =		@MAN2TCLFLAGS@
+MAN2TCLFLAGS		= @MAN2TCLFLAGS@
 
 SRC_DIR			= @srcdir@
 ROOT_DIR		= @srcdir@/..
@@ -105,11 +108,11 @@ COMPAT_DIR		= @srcdir@/../compat
 # Converts a POSIX path to a Windows native path.
 CYGPATH			= @CYGPATH@
 
-GENERIC_DIR_NATIVE	= $(shell $(CYGPATH) '$(GENERIC_DIR)')
-WIN_DIR_NATIVE		= $(shell $(CYGPATH) '$(WIN_DIR)')
-ROOT_DIR_NATIVE		= $(shell $(CYGPATH) '$(ROOT_DIR)')
+GENERIC_DIR_NATIVE	= $(shell $(CYGPATH) '$(GENERIC_DIR)' | sed 's!\\!/!g')
+WIN_DIR_NATIVE		= $(shell $(CYGPATH) '$(WIN_DIR)' | sed 's!\\!/!g')
+ROOT_DIR_NATIVE		= $(shell $(CYGPATH) '$(ROOT_DIR)' | sed 's!\\!/!g')
 
-LIBRARY_DIR   = $(shell echo '$(ROOT_DIR_NATIVE)/library' | sed 's/\\/\//g' )
+LIBRARY_DIR		= $(ROOT_DIR_NATIVE)/library
 
 DLLSUFFIX		= @DLLSUFFIX@
 LIBSUFFIX		= @LIBSUFFIX@
@@ -329,7 +332,7 @@ cat32.$(OBJEXT): cat.c
 	$(CC) -c $(CC_SWITCHES) @DEPARG@ $(CC_OBJNAME)
 
 $(CAT32): cat32.$(OBJEXT)
-	$(CC) $(CFLAGS) cat32.$(OBJEXT) $(CC_EXENAME) $(LDFLAGS_CONSOLE)
+	$(CC) $(CFLAGS) cat32.$(OBJEXT) $(CC_EXENAME) $(LIBS) $(LDFLAGS_CONSOLE)
 
 # The following targets are configured by autoconf to generate either
 # a shared library or static library
@@ -490,7 +493,7 @@ install-libraries: libraries
 		else true; \
 		fi; \
 	    done;
-	@for i in http1.0 http2.4 opt0.4 encoding msgcat1.3 tcltest2.2; \
+	@for i in http1.0 http2.5 opt0.4 encoding msgcat1.3 tcltest2.2; \
 	    do \
 	    if [ ! -d $(SCRIPT_INSTALL_DIR)/$$i ] ; then \
 		echo "Making directory $(SCRIPT_INSTALL_DIR)/$$i"; \
@@ -514,10 +517,10 @@ install-libraries: libraries
 	    do \
 	    $(COPY) "$$j" "$(SCRIPT_INSTALL_DIR)/http1.0"; \
 	    done;
-	@echo "Installing library http2.4 directory";
+	@echo "Installing library http2.5 directory";
 	@for j in $(ROOT_DIR)/library/http/*.tcl; \
 	    do \
-	    $(COPY) "$$j" "$(SCRIPT_INSTALL_DIR)/http2.4"; \
+	    $(COPY) "$$j" "$(SCRIPT_INSTALL_DIR)/http2.5"; \
 	    done;
 	@echo "Installing library opt0.4 directory";
 	@for j in $(ROOT_DIR)/library/opt/*.tcl; \
@@ -540,6 +543,25 @@ install-libraries: libraries
 	done;
 
 install-doc: doc
+
+# Optional target to install private headers
+install-private-headers: libraries
+	@for i in $(PRIVATE_INCLUDE_INSTALL_DIR); \
+	    do \
+	    if [ ! -d $$i ] ; then \
+		echo "Making directory $$i"; \
+		$(MKDIR) $$i; \
+		chmod 755 $$i; \
+		else true; \
+		fi; \
+	    done;
+	@echo "Installing private header files to $(PRIVATE_INCLUDE_INSTALL_DIR)/";
+	@for i in "$(GENERIC_DIR)/tclInt.h" "$(GENERIC_DIR)/tclIntDecls.h" \
+		"$(GENERIC_DIR)/tclIntPlatDecls.h" "$(GENERIC_DIR)/tclPort.h" \
+		"$(WIN_DIR)/tclWinPort.h" ; \
+	    do \
+	    $(COPY) "$$i" "$(PRIVATE_INCLUDE_INSTALL_DIR)"; \
+	    done;
 
 # Specifying TESTFLAGS on the command line is the standard way to pass
 # args to tcltest, ie:

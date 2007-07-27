@@ -10,11 +10,11 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: unixInit.test,v 1.30.2.6 2004/02/25 23:38:17 dgp Exp $
+# RCS: @(#) $Id: unixInit.test,v 1.30.2.12 2005/04/27 21:07:52 dgp Exp $
 
 package require tcltest 2
 namespace import -force ::tcltest::*
-catch {unset path}
+unset -nocomplain path
 if {[info exists env(TCL_LIBRARY)]} {
     set oldlibrary $env(TCL_LIBRARY)
     unset env(TCL_LIBRARY)
@@ -281,8 +281,11 @@ test unixInit-2.10 {TclpInitLibraryPath: executable relative} -constraints {
     cd $libDir
 } -body {
     # Checking for Bug 832657
-    # The proposed patch in TclFindEncodings was not correct x-platform.
-    lrange [getlibpath [file join .. bin tcltest]] 2 3
+    set x [lrange [getlibpath [file join .. bin tcltest]] 2 3]
+    foreach p $x {
+      lappend y [file normalize $p]
+    }
+    set y
 } -cleanup {
     cd $saveDir
     unset saveDir
@@ -298,6 +301,7 @@ test unixInit-2.10 {TclpInitLibraryPath: executable relative} -constraints {
     removeDirectory sparkly $tmpDir
     unset tmpDir
     removeDirectory tmp
+    unset x p y
 } -result [list [file join [temporaryDirectory] tmp sparkly library] \
 	[file join [temporaryDirectory] tmp library] ]
 
@@ -314,7 +318,9 @@ test unixInit-3.1 {TclpSetInitialEncodings} -constraints {
     unset env(LANG)
 
     set enc
-} -match regexp -result ^iso8859-15?$
+} -match regexp -result [expr {
+	($tcl_platform(os) eq "Darwin") ? "^utf-8$" : "^iso8859-15?$"}]
+
 test unixInit-3.2 {TclpSetInitialEncodings} {unixOnly stdio} {
     set env(LANG) japanese
     catch {set oldlc_all $env(LC_ALL)}
@@ -358,12 +364,12 @@ test unixInit-7.1 {closed standard channel: Bug 772288} -constraints {
 	unixOnly stdio
 } -body {
     set tclsh [interpreter]
-    makeFile {puts [open /dev/null]} crash.tcl
-    makeFile "
+    set crash [makeFile {puts [open /dev/null]} crash.tcl]
+    set crashtest [makeFile "
 	close stdin
-	[list exec $tclsh crash.tcl]
-    " crashtest.tcl
-    exec $tclsh crashtest.tcl
+	[list exec $tclsh $crash]
+    " crashtest.tcl]
+    exec $tclsh $crashtest
 } -cleanup {
     removeFile crash.tcl
     removeFile crashtest.tcl
@@ -375,5 +381,6 @@ if {[info exists oldlibrary]} {
 }
 catch {unset env(LANG)}
 catch {set env(LANG) $oldlang}
+unset -nocomplain path
 ::tcltest::cleanupTests
 return

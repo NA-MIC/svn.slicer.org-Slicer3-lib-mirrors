@@ -8,7 +8,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclWinInt.h,v 1.20.2.1 2003/04/14 15:46:01 vincentdarley Exp $
+ * RCS: @(#) $Id: tclWinInt.h,v 1.20.2.5 2006/03/10 10:35:25 vincentdarley Exp $
  */
 
 #ifndef _TCLWININT
@@ -27,7 +27,7 @@
  * to help avoid overflowing the stack in the case of infinite recursion.
  */
 
-#define TCL_WIN_STACK_THRESHOLD 0x2000
+#define TCL_WIN_STACK_THRESHOLD 0x8000
 
 #ifdef BUILD_tcl
 # undef TCL_STORAGE_CLASS
@@ -37,10 +37,14 @@
 /*
  * Some versions of Borland C have a define for the OSVERSIONINFO for
  * Win32s and for NT, but not for Windows 95.
+ * Define VER_PLATFORM_WIN32_CE for those without newer headers.
  */
 
 #ifndef VER_PLATFORM_WIN32_WINDOWS
 #define VER_PLATFORM_WIN32_WINDOWS 1
+#endif
+#ifndef VER_PLATFORM_WIN32_CE
+#define VER_PLATFORM_WIN32_CE 3
 #endif
 
 /*
@@ -107,6 +111,46 @@ typedef struct TclWinProcs {
 					 LPVOID, UINT,
 					 LPVOID, DWORD);
     BOOL (WINAPI *getVolumeNameForVMPProc)(CONST TCHAR*, TCHAR*, DWORD);
+
+    DWORD (WINAPI *getLongPathNameProc)(CONST TCHAR*, TCHAR*, DWORD);
+    /* 
+     * These six are for the security sdk to get correct file
+     * permissions on NT, 2000, XP, etc.  On 95,98,ME they are
+     * always null.
+     */
+    BOOL (WINAPI *getFileSecurityProc)(LPCTSTR lpFileName,
+		     SECURITY_INFORMATION RequestedInformation,
+		     PSECURITY_DESCRIPTOR pSecurityDescriptor,
+		     DWORD nLength, 
+		     LPDWORD lpnLengthNeeded);
+    BOOL (WINAPI *impersonateSelfProc) (SECURITY_IMPERSONATION_LEVEL 
+		      ImpersonationLevel);
+    BOOL (WINAPI *openThreadTokenProc) (HANDLE ThreadHandle,
+		      DWORD DesiredAccess, BOOL OpenAsSelf,
+		      PHANDLE TokenHandle);
+    BOOL (WINAPI *revertToSelfProc) (void);
+    VOID (WINAPI *mapGenericMaskProc) (PDWORD AccessMask,
+		      PGENERIC_MAPPING GenericMapping);
+    BOOL (WINAPI *accessCheckProc)(PSECURITY_DESCRIPTOR pSecurityDescriptor,
+		    HANDLE ClientToken, DWORD DesiredAccess,
+		    PGENERIC_MAPPING GenericMapping,
+		    PPRIVILEGE_SET PrivilegeSet,
+		    LPDWORD PrivilegeSetLength,
+		    LPDWORD GrantedAccess,
+		    LPBOOL AccessStatus);
+   /*
+    * Unicode console support. WriteConsole and ReadConsole
+    */
+    BOOL (WINAPI *readConsoleProc)(HANDLE hConsoleInput,
+	                           LPVOID lpBuffer,
+	                           DWORD nNumberOfCharsToRead,
+	                           LPDWORD lpNumberOfCharsRead,
+	                           LPVOID lpReserved);
+    BOOL (WINAPI *writeConsoleProc)(HANDLE hConsoleOutput,
+				    const VOID* lpBuffer,
+				    DWORD nNumberOfCharsToWrite,
+				    LPDWORD lpNumberOfCharsWritten,
+				    LPVOID lpReserved);
 } TclWinProcs;
 
 EXTERN TclWinProcs *tclWinProcs;

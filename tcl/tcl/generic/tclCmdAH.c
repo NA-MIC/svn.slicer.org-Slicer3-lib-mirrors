@@ -11,7 +11,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclCmdAH.c,v 1.27.2.8 2003/12/12 16:47:47 vincentdarley Exp $
+ * RCS: @(#) $Id: tclCmdAH.c,v 1.27.2.16 2006/11/28 22:20:00 andreas_kupries Exp $
  */
 
 #include "tclInt.h"
@@ -235,23 +235,25 @@ Tcl_CatchObjCmd(dummy, interp, objc, objv)
 {
     Tcl_Obj *varNamePtr = NULL;
     int result;
+#ifdef TCL_TIP280
+    Interp* iPtr = (Interp*) interp;
+#endif
 
     if ((objc != 2) && (objc != 3)) {
 	Tcl_WrongNumArgs(interp, 1, objv, "command ?varName?");
 	return TCL_ERROR;
     }
 
-    /*
-     * Save a pointer to the variable name object, if any, in case the
-     * Tcl_EvalObj reallocates the bytecode interpreter's evaluation
-     * stack rendering objv invalid.
-     */
-    
     if (objc == 3) {
 	varNamePtr = objv[2];
     }
 
+#ifndef TCL_TIP280
     result = Tcl_EvalObjEx(interp, objv[1], 0);
+#else
+    /* TIP #280. Make invoking context available to caught script */
+    result = TclEvalObjEx(interp, objv[1], 0, iPtr->cmdFramePtr,1);
+#endif
     
     if (objc == 3) {
 	if (Tcl_ObjSetVar2(interp, varNamePtr, NULL,
@@ -446,24 +448,21 @@ Tcl_EncodingObjCmd(dummy, interp, objc, objv)
     switch ((enum options) index) {
 	case ENC_CONVERTTO:
 	case ENC_CONVERTFROM: {
-	    char *name;
 	    Tcl_Obj *data;
 	    if (objc == 3) {
-		name = NULL;
+		encoding = Tcl_GetEncoding(interp, NULL);
 		data = objv[2];
 	    } else if (objc == 4) {
-		name = Tcl_GetString(objv[2]);
+		if (TclGetEncodingFromObj(interp, objv[2], &encoding)
+			!= TCL_OK) {
+		    return TCL_ERROR;
+		}
 		data = objv[3];
 	    } else {
 		Tcl_WrongNumArgs(interp, 2, objv, "?encoding? data");
 		return TCL_ERROR;
 	    }
 	    
-	    encoding = Tcl_GetEncoding(interp, name);
-	    if (!encoding) {
-		return TCL_ERROR;
-	    }
-
 	    if ((enum options) index == ENC_CONVERTFROM) {
 		/*
 		 * Treat the string as binary data.
@@ -601,6 +600,9 @@ Tcl_EvalObjCmd(dummy, interp, objc, objv)
 {
     int result;
     register Tcl_Obj *objPtr;
+#ifdef TCL_TIP280
+    Interp* iPtr = (Interp*) interp;
+#endif
 
     if (objc < 2) {
 	Tcl_WrongNumArgs(interp, 1, objv, "arg ?arg ...?");
@@ -608,7 +610,13 @@ Tcl_EvalObjCmd(dummy, interp, objc, objv)
     }
     
     if (objc == 2) {
+#ifndef TCL_TIP280
 	result = Tcl_EvalObjEx(interp, objv[1], TCL_EVAL_DIRECT);
+#else
+	/* TIP #280. Make invoking context available to eval'd script */
+	result = TclEvalObjEx(interp, objv[1], TCL_EVAL_DIRECT,
+			      iPtr->cmdFramePtr,1);
+#endif
     } else {
 	/*
 	 * More than one argument: concatenate them together with spaces
@@ -616,7 +624,12 @@ Tcl_EvalObjCmd(dummy, interp, objc, objv)
 	 * the object when it decrements its refcount after eval'ing it.
 	 */
     	objPtr = Tcl_ConcatObj(objc-1, objv+1);
+#ifndef TCL_TIP280
 	result = Tcl_EvalObjEx(interp, objPtr, TCL_EVAL_DIRECT);
+#else
+	/* TIP #280. Make invoking context available to eval'd script */
+	result = TclEvalObjEx(interp, objPtr, TCL_EVAL_DIRECT, NULL, 0);
+#endif
     }
     if (result == TCL_ERROR) {
 	char msg[32 + TCL_INTEGER_SPACE];
@@ -1616,13 +1629,21 @@ Tcl_ForObjCmd(dummy, interp, objc, objv)
     Tcl_Obj *CONST objv[];	/* Argument objects. */
 {
     int result, value;
+#ifdef TCL_TIP280
+    Interp* iPtr = (Interp*) interp;
+#endif
 
     if (objc != 5) {
         Tcl_WrongNumArgs(interp, 1, objv, "start test next command");
         return TCL_ERROR;
     }
 
+#ifndef TCL_TIP280
     result = Tcl_EvalObjEx(interp, objv[1], 0);
+#else
+    /* TIP #280. Make invoking context available to initial script */
+    result = TclEvalObjEx(interp, objv[1], 0, iPtr->cmdFramePtr,1);
+#endif
     if (result != TCL_OK) {
         if (result == TCL_ERROR) {
             Tcl_AddErrorInfo(interp, "\n    (\"for\" initial command)");
@@ -1644,7 +1665,12 @@ Tcl_ForObjCmd(dummy, interp, objc, objv)
         if (!value) {
             break;
         }
+#ifndef TCL_TIP280
         result = Tcl_EvalObjEx(interp, objv[4], 0);
+#else
+	/* TIP #280. Make invoking context available to loop body */
+        result = TclEvalObjEx(interp, objv[4], 0, iPtr->cmdFramePtr,4);
+#endif
         if ((result != TCL_OK) && (result != TCL_CONTINUE)) {
             if (result == TCL_ERROR) {
                 char msg[32 + TCL_INTEGER_SPACE];
@@ -1654,7 +1680,12 @@ Tcl_ForObjCmd(dummy, interp, objc, objv)
             }
             break;
         }
+#ifndef TCL_TIP280
         result = Tcl_EvalObjEx(interp, objv[3], 0);
+#else
+	/* TIP #280. Make invoking context available to next script */
+        result = TclEvalObjEx(interp, objv[3], 0, iPtr->cmdFramePtr,3);
+#endif
 	if (result == TCL_BREAK) {
             break;
         } else if (result != TCL_OK) {
@@ -1728,6 +1759,9 @@ Tcl_ForeachObjCmd(dummy, interp, objc, objv)
     Tcl_Obj ***varvList = varvListArray;   /* Array of var name lists */
     int *argcList = argcListArray;	   /* Array of value list sizes */
     Tcl_Obj ***argvList = argvListArray;   /* Array of value lists */
+#ifdef TCL_TIP280
+    Interp* iPtr = (Interp*) interp;
+#endif
 
     if (objc < 4 || (objc%2 != 0)) {
 	Tcl_WrongNumArgs(interp, 1, objv,
@@ -1835,20 +1869,17 @@ Tcl_ForeachObjCmd(dummy, interp, objc, objv)
 	    for (v = 0;  v < varcList[i];  v++) {
 		int k = index[i]++;
 		Tcl_Obj *valuePtr, *varValuePtr;
-		int isEmptyObj = 0;
 		
 		if (k < argcList[i]) {
 		    valuePtr = argvList[i][k];
 		} else {
 		    valuePtr = Tcl_NewObj(); /* empty string */
-		    isEmptyObj = 1;
 		}
+		Tcl_IncrRefCount(valuePtr);
 		varValuePtr = Tcl_ObjSetVar2(interp, varvList[i][v],
 			NULL, valuePtr, 0);
+		Tcl_DecrRefCount(valuePtr);
 		if (varValuePtr == NULL) {
-		    if (isEmptyObj) {
-			Tcl_DecrRefCount(valuePtr);
-		    }
 		    Tcl_ResetResult(interp);
 		    Tcl_AppendStringsToObj(Tcl_GetObjResult(interp),
 			"couldn't set loop variable: \"",
@@ -1860,7 +1891,12 @@ Tcl_ForeachObjCmd(dummy, interp, objc, objv)
 	    }
 	}
 
+#ifndef TCL_TIP280
 	result = Tcl_EvalObjEx(interp, bodyPtr, 0);
+#else
+	/* TIP #280. Make invoking context available to loop body */
+	result = TclEvalObjEx(interp, bodyPtr, 0, iPtr->cmdFramePtr,objc-1);
+#endif
 	if (result != TCL_OK) {
 	    if (result == TCL_CONTINUE) {
 		result = TCL_OK;
@@ -2193,67 +2229,44 @@ Tcl_FormatObjCmd(dummy, interp, objc, objv)
 	case 'u':
 	case 'x':
 	case 'X':
-	    size = 40 + precision;
-
-	    /*
-	     * Peek what kind of value we've got so as not to be
-	     * converting stuff unduly.  [Bug #699060]
-	     */
-	    if (objv[objIndex]->typePtr == &tclWideIntType) {
-		Tcl_GetWideIntFromObj(NULL, objv[objIndex], &wideValue);
-		if (useWide) {
-		    whichValue = WIDE_VALUE;
-		    break;
-		} else {
-		    whichValue = INT_VALUE;
-		    if (wideValue>ULONG_MAX || wideValue<LONG_MIN) {
-			/*
-			 * Value too big for type.  Generate an error.
-			 */
-			Tcl_GetLongFromObj(interp, objv[objIndex], &intValue);
-			goto fmtError;
-		    }
-		    intValue = Tcl_WideAsLong(wideValue);
-		}
-	    } else if (objv[objIndex]->typePtr == &tclIntType) {
-		Tcl_GetLongFromObj(NULL, objv[objIndex], &intValue);
-		if (useWide) {
-		    whichValue = WIDE_VALUE;
-		    wideValue = Tcl_LongAsWide(intValue);
-		    break;
-		} else {
-		    whichValue = INT_VALUE;
-		}
-	    } else {
-		/*
-		 * No existing numeric interpretation, so we can
-		 * coerce to whichever is convenient.
-		 */
-		if (useWide) {
-		    if (Tcl_GetWideIntFromObj(interp, /* INTL: Tcl source. */
-			    objv[objIndex], &wideValue) != TCL_OK) {
-			goto fmtError;
-		    }
-		    whichValue = WIDE_VALUE;
-		    break;
-		}
-		if (Tcl_GetLongFromObj(interp,	      /* INTL: Tcl source. */
-			objv[objIndex], &intValue) != TCL_OK) {
+	    if (useWide) {
+		if (Tcl_GetWideIntFromObj(interp,	/* INTL: Tcl source. */
+			objv[objIndex], &wideValue) != TCL_OK) {
 		    goto fmtError;
 		}
+		whichValue = WIDE_VALUE;
+		size = 40 + precision;
+		break;
 	    }
+	    if (Tcl_GetLongFromObj(interp,		/* INTL: Tcl source. */
+		    objv[objIndex], &intValue) != TCL_OK) {
+		if (Tcl_GetWideIntFromObj(interp,	/* INTL: Tcl source. */
+			objv[objIndex], &wideValue) != TCL_OK) {
+		    goto fmtError;
+		}
+		intValue = Tcl_WideAsLong(wideValue);
+	    }
+
 #if (LONG_MAX > INT_MAX)
-	    /*
-	     * Add the 'l' for long format type because we are on an
-	     * LP64 archtecture and we are really going to pass a long
-	     * argument to sprintf.
-	     */
-	    newPtr++;
-	    *newPtr = 0;
-	    newPtr[-1] = newPtr[-2];
-	    newPtr[-2] = 'l';
+	    if (!useShort) {
+		/*
+		 * Add the 'l' for long format type because we are on an
+		 * LP64 archtecture and we are really going to pass a long
+		 * argument to sprintf.
+		 *
+		 * Do not add this if we're going to pass in a short (i.e.
+		 * if we've got an 'h' modifier already in the string); some
+		 * libc implementations of sprintf() do not like it at all.
+		 * [Bug 1154163]
+		 */
+		newPtr++;
+		*newPtr = 0;
+		newPtr[-1] = newPtr[-2];
+		newPtr[-2] = 'l';
+	    }
 #endif /* LONG_MAX > INT_MAX */
 	    whichValue = INT_VALUE;
+	    size = 40 + precision;
 	    break;
 	case 's':
 	    /*
@@ -2429,3 +2442,12 @@ Tcl_FormatObjCmd(dummy, interp, objc, objv)
     Tcl_DecrRefCount(resultPtr);
     return TCL_ERROR;
 }
+
+/*
+ * Local Variables:
+ * mode: c
+ * c-basic-offset: 4
+ * fill-column: 78
+ * End:
+ */
+

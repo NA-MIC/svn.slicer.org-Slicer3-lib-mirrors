@@ -11,12 +11,12 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclThreadAlloc.c,v 1.4.2.2 2003/05/10 04:57:40 mistachkin Exp $ 
+ * RCS: @(#) $Id: tclThreadAlloc.c,v 1.4.2.7 2005/12/20 22:16:34 dkf Exp $ 
  */
 
-#if defined(TCL_THREADS) && defined(USE_THREAD_ALLOC)
-
 #include "tclInt.h"
+
+#if defined(TCL_THREADS) && defined(USE_THREAD_ALLOC) && !defined(TCL_MEM_DEBUG)
 
 #ifdef WIN32
 #include "tclWinInt.h"
@@ -90,12 +90,12 @@ typedef struct Block {
 
 typedef struct Bucket {
     Block *firstPtr;
-    int nfree;
-    int nget;
-    int nput;
-    int nwait;
-    int nlock;
-    int nrequest;
+    long nfree;
+    long nget;
+    long nput;
+    long nwait;
+    long nlock;
+    long nrequest;
 } Bucket;
 
 /*
@@ -637,8 +637,8 @@ Tcl_GetMemoryInfo(Tcl_DString *dsPtr)
     	    Tcl_DStringAppendElement(dsPtr, buf);
 	}
 	for (n = 0; n < NBUCKETS; ++n) {
-    	    sprintf(buf, "%d %d %d %d %d %d %d",
-		(int) binfo[n].blocksize,
+    	    sprintf(buf, "%lu %ld %ld %ld %ld %ld %ld",
+		(unsigned long) binfo[n].blocksize,
 		cachePtr->buckets[n].nfree,
 		cachePtr->buckets[n].nget,
 		cachePtr->buckets[n].nput,
@@ -947,6 +947,66 @@ GetBlocks(Cache *cachePtr, int bucket)
 	blockPtr->b_next = NULL;
     }
     return 1;
+}
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * TclFinalizeThreadAlloc --
+ *
+ *	This procedure is used to destroy all private resources used in
+ *	this file.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	None.
+ *
+ *----------------------------------------------------------------------
+ */
+
+void
+TclFinalizeThreadAlloc()
+{
+    int i;
+    for (i = 0; i < NBUCKETS; ++i) {
+        TclpFreeAllocMutex(binfo[i].lockPtr); 
+        binfo[i].lockPtr = NULL;
+    }
+
+    TclpFreeAllocMutex(objLockPtr);
+    objLockPtr = NULL;
+
+    TclpFreeAllocMutex(listLockPtr);
+    listLockPtr = NULL;
+
+    TclpFreeAllocCache(NULL);
+}
+
+#else /* ! defined(TCL_THREADS) && ! defined(USE_THREAD_ALLOC) */
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * TclFinalizeThreadAlloc --
+ *
+ *	This procedure is used to destroy all private resources used in
+ *	this file.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	None.
+ *
+ *----------------------------------------------------------------------
+ */
+
+void
+TclFinalizeThreadAlloc()
+{
+    Tcl_Panic("TclFinalizeThreadAlloc called when threaded memory allocator not in use.");
 }
 
 #endif /* TCL_THREADS */

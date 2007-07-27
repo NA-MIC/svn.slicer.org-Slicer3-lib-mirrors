@@ -81,9 +81,12 @@ proc parse_command_line {} {
     set webdir ../html
     set build_tcl 0
     set build_tk 0
+    # Default search version is a glob pattern
+    set useversion {{,[8-9].[0-9]{,.[0-9]{,[0-9]}}}}
 
     # Handle arguments a la GNU:
     #   --version
+    #   --useversion=<version>
     #   --help
     #   --srcdir=/path
     #   --htmldir=/path
@@ -103,6 +106,7 @@ proc parse_command_line {} {
 		puts "  --htmldir=DIR       put generated HTML in DIR"
 		puts "  --tcl               build tcl help"
 		puts "  --tk                build tk help"
+		puts "  --useversion        version of tcl/tk to search for"
 		exit 0
 	    }
 
@@ -114,6 +118,11 @@ proc parse_command_line {} {
 	    --htmldir=* {
 		# length of "--htmldir=" is 10
 		set webdir [string range $option 10 end]
+	    }
+
+	    --useversion=* {
+		# length of "--useversion=" is 13
+		set useversion [string range $option 13 end]
 	    }
 
 	    --tcl {
@@ -134,25 +143,25 @@ proc parse_command_line {} {
     if {!$build_tcl && !$build_tk} {set build_tcl 1; set build_tk 1}
 
     if {$build_tcl} {
-    # Find Tcl.
-    set tcldir [lindex [lsort [glob -nocomplain -tails -type d \
-		-directory $tcltkdir {tcl{,[8-9].[0-9]{,.[0-9]}}}]] end]
-    if {$tcldir == ""} then {
-	puts stderr "tcltk-man-html: couldn't find Tcl below $tcltkdir"
-	exit 1
-    }
-    puts "using Tcl source directory $tcldir"
+	# Find Tcl.
+	set tcldir [lindex [lsort [glob -nocomplain -tails -type d \
+				       -directory $tcltkdir tcl$useversion]] end]
+	if {$tcldir == ""} then {
+	    puts stderr "tcltk-man-html: couldn't find Tcl below $tcltkdir"
+	    exit 1
+	}
+	puts "using Tcl source directory $tcldir"
     }
 
     if {$build_tk} {
-    # Find Tk.
-    set tkdir [lindex [lsort [glob -nocomplain -tails -type d \
-		-directory $tcltkdir {tk{,[8-9].[0-9]{,.[0-9]}}}]] end]
-    if {$tkdir == ""} then {
-	puts stderr "tcltk-man-html: couldn't find Tk below $tcltkdir"
-	exit 1
-    }
-    puts "using Tk source directory $tkdir"
+	# Find Tk.
+	set tkdir [lindex [lsort [glob -nocomplain -tails -type d \
+				      -directory $tcltkdir tk$useversion]] end]
+	if {$tkdir == ""} then {
+	    puts stderr "tcltk-man-html: couldn't find Tk below $tcltkdir"
+	    exit 1
+	}
+	puts "using Tk source directory $tkdir"
     }
 
     # the title for the man pages overall
@@ -230,6 +239,7 @@ proc process-text {text} {
 	    {\(+-}	{&#177;} \
 	    {\fP}	{\fR} \
 	    {\.}	. \
+	    {\(bu}	{&#8226;} \
 	    ] $text]
     regsub -all {\\o'o\^'} $text {\&ocirc;} text; # o-circumflex in re_syntax.n
     regsub -all {\\-\\\|\\-} $text -- text;	# two hyphens
@@ -488,7 +498,7 @@ proc output-RS-list {} {
 		.RE {
 		    break
 		}
-		.SH {
+		.SH - .SS {
 		    manerror "unbalanced .RS at section end"
 		    backup-text 1
 		    break
@@ -534,7 +544,10 @@ proc output-IP-list {context code rest} {
 	man-puts </DL>
     } else {
 	# labelled list, make contents
-	if {[string compare $context ".SH"]} {
+	if {
+	    [string compare $context ".SH"] &&
+	    [string compare $context ".SS"]
+	} then {
 	    man-puts <P>
 	}
 	man-puts <DL>
@@ -555,6 +568,8 @@ proc output-IP-list {context code rest} {
 			if {[string equal $manual(section) "ARGUMENTS"] || \
 				[regexp {^\[\d+\]$} $rest]} {
 			    man-puts "$para<DT>$rest<DD>"
+			} elseif {[string equal {&#8226;} $rest]} {
+			   man-puts "$para<DT><DD>$rest&nbsp;"
 			} else {
 			    man-puts "$para<DT>[long-toc $rest]<DD>"
 			}
@@ -954,14 +969,18 @@ proc output-directive {line} {
 	.BE {
 	    # man-puts <HR>
 	}
-	.SH {
+	.SH - .SS {
 	    # drain any open lists
 	    # announce the subject
 	    set manual(section) $rest
 	    # start our own stack of stuff
 	    set manual($manual(name)-$manual(section)) {}
 	    lappend manual(has-$manual(section)) $manual(name)
-	    man-puts "<H3>[long-toc $manual(section)]</H3>"
+	    if {[string compare .SS $code]} {
+		man-puts "<H3>[long-toc $manual(section)]</H3>"
+	    } else {
+		man-puts "<H4>[long-toc $manual(section)]</H4>"
+	    }
 	    # some sections can simply free wheel their way through the text
 	    # some sections can be processed in their own loops
 	    switch -exact $manual(section) {
@@ -994,6 +1013,7 @@ proc output-directive {line} {
 			    continue
 			}
 			if {[next-op-is .SH rest]
+		         || [next-op-is .SS rest]
 		         || [next-op-is .BE rest]
 			 || [next-op-is .SO rest]} {
 			    backup-text 1
@@ -1022,7 +1042,7 @@ proc output-directive {line} {
 		}
 		{SEE ALSO} {
 		    while {[more-text]} {
-			if {[next-op-is .SH rest]} {
+			if {[next-op-is .SH rest] || [next-op-is .SS rest]} {
 			    backup-text 1
 			    return
 			}
@@ -1049,7 +1069,7 @@ proc output-directive {line} {
 		}
 		KEYWORDS {
 		    while {[more-text]} {
-			if {[next-op-is .SH rest]} {
+			if {[next-op-is .SH rest] || [next-op-is .SS rest]} {
 			    backup-text 1
 			    return
 			}
@@ -1072,7 +1092,7 @@ proc output-directive {line} {
 		}
 	    }
 	    if {[next-op-is .IP rest]} {
-		output-IP-list .SH .IP $rest
+		output-IP-list $code .IP $rest
 		return
 	    }
 	    if {[next-op-is .PP rest]} {
@@ -1168,6 +1188,7 @@ proc output-directive {line} {
 		{expr:MATH FUNCTIONS} -
 		{history:DESCRIPTION} -
 		{history:HISTORY REVISION} -
+		{re_syntax:BRACKET EXPRESSIONS} -
 		{switch:DESCRIPTION} -
 		{upvar:DESCRIPTION} {
 		    return;			# fix.me
@@ -1377,11 +1398,11 @@ proc make-man-pages {html args} {
 			set manual(partial-text) {}
 		    }
 		    switch -exact $code {
-			.SH {
+			.SH - .SS {
 			    if {[llength $rest] == 0} {
 				gets $manual(infp) rest
 			    }
-			    lappend manual(text) ".SH [unquote $rest]"
+			    lappend manual(text) "$code [unquote $rest]"
 			}
 			.TH {
 			    lappend manual(text) "$code [unquote $rest]"
@@ -1601,7 +1622,7 @@ proc make-man-pages {html args} {
 	}
 	puts $afp "</H2><HR><DL>"
 	foreach k $keys {
-	    if {[regexp -nocase -- "^keyword-$a" $k]} {
+	    if {[string match -nocase "keyword-${a}*" $k]} {
 		set k [string range $k 8 end]
 		puts $afp "<DT><A NAME=\"$k\">$k</A><DD>"
 		set refs {}

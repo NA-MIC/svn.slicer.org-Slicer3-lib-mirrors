@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclUnixChan.c,v 1.42.2.2 2004/02/25 14:54:52 dkf Exp $
+ * RCS: @(#) $Id: tclUnixChan.c,v 1.42.2.10 2006/11/28 16:29:48 kennykb Exp $
  */
 
 #include "tclInt.h"	/* Internal definitions for Tcl. */
@@ -250,6 +250,10 @@ static int		FileOutputProc _ANSI_ARGS_((
 			    int toWrite, int *errorCode));
 static int		FileSeekProc _ANSI_ARGS_((ClientData instanceData,
 			    long offset, int mode, int *errorCode));
+#ifdef DEPRECATED
+static void             FileThreadActionProc _ANSI_ARGS_ ((
+			   ClientData instanceData, int action));
+#endif
 static Tcl_WideInt	FileWideSeekProc _ANSI_ARGS_((ClientData instanceData,
 			    Tcl_WideInt offset, int mode, int *errorCode));
 static void		FileWatchProc _ANSI_ARGS_((ClientData instanceData,
@@ -305,7 +309,7 @@ static Tcl_Channel	MakeTcpClientChannelMode _ANSI_ARGS_(
 
 static Tcl_ChannelType fileChannelType = {
     "file",			/* Type name. */
-    TCL_CHANNEL_VERSION_3,	/* v3 channel */
+    TCL_CHANNEL_VERSION_4,	/* v4 channel */
     FileCloseProc,		/* Close proc. */
     FileInputProc,		/* Input proc. */
     FileOutputProc,		/* Output proc. */
@@ -319,6 +323,11 @@ static Tcl_ChannelType fileChannelType = {
     NULL,			/* flush proc. */
     NULL,			/* handler proc. */
     FileWideSeekProc,		/* wide seek proc. */
+#ifdef DEPRECATED
+    FileThreadActionProc,       /* thread actions */
+#else
+    NULL,
+#endif
 };
 
 #ifdef SUPPORTS_TTY
@@ -329,7 +338,7 @@ static Tcl_ChannelType fileChannelType = {
 
 static Tcl_ChannelType ttyChannelType = {
     "tty",			/* Type name. */
-    TCL_CHANNEL_VERSION_2,	/* v2 channel */
+    TCL_CHANNEL_VERSION_4,	/* v4 channel */
     TtyCloseProc,		/* Close proc. */
     FileInputProc,		/* Input proc. */
 #if BAD_TIP35_FLUSH
@@ -346,6 +355,8 @@ static Tcl_ChannelType ttyChannelType = {
     FileBlockModeProc,		/* Set blocking or non-blocking mode.*/
     NULL,			/* flush proc. */
     NULL,			/* handler proc. */
+    NULL,			/* wide seek proc. */
+    NULL,			/* thread action proc. */
 };
 #endif	/* SUPPORTS_TTY */
 
@@ -356,7 +367,7 @@ static Tcl_ChannelType ttyChannelType = {
 
 static Tcl_ChannelType tcpChannelType = {
     "tcp",			/* Type name. */
-    TCL_CHANNEL_VERSION_2,	/* v2 channel */
+    TCL_CHANNEL_VERSION_4,	/* v4 channel */
     TcpCloseProc,		/* Close proc. */
     TcpInputProc,		/* Input proc. */
     TcpOutputProc,		/* Output proc. */
@@ -369,6 +380,8 @@ static Tcl_ChannelType tcpChannelType = {
     TcpBlockModeProc,		/* Set blocking or non-blocking mode.*/
     NULL,			/* flush proc. */
     NULL,			/* handler proc. */
+    NULL,			/* wide seek proc. */
+    NULL,			/* thread action proc. */
 };
 
 
@@ -969,9 +982,11 @@ TtySetOptionProc(instanceData, interp, optionName, value)
 		    "bad value for -xchar: should be a list of two elements",
 		    (char *) NULL);
 	    }
+	    ckfree((char *) argv);
 	    return TCL_ERROR;
 	}
 	SETIOSTATE(fsPtr->fd, &iostate);
+	ckfree((char *) argv);
 	return TCL_OK;
     }
 
@@ -995,6 +1010,7 @@ TtySetOptionProc(instanceData, interp, optionName, value)
      * Option -ttycontrol {DTR 1 RTS 0 BREAK 0}
      */
     if ((len > 4) && (strncmp(optionName, "-ttycontrol", len) == 0)) {
+	int i;
 	if (Tcl_SplitList(interp, value, &argc, &argv) == TCL_ERROR) {
 	    return TCL_ERROR;
 	}
@@ -1004,15 +1020,17 @@ TtySetOptionProc(instanceData, interp, optionName, value)
 			"bad value for -ttycontrol: should be a list of",
 			"signal,value pairs", (char *) NULL);
 	    }
+	    ckfree((char *) argv);
 	    return TCL_ERROR;
 	}
 
 	GETCONTROL(fsPtr->fd, &control);
-	while (argc > 1) {
-	    if (Tcl_GetBoolean(interp, argv[1], &flag) == TCL_ERROR) {
+	for (i = 0; i < argc-1; i += 2) {
+	    if (Tcl_GetBoolean(interp, argv[i+1], &flag) == TCL_ERROR) {
+		ckfree((char *) argv);
 		return TCL_ERROR;
 	    }
-	    if (strncasecmp(argv[0], "DTR", strlen(argv[0])) == 0) {
+	    if (strncasecmp(argv[i], "DTR", strlen(argv[i])) == 0) {
 #ifdef TIOCM_DTR
 		if (flag) {
 		    control |= TIOCM_DTR;
@@ -1021,9 +1039,10 @@ TtySetOptionProc(instanceData, interp, optionName, value)
 		}
 #else /* !TIOCM_DTR */
 		UNSUPPORTED_OPTION("-ttycontrol DTR");
+		ckfree((char *) argv);
 		return TCL_ERROR;
 #endif /* TIOCM_DTR */
-	    } else if (strncasecmp(argv[0], "RTS", strlen(argv[0])) == 0) {
+	    } else if (strncasecmp(argv[i], "RTS", strlen(argv[i])) == 0) {
 #ifdef TIOCM_RTS
 		if (flag) {
 		    control |= TIOCM_RTS;
@@ -1032,27 +1051,30 @@ TtySetOptionProc(instanceData, interp, optionName, value)
 		}
 #else /* !TIOCM_RTS*/
 		UNSUPPORTED_OPTION("-ttycontrol RTS");
+		ckfree((char *) argv);
 		return TCL_ERROR;
 #endif /* TIOCM_RTS*/
-	    } else if (strncasecmp(argv[0], "BREAK", strlen(argv[0])) == 0) {
+	    } else if (strncasecmp(argv[i], "BREAK", strlen(argv[i])) == 0) {
 #ifdef SETBREAK
 		SETBREAK(fsPtr->fd, flag);
 #else /* !SETBREAK */
 		UNSUPPORTED_OPTION("-ttycontrol BREAK");
+		ckfree((char *) argv);
 		return TCL_ERROR;
 #endif /* SETBREAK */
 	    } else {
 		if (interp) {
-		    Tcl_AppendResult(interp,
-			    "bad signal for -ttycontrol: must be ",
+		    Tcl_AppendResult(interp, "bad signal \"", argv[i],
+			    "\" for -ttycontrol: must be ",
 			    "DTR, RTS or BREAK", (char *) NULL);
 		}
+		ckfree((char *) argv);
 		return TCL_ERROR;
 	    }
-	    argc -= 2, argv += 2;
-	} /* while (argc > 1) */
+	} /* -ttycontrol options loop */
 
 	SETCONTROL(fsPtr->fd, &control);
+	ckfree((char *) argv);
 	return TCL_OK;
     }
 
@@ -1831,8 +1853,11 @@ TclpOpenFileChannel(interp, pathPtr, mode, permissions)
 
 #ifdef DEPRECATED
     if (channelTypePtr == &fileChannelType) {
-        fsPtr->nextPtr = tsdPtr->firstFilePtr;
-        tsdPtr->firstFilePtr = fsPtr;
+        /* TIP #218. Removed the code inserting the new structure
+	 * into the global list. This is now handled in the thread
+	 * action callbacks, and only there.
+	 */
+        fsPtr->nextPtr = NULL;
     }
 #endif /* DEPRECATED */
     fsPtr->validMask = channelPermissions | TCL_EXCEPTION;
@@ -2281,10 +2306,10 @@ TcpGetOptionProc(instanceData, interp, optionName, dsPtr)
 		Tcl_DStringStartSublist(dsPtr);
 	    }
 	    Tcl_DStringAppendElement(dsPtr, inet_ntoa(peername.sin_addr));
-	    hostEntPtr = gethostbyaddr(			/* INTL: Native. */
+	    hostEntPtr = TclpGetHostByAddr(			/* INTL: Native. */
 		    (char *) &peername.sin_addr,
 		    sizeof(peername.sin_addr), AF_INET);
-	    if (hostEntPtr != NULL) {
+	    if (hostEntPtr != (struct hostent *) NULL) {
 		Tcl_DString ds;
 
 		Tcl_ExternalToUtfDString(NULL, hostEntPtr->h_name, -1, &ds);
@@ -2328,7 +2353,7 @@ TcpGetOptionProc(instanceData, interp, optionName, dsPtr)
 		Tcl_DStringStartSublist(dsPtr);
 	    }
 	    Tcl_DStringAppendElement(dsPtr, inet_ntoa(sockname.sin_addr));
-	    hostEntPtr = gethostbyaddr(			/* INTL: Native. */
+	    hostEntPtr = TclpGetHostByAddr(			/* INTL: Native. */
 		    (char *) &sockname.sin_addr,
 		    sizeof(sockname.sin_addr), AF_INET);
 	    if (hostEntPtr != (struct hostent *) NULL) {
@@ -2661,8 +2686,8 @@ CreateSocketAddress(sockaddrPtr, host, port)
 	 * on either 32 or 64 bits systems.
 	 */
 	if (addr.s_addr == 0xFFFFFFFF) {
-	    hostent = gethostbyname(native);		/* INTL: Native. */
-	    if (hostent != NULL) {
+	    hostent = TclpGetHostByName(native);		/* INTL: Native. */
+	    if (hostent != (struct hostent *) NULL) {
 		memcpy((VOID *) &addr,
 			(VOID *) hostent->h_addr_list[0],
 			(size_t) hostent->h_length);
@@ -3158,9 +3183,10 @@ TclUnixWaitForFile(fd, mask, timeout)
 				 * wait at all, and a value of -1 means
 				 * wait forever. */
 {
-    Tcl_Time abortTime, now;
+    Tcl_Time abortTime = {0, 0}, now; /* silence gcc 4 warning */
     struct timeval blockTime, *timeoutPtr;
-    int index, bit, numFound, result = 0;
+    int index, numFound, result = 0;
+    fd_mask bit;
     fd_mask readyMasks[3*MASK_SIZE];
 				/* This array reflects the readable/writable
 				 * conditions that were found to exist by the
@@ -3197,7 +3223,7 @@ TclUnixWaitForFile(fd, mask, timeout)
     }
     memset((VOID *) readyMasks, 0, 3*MASK_SIZE*sizeof(fd_mask));
     index = fd/(NBBY*sizeof(fd_mask));
-    bit = 1 << (fd%(NBBY*sizeof(fd_mask)));
+    bit = ((fd_mask) 1) << (fd%(NBBY*sizeof(fd_mask)));
 
     /*
      * Loop in a mini-event loop of our own, waiting for either the
@@ -3257,6 +3283,9 @@ TclUnixWaitForFile(fd, mask, timeout)
 	if (timeout == 0) {
 	    break;
 	}
+	if (timeout < 0) {
+	    continue;
+	}
 
 	/*
 	 * The select returned early, so we need to recompute the timeout.
@@ -3272,13 +3301,13 @@ TclUnixWaitForFile(fd, mask, timeout)
     return result;
 }
 
+#ifdef DEPRECATED
 /*
  *----------------------------------------------------------------------
  *
- * TclpCutFileChannel --
+ * FileThreadActionProc --
  *
- *	Remove any thread local refs to this channel. See
- *	Tcl_CutChannel for more info.
+ *	Insert or remove any thread local refs to this channel.
  *
  * Results:
  *	None.
@@ -3289,79 +3318,40 @@ TclUnixWaitForFile(fd, mask, timeout)
  *----------------------------------------------------------------------
  */
 
-void
-TclpCutFileChannel(chan)
-    Tcl_Channel chan;			/* The channel being removed. Must
-                                         * not be referenced in any
-                                         * interpreter. */
+static void
+FileThreadActionProc (instanceData, action)
+     ClientData instanceData;
+     int action;
 {
-#ifdef DEPRECATED
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
-    Channel *chanPtr = (Channel *) chan;
-    FileState *fsPtr;
-    FileState **nextPtrPtr;
-    int removed = 0;
+    FileState *fsPtr = (FileState *) instanceData;
 
-    if (chanPtr->typePtr != &fileChannelType)
-        return;
+    if (action == TCL_CHANNEL_THREAD_INSERT) {
+        fsPtr->nextPtr       = tsdPtr->firstFilePtr;
+	tsdPtr->firstFilePtr = fsPtr;
+    } else {
+        FileState **nextPtrPtr;
+	int removed = 0;
 
-    fsPtr = (FileState *) chanPtr->instanceData;
+	for (nextPtrPtr = &(tsdPtr->firstFilePtr); (*nextPtrPtr) != NULL;
+	     nextPtrPtr = &((*nextPtrPtr)->nextPtr)) {
+	    if ((*nextPtrPtr) == fsPtr) {
+	        (*nextPtrPtr) = fsPtr->nextPtr;
+		removed = 1;
+		break;
+	    }
+	}
 
-    for (nextPtrPtr = &(tsdPtr->firstFilePtr); (*nextPtrPtr) != NULL;
-	 nextPtrPtr = &((*nextPtrPtr)->nextPtr)) {
-	if ((*nextPtrPtr) == fsPtr) {
-	    (*nextPtrPtr) = fsPtr->nextPtr;
-	    removed = 1;
-	    break;
+	/*
+	 * This could happen if the channel was created in one
+	 * thread and then moved to another without updating
+	 * the thread local data in each thread.
+	 */
+
+	if (!removed) {
+	  panic("file info ptr not on thread channel list");
 	}
     }
-
-    /*
-     * This could happen if the channel was created in one thread
-     * and then moved to another without updating the thread
-     * local data in each thread.
-     */
-
-    if (!removed)
-        panic("file info ptr not on thread channel list");
-
-#endif /* DEPRECATED */
 }
-
-/*
- *----------------------------------------------------------------------
- *
- * TclpSpliceFileChannel --
- *
- *	Insert thread local ref for this channel.
- *	Tcl_SpliceChannel for more info.
- *
- * Results:
- *	None.
- *
- * Side effects:
- *	Changes thread local list of valid channels.
- *
- *----------------------------------------------------------------------
- */
-
-void
-TclpSpliceFileChannel(chan)
-    Tcl_Channel chan;			/* The channel being removed. Must
-                                         * not be referenced in any
-                                         * interpreter. */
-{
-#ifdef DEPRECATED
-    ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
-    Channel *chanPtr = (Channel *) chan;
-    FileState *fsPtr;
-
-    if (chanPtr->typePtr != &fileChannelType)
-        return;
-
-    fsPtr = (FileState *) chanPtr->instanceData;
-
-    fsPtr->nextPtr = tsdPtr->firstFilePtr;
-    tsdPtr->firstFilePtr = fsPtr;
 #endif /* DEPRECATED */
-}
+

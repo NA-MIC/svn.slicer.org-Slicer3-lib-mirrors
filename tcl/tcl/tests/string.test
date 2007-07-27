@@ -12,7 +12,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: string.test,v 1.36.2.2 2003/06/09 21:51:56 dgp Exp $
+# RCS: @(#) $Id: string.test,v 1.36.2.7 2006/01/23 12:11:15 msofer Exp $
 
 if {[lsearch [namespace children] ::tcltest] == -1} {
     package require tcltest
@@ -23,6 +23,8 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 
 set ::tcltest::testConstraints(testobj) \
 	[expr {[info commands testobj] != {}}]
+set ::tcltest::testConstraints(testindexobj) \
+	[expr {[info commands testindexobj] != {}}]
 
 test string-1.1 {error conditions} {
     list [catch {string gorp a b} msg] $msg
@@ -760,6 +762,40 @@ test string-10.18 {string map, empty argument} {
 test string-10.19 {string map, empty arguments} {
     string map -nocase {{} abc f bar {} def} foo
 } baroo
+test string-10.20 {string map, nasty sharing crash from [Bug 1018562]} {
+    set a {a b}
+    string map $a $a
+} {b b}
+test string-10.21 {string map, ABR checks} {
+    string map {longstring foob} long
+} long
+test string-10.22 {string map, ABR checks} {
+    string map {long foob} long
+} foob
+test string-10.23 {string map, ABR checks} {
+    string map {lon foob} long
+} foobg
+test string-10.24 {string map, ABR checks} {
+    string map {lon foob} longlo
+} foobglo
+test string-10.25 {string map, ABR checks} {
+    string map {lon foob} longlon
+} foobgfoob
+test string-10.26 {string map, ABR checks} {
+    string map {longstring foob longstring bar} long
+} long
+test string-10.27 {string map, ABR checks} {
+    string map {long foob longstring bar} long
+} foob
+test string-10.28 {string map, ABR checks} {
+    string map {lon foob longstring bar} long
+} foobg
+test string-10.29 {string map, ABR checks} {
+    string map {lon foob longstring bar} longlo
+} foobglo
+test string-10.30 {string map, ABR checks} {
+    string map {lon foob longstring bar} longlon
+} foobgfoob
 
 test string-11.1 {string match, too few args} {
     list [catch {string match a} msg] $msg
@@ -1016,6 +1052,21 @@ test string-12.19 {string range, bytearray object} {
 test string-12.20 {string range, out of bounds indices} {
     string range \u00ff 0 1
 } \u00ff
+test string-12.21 {string range, regenerates correct reps, bug 1410553} {
+    set bytes "\x00 \x03 \x41"
+    set rxBuffer {}
+    foreach ch $bytes {
+	append rxBuffer $ch
+	if {$ch eq "\x03"} {
+	    string length $rxBuffer
+	}
+    }
+    set rxCRC [string range $rxBuffer end-1 end]
+    binary scan [join $bytes {}] "H*" input_hex
+    binary scan $rxBuffer "H*" rxBuffer_hex
+    binary scan $rxCRC "H*" rxCRC_hex
+    list $input_hex $rxBuffer_hex $rxCRC_hex
+} {000341 000341 0341}
 
 test string-13.1 {string repeat} {
     list [catch {string repeat} msg] $msg
@@ -1335,6 +1386,13 @@ test string-22.12 {string wordstart, unicode} {
 test string-22.13 {string wordstart, unicode} {
     string wordstart "\uc700\uc700 abc" 8
 } 3
+
+test string-23.0 {string is boolean, Bug 1187123} testindexobj {
+    set x 5
+    catch {testindexobj $x foo bar soom}
+    string is boolean $x
+} 0
+
 
 # cleanup
 ::tcltest::cleanupTests

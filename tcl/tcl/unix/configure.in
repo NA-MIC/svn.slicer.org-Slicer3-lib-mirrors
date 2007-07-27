@@ -3,7 +3,7 @@ dnl	This file is an input file used by the GNU "autoconf" program to
 dnl	generate the file "configure", which is run during Tcl installation
 dnl	to configure the system for the local environment.
 #
-# RCS: @(#) $Id: configure.in,v 1.106.2.6 2004/02/13 01:38:02 hobbs Exp $
+# RCS: @(#) $Id: configure.in,v 1.106.2.35 2007/04/29 02:20:38 das Exp $
 
 AC_INIT(../generic/tcl.h)
 AC_PREREQ(2.13)
@@ -11,7 +11,7 @@ AC_PREREQ(2.13)
 TCL_VERSION=8.4
 TCL_MAJOR_VERSION=8
 TCL_MINOR_VERSION=4
-TCL_PATCH_LEVEL=".6"
+TCL_PATCH_LEVEL=".15"
 VERSION=${TCL_VERSION}
 
 #------------------------------------------------------------------------
@@ -24,14 +24,15 @@ fi
 if test "${exec_prefix}" = "NONE"; then
     exec_prefix=$prefix
 fi
-# libdir must be a fully qualified path and (not ${exec_prefix}/lib)
-eval libdir="$libdir"
+# Make sure srcdir is fully qualified!
+srcdir=`cd $srcdir ; pwd`
 TCL_SRC_DIR=`cd $srcdir/..; pwd`
 
 #------------------------------------------------------------------------
 # Compress and/or soft link the manpages?
 #------------------------------------------------------------------------
-SC_CONFIG_MANPAGES
+
+SC_CONFIG_MANPAGES([tcl])
 
 #------------------------------------------------------------------------
 # Standard compiler checks
@@ -44,7 +45,33 @@ if test "${CFLAGS+set}" != "set" ; then
 fi
 
 AC_PROG_CC
-AC_HAVE_HEADERS(unistd.h limits.h)
+
+#--------------------------------------------------------------------
+# Supply substitutes for missing POSIX header files.  Special notes:
+#	- stdlib.h doesn't define strtol, strtoul, or
+#	  strtod insome versions of SunOS
+#	- some versions of string.h don't declare procedures such
+#	  as strstr
+# Do this early, otherwise an autoconf bug throws errors on configure
+#--------------------------------------------------------------------
+
+SC_MISSING_POSIX_HEADERS
+
+#------------------------------------------------------------------------
+# If we're using GCC, see if the compiler understands -pipe.  If so, use it.
+# It makes compiling go faster.  (This is only a performance feature.)
+#------------------------------------------------------------------------
+
+if test -z "$no_pipe" && test -n "$GCC"; then
+    AC_CACHE_CHECK([if the compiler understands -pipe],
+	tcl_cv_cc_pipe, [
+	hold_cflags=$CFLAGS; CFLAGS="$CFLAGS -pipe"
+	AC_TRY_COMPILE(,, tcl_cv_cc_pipe=yes, tcl_cv_cc_pipe=no)
+	CFLAGS=$hold_cflags])
+    if test $tcl_cv_cc_pipe = yes; then
+	CFLAGS="$CFLAGS -pipe"
+    fi
+fi
 
 #------------------------------------------------------------------------
 # Threads support
@@ -52,22 +79,28 @@ AC_HAVE_HEADERS(unistd.h limits.h)
 
 SC_ENABLE_THREADS
 
-#------------------------------------------------------------------------
-# If we're using GCC, see if the compiler understands -pipe.  If so, use it.
-# It makes compiling go faster.  (This is only a performance feature.)
-#------------------------------------------------------------------------
+#--------------------------------------------------------------------
+# Look for libraries that we will need when compiling the Tcl shell
+#--------------------------------------------------------------------
 
-if test -z "$no_pipe"; then
-if test -n "$GCC"; then
-  AC_MSG_CHECKING([if the compiler understands -pipe])
-  OLDCC="$CC"  
-  CC="$CC -pipe"
-  AC_TRY_COMPILE(,,
-    AC_MSG_RESULT(yes),
-    CC="$OLDCC"
-    AC_MSG_RESULT(no))
-fi  
-fi
+SC_TCL_LINK_LIBS
+
+# Add the threads support libraries
+LIBS="$LIBS$THREADS_LIBS"
+
+SC_ENABLE_SHARED
+
+#--------------------------------------------------------------------
+# The statements below define a collection of compile flags.  This
+# macro depends on the value of SHARED_BUILD, and should be called
+# after SC_ENABLE_SHARED checks the configure switches.
+#--------------------------------------------------------------------
+
+SC_CONFIG_CFLAGS
+
+SC_ENABLE_SYMBOLS
+
+TCL_DBGX=${DBGX}
 
 #--------------------------------------------------------------------
 #	Detect what compiler flags to set for 64-bit support.
@@ -94,25 +127,48 @@ AC_CHECK_FUNCS(getcwd, , [AC_DEFINE(USEGETWD)])
 # Nb: if getcwd uses popen and pwd(1) (like SunOS 4) we should really
 # define USEGETWD even if the posix getcwd exists. Add a test ?
 
-AC_REPLACE_FUNCS(opendir strstr)
-
-AC_REPLACE_FUNCS(strtol strtoll strtoull tmpnam waitpid)
+AC_REPLACE_FUNCS(opendir strstr strtol strtoll strtoull tmpnam waitpid)
 AC_CHECK_FUNC(strerror, , [AC_DEFINE(NO_STRERROR)])
 AC_CHECK_FUNC(getwd, , [AC_DEFINE(NO_GETWD)])
 AC_CHECK_FUNC(wait3, , [AC_DEFINE(NO_WAIT3)])
 AC_CHECK_FUNC(uname, , [AC_DEFINE(NO_UNAME)])
+
+if test "`uname -s`" = "Darwin" && test "${TCL_THREADS}" = 1 && \
+	test "`uname -r | awk -F. '{print [$]1}'`" -lt 7; then
+    # prior to Darwin 7, realpath is not threadsafe, so don't
+    # use it when threads are enabled, c.f. bug # 711232
+    ac_cv_func_realpath=no
+fi
 AC_CHECK_FUNC(realpath, , [AC_DEFINE(NO_REALPATH)])
 
 #--------------------------------------------------------------------
-#	Supply substitutes for missing POSIX header files.  Special
-#	notes:
-#	    - stdlib.h doesn't define strtol, strtoul, or
-#	      strtod insome versions of SunOS
-#	    - some versions of string.h don't declare procedures such
-#	      as strstr
+#	Look for thread-safe variants of some library functions.
 #--------------------------------------------------------------------
 
-SC_MISSING_POSIX_HEADERS
+if test "${TCL_THREADS}" = 1; then
+    SC_TCL_GETPWUID_R
+    SC_TCL_GETPWNAM_R
+    SC_TCL_GETGRGID_R
+    SC_TCL_GETGRNAM_R
+    if test "`uname -s`" = "Darwin" && \
+	    test "`uname -r | awk -F. '{print [$]1}'`" -gt 5; then
+	# Starting with Darwin 6 (Mac OSX 10.2), gethostbyX 
+	# are actually MT-safe as they always return pointers
+	# from the TSD instead of the static storage.
+	AC_DEFINE(HAVE_MTSAFE_GETHOSTBYNAME)
+	AC_DEFINE(HAVE_MTSAFE_GETHOSTBYADDR)
+    elif test "`uname -s`" = "HP-UX" && \
+	      test "`uname -r|sed -e 's|B\.||' -e 's|\..*$||'`" -gt 10; then
+        # Starting with HPUX 11.00 (we believe), gethostbyX
+        # are actually MT-safe as they always return pointers
+	# from TSD instead of static storage.
+	AC_DEFINE(HAVE_MTSAFE_GETHOSTBYNAME)
+	AC_DEFINE(HAVE_MTSAFE_GETHOSTBYADDR)
+    else
+	SC_TCL_GETHOSTBYNAME_R
+	SC_TCL_GETHOSTBYADDR_R
+    fi
+fi
 
 #---------------------------------------------------------------------------
 #	Determine which interface to use to talk to the serial port.
@@ -132,24 +188,20 @@ SC_SERIAL_PORT
 #	special flag.
 #--------------------------------------------------------------------
 
-AC_MSG_CHECKING([for fd_set in sys/types])
-AC_CACHE_VAL(tcl_cv_type_fd_set,
+AC_CACHE_CHECK([for fd_set in sys/types], tcl_cv_type_fd_set, [
     AC_TRY_COMPILE([#include <sys/types.h>],[fd_set readMask, writeMask;],
-	tcl_cv_type_fd_set=yes, tcl_cv_type_fd_set=no))
-AC_MSG_RESULT($tcl_cv_type_fd_set)
-tk_ok=$tcl_cv_type_fd_set
-if test $tcl_cv_type_fd_set = no; then
-    AC_MSG_CHECKING([for fd_mask in sys/select])
-    AC_CACHE_VAL(tcl_cv_grep_fd_mask,
-	AC_HEADER_EGREP(fd_mask, sys/select.h,
-	     tcl_cv_grep_fd_mask=present, tcl_cv_grep_fd_mask=missing))
-    AC_MSG_RESULT($tcl_cv_grep_fd_mask)
+	tcl_cv_type_fd_set=yes, tcl_cv_type_fd_set=no)])
+tcl_ok=$tcl_cv_type_fd_set
+if test $tcl_ok = no; then
+    AC_CACHE_CHECK([for fd_mask in sys/select], tcl_cv_grep_fd_mask, [
+	AC_EGREP_HEADER(fd_mask, sys/select.h,
+	     tcl_cv_grep_fd_mask=present, tcl_cv_grep_fd_mask=missing)])
     if test $tcl_cv_grep_fd_mask = present; then
 	AC_DEFINE(HAVE_SYS_SELECT_H)
-	tk_ok=yes
+	tcl_ok=yes
     fi
 fi
-if test $tk_ok = no; then
+if test $tcl_ok = no; then
     AC_DEFINE(NO_FD_SET)
 fi
 
@@ -183,20 +235,19 @@ AC_CHECK_FUNC(memmove, , [AC_DEFINE(NO_MEMMOVE) AC_DEFINE(NO_STRING_H)])
 #	On some systems strstr is broken: it returns a pointer even
 #	even if the original string is empty.
 #--------------------------------------------------------------------
-
-AC_MSG_CHECKING([proper strstr implementation])
-AC_TRY_RUN([
-extern int strstr();
-int main()
-{
-    exit(strstr("\0test", "test") ? 1 : 0);
-}
-], tcl_ok=yes, tcl_ok=no, tcl_ok=no)
-if test $tcl_ok = yes; then
-    AC_MSG_RESULT(yes)
-else
-    AC_MSG_RESULT([broken, using substitute])
-    LIBOBJS="$LIBOBJS strstr.o"
+dnl only run if AC_REPLACE_FUNCS(strstr) hasn't already added strstr.o
+if test "x${ac_cv_func_strstr}" = "xyes"; then
+    AC_CACHE_CHECK([proper strstr implementation], tcl_cv_strstr_unbroken, [
+	AC_TRY_RUN([
+	extern int strstr();
+	int main()
+	{
+	    exit(strstr("\0test", "test") ? 1 : 0);
+	}], tcl_cv_strstr_unbroken=ok, tcl_cv_strstr_unbroken=broken,
+	    tcl_cv_strstr_unbroken=broken)])
+    if test $tcl_cv_strstr_unbroken = broken; then
+        LIBOBJS="$LIBOBJS strstr.o"
+    fi
 fi
 
 #--------------------------------------------------------------------
@@ -206,21 +257,27 @@ fi
 #--------------------------------------------------------------------
 
 AC_CHECK_FUNC(strtoul, tcl_ok=1, tcl_ok=0)
-AC_TRY_RUN([
-extern int strtoul();
-int main()
-{
-    char *string = "0";
-    char *term;
-    int value;
-    value = strtoul(string, &term, 0);
-    if ((value != 0) || (term != (string+1))) {
-        exit(1);
-    }
-    exit(0);
-}], , tcl_ok=0, tcl_ok=0)
-if test "$tcl_ok" = 0; then
-    test -n "$verbose" && echo "	Adding strtoul.o."
+if test $tcl_ok = 1; then
+    AC_CACHE_CHECK([proper strtoul implementation], tcl_cv_strtoul_unbroken, [
+	AC_TRY_RUN([
+	extern int strtoul();
+	int main()
+	{
+	    char *string = "0";
+	    char *term;
+	    int value;
+	    value = strtoul(string, &term, 0);
+	    if ((value != 0) || (term != (string+1))) {
+		exit(1);
+	    }
+	    exit(0);
+	}], tcl_cv_strtoul_unbroken=ok , tcl_cv_strtoul_unbroken=broken,
+	    tcl_cv_strtoul_unbroken=broken)])
+    if test $tcl_cv_strtoul_unbroken = broken; then
+	tcl_ok=0
+    fi
+fi
+if test $tcl_ok = 0; then
     LIBOBJS="$LIBOBJS strtoul.o"
 fi
 
@@ -230,21 +287,27 @@ fi
 #--------------------------------------------------------------------
 
 AC_CHECK_FUNC(strtod, tcl_ok=1, tcl_ok=0)
-AC_TRY_RUN([
-extern double strtod();
-int main()
-{
-    char *string = " +69";
-    char *term;
-    double value;
-    value = strtod(string, &term);
-    if ((value != 69) || (term != (string+4))) {
-	exit(1);
-    }
-    exit(0);
-}], , tcl_ok=0, tcl_ok=0)
-if test "$tcl_ok" = 0; then
-    test -n "$verbose" && echo "	Adding strtod.o."
+if test $tcl_ok = 1; then
+    AC_CACHE_CHECK([proper strtod implementation], tcl_cv_strtod_unbroken, [
+	AC_TRY_RUN([
+	extern double strtod();
+	int main()
+	{
+	    char *string = " +69";
+	    char *term;
+	    double value;
+	    value = strtod(string, &term);
+	    if ((value != 69) || (term != (string+4))) {
+		exit(1);
+	    }
+	    exit(0);
+	}], tcl_cv_strtod_unbroken=ok , tcl_cv_strtod_unbroken=broken,
+	    tcl_cv_strtod_unbroken=broken)])
+    if test $tcl_cv_strtod_unbroken = broken; then
+	tcl_ok=0
+    fi
+fi
+if test $tcl_ok = 0; then
     LIBOBJS="$LIBOBJS strtod.o"
 fi
 
@@ -267,8 +330,8 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 
-AC_MSG_CHECKING([for socklen_t])
-AC_CACHE_VAL(ac_cv_type_socklen_t,[AC_EGREP_CPP(changequote(<<,>>)dnl
+AC_CACHE_CHECK([for socklen_t], ac_cv_type_socklen_t, [
+    AC_EGREP_CPP(changequote(<<,>>)dnl
 <<(^|[^a-zA-Z_0-9])socklen_t[^a-zA-Z_0-9]>>dnl
 changequote([,]),[
     #include <sys/types.h>
@@ -278,7 +341,6 @@ changequote([,]),[
     #include <stddef.h>
     #endif
     ], ac_cv_type_socklen_t=yes, ac_cv_type_socklen_t=no)])
-AC_MSG_RESULT($ac_cv_type_socklen_t)
 if test $ac_cv_type_socklen_t = no; then
     AC_DEFINE(socklen_t, unsigned)
 fi
@@ -300,15 +362,13 @@ AC_CHECK_FUNC(opendir, , [AC_DEFINE(USE_DIRENT2_H)])
 #	the trick.
 #--------------------------------------------------------------------
 
-AC_MSG_CHECKING([union wait])
-AC_CACHE_VAL(tcl_cv_union_wait,
+AC_CACHE_CHECK([union wait], tcl_cv_union_wait, [
     AC_TRY_LINK([#include <sys/types.h> 
 #include <sys/wait.h>], [
 union wait x;
 WIFEXITED(x);		/* Generates compiler error if WIFEXITED
 			 * uses an int. */
-    ], tcl_cv_union_wait=yes, tcl_cv_union_wait=no))
-AC_MSG_RESULT($tcl_cv_union_wait)
+    ], tcl_cv_union_wait=yes, tcl_cv_union_wait=no)])
 if test $tcl_cv_union_wait = no; then
     AC_DEFINE(NO_UNION_WAIT)
 fi
@@ -345,11 +405,9 @@ AC_CHECK_FUNC(BSDgettimeofday,
     [AC_DEFINE(HAVE_BSDGETTIMEOFDAY)], [
     AC_CHECK_FUNC(gettimeofday, , [AC_DEFINE(NO_GETTOD)])
 ])
-AC_MSG_CHECKING([for gettimeofday declaration])
-AC_CACHE_VAL(tcl_cv_grep_gettimeofday,
+AC_CACHE_CHECK([for gettimeofday declaration], tcl_cv_grep_gettimeofday, [
     AC_EGREP_HEADER(gettimeofday, sys/time.h,
-	tcl_cv_grep_gettimeofday=present, tcl_cv_grep_gettimeofday=missing))
-AC_MSG_RESULT($tcl_cv_grep_gettimeofday)
+	tcl_cv_grep_gettimeofday=present, tcl_cv_grep_gettimeofday=missing)])
 if test $tcl_cv_grep_gettimeofday = missing ; then
     AC_DEFINE(GETTOD_NOT_DECLARED)
 fi
@@ -361,13 +419,11 @@ fi
 #--------------------------------------------------------------------
 
 AC_C_CHAR_UNSIGNED
-AC_MSG_CHECKING([signed char declarations])
-AC_CACHE_VAL(tcl_cv_char_signed,
+AC_CACHE_CHECK([signed char declarations], tcl_cv_char_signed, [
     AC_TRY_COMPILE(, [
 	signed char *p;
 	p = 0;
-	], tcl_cv_char_signed=yes, tcl_cv_char_signed=no))
-AC_MSG_RESULT($tcl_cv_char_signed)
+	], tcl_cv_char_signed=yes, tcl_cv_char_signed=no)])
 if test $tcl_cv_char_signed = yes; then
     AC_DEFINE(HAVE_SIGNED_CHAR)
 fi
@@ -376,8 +432,7 @@ fi
 #  Does putenv() copy or not?  We need to know to avoid memory leaks.
 #--------------------------------------------------------------------
 
-AC_MSG_CHECKING([for a putenv() that copies the buffer])
-AC_CACHE_VAL(tcl_cv_putenv_copy,
+AC_CACHE_CHECK([for a putenv() that copies the buffer], tcl_cv_putenv_copy, [
     AC_TRY_RUN([
 	#include <stdlib.h>
 	#define OURVAR "havecopy=yes"
@@ -399,9 +454,7 @@ AC_CACHE_VAL(tcl_cv_putenv_copy,
     ],
     tcl_cv_putenv_copy=no,
     tcl_cv_putenv_copy=yes,
-    tcl_cv_putenv_copy=no)
-)
-AC_MSG_RESULT($tcl_cv_putenv_copy)
+    tcl_cv_putenv_copy=no)])
 if test $tcl_cv_putenv_copy = yes; then
     AC_DEFINE(HAVE_PUTENV_THAT_COPIES)
 fi
@@ -413,28 +466,59 @@ fi
 SC_ENABLE_LANGINFO
 
 #--------------------------------------------------------------------
-# Look for libraries that we will need when compiling the Tcl shell
+# Darwin specific API checks and defines
 #--------------------------------------------------------------------
 
-SC_TCL_LINK_LIBS
-
-# Add the threads support libraries
-
-LIBS="$LIBS$THREADS_LIBS"
-
-SC_ENABLE_SHARED
+if test "`uname -s`" = "Darwin" ; then
+    AC_CHECK_HEADERS(copyfile.h)
+    AC_CHECK_FUNCS(copyfile)
+    if test $tcl_corefoundation = yes; then
+	AC_CHECK_HEADERS(libkern/OSAtomic.h)
+	AC_CHECK_FUNCS(OSSpinLockLock)
+	AC_CHECK_FUNCS(pthread_atfork)
+    fi
+    AC_DEFINE(USE_VFORK)
+    AC_DEFINE(TCL_DEFAULT_ENCODING, "utf-8")
+    AC_DEFINE(TCL_LOAD_FROM_MEMORY)
+    AC_CHECK_HEADERS(AvailabilityMacros.h)
+    if test "$ac_cv_header_AvailabilityMacros_h" = yes; then
+	AC_CACHE_CHECK([if weak import is available], tcl_cv_cc_weak_import, [
+	    hold_cflags=$CFLAGS; CFLAGS="$CFLAGS -Werror"
+	    AC_TRY_LINK([
+		    #ifdef __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__
+		    #if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1020
+		    #error __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1020
+		    #endif
+		    #elif MAC_OS_X_VERSION_MIN_REQUIRED < 1020
+		    #error MAC_OS_X_VERSION_MIN_REQUIRED < 1020
+		    #endif
+		    int rand(void) __attribute__((weak_import));
+		], [rand();],
+		tcl_cv_cc_weak_import=yes, tcl_cv_cc_weak_import=no)
+	    CFLAGS=$hold_cflags])
+	if test $tcl_cv_cc_weak_import = yes; then
+	    AC_DEFINE(HAVE_WEAK_IMPORT)
+	fi
+    fi
+fi
 
 #--------------------------------------------------------------------
-# The statements below define a collection of compile flags.  This
-# macro depends on the value of SHARED_BUILD, and should be called
-# after SC_ENABLE_SHARED checks the configure switches.
+# Check for support of fts functions (readdir replacement)
 #--------------------------------------------------------------------
 
-SC_CONFIG_CFLAGS
-
-SC_ENABLE_SYMBOLS
-
-TCL_DBGX=${DBGX}
+AC_CACHE_CHECK([for fts], tcl_cv_api_fts, [
+    AC_TRY_LINK([
+	    #include <sys/param.h>
+	    #include <sys/stat.h>
+	    #include <fts.h>
+	], [
+	    char*const p[2] = {"/", NULL};
+	    FTS *f = fts_open(p, FTS_PHYSICAL|FTS_NOCHDIR|FTS_NOSTAT, NULL);
+	    FTSENT *e = fts_read(f); fts_close(f);
+	], tcl_cv_api_fts=yes, tcl_cv_api_fts=no)])
+if test $tcl_cv_api_fts = yes; then
+    AC_DEFINE(HAVE_FTS)
+fi
 
 #--------------------------------------------------------------------
 #	The statements below check for systems where POSIX-style
@@ -454,8 +538,6 @@ TCL_UNSHARED_LIB_SUFFIX=${UNSHARED_LIB_SUFFIX}
 TCL_SHARED_LIB_SUFFIX=${SHARED_LIB_SUFFIX}
 eval "TCL_LIB_FILE=libtcl${LIB_SUFFIX}"
 
-SC_ENABLE_FRAMEWORK
-
 # tclConfig.sh needs a version of the _LIB_SUFFIX that has been eval'ed
 # so that the backslashes quoting the DBX braces are dropped.
 
@@ -463,36 +545,83 @@ SC_ENABLE_FRAMEWORK
 DBGX='${TCL_DBGX}'
 eval "TCL_LIB_FILE=${TCL_LIB_FILE}"
 
+TCL_LIBRARY='$(prefix)/lib/tcl$(VERSION)'
+PRIVATE_INCLUDE_DIR='$(includedir)'
+HTML_DIR='$(DISTDIR)/html'
+
 # Note:  in the following variable, it's important to use the absolute
 # path name of the Tcl directory rather than "..":  this is because
 # AIX remembers this path and will attempt to use it at run-time to look
 # up the Tcl library.
 
-if test "$FRAMEWORK_BUILD" = "1" ; then
-    TCL_BUILD_LIB_SPEC="-F`pwd` -framework Tcl"
-    TCL_LIB_SPEC="-framework Tcl"
-    TCL_LIB_FILE="Tcl"
-elif test "$SHARED_BUILD" = "0" || test "$TCL_NEEDS_EXP_FILE" = "0"; then
-    if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
-        TCL_LIB_FLAG="-ltcl${TCL_VERSION}\${TCL_DBGX}"
-    else
-        TCL_LIB_FLAG="-ltcl`echo ${TCL_VERSION} | tr -d .`\${TCL_DBGX}"
-    fi
-    TCL_BUILD_LIB_SPEC="-L`pwd` ${TCL_LIB_FLAG}"
-    TCL_LIB_SPEC="-L${libdir} ${TCL_LIB_FLAG}"
-else
-    TCL_BUILD_EXP_FILE="lib.exp"
-    eval "TCL_EXP_FILE=libtcl${TCL_EXPORT_FILE_SUFFIX}"
+if test "`uname -s`" = "Darwin" ; then
+    SC_ENABLE_FRAMEWORK
+    TCL_SHLIB_LD_EXTRAS="-compatibility_version ${TCL_VERSION} -current_version ${TCL_VERSION}`echo ${TCL_PATCH_LEVEL} | awk ['{match($0, "\\\.[0-9]+"); print substr($0,RSTART,RLENGTH)}']`"
+    TCL_SHLIB_LD_EXTRAS="${TCL_SHLIB_LD_EXTRAS}"' -install_name ${DYLIB_INSTALL_DIR}/${TCL_LIB_FILE} -seg1addr 0xa000000'
+fi
 
-    # Replace DBGX with TCL_DBGX
-    eval "TCL_EXP_FILE=\"${TCL_EXP_FILE}\""
-    
-    if test "$GCC" = "yes" ; then
-	TCL_BUILD_LIB_SPEC="-Wl,-bI:`pwd`/${TCL_BUILD_EXP_FILE} -L`pwd`"
-	TCL_LIB_SPEC="-Wl,-bI:${libdir}/${TCL_EXP_FILE} -L`pwd`"
+if test "$FRAMEWORK_BUILD" = "1" ; then
+    AC_DEFINE(TCL_FRAMEWORK)
+    tcl_config_files="${tcl_config_files} [Tcl-Info.plist:../macosx/Tcl-Info.plist.in]"
+    # Construct a fake local framework structure to make linking with
+    # '-framework Tcl' and running of tcltest work
+    AC_OUTPUT_COMMANDS([test "$FRAMEWORK_BUILD" = "1" && n=Tcl &&
+	f=$n.framework && v=Versions/$VERSION &&
+	echo "creating $f" && rm -rf $f && mkdir -p $f/$v/Resources &&
+	ln -s $v/$n $v/Resources $f && ln -s ../../../$n $f/$v &&
+	ln -s ../../../../$n-Info.plist $f/$v/Resources/Info.plist &&
+	unset n f v
+    ], [VERSION=${TCL_VERSION} FRAMEWORK_BUILD=${FRAMEWORK_BUILD}])
+    LD_LIBRARY_PATH_VAR="DYLD_FRAMEWORK_PATH"
+    if test "${libdir}" = '${exec_prefix}/lib'; then
+        # override libdir default
+        libdir="/Library/Frameworks"
+    fi
+    TCL_LIB_FILE="Tcl"
+    TCL_LIB_FLAG="-framework Tcl"
+    TCL_BUILD_LIB_SPEC="-F`pwd` -framework Tcl"
+    TCL_LIB_SPEC="-F${libdir} -framework Tcl"
+    libdir="${libdir}/Tcl.framework/Versions/\${VERSION}"
+    TCL_LIBRARY="${libdir}/Resources/Scripts"
+    includedir="${libdir}/Headers"
+    PRIVATE_INCLUDE_DIR="${libdir}/PrivateHeaders"
+    HTML_DIR="${libdir}/Resources/Documentation/Reference/Tcl"
+    EXTRA_INSTALL="install-private-headers html-tcl"
+    EXTRA_BUILD_HTML='@ln -fs contents.htm $(HTML_INSTALL_DIR)/TclTOC.html' 
+    EXTRA_INSTALL_BINARIES='@echo "Installing Info.plist to $(LIB_INSTALL_DIR)/Resources" && mkdir -p "$(LIB_INSTALL_DIR)/Resources" && $(INSTALL_DATA) Tcl-Info.plist "$(LIB_INSTALL_DIR)/Resources/Info.plist"'
+    EXTRA_INSTALL_BINARIES="$EXTRA_INSTALL_BINARIES"' && echo "Installing license.terms to $(LIB_INSTALL_DIR)/Resources" && $(INSTALL_DATA) "$(TOP_DIR)/license.terms" "$(LIB_INSTALL_DIR)/Resources"'
+    EXTRA_INSTALL_BINARIES="$EXTRA_INSTALL_BINARIES"' && echo "Finalizing Tcl.framework" && rm -f "$(LIB_INSTALL_DIR)/../Current" && ln -s "$(VERSION)" "$(LIB_INSTALL_DIR)/../Current" && for f in "$(LIB_FILE)" tclConfig.sh Resources Headers PrivateHeaders; do rm -f "$(LIB_INSTALL_DIR)/../../$$f" && ln -s "Versions/Current/$$f" "$(LIB_INSTALL_DIR)/../.."; done && f="$(STUB_LIB_FILE)" && rm -f "$(LIB_INSTALL_DIR)/../../$$f" && ln -s "Versions/$(VERSION)/$$f" "$(LIB_INSTALL_DIR)/../.."'
+    TCL_YEAR="`date +%Y`"
+    # Don't use AC_DEFINE for the following as the framework version define 
+    # needs to go into the Makefile even when using autoheader, so that we  
+    # can pick up a potential make override of VERSION. Also, don't put this
+    # into CFLAGS as it should not go into tclConfig.sh
+    EXTRA_CC_SWITCHES='-DTCL_FRAMEWORK_VERSION=\"$(VERSION)\"'
+else
+    # libdir must be a fully qualified path and not ${exec_prefix}/lib
+    eval libdir="$libdir"
+    if test "$SHARED_BUILD" = "0" || test "$TCL_NEEDS_EXP_FILE" = "0"; then
+        if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
+            TCL_LIB_FLAG="-ltcl${TCL_VERSION}\${TCL_DBGX}"
+        else
+            TCL_LIB_FLAG="-ltcl`echo ${TCL_VERSION} | tr -d .`\${TCL_DBGX}"
+        fi
+        TCL_BUILD_LIB_SPEC="-L`pwd` ${TCL_LIB_FLAG}"
+        TCL_LIB_SPEC="-L${libdir} ${TCL_LIB_FLAG}"
     else
-	TCL_BUILD_LIB_SPEC="-bI:`pwd`/${TCL_BUILD_EXP_FILE}"
-	TCL_LIB_SPEC="-bI:${libdir}/${TCL_EXP_FILE}"
+        TCL_BUILD_EXP_FILE="lib.exp"
+        eval "TCL_EXP_FILE=libtcl${TCL_EXPORT_FILE_SUFFIX}"
+    
+        # Replace DBGX with TCL_DBGX
+        eval "TCL_EXP_FILE=\"${TCL_EXP_FILE}\""
+        
+        if test "$GCC" = "yes" ; then
+            TCL_BUILD_LIB_SPEC="-Wl,-bI:`pwd`/${TCL_BUILD_EXP_FILE} -L`pwd`"
+            TCL_LIB_SPEC="-Wl,-bI:${libdir}/${TCL_EXP_FILE} -L`pwd`"
+        else
+            TCL_BUILD_LIB_SPEC="-bI:`pwd`/${TCL_BUILD_EXP_FILE}"
+            TCL_LIB_SPEC="-bI:${libdir}/${TCL_EXP_FILE}"
+        fi
     fi
 fi
 VERSION='${VERSION}'
@@ -509,7 +638,7 @@ VERSION=${TCL_VERSION}
 #--------------------------------------------------------------------
 
 if test "$FRAMEWORK_BUILD" = "1" ; then
-    TCL_PACKAGE_PATH="${libdir}/Resources/Scripts"
+    TCL_PACKAGE_PATH="~/Library/Tcl /Library/Tcl /Network/Library/Tcl /System/Library/Tcl ~/Library/Frameworks /Library/Frameworks /Network/Library/Frameworks /System/Library/Frameworks"
 elif test "$prefix" != "$exec_prefix"; then
     TCL_PACKAGE_PATH="${libdir} ${prefix}/lib"
 else
@@ -525,6 +654,7 @@ fi
 eval "TCL_STUB_LIB_FILE=libtclstub${TCL_UNSHARED_LIB_SUFFIX}"
 # Replace DBGX with TCL_DBGX
 eval "TCL_STUB_LIB_FILE=\"${TCL_STUB_LIB_FILE}\""
+eval "TCL_STUB_LIB_DIR=${libdir}"
 
 if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
     TCL_STUB_LIB_FLAG="-ltclstub${TCL_VERSION}\${TCL_DBGX}"
@@ -533,9 +663,9 @@ else
 fi
 
 TCL_BUILD_STUB_LIB_SPEC="-L`pwd` ${TCL_STUB_LIB_FLAG}"
-TCL_STUB_LIB_SPEC="-L${libdir} ${TCL_STUB_LIB_FLAG}"
+TCL_STUB_LIB_SPEC="-L${TCL_STUB_LIB_DIR} ${TCL_STUB_LIB_FLAG}"
 TCL_BUILD_STUB_LIB_PATH="`pwd`/${TCL_STUB_LIB_FILE}"
-TCL_STUB_LIB_PATH="${libdir}/${TCL_STUB_LIB_FILE}"
+TCL_STUB_LIB_PATH="${TCL_STUB_LIB_DIR}/${TCL_STUB_LIB_FILE}"
 
 # Install time header dir can be set via --includedir
 eval "TCL_INCLUDE_SPEC=\"-I${includedir}\""
@@ -550,6 +680,7 @@ AC_SUBST(TCL_VERSION)
 AC_SUBST(TCL_MAJOR_VERSION)
 AC_SUBST(TCL_MINOR_VERSION)
 AC_SUBST(TCL_PATCH_LEVEL)
+AC_SUBST(TCL_YEAR)
 
 AC_SUBST(TCL_LIB_FILE)
 AC_SUBST(TCL_LIB_FLAG)
@@ -585,4 +716,16 @@ AC_SUBST(TCL_HAS_LONGLONG)
 AC_SUBST(BUILD_DLTEST)
 AC_SUBST(TCL_PACKAGE_PATH)
 
-AC_OUTPUT(Makefile dltest/Makefile tclConfig.sh)
+AC_SUBST(TCL_LIBRARY)
+AC_SUBST(PRIVATE_INCLUDE_DIR)
+AC_SUBST(HTML_DIR)
+
+AC_SUBST(EXTRA_CC_SWITCHES)
+AC_SUBST(EXTRA_INSTALL)
+AC_SUBST(EXTRA_INSTALL_BINARIES)
+AC_SUBST(EXTRA_BUILD_HTML)
+
+SC_OUTPUT_COMMANDS_PRE
+
+tcl_config_files="${tcl_config_files} [Makefile dltest/Makefile tclConfig.sh]"
+AC_OUTPUT([${tcl_config_files}])

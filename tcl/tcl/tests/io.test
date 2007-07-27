@@ -1,3 +1,4 @@
+# -*- tcl -*-
 # Functionality covered: operation of all IO commands, and all procedures
 # defined in generic/tclIO.c.
 #
@@ -12,7 +13,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: io.test,v 1.40.2.3 2004/02/25 23:38:16 dgp Exp $
+# RCS: @(#) $Id: io.test,v 1.40.2.12 2007/02/12 19:25:42 andreas_kupries Exp $
 
 if {[catch {package require tcltest 2}]} {
     puts stderr "Skipping tests in [info script].  tcltest 2 required."
@@ -115,6 +116,66 @@ test io-1.8 {Tcl_WriteChars: WriteChars} {
     close           $f 
     contents $path(test2)
 } "    \x1b\$B\$O\x1b(B"
+
+test io-1.9 {Tcl_WriteChars: WriteChars} {
+    # When closing a channel with an encoding that appends
+    # escape bytes, check for the case where the escape
+    # bytes overflow the current IO buffer. The bytes
+    # should be moved into a new buffer.
+
+    set data "1234567890 [format %c 12399]"
+
+    set sizes [list]
+
+    # With default buffer size
+    set f [open $path(test2) w]
+    fconfigure      $f -encoding iso2022-jp
+    puts -nonewline $f $data
+    close           $f
+    lappend sizes [file size $path(test2)]
+
+    # With buffer size equal to the length
+    # of the data, the escape bytes would
+    # go into the next buffer.
+
+    set f [open $path(test2) w]
+    fconfigure      $f -encoding iso2022-jp -buffersize 16
+    puts -nonewline $f $data
+    close           $f
+    lappend sizes [file size $path(test2)]
+
+    # With buffer size that is large enough
+    # to hold 1 byte of escaped data, but
+    # not all 3. This should not write
+    # the escape bytes to the first buffer
+    # and then again to the second buffer.
+
+    set f [open $path(test2) w]
+    fconfigure      $f -encoding iso2022-jp -buffersize 17
+    puts -nonewline $f $data
+    close           $f
+    lappend sizes [file size $path(test2)]
+
+    # With buffer size that can hold 2 out of
+    # 3 bytes of escaped data.
+
+    set f [open $path(test2) w]
+    fconfigure      $f -encoding iso2022-jp -buffersize 18
+    puts -nonewline $f $data
+    close           $f
+    lappend sizes [file size $path(test2)]
+
+    # With buffer size that can hold all the
+    # data and escape bytes.
+
+    set f [open $path(test2) w]
+    fconfigure      $f -encoding iso2022-jp -buffersize 19
+    puts -nonewline $f $data
+    close           $f
+    lappend sizes [file size $path(test2)]
+
+    set sizes
+} {19 19 19 19 19}
 
 test io-2.1 {WriteBytes} {
     # loop until all bytes are written
@@ -410,7 +471,7 @@ test io-6.6 {Tcl_GetsObj: loop test} {
 test io-6.7 {Tcl_GetsObj: error in input} {stdio openpipe} {
     # if (FilterInputBytes(chanPtr, &gs) != 0)
 
-    set f [open "|[list [interpreter] cat]" w+]
+    set f [open "|[list [interpreter] $path(cat)]" w+]
     puts -nonewline $f "hi\nwould"
     flush $f
     gets $f
@@ -1712,6 +1773,12 @@ test io-14.9 {reuse of stdio special channels} {stdio openpipe fileevent} {
     set f [open "|[list [interpreter] $path(script) [array get path]]" r]
     set c [gets $f]
     close $f
+    # Added delay to give Windows time to stop the spawned process and clean
+    # up its grip on the file test1. Added delete as proper test cleanup.
+    # The failing tests were 18.1 and 18.2 as first re-users of file "test1".
+    after 10000
+    file delete $path(script)
+    file delete $path(test1)
     set c
 } hello
 
@@ -2685,7 +2752,7 @@ test io-29.33 {Tcl_Flush, implicit flush on exit} {exec} {
     set r
 } "hello\nbye\nstrange\n"
 test io-29.34 {Tcl_Close, async flush on close, using sockets} {socket tempNotMac fileevent} {
-    set c 0
+    variable c 0
     variable x running
     set l abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
     proc writelots {s l} {
@@ -4810,7 +4877,7 @@ test io-38.2 {Tcl_SetChannelBufferSize, Tcl_GetChannelBufferSize} {
     lappend l [fconfigure $f -buffersize]
     close $f
     set l
-} {4096 10000 4096 4096 4096 100000 4096}
+} {4096 10000 1 1 1 100000 100000}
 
 test io-38.3 {Tcl_SetChannelBufferSize, changing buffersize between reads} {
     # This test crashes the interp if Bug #427196 is not fixed
@@ -5373,14 +5440,6 @@ test io-42.3 {Tcl_FileeventCmd: replacing, with NULL chars in script} {fileevent
     lappend result [fileevent $f readable]
 } {13 11 12 {}}
 
-#
-# Test fileevent on a pipe
-#
-if {[testConstraint openpipe]} {
-catch {set f2 [open "|[list cat -u]" r+]}
-catch {set f3 [open "|[list cat -u]" r+]}
-}
-
 test io-43.1 {Tcl_FileeventCmd: creating, deleting, querying} {stdio unixExecs fileevent} {
     set result {}
     fileevent $f readable "script 1"
@@ -5392,7 +5451,10 @@ test io-43.1 {Tcl_FileeventCmd: creating, deleting, querying} {stdio unixExecs f
     fileevent $f writable {}
     lappend result [fileevent $f readable] [fileevent $f writable]
 } {{script 1} {} {script 1} {write script} {} {write script} {} {}}
-test io-43.2 {Tcl_FileeventCmd: deleting when many present} {stdio unixExecs fileevent} {
+test io-43.2 {Tcl_FileeventCmd: deleting when many present} -setup {
+    set f2 [open "|[list cat -u]" r+]
+    set f3 [open "|[list cat -u]" r+]
+} -constraints {stdio unixExecs fileevent openpipe} -body {
     set result {}
     lappend result [fileevent $f r] [fileevent $f2 r] [fileevent $f3 r]
     fileevent $f r "read f"
@@ -5405,9 +5467,15 @@ test io-43.2 {Tcl_FileeventCmd: deleting when many present} {stdio unixExecs fil
     lappend result [fileevent $f r] [fileevent $f2 r] [fileevent $f3 r]
     fileevent $f r {}
     lappend result [fileevent $f r] [fileevent $f2 r] [fileevent $f3 r]
-} {{} {} {} {read f} {read f2} {read f3} {read f} {} {read f3} {read f} {} {} {} {} {}}
+} -cleanup {
+    catch {close $f2}
+    catch {close $f3}
+} -result {{} {} {} {read f} {read f2} {read f3} {read f} {} {read f3} {read f} {} {} {} {} {}}
 
-test io-44.1 {FileEventProc procedure: normal read event} {stdio unixExecs fileevent} {
+test io-44.1 {FileEventProc procedure: normal read event} -setup {
+    set f2 [open "|[list cat -u]" r+]
+    set f3 [open "|[list cat -u]" r+]
+} -constraints {stdio unixExecs fileevent openpipe} -body {
     fileevent $f2 readable [namespace code {
 	set x [gets $f2]; fileevent $f2 readable {}
     }]
@@ -5415,8 +5483,14 @@ test io-44.1 {FileEventProc procedure: normal read event} {stdio unixExecs filee
     variable x initial
     vwait [namespace which -variable x]
     set x
-} {text}
-test io-44.2 {FileEventProc procedure: error in read event} {stdio unixExecs fileevent} {
+} -cleanup {
+    catch {close $f2}
+    catch {close $f3}
+} -result {text}
+test io-44.2 {FileEventProc procedure: error in read event} -setup {
+    set f2 [open "|[list cat -u]" r+]
+    set f3 [open "|[list cat -u]" r+]
+} -constraints {stdio unixExecs fileevent openpipe} -body {
     proc ::bgerror args "set [namespace which -variable x] \$args"
     fileevent $f2 readable {error bogus}
     puts $f2 text; flush $f2
@@ -5424,8 +5498,14 @@ test io-44.2 {FileEventProc procedure: error in read event} {stdio unixExecs fil
     vwait [namespace which -variable x]
     rename ::bgerror {}
     list $x [fileevent $f2 readable]
-} {bogus {}}
-test io-44.3 {FileEventProc procedure: normal write event} {stdio unixExecs fileevent} {
+} -cleanup {
+    catch {close $f2}
+    catch {close $f3}
+} -result {bogus {}}
+test io-44.3 {FileEventProc procedure: normal write event} -setup {
+    set f2 [open "|[list cat -u]" r+]
+    set f3 [open "|[list cat -u]" r+]
+} -constraints {stdio unixExecs fileevent openpipe} -body {
     fileevent $f2 writable [namespace code {
 	lappend x "triggered"
 	incr count -1
@@ -5439,15 +5519,24 @@ test io-44.3 {FileEventProc procedure: normal write event} {stdio unixExecs file
     vwait [namespace which -variable x]
     vwait [namespace which -variable x]
     set x
-} {initial triggered triggered triggered}
-test io-44.4 {FileEventProc procedure: eror in write event} {stdio unixExecs fileevent} {
+} -cleanup {
+    catch {close $f2}
+    catch {close $f3}
+} -result {initial triggered triggered triggered}
+test io-44.4 {FileEventProc procedure: eror in write event} -setup {
+    set f2 [open "|[list cat -u]" r+]
+    set f3 [open "|[list cat -u]" r+]
+} -constraints {stdio unixExecs fileevent openpipe} -body {
     proc ::bgerror args "set [namespace which -variable x] \$args"
     fileevent $f2 writable {error bad-write}
     variable x initial
     vwait [namespace which -variable x]
     rename ::bgerror {}
     list $x [fileevent $f2 writable]
-} {bad-write {}}
+} -cleanup {
+    catch {close $f2}
+    catch {close $f3}
+} -result {bad-write {}}
 test io-44.5 {FileEventProc procedure: end of file} {stdio unixExecs openpipe fileevent} {
     set f4 [open "|[list [interpreter] $path(cat) << foo]" r]
     fileevent $f4 readable [namespace code {
@@ -5464,9 +5553,6 @@ test io-44.5 {FileEventProc procedure: end of file} {stdio unixExecs openpipe fi
     close $f4
     set x
 } {initial foo eof}
-
-catch {close $f2}
-catch {close $f3}
 
 
 close $f
@@ -5776,7 +5862,7 @@ test io-48.4 {lf write, testing readability, ^Z termination, auto read mode} {fi
     file delete $path(test1)
     set f [open $path(test1) w]
     fconfigure $f -translation lf
-    set c [format "abc\ndef\n%c" 26]
+    variable c [format "abc\ndef\n%c" 26]
     puts -nonewline $f $c
     close $f
     proc consume {f} {
@@ -7108,8 +7194,32 @@ test io-60.1 {writing illegal utf sequences} {openpipe fileevent} {
     list $x $result
 } {1 {gets {} catch {error writing "stdout": invalid argument}}}
 
-
-
+test io-61.1 {Reset eof state after changing the eof char} -setup {
+    set datafile [makeFile {} eofchar]
+    set f [open $datafile w]
+    fconfigure $f -translation binary
+    puts -nonewline $f [string repeat "Ho hum\n" 11]
+    puts $f =
+    set line [string repeat "Ge gla " 4]
+    puts -nonewline $f [string repeat [string trimright $line]\n 834]
+    close $f
+} -body {
+    set f [open $datafile r]
+    fconfigure $f -eofchar =
+    set res {}
+    lappend res [read $f; tell $f]
+    fconfigure $f -eofchar {}
+    lappend res [read $f 1]
+    lappend res [read $f; tell $f]
+    # Any seek zaps the internals into a good state.
+    #seek $f 0 start
+    #seek $f 0 current
+    #lappend res [read $f; tell $f]
+    close $f
+    set res
+} -cleanup {
+    removeFile eofchar
+} -result {77 = 23431}
 
 # cleanup
 foreach file [list fooBar longfile script output test1 pipe my_script foo \

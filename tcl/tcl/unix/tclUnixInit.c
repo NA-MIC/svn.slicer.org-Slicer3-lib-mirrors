@@ -7,19 +7,26 @@
  * Copyright (c) 1999 by Scriptics Corporation.
  * All rights reserved.
  *
- * RCS: @(#) $Id: tclUnixInit.c,v 1.34.2.3 2004/02/17 23:46:54 hobbs Exp $
+ * RCS: @(#) $Id: tclUnixInit.c,v 1.34.2.15 2007/04/29 02:19:51 das Exp $
  */
 
-#if defined(HAVE_CFBUNDLE)
+#if defined(HAVE_COREFOUNDATION)
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 #include "tclInt.h"
 #include "tclPort.h"
 #include <locale.h>
 #ifdef HAVE_LANGINFO
-#include <langinfo.h>
+#   include <langinfo.h>
+#   ifdef __APPLE__
+#       if defined(HAVE_WEAK_IMPORT) && MAC_OS_X_VERSION_MIN_REQUIRED < 1030
+	    /* Support for weakly importing nl_langinfo on Darwin. */
+#           define WEAK_IMPORT_NL_LANGINFO
+	    extern char *nl_langinfo(nl_item) WEAK_IMPORT_ATTRIBUTE;
+#       endif
+#    endif
 #endif
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) && defined(__GNUC__)
 #   include <floatingpoint.h>
 #endif
 #if defined(__bsdi__)
@@ -81,6 +88,7 @@ typedef struct LocaleTable {
 static CONST LocaleTable localeTable[] = {
 #ifdef HAVE_LANGINFO
     {"gb2312-1980",	"gb2312"},
+    {"ansi-1251",	"cp1251"},		/* Solaris gets this wrong. */
 #ifdef __hpux
     {"SJIS",		"shiftjis"},
     {"eucjp",		"euc-jp"},
@@ -136,13 +144,32 @@ static CONST LocaleTable localeTable[] = {
     {"ru_SU",		"iso8859-5"},		
 
     {"zh",		"cp936"},
+    {"zh_CN.gb2312",	"euc-cn"},
+    {"zh_CN.GB2312",	"euc-cn"},
+    {"zh_CN.GBK",	"euc-cn"},
+    {"zh_TW.Big5",	"big5"},
+    {"zh_TW",		"euc-tw"},
 
     {NULL, NULL}
 };
 
-#ifdef HAVE_CFBUNDLE
-static int Tcl_MacOSXGetLibraryPath(Tcl_Interp *interp, int maxPathLen, char *tclLibPath);
-#endif /* HAVE_CFBUNDLE */
+#ifdef HAVE_COREFOUNDATION
+static int		MacOSXGetLibraryPath _ANSI_ARGS_((
+			    Tcl_Interp *interp, int maxPathLen,
+			    char *tclLibPath));
+#endif /* HAVE_COREFOUNDATION */
+#if defined(__APPLE__) && (defined(TCL_LOAD_FROM_MEMORY) || ( \
+	defined(TCL_THREADS) && defined(MAC_OS_X_VERSION_MIN_REQUIRED) && \
+	MAC_OS_X_VERSION_MIN_REQUIRED < 1030) || ( \
+	defined(__LP64__) && defined(MAC_OS_X_VERSION_MIN_REQUIRED) && \
+	MAC_OS_X_VERSION_MIN_REQUIRED < 1050))
+/*
+ * Need to check Darwin release at runtime in tclUnixFCmd.c and tclLoadDyld.c:
+ * initialize release global at startup from uname().
+ */
+#define GET_DARWIN_RELEASE 1
+long tclMacOSXDarwinRelease = 0;
+#endif
 
 
 /*
@@ -196,7 +223,14 @@ TclpInitPlatform()
     (void) signal(SIGPIPE, SIG_IGN);
 #endif /* SIGPIPE */
 
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) && defined(__GNUC__)
+    /*
+     * Adjust the rounding mode to be more conventional. Note that FreeBSD
+     * only provides the __fpsetreg() used by the following two for the GNU
+     * Compiler. When using, say, Intel's icc they break. (Partially based on
+     * patch in BSD ports system from root@celsius.bychok.com)
+     */
+
     fpsetround(FP_RN);
     fpsetmask(0L);
 #endif
@@ -206,6 +240,15 @@ TclpInitPlatform()
      * Find local symbols. Don't report an error if we fail.
      */
     (void) dlopen (NULL, RTLD_NOW);			/* INTL: Native. */
+#endif
+
+#ifdef GET_DARWIN_RELEASE
+    {
+	struct utsname name;
+	if (!uname(&name)) {
+	    tclMacOSXDarwinRelease = strtol(name.release, NULL, 10);
+	}
+    }
 #endif
 }
 
@@ -242,7 +285,8 @@ TclpInitPlatform()
  *	Called at process initialization time.
  *
  * Results:
- *	None.
+ *	Return 1, indicating that the UTF may be dirty and require "cleanup"
+ *	after encodings are initialized.
  *
  * Side effects:
  *	None.
@@ -250,7 +294,7 @@ TclpInitPlatform()
  *---------------------------------------------------------------------------
  */
 
-void
+int
 TclpInitLibraryPath(path)
 CONST char *path;		/* Path to the executable in native 
 				 * multi-byte encoding. */
@@ -433,15 +477,15 @@ CONST char *path;		/* Path to the executable in native
      * This is needed when users install Tcl with an exec-prefix that
      * is different from the prtefix.
      */
-			      
+
     {
-#ifdef HAVE_CFBUNDLE
+#ifdef HAVE_COREFOUNDATION
     char tclLibPath[MAXPATHLEN + 1];
-    
-    if (Tcl_MacOSXGetLibraryPath(NULL, MAXPATHLEN, tclLibPath) == TCL_OK) {
+
+    if (MacOSXGetLibraryPath(NULL, MAXPATHLEN, tclLibPath) == TCL_OK) {
         str = tclLibPath;
     } else
-#endif /* HAVE_CFBUNDLE */
+#endif /* HAVE_COREFOUNDATION */
     {
         str = defaultLibraryDir;
     }
@@ -453,6 +497,8 @@ CONST char *path;		/* Path to the executable in native
 
     TclSetLibraryPath(pathPtr);    
     Tcl_DStringFree(&buffer);
+
+    return 1; /* 1 indicates that pathPtr may be dirty utf (needs cleaning) */
 }
 
 /*
@@ -482,7 +528,6 @@ CONST char *path;		/* Path to the executable in native
 void
 TclpSetInitialEncodings()
 {
-    if (libraryPathEncodingFixed == 0) {
 	CONST char *encoding = NULL;
 	int i, setSysEncCode = TCL_ERROR;
 	Tcl_Obj *pathPtr;
@@ -493,7 +538,11 @@ TclpSetInitialEncodings()
 	 * but this does not work on some systems (e.g. Linux/i386 RH 5.0).
 	 */
 #ifdef HAVE_LANGINFO
-	if (setlocale(LC_CTYPE, "") != NULL) {
+	if (
+#ifdef WEAK_IMPORT_NL_LANGINFO
+		nl_langinfo != NULL &&
+#endif
+		setlocale(LC_CTYPE, "") != NULL) {
 	    Tcl_DString ds;
 
 	    /*
@@ -646,6 +695,8 @@ TclpSetInitialEncodings()
 
 	setlocale(LC_NUMERIC, "C");
 
+    if ((libraryPathEncodingFixed == 0) && strcmp("identity",
+	    Tcl_GetEncodingName(Tcl_GetEncoding(NULL, NULL))) ) {
 	/*
 	 * Until the system encoding was actually set, the library path was
 	 * actually in the native multi-byte encoding, and not really UTF-8
@@ -731,10 +782,34 @@ TclpSetVariables(interp)
     CONST char *user;
     Tcl_DString ds;
 
-#ifdef HAVE_CFBUNDLE
+#ifdef HAVE_COREFOUNDATION
     char tclLibPath[MAXPATHLEN + 1];
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED > 1020
+    /*
+     * Set msgcat fallback locale to current CFLocale identifier.
+     */
+    CFLocaleRef localeRef;
     
-    if (Tcl_MacOSXGetLibraryPath(interp, MAXPATHLEN, tclLibPath) == TCL_OK) {
+    if (CFLocaleCopyCurrent != NULL && CFLocaleGetIdentifier != NULL &&
+	    (localeRef = CFLocaleCopyCurrent())) {
+	CFStringRef locale = CFLocaleGetIdentifier(localeRef);
+
+	if (locale) {
+	    char loc[256];
+
+	    if (CFStringGetCString(locale, loc, 256, kCFStringEncodingUTF8)) {
+		if (!Tcl_CreateNamespace(interp, "::tcl::mac", NULL, NULL)) {
+		    Tcl_ResetResult(interp);
+		}
+		Tcl_SetVar(interp, "::tcl::mac::locale", loc, TCL_GLOBAL_ONLY);
+	    }
+	}
+	CFRelease(localeRef);
+    }
+#endif
+
+    if (MacOSXGetLibraryPath(interp, MAXPATHLEN, tclLibPath) == TCL_OK) {
         CONST char *str;
         Tcl_DString ds;
         CFBundleRef bundleRef;
@@ -763,7 +838,7 @@ TclpSetVariables(interp)
             Tcl_StatBuf statBuf;
             if((frameworksURL = CFBundleCopyPrivateFrameworksURL(bundleRef))) {
                 if(CFURLGetFileSystemRepresentation(frameworksURL, TRUE,
-                            tclLibPath, MAXPATHLEN) &&
+                            (unsigned char*) tclLibPath, MAXPATHLEN) &&
                         ! TclOSstat(tclLibPath, &statBuf) &&
                         S_ISDIR(statBuf.st_mode)) {
                     Tcl_SetVar(interp, "tcl_pkgPath", tclLibPath,
@@ -775,7 +850,7 @@ TclpSetVariables(interp)
             }
             if((frameworksURL = CFBundleCopySharedFrameworksURL(bundleRef))) {
                 if(CFURLGetFileSystemRepresentation(frameworksURL, TRUE,
-                            tclLibPath, MAXPATHLEN) &&
+                            (unsigned char*) tclLibPath, MAXPATHLEN) &&
                         ! TclOSstat(tclLibPath, &statBuf) &&
                         S_ISDIR(statBuf.st_mode)) {
                     Tcl_SetVar(interp, "tcl_pkgPath", tclLibPath,
@@ -789,7 +864,7 @@ TclpSetVariables(interp)
         Tcl_SetVar(interp, "tcl_pkgPath", pkgPath,
                 TCL_GLOBAL_ONLY | TCL_APPEND_VALUE);
     } else
-#endif /* HAVE_CFBUNDLE */
+#endif /* HAVE_COREFOUNDATION */
     {
         Tcl_SetVar(interp, "tclDefaultLibrary", defaultLibraryDir, 
                 TCL_GLOBAL_ONLY);
@@ -952,7 +1027,9 @@ Tcl_Init(interp)
     if (pathPtr == NULL) {
 	pathPtr = Tcl_NewObj();
     }
+    Tcl_IncrRefCount(pathPtr);
     Tcl_SetVar2Ex(interp, "tcl_libPath", NULL, pathPtr, TCL_GLOBAL_ONLY);
+    Tcl_DecrRefCount(pathPtr);
     return Tcl_Eval(interp, initScript);
 }
 
@@ -1045,11 +1122,10 @@ TclpCheckStackSpace()
     return 1;
 }
 
-#ifdef HAVE_CFBUNDLE
 /*
  *----------------------------------------------------------------------
  *
- * Tcl_MacOSXGetLibraryPath --
+ * MacOSXGetLibraryPath --
  *
  *	If we have a bundle structure for the Tcl installation,
  *	then check there first to see if we can find the libraries
@@ -1063,14 +1139,16 @@ TclpCheckStackSpace()
  *
  *----------------------------------------------------------------------
  */
-static int Tcl_MacOSXGetLibraryPath(Tcl_Interp *interp, int maxPathLen, char *tclLibPath)
+
+#ifdef HAVE_COREFOUNDATION
+static int
+MacOSXGetLibraryPath(Tcl_Interp *interp, int maxPathLen, char *tclLibPath)
 {
     int foundInFramework = TCL_ERROR;
-    if (strcmp(defaultLibraryDir, "@TCL_IN_FRAMEWORK@") == 0) {
-	foundInFramework = Tcl_MacOSXOpenVersionedBundleResources(interp, 
-	    "com.tcltk.tcllibrary", TCL_VERSION, 0, maxPathLen, tclLibPath);
-    }
+#ifdef TCL_FRAMEWORK
+    foundInFramework = Tcl_MacOSXOpenVersionedBundleResources(interp, 
+	"com.tcltk.tcllibrary", TCL_FRAMEWORK_VERSION, 0, maxPathLen, tclLibPath);
+#endif
     return foundInFramework;
 }
-#endif /* HAVE_CFBUNDLE */
-
+#endif /* HAVE_COREFOUNDATION */

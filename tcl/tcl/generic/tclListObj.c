@@ -11,7 +11,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclListObj.c,v 1.13 2002/01/07 23:09:13 dgp Exp $
+ * RCS: @(#) $Id: tclListObj.c,v 1.13.4.2 2005/08/25 22:27:08 dkf Exp $
  */
 
 #include "tclInt.h"
@@ -680,17 +680,9 @@ Tcl_ListObjReplace(interp, listPtr, first, count, objc, objv)
 	if ((numAfterLast > 0) && (shift != 0)) {
 	    Tcl_Obj **src, **dst;
 
-	    if (shift < 0) {
-		for (src = elemPtrs + start, dst = src + shift;
-			numAfterLast > 0; numAfterLast--, src++, dst++) {
-		    *dst = *src;
-		}
-	    } else {
-		for (src = elemPtrs + numElems - 1, dst = src + shift;
-			numAfterLast > 0; numAfterLast--, src--, dst--) {
-		    *dst = *src;
-		}
-	    }
+	    src = elemPtrs + start; dst = src + shift;
+	    memmove((VOID*) dst, (VOID*) src, 
+	            (size_t) (numAfterLast * sizeof(Tcl_Obj*)));
 	}
 
 	/*
@@ -1631,6 +1623,12 @@ UpdateStringOfList(listPtr)
 	elem = Tcl_GetStringFromObj(listRepPtr->elements[i], &length);
 	listPtr->length += Tcl_ScanCountedElement(elem, length,
 		&flagPtr[i]) + 1;
+	/*
+	 * Check for continued sanity. [Bug 1267380]
+	 */
+	if (listPtr->length < 1) {
+	    Tcl_Panic("string representation size exceeds sane bounds");
+	}
     }
 
     /*

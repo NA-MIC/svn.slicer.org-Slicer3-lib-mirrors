@@ -27,6 +27,7 @@ namespace eval ::tcl::test::fileSystem {
 	file delete -force [file join dir.file linkinside.file]
     }
 
+cd [tcltest::temporaryDirectory]
 makeFile "test file" gorp.file
 makeDirectory dir.file
 makeFile "test file in directory" [file join dir.file inside.file]
@@ -472,6 +473,147 @@ test filesystem-8.3 {path objects and empty string} {
     set dst [file join  $anchor $dst]
     lappend res $dst $yyy
 } {foo foo {}}
+
+proc TestFind1 {d f} {
+    set r1 [file exists [file join $d $f]]
+    lappend res "[file join $d $f] found: $r1"
+    lappend res "is dir a dir? [file isdirectory $d]"
+    set r2 [file exists [file join $d $f]]
+    lappend res "[file join $d $f] found: $r2"
+    set res
+}
+proc TestFind2 {d f} {
+    set r1 [file exists [file join $d $f]]
+    lappend res "[file join $d $f] found: $r1"
+    lappend res "is dir a dir? [file isdirectory [file join $d]]"
+    set r2 [file exists [file join $d $f]]
+    lappend res "[file join $d $f] found: $r2"
+    set res
+}
+
+test filesystem-9.1 {path objects and join and object rep} {
+    set origdir [pwd]
+    cd [tcltest::temporaryDirectory]
+    file mkdir [file join a b c]
+    set res [TestFind1 a [file join b . c]]
+    file delete -force a
+    cd $origdir
+    set res
+} {{a/b/./c found: 1} {is dir a dir? 1} {a/b/./c found: 1}}
+
+test filesystem-9.2 {path objects and join and object rep} {
+    set origdir [pwd]
+    cd [tcltest::temporaryDirectory]
+    file mkdir [file join a b c]
+    set res [TestFind2 a [file join b . c]]
+    file delete -force a
+    cd $origdir
+    set res
+} {{a/b/./c found: 1} {is dir a dir? 1} {a/b/./c found: 1}}
+
+test filesystem-9.2.1 {path objects and join and object rep} {
+    set origdir [pwd]
+    cd [tcltest::temporaryDirectory]
+    file mkdir [file join a b c]
+    set res [TestFind2 a [file join b .]]
+    file delete -force a
+    cd $origdir
+    set res
+} {{a/b/. found: 1} {is dir a dir? 1} {a/b/. found: 1}}
+
+test filesystem-9.3 {path objects and join and object rep} {
+    set origdir [pwd]
+    cd [tcltest::temporaryDirectory]
+    file mkdir [file join a b c]
+    set res [TestFind1 a [file join b .. b c]]
+    file delete -force a
+    cd $origdir
+    set res
+} {{a/b/../b/c found: 1} {is dir a dir? 1} {a/b/../b/c found: 1}}
+
+test filesystem-9.4 {path objects and join and object rep} {
+    set origdir [pwd]
+    cd [tcltest::temporaryDirectory]
+    file mkdir [file join a b c]
+    set res [TestFind2 a [file join b .. b c]]
+    file delete -force a
+    cd $origdir
+    set res
+} {{a/b/../b/c found: 1} {is dir a dir? 1} {a/b/../b/c found: 1}}
+
+test filesystem-9.5 {path objects and file tail and object rep} {
+    set origdir [pwd]
+    cd [tcltest::temporaryDirectory]
+    file mkdir dgp
+    close [open dgp/test w]
+    foreach relative [glob -nocomplain [file join * test]] {
+	set absolute [file join [pwd] $relative]
+	set res [list [file tail $absolute] "test"]
+    }
+    file delete -force dgp 
+    cd $origdir
+    set res
+} {test test}
+
+test filesystem-9.6 {path objects and file join and object rep} {winOnly} {
+    set res {}
+    set p "C:\\toto"
+    lappend res [file join $p toto]
+    file isdirectory $p
+    lappend res [file join $p toto]
+} {C:/toto/toto C:/toto/toto}
+
+test filesystem-9.7 {path objects and glob and file tail and tilde} {
+    set res {}
+    set origdir [pwd]
+    cd [tcltest::temporaryDirectory]
+    file mkdir tilde
+    close [open tilde/~testNotExist w]
+    cd tilde
+    set file [lindex [glob *test*] 0]
+    lappend res [file exists $file] [catch {file tail $file} r] $r
+    lappend res $file
+    lappend res [file exists $file] [catch {file tail $file} r] $r
+    lappend res [catch {file tail $file} r] $r
+    cd ..
+    file delete -force tilde
+    cd $origdir
+    set res
+} {0 1 {user "testNotExist" doesn't exist} ~testNotExist 0 1 {user "testNotExist" doesn't exist} 1 {user "testNotExist" doesn't exist}}
+test filesystem-9.8 {path objects and glob and file tail and tilde} {
+    set res {}
+    set origdir [pwd]
+    cd [tcltest::temporaryDirectory]
+    file mkdir tilde
+    close [open tilde/~testNotExist w]
+    cd tilde
+    set file1 [lindex [glob *test*] 0]
+    set file2 "~testNotExist"
+    lappend res $file1 $file2
+    lappend res [catch {file tail $file1} r] $r
+    lappend res [catch {file tail $file2} r] $r
+    cd ..
+    file delete -force tilde
+    cd $origdir
+    set res
+} {~testNotExist ~testNotExist 1 {user "testNotExist" doesn't exist} 1 {user "testNotExist" doesn't exist}}
+test filesystem-9.9 {path objects and glob and file tail and tilde} {
+    set res {}
+    set origdir [pwd]
+    cd [tcltest::temporaryDirectory]
+    file mkdir tilde
+    close [open tilde/~testNotExist w]
+    cd tilde
+    set file1 [lindex [glob *test*] 0]
+    set file2 "~testNotExist"
+    lappend res [catch {file exists $file1} r] $r
+    lappend res [catch {file exists $file2} r] $r
+    lappend res [string equal $file1 $file2]
+    cd ..
+    file delete -force tilde
+    cd $origdir
+    set res
+} {0 0 0 0 1}
 
 cleanupTests
 }

@@ -5,7 +5,7 @@
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
-'\" RCS: @(#) $Id: tclvars.n,v 1.13 2002/07/01 18:24:39 jenglish Exp $
+'\" RCS: @(#) $Id: tclvars.n,v 1.13.2.3 2005/07/26 21:39:22 dgp Exp $
 '\" 
 .so man.macros
 .TH tclvars n 8.0 Tcl "Tcl Built-In Commands"
@@ -110,9 +110,8 @@ applications needs.
 .TP
 \fBerrorCode\fR
 After an error has occurred, this variable will be set to hold
-additional information about the error in a form that is easy
-to process with programs.
-\fBerrorCode\fR consists of a Tcl list with one or more elements.
+a list value representing additional information about the error
+in a form that is easy to process with programs.
 The first element of the list identifies a general class of
 errors, and determines the format of the rest of the list.
 The following formats for \fBerrorCode\fR are used by the
@@ -247,7 +246,6 @@ be defined, but they may have empty strings as values if Tcl couldn't
 retrieve any relevant information.  In addition, extensions
 and applications may add additional values to the array.  The
 predefined elements are:
-
 .RS
 .VS
 .TP
@@ -257,10 +255,11 @@ The native byte order of this machine: either \fBlittleEndian\fR or
 .VE
 .TP
 \fBdebug\fR
-If this variable exists, then the interpreter
-was compiled with debugging symbols enabled.  This variable will only
-exist on Windows so extension writers can specify which package to load
-depending on the C run-time library that is loaded.
+If this variable exists, then the interpreter was compiled with and linked
+to a debug-enabled C run-time.  This variable will only exist on Windows,
+so extension writers can specify which package to load depending on the
+C run-time library that is in use.  This is not an indication that this core
+contains symbols.
 .TP
 \fBmachine\fR
 The instruction set executed by this machine, such as
@@ -343,24 +342,24 @@ The value of this variable can be set to control
 how much tracing information
 is displayed during bytecode compilation.
 By default, tcl_traceCompile is zero and no information is displayed.
-Setting tcl_traceCompile to 1 generates a one line summary in stdout
-whenever a procedure or top level command is compiled.
+Setting tcl_traceCompile to 1 generates a one-line summary in stdout
+whenever a procedure or top-level command is compiled.
 Setting it to 2 generates a detailed listing in stdout of the
 bytecode instructions emitted during every compilation.
 This variable is useful in
 tracking down suspected problems with the Tcl compiler.
 It is also occasionally useful when converting
 existing code to use Tcl8.0.
-
+.PP
 This variable and functionality only exist if
-TCL_COMPILE_DEBUG was defined during Tcl's compilation.
+\fBTCL_COMPILE_DEBUG\fR was defined during Tcl's compilation.
 .TP
 \fBtcl_traceExec\fR
 The value of this variable can be set to control
 how much tracing information
 is displayed during bytecode execution.
 By default, tcl_traceExec is zero and no information is displayed.
-Setting tcl_traceExec to 1 generates a one line trace in stdout
+Setting tcl_traceExec to 1 generates a one-line trace in stdout
 on each call to a Tcl procedure.
 Setting it to 2 generates a line of output
 whenever any Tcl command is invoked
@@ -368,7 +367,7 @@ that contains the name of the command and its arguments.
 Setting it to 3 produces a detailed trace showing the result of
 executing each bytecode instruction.
 Note that when tcl_traceExec is 2 or 3,
-commands such as set and incr
+commands such as \fBset\fR and \fBincr\fR
 that have been entirely replaced by a sequence
 of bytecode instructions are not shown.
 Setting this variable is useful in
@@ -376,9 +375,9 @@ tracking down suspected problems with the bytecode compiler
 and interpreter.
 It is also occasionally useful when converting
 code to use Tcl8.0.
-
+.PP
 This variable and functionality only exist if
-TCL_COMPILE_DEBUG was defined during Tcl's compilation.
+\fBTCL_COMPILE_DEBUG\fR was defined during Tcl's compilation.
 .TP
 \fBtcl_wordchars\fR
 The value of this variable is a regular expression that can be set to
@@ -404,9 +403,36 @@ incompatibilities and changes to \fIy\fR represent small enhancements and
 bug fixes that retain backward compatibility.
 The value of this variable is returned by the \fBinfo tclversion\fR
 command.
+.SH "OTHER GLOBAL VARIABLES"
+The following variables are only guaranteed to exist in \fBtclsh\fR
+and \fBwish\fR executables; the Tcl library does not define them
+itself but many Tcl environments do.
+.TP 6
+\fBargc\fR
+The number of arguments to \fBtclsh\fR or \fBwish\fR.
+.TP 6
+\fBargv\fR
+Tcl list of arguments to \fBtclsh\fR or \fBwish\fR.
+.TP 6
+\fBargv0\fR
+The script that \fBtclsh\fR or \fBwish\fR started executing (if it was
+specified) or otherwise the name by which \fBtclsh\fR or \fBwish\fR
+was invoked.
+.TP 6
+\fBtcl_interactive\fR
+Contains 1 if \fBtclsh\fR or \fBwish\fR is running interactively (no
+script was specified and standard input is a terminal-like device), 0
+otherwise.
+.PP
+The \fBwish\fR executably additionally specifies the following global
+variable:
+.TP 6
+\fBgeometry\fR
+If set, contains the user-supplied geometry specification to use for
+the main Tk window.
 
 .SH "SEE ALSO"
-eval(n)
+eval(n), tclsh(1), wish(1)
 
 .SH KEYWORDS
 arithmetic, bytecode, compiler, error, environment, POSIX, precision, subprocess, variables

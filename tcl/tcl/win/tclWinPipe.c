@@ -9,7 +9,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclWinPipe.c,v 1.33.2.6 2004/02/25 07:56:21 davygrvy Exp $
+ * RCS: @(#) $Id: tclWinPipe.c,v 1.33.2.17 2006/03/14 20:36:39 andreas_kupries Exp $
  */
 
 #include "tclWinInt.h"
@@ -189,7 +189,6 @@ static void		PipeCheckProc(ClientData clientData, int flags);
 static int		PipeClose2Proc(ClientData instanceData,
 			    Tcl_Interp *interp, int flags);
 static int		PipeEventProc(Tcl_Event *evPtr, int flags);
-static void		PipeExitHandler(ClientData clientData);
 static int		PipeGetHandleProc(ClientData instanceData,
 			    int direction, ClientData *handlePtr);
 static void		PipeInit(void);
@@ -201,9 +200,11 @@ static DWORD WINAPI	PipeReaderThread(LPVOID arg);
 static void		PipeSetupProc(ClientData clientData, int flags);
 static void		PipeWatchProc(ClientData instanceData, int mask);
 static DWORD WINAPI	PipeWriterThread(LPVOID arg);
-static void		ProcExitHandler(ClientData clientData);
 static int		TempFileName(WCHAR name[MAX_PATH]);
 static int		WaitForRead(PipeInfo *infoPtr, int blocking);
+
+static void             PipeThreadActionProc _ANSI_ARGS_ ((
+			   ClientData instanceData, int action));
 
 /*
  * This structure describes the channel type structure for command pipe
@@ -212,7 +213,7 @@ static int		WaitForRead(PipeInfo *infoPtr, int blocking);
 
 static Tcl_ChannelType pipeChannelType = {
     "pipe",			/* Type name. */
-    TCL_CHANNEL_VERSION_2,	/* v2 channel */
+    TCL_CHANNEL_VERSION_4,	/* v4 channel */
     TCL_CLOSE2PROC,		/* Close proc. */
     PipeInputProc,		/* Input proc. */
     PipeOutputProc,		/* Output proc. */
@@ -225,6 +226,8 @@ static Tcl_ChannelType pipeChannelType = {
     PipeBlockModeProc,		/* Set blocking or non-blocking mode.*/
     NULL,			/* flush proc. */
     NULL,			/* handler proc. */
+    NULL,                       /* wide seek proc */
+    PipeThreadActionProc,       /* thread action proc */
 };
 
 /*
@@ -258,7 +261,6 @@ PipeInit()
 	if (!initialized) {
 	    initialized = 1;
 	    procList = NULL;
-	    Tcl_CreateExitHandler(ProcExitHandler, NULL);
 	}
 	Tcl_MutexUnlock(&pipeMutex);
     }
@@ -268,17 +270,16 @@ PipeInit()
 	tsdPtr = TCL_TSD_INIT(&dataKey);
 	tsdPtr->firstPipePtr = NULL;
 	Tcl_CreateEventSource(PipeSetupProc, PipeCheckProc, NULL);
-	Tcl_CreateThreadExitHandler(PipeExitHandler, NULL);
     }
 }
 
 /*
  *----------------------------------------------------------------------
  *
- * PipeExitHandler --
+ * TclpFinalizePipes --
  *
- *	This function is called to cleanup the pipe module before
- *	Tcl is unloaded.
+ *	This function is called from Tcl_FinalizeThread to finalize the 
+ *	platform specific pipe subsystem.
  *
  * Results:
  *	None.
@@ -289,37 +290,15 @@ PipeInit()
  *----------------------------------------------------------------------
  */
 
-static void
-PipeExitHandler(
-    ClientData clientData)	/* Old window proc */
-{
-    Tcl_DeleteEventSource(PipeSetupProc, PipeCheckProc, NULL);
-}
-
-/*
- *----------------------------------------------------------------------
- *
- * ProcExitHandler --
- *
- *	This function is called to cleanup the process list before
- *	Tcl is unloaded.
- *
- * Results:
- *	None.
- *
- * Side effects:
- *	Resets the process list.
- *
- *----------------------------------------------------------------------
- */
+void
+TclpFinalizePipes()
+{    
+    ThreadSpecificData *tsdPtr;
 
-static void
-ProcExitHandler(
-    ClientData clientData)	/* Old window proc */
-{
-    Tcl_MutexLock(&pipeMutex);
-    initialized = 0;
-    Tcl_MutexUnlock(&pipeMutex);
+    tsdPtr = (ThreadSpecificData *)TclThreadDataKeyGet(&dataKey);
+    if (tsdPtr != NULL) {
+	Tcl_DeleteEventSource(PipeSetupProc, PipeCheckProc, NULL);
+    }
 }
 
 /*
@@ -668,7 +647,7 @@ TclpOpenFile(path, mode)
      * Seek to the end of file if we are writing.
      */
 
-    if (mode & O_WRONLY) {
+    if (mode & (O_WRONLY|O_APPEND)) {
 	SetFilePointer(handle, 0, NULL, FILE_END);
     }
 
@@ -905,6 +884,8 @@ TclpGetPid(
     Tcl_Pid pid)		/* The HANDLE of the child process. */
 {
     ProcInfo *infoPtr;
+
+    PipeInit();
 
     Tcl_MutexLock(&pipeMutex);
     for (infoPtr = procList; infoPtr != NULL; infoPtr = infoPtr->nextPtr) {
@@ -1156,7 +1137,7 @@ TclpCreateProcess(
 	    startInfo.wShowWindow = SW_HIDE;
 	    startInfo.dwFlags |= STARTF_USESHOWWINDOW;
 	    createFlags = CREATE_NEW_CONSOLE;
-	    Tcl_DStringAppend(&cmdLine, "cmd.exe /c ", -1);
+	    Tcl_DStringAppend(&cmdLine, "cmd.exe /c", -1);
 	} else {
 	    createFlags = DETACHED_PROCESS;
 	} 
@@ -1567,11 +1548,13 @@ BuildCommandLine(
     Tcl_DStringInit(&ds);
 
     /*
-     * Prime the path.
+     * Prime the path.  Add a space separator if we were primed with
+     * something.
      */
-    
+
     Tcl_DStringAppend(&ds, Tcl_DStringValue(linePtr), -1);
-    
+    if (Tcl_DStringLength(&ds) > 0) Tcl_DStringAppend(&ds, " ", 1);
+
     for (i = 0; i < argc; i++) {
 	if (i == 0) {
 	    arg = executable;
@@ -1687,6 +1670,7 @@ TclpCreateCommandChannel(
     infoPtr->writeBuf = 0;
     infoPtr->writeBufLen = 0;
     infoPtr->writeError = 0;
+    infoPtr->channel = (Tcl_Channel) NULL;
 
     /*
      * Use one of the fds associated with the channel as the
@@ -1879,7 +1863,7 @@ PipeClose2Proc(
 
     errorCode = 0;
     if ((!flags || (flags == TCL_CLOSE_READ))
-	    && (pipePtr->readFile != NULL)) {
+	&& (pipePtr->readFile != NULL)) {
 	/*
 	 * Clean up the background thread if necessary.  Note that this
 	 * must be done before we can close the file, since the 
@@ -1908,7 +1892,7 @@ PipeClose2Proc(
 		 */
 
 		if (WaitForSingleObject(pipePtr->readThread, 20)
-			== WAIT_TIMEOUT) {
+		    == WAIT_TIMEOUT) {
 		    /*
 		     * The thread must be blocked waiting for the pipe to
 		     * become readable in ReadFile().  There isn't a clean way
@@ -1944,7 +1928,7 @@ PipeClose2Proc(
 	pipePtr->readFile = NULL;
     }
     if ((!flags || (flags & TCL_CLOSE_WRITE))
-	    && (pipePtr->writeFile != NULL)) {
+	&& (pipePtr->writeFile != NULL)) {
 
 	if (pipePtr->writeThread) {
 	    /*
@@ -1977,7 +1961,7 @@ PipeClose2Proc(
 		 */
 
 		if (WaitForSingleObject(pipePtr->writeThread, 20)
-			== WAIT_TIMEOUT) {
+		    == WAIT_TIMEOUT) {
 		    /*
 		     * The thread must be blocked waiting for the pipe to
 		     * consume input in WriteFile().  There isn't a clean way
@@ -2030,32 +2014,52 @@ PipeClose2Proc(
      */
 
     for (nextPtrPtr = &(tsdPtr->firstPipePtr), infoPtr = *nextPtrPtr;
-	    infoPtr != NULL;
-	    nextPtrPtr = &infoPtr->nextPtr, infoPtr = *nextPtrPtr) {
+	 infoPtr != NULL;
+	 nextPtrPtr = &infoPtr->nextPtr, infoPtr = *nextPtrPtr) {
 	if (infoPtr == (PipeInfo *)pipePtr) {
 	    *nextPtrPtr = infoPtr->nextPtr;
 	    break;
 	}
     }
 
-    /*
-     * Wrap the error file into a channel and give it to the cleanup
-     * routine.
-     */
+    if ((pipePtr->flags & PIPE_ASYNC) || TclInExit()) {
+	/*
+	 * If the channel is non-blocking or Tcl is being cleaned up,
+	 * just detach the children PIDs, reap them (important if we are
+	 * in a dynamic load module), and discard the errorFile.
+	 */
 
-    if (pipePtr->errorFile) {
-	WinFile *filePtr;
+	Tcl_DetachPids(pipePtr->numPids, pipePtr->pidPtr);
+	Tcl_ReapDetachedProcs();
 
-	filePtr = (WinFile*)pipePtr->errorFile;
-	errChan = Tcl_MakeFileChannel((ClientData) filePtr->handle,
-		TCL_READABLE);
-	ckfree((char *) filePtr);
+	if (pipePtr->errorFile) {
+	    if (TclpCloseFile(pipePtr->errorFile) != 0) {
+		if ( errorCode == 0 ) {
+		    errorCode = errno;
+		}
+	    }
+	}
+	result = 0;
     } else {
-        errChan = NULL;
-    }
+	/*
+	 * Wrap the error file into a channel and give it to the cleanup
+	 * routine.
+	 */
 
-    result = TclCleanupChildren(interp, pipePtr->numPids, pipePtr->pidPtr,
-            errChan);
+	if (pipePtr->errorFile) {
+	    WinFile *filePtr;
+
+	    filePtr = (WinFile*)pipePtr->errorFile;
+	    errChan = Tcl_MakeFileChannel((ClientData) filePtr->handle,
+					  TCL_READABLE);
+	    ckfree((char *) filePtr);
+	} else {
+	    errChan = NULL;
+	}
+
+	result = TclCleanupChildren(interp, pipePtr->numPids,
+				    pipePtr->pidPtr, errChan);
+    }
 
     if (pipePtr->numPids > 0) {
         ckfree((char *) pipePtr->pidPtr);
@@ -2477,7 +2481,7 @@ Tcl_WaitPid(
     int *statPtr,
     int options)
 {
-    ProcInfo *infoPtr, **prevPtrPtr;
+    ProcInfo *infoPtr = NULL, **prevPtrPtr;
     DWORD flags;
     Tcl_Pid result;
     DWORD ret, exitCode;
@@ -2494,7 +2498,13 @@ Tcl_WaitPid(
     }
 
     /*
-     * Find the process on the process list.
+     * Find the process and cut it from the process list.
+     * SF Tcl Bug  859820, Backport of its fix.
+     * SF Tcl Bug 1381436, asking for the backport.
+     *     
+     * [x] Cutting the infoPtr after the closehandle allows the
+     * pointer to become stale. We do it here, and compensate if the
+     * process was not done yet.
      */
 
     Tcl_MutexLock(&pipeMutex);
@@ -2502,6 +2512,7 @@ Tcl_WaitPid(
     for (infoPtr = procList; infoPtr != NULL;
 	    prevPtrPtr = &infoPtr->nextPtr, infoPtr = infoPtr->nextPtr) {
 	 if (infoPtr->hProcess == (HANDLE) pid) {
+	    *prevPtrPtr = infoPtr->nextPtr;
 	    break;
 	}
     }
@@ -2531,6 +2542,14 @@ Tcl_WaitPid(
     if (ret == WAIT_TIMEOUT) {
 	*statPtr = 0;
 	if (options & WNOHANG) {
+	    /*
+	     * Re-insert the cut infoPtr back on the list.
+	     * See [x] for explanation.
+	     */
+	    Tcl_MutexLock(&pipeMutex);
+	    infoPtr->nextPtr = procList;
+	    procList = infoPtr;
+	    Tcl_MutexUnlock(&pipeMutex);
 	    return 0;
 	} else {
 	    result = 0;
@@ -2551,12 +2570,12 @@ Tcl_WaitPid(
 		case EXCEPTION_FLT_UNDERFLOW:
 		case EXCEPTION_INT_DIVIDE_BY_ZERO:
 		case EXCEPTION_INT_OVERFLOW:
-		    *statPtr = SIGFPE;
+		    *statPtr = 0xC0000000 | SIGFPE;
 		    break;
 
 		case EXCEPTION_PRIV_INSTRUCTION:
 		case EXCEPTION_ILLEGAL_INSTRUCTION:
-		    *statPtr = SIGILL;
+		    *statPtr = 0xC0000000 | SIGILL;
 		    break;
 
 		case EXCEPTION_ACCESS_VIOLATION:
@@ -2567,37 +2586,32 @@ Tcl_WaitPid(
 		case EXCEPTION_INVALID_DISPOSITION:
 		case EXCEPTION_GUARD_PAGE:
 		case EXCEPTION_INVALID_HANDLE:
-		    *statPtr = SIGSEGV;
+		    *statPtr = 0xC0000000 | SIGSEGV;
 		    break;
 
 		case CONTROL_C_EXIT:
-		    *statPtr = SIGINT;
+		    *statPtr = 0xC0000000 | SIGINT;
 		    break;
 
 		default:
-		    *statPtr = SIGABRT;
+		    *statPtr = 0xC0000000 | SIGABRT;
 		    break;
 	    }
 	} else {
-	    /*
-	     * Non exception, normal, exit code.  Note that the exit code
-	     * is truncated to a byte range.
-	     */
-	    *statPtr = ((exitCode << 8) & 0xff00);
+	    *statPtr = exitCode;
 	}
 	result = pid;
     } else {
 	errno = ECHILD;
-        *statPtr = ECHILD;
+        *statPtr = 0xC0000000 | ECHILD;
 	result = (Tcl_Pid) -1;
     }
 
     /*
-     * Remove the process from the process list and close the process handle.
+     * Officially close the process handle.
      */
 
     CloseHandle(infoPtr->hProcess);
-    *prevPtrPtr = infoPtr->nextPtr;
     ckfree((char*)infoPtr);
 
     return result;
@@ -2929,7 +2943,10 @@ PipeReaderThread(LPVOID arg)
 	 */
 
 	Tcl_MutexLock(&pipeMutex);
-	Tcl_ThreadAlert(infoPtr->threadId);
+	if (infoPtr->threadId != NULL) {
+	    /* TIP #218. When in flight ignore the event, no one will receive it anyway */
+	    Tcl_ThreadAlert(infoPtr->threadId);
+	}
 	Tcl_MutexUnlock(&pipeMutex);
     }
 
@@ -3017,10 +3034,60 @@ PipeWriterThread(LPVOID arg)
 	 */
 
 	Tcl_MutexLock(&pipeMutex);
-	Tcl_ThreadAlert(infoPtr->threadId);
+	if (infoPtr->threadId != NULL) {
+	    /* TIP #218. When in flight ignore the event, no one will receive it anyway */
+	    Tcl_ThreadAlert(infoPtr->threadId);
+	}
 	Tcl_MutexUnlock(&pipeMutex);
     }
 
     return 0;
 }
 
+/*
+ *----------------------------------------------------------------------
+ *
+ * PipeThreadActionProc --
+ *
+ *	Insert or remove any thread local refs to this channel.
+ *
+ * Results:
+ *	None.
+ *
+ * Side effects:
+ *	Changes thread local list of valid channels.
+ *
+ *----------------------------------------------------------------------
+ */
+
+static void
+PipeThreadActionProc (instanceData, action)
+     ClientData instanceData;
+     int action;
+{
+    PipeInfo *infoPtr = (PipeInfo *) instanceData;
+
+    /* We do not access firstPipePtr in the thread structures. This is
+     * not for all pipes managed by the thread, but only those we are
+     * watching. Removal of the filevent handlers before transfer thus
+     * takes care of this structure.
+     */
+
+    Tcl_MutexLock(&pipeMutex);
+    if (action == TCL_CHANNEL_THREAD_INSERT) {
+        /* We can't copy the thread information from the channel when
+	 * the channel is created. At this time the channel back
+	 * pointer has not been set yet. However in that case the
+	 * threadId has already been set by TclpCreateCommandChannel
+	 * itself, so the structure is still good.
+	 */
+
+        PipeInit ();
+        if (infoPtr->channel != NULL) {
+	    infoPtr->threadId = Tcl_GetChannelThread (infoPtr->channel);
+	}
+    } else {
+	infoPtr->threadId = NULL;
+    }
+    Tcl_MutexUnlock(&pipeMutex);
+}

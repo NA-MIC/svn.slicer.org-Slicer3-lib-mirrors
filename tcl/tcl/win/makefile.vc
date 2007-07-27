@@ -8,36 +8,41 @@
 # 
 # Copyright (c) 1995-1996 Sun Microsystems, Inc.
 # Copyright (c) 1998-2000 Ajuba Solutions.
-# Copyright (c) 2001 ActiveState Corporation.
+# Copyright (c) 2001-2005 ActiveState Corporation.
 # Copyright (c) 2001-2002 David Gravereaux.
 #
 #------------------------------------------------------------------------------
-# RCS: @(#) $Id: makefile.vc,v 1.100.2.4 2003/07/16 19:34:14 mdejong Exp $
+# RCS: @(#) $Id: makefile.vc,v 1.100.2.9 2006/09/26 21:40:36 patthoyts Exp $
 #------------------------------------------------------------------------------
 
-!if "$(MSVCDIR)" == ""
+# Check to see we are configured to build with MSVC (MSDEVDIR or MSVCDIR)
+# or with the MS Platform SDK (MSSDK). Visual Studio .NET 2003 and 2005 define
+# VCINSTALLDIR instead.
+!if !defined(MSDEVDIR) && !defined(MSVCDIR) && !defined(MSSDK) && !defined(VCINSTALLDIR)
 MSG = ^
-You'll need to run vcvars32.bat from Developer Studio, first, to setup^
-the environment.  Jump to this line to read the new instructions.
+You need to run vcvars32.bat from Developer Studio or setenv.bat from the^
+Platform SDK first to setup the environment.  Jump to this line to read^
+the build instructions.
 !error $(MSG)
 !endif
 
 #------------------------------------------------------------------------------
 # HOW TO USE this makefile:
 #
-# 1)  It is now necessary to have %MSVCDir% set in the environment.  This is used
-#     as a check to see if vcvars32.bat had been run prior to running nmake or
-#     during the installation of Microsoft Visual C++, MSVCDir had been set
-#     globally and the PATH adjusted.  Either way is valid.
+# 1)  It is now necessary to have MSVCDir, MSDevDir or MSSDK set in the
+#     environment.  This is used as a check to see if vcvars32.bat had been
+#     run prior to running nmake or during the installation of Microsoft
+#     Visual C++, MSVCDir had been set globally and the PATH adjusted.
+#     Either way is valid.
 #
 #     You'll need to run vcvars32.bat contained in the MsDev's vc(98)/bin
-#     directory to setup the proper environment, if needed, for your current
-#     setup.  This is a needed bootstrap requirement and allows the swapping of
-#     different environments to be easier.
+#     directory to setup the proper environment, if needed, for your
+#     current setup.  This is a needed bootstrap requirement and allows the
+#     swapping of different environments to be easier.
 #
 # 2)  To use the Platform SDK (not expressly needed), run setenv.bat after
-#     vcvars32.bat according to the instructions for it.  This can also turn on
-#     the 64-bit compiler, if your SDK has it.
+#     vcvars32.bat according to the instructions for it.  This can also
+#     turn on the 64-bit compiler, if your SDK has it.
 #
 # 3)  Targets are:
 #	release  -- Builds the core, the shell and the dlls. (default)
@@ -318,26 +323,25 @@ WINDIR		= $(ROOT)\win
 !if !$(DEBUG)
 !if $(OPTIMIZING)
 ### This cranks the optimization level to maximize speed
-cdebug	= -O2 -Op -Gs
+cdebug	= -O2 $(OPTIMIZATIONS)
 !else
 cdebug	=
 !endif
 !else if "$(MACHINE)" == "IA64"
 ### Warnings are too many, can't support warnings into errors.
-cdebug	= -Z7 -Od
+cdebug	= -Z7 -Od $(DEBUGFLAGS)
 !else
-cdebug	= -Z7 -WX -Od
+cdebug	= -Z7 -WX $(DEBUGFLAGS)
 !endif
 
 ### Declarations common to all compiler options
-cflags = -nologo -c -W3 -YX -Fp$(TMP_DIR)^\
+cwarn = -D _CRT_SECURE_NO_DEPRECATE -D _CRT_NONSTDC_NO_DEPRECATE
+cflags = -nologo -c $(COMPILERFLAGS) $(cwarn) -Fp$(TMP_DIR)^\
 
-!if $(PENT_0F_ERRATA)
-cflags = $(cflags) -QI0f
-!endif
-
-!if $(ITAN_B_ERRATA)
-cflags = $(cflags) -QIA64_Bx
+!if $(FULLWARNINGS)
+cflags = $(cflags) -W4
+!else
+cflags = $(cflags) -W3
 !endif
 
 !if $(MSVCRT)
@@ -355,10 +359,10 @@ crt = -MTd
 !endif
 
 TCL_INCLUDES	= -I"$(WINDIR)" -I"$(GENERICDIR)"
-BASE_CLFAGS	= $(cflags) $(cdebug) $(crt) $(TCL_INCLUDES) \
+BASE_CFLAGS	= $(cflags) $(cdebug) $(crt) $(TCL_INCLUDES) \
 			-DTCL_PIPE_DLL=\"$(TCLPIPEDLLNAME)\"
 CON_CFLAGS	= $(cflags) $(cdebug) $(crt) -DCONSOLE
-TCL_CFLAGS	= $(BASE_CLFAGS) $(OPTDEFINES)
+TCL_CFLAGS	= $(BASE_CFLAGS) $(OPTDEFINES)
 
 
 #---------------------------------------------------------------------
@@ -372,7 +376,11 @@ ldebug	= -release -opt:ref -opt:icf,3
 !endif
 
 ### Declarations common to all linker options
-lflags	= -nologo -machine:$(MACHINE) $(ldebug)
+lflags	= -nologo -machine:$(MACHINE) $(LINKERFLAGS) $(ldebug)
+
+!if $(FULLWARNINGS)
+lflags = $(lflags) -warn:3
+!endif
 
 !if $(PROFILE)
 lflags	= $(lflags) -profile
@@ -394,8 +402,12 @@ dlllflags = $(lflags) -dll
 conlflags = $(lflags) -subsystem:console
 guilflags = $(lflags) -subsystem:windows
 
-baselibs   = kernel32.lib advapi32.lib user32.lib
-
+baselibs  = kernel32.lib advapi32.lib user32.lib
+# Avoid 'unresolved external symbol __security_cookie' errors.
+# c.f. http://support.microsoft.com/?id=894573
+!if "$(MACHINE)" == "IA64" || "$(MACHINE)" == "AMD64"
+baselibs   = $(baselibs) bufferoverflowU.lib
+!endif
 
 #---------------------------------------------------------------------
 # TclTest flags
@@ -450,6 +462,7 @@ $**
 		$(baselibs) @<<
 $**
 <<
+	$(_VC_MANIFEST_EMBED_DLL)
 	-@del $*.exp
 !endif
 
@@ -458,13 +471,16 @@ $(TCLSTUBLIB): $(TCLSTUBOBJS)
 
 $(TCLSH): $(TCLSHOBJS) $(TCLIMPLIB)
 	$(link32) $(conlflags) -stack:2300000 -out:$@ $(baselibs) $**
+	$(_VC_MANIFEST_EMBED_EXE)
 
 $(TCLTEST): $(TCLTESTOBJS) $(TCLIMPLIB)
 	$(link32) $(conlflags) -stack:2300000 -out:$@ $(baselibs) $**
+	$(_VC_MANIFEST_EMBED_EXE)
 
 $(TCLPIPEDLL): $(WINDIR)\stub16.c
 	$(cc32) $(CON_CFLAGS) -Fo$(TMP_DIR)\ $(WINDIR)\stub16.c
 	$(link32) $(conlflags) -out:$@ $(TMP_DIR)\stub16.obj $(baselibs)
+	$(_VC_MANIFEST_EMBED_DLL)
 
 !if $(STATIC_BUILD)
 $(TCLDDELIB): $(TMP_DIR)\tclWinDde.obj
@@ -473,6 +489,7 @@ $(TCLDDELIB): $(TMP_DIR)\tclWinDde.obj
 $(TCLDDELIB): $(TMP_DIR)\tclWinDde.obj $(TCLSTUBLIB)
 	$(link32) $(dlllflags) -base:@$(WINDIR)\coffbase.txt,tcldde -out:$@ \
 		$** $(baselibs)
+	$(_VC_MANIFEST_EMBED_DLL)
 	-@del $*.exp
 	-@del $*.lib
 !endif
@@ -484,6 +501,7 @@ $(TCLREGLIB): $(TMP_DIR)\tclWinReg.obj
 $(TCLREGLIB): $(TMP_DIR)\tclWinReg.obj $(TCLSTUBLIB)
 	$(link32) $(dlllflags) -base:@$(WINDIR)\coffbase.txt,tclreg -out:$@ \
 		$** $(baselibs)
+	$(_VC_MANIFEST_EMBED_DLL)
 	-@del $*.exp
 	-@del $*.lib
 !endif
@@ -492,7 +510,7 @@ $(CAT32): $(WINDIR)\cat.c
 	$(cc32) $(CON_CFLAGS) -Fo$(TMP_DIR)\ $?
 	$(link32) $(conlflags) -out:$@ -stack:16384 $(TMP_DIR)\cat.obj \
 		$(baselibs)
-
+        $(_VC_MANIFEST_EMBED_EXE)
 
 #---------------------------------------------------------------------
 # Regenerate the stubs files.  [Development use only]
@@ -620,23 +638,23 @@ $(TMP_DIR)\tclAppInit.obj: $(WINDIR)\tclAppInit.c
 
 $(TMP_DIR)\tclWinReg.obj: $(WINDIR)\tclWinReg.c
 !if $(STATIC_BUILD)
-	$(cc32) $(BASE_CLFAGS) -DTCL_THREADS=1 -DSTATIC_BUILD -Fo$@ $?
+	$(cc32) $(BASE_CFLAGS) -DTCL_THREADS=1 -DSTATIC_BUILD -Fo$@ $?
 !else
-	$(cc32) $(BASE_CLFAGS) -DTCL_THREADS=1 -DUSE_TCL_STUBS -Fo$@ $?
+	$(cc32) $(BASE_CFLAGS) -DTCL_THREADS=1 -DUSE_TCL_STUBS -Fo$@ $?
 !endif
 
 
 $(TMP_DIR)\tclWinDde.obj: $(WINDIR)\tclWinDde.c
 !if $(STATIC_BUILD)
-	$(cc32) $(BASE_CLFAGS) -DTCL_THREADS=1 -DSTATIC_BUILD -Fo$@ $?
+	$(cc32) $(BASE_CFLAGS) -DTCL_THREADS=1 -DSTATIC_BUILD -Fo$@ $?
 !else
-	$(cc32) $(BASE_CLFAGS) -DTCL_THREADS=1 -DUSE_TCL_STUBS -Fo$@ $?
+	$(cc32) $(BASE_CFLAGS) -DTCL_THREADS=1 -DUSE_TCL_STUBS -Fo$@ $?
 !endif
 
 
 ### The following objects are part of the stub library and should not
 ### be built as DLL objects.  -Zl is used to avoid a dependancy on any
-### specific c-runtime.
+### specific C run-time.
 
 $(TMP_DIR)\tclStubLib.obj: $(GENERICDIR)\tclStubLib.c
 	$(cc32) $(cdebug) $(cflags) -Zl -DSTATIC_BUILD $(TCL_INCLUDES) -Fo$@ $?
@@ -738,9 +756,9 @@ install-libraries:
 	@echo installing http1.0
 	@$(CPY) "$(ROOT)\library\http1.0\*.tcl" \
 		"$(SCRIPT_INSTALL_DIR)\http1.0\"
-	@echo installing http2.4
+	@echo installing http2.5
 	@$(CPY) "$(ROOT)\library\http\*.tcl" \
-		"$(SCRIPT_INSTALL_DIR)\http2.4\"
+		"$(SCRIPT_INSTALL_DIR)\http2.5\"
 	@echo installing opt0.4
 	@$(CPY) "$(ROOT)\library\opt\*.tcl" \
 		"$(SCRIPT_INSTALL_DIR)\opt0.4\"

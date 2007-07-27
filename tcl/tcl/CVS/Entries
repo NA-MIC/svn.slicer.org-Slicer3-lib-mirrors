@@ -1,10 +1,3 @@
-/ChangeLog/1.1453.2.222/Mon Mar  1 18:22:58 2004//Tcore-8-4-6
-/ChangeLog.1999/1.1/Thu Sep 13 19:10:08 2001//Tcore-8-4-6
-/ChangeLog.2000/1.1/Tue Jan 29 01:17:37 2002//Tcore-8-4-6
-/ChangeLog.2001/1.1/Fri Jul 19 10:23:51 2002//Tcore-8-4-6
-/README/1.49.2.6/Fri Feb 13 01:38:00 2004//Tcore-8-4-6
-/changes/1.79.2.7/Mon Mar  1 18:22:59 2004//Tcore-8-4-6
-/license.terms/1.3/Fri Jul 19 09:17:16 2002//Tcore-8-4-6
 D/compat////
 D/doc////
 D/generic////
@@ -15,3 +8,10 @@ D/tests////
 D/tools////
 D/unix////
 D/win////
+/ChangeLog/1.1453.2.751/Fri Jul 27 22:16:23 2007//Tcore-8-4-15
+/ChangeLog.1999/1.1/Fri Jul 27 21:10:13 2007//Tcore-8-4-15
+/ChangeLog.2000/1.1/Fri Jul 27 21:10:13 2007//Tcore-8-4-15
+/ChangeLog.2001/1.1/Fri Jul 27 21:10:13 2007//Tcore-8-4-15
+/README/1.49.2.18/Fri Jul 27 22:16:23 2007//Tcore-8-4-15
+/changes/1.79.2.50/Fri Jul 27 22:16:23 2007//Tcore-8-4-15
+/license.terms/1.3/Fri Jul 27 21:10:13 2007//Tcore-8-4-15

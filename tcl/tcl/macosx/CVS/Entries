@@ -1,4 +1,6 @@
-/Makefile/1.5.2.8/Thu Feb 26 09:10:40 2004//Tcore-8-4-6
-/README/1.1.2.1/Tue Jul 15 01:15:51 2003//Tcore-8-4-6
-/tclMacOSXBundle.c/1.3.2.2/Thu May 22 01:15:33 2003//Tcore-8-4-6
 D/Tcl.pbproj////
+/Makefile/1.5.2.17/Fri Jul 27 22:18:01 2007//Tcore-8-4-15
+/README/1.1.2.9/Fri Jul 27 22:18:01 2007//Tcore-8-4-15
+/Tcl-Info.plist.in/1.1.2.3/Sun Apr 29 02:21:33 2007//Tcore-8-4-15
+/tclMacOSXBundle.c/1.3.2.6/Fri Jul 27 22:18:01 2007//Tcore-8-4-15
+/tclMacOSXNotify.c/1.1.2.12/Sun Apr 29 02:21:33 2007//Tcore-8-4-15

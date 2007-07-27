@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclUnixPipe.c,v 1.23 2003/02/21 14:15:58 das Exp $
+ * RCS: @(#) $Id: tclUnixPipe.c,v 1.23.2.7 2006/08/02 20:04:40 das Exp $
  */
 
 #include "tclInt.h"
@@ -72,7 +72,7 @@ static int	SetupStdFile _ANSI_ARGS_((TclFile file, int type));
 
 static Tcl_ChannelType pipeChannelType = {
     "pipe",			/* Type name. */
-    TCL_CHANNEL_VERSION_2,	/* v2 channel */
+    TCL_CHANNEL_VERSION_4,	/* v4 channel */
     PipeCloseProc,		/* Close proc. */
     PipeInputProc,		/* Input proc. */
     PipeOutputProc,		/* Output proc. */
@@ -85,6 +85,8 @@ static Tcl_ChannelType pipeChannelType = {
     PipeBlockModeProc,		/* Set blocking or non-blocking mode.*/
     NULL,			/* flush proc. */
     NULL,			/* handler proc. */
+    NULL,                       /* wide seek proc */
+    NULL,                       /* thread action proc */
 };
 
 /*
@@ -154,7 +156,7 @@ TclpOpenFile(fname, mode)
 	 * so we can append to any data already in the file.
 	 */
 
-	if (mode & O_WRONLY) {
+	if ((mode & O_WRONLY) && !(mode & O_APPEND)) {
 	    TclOSseek(fd, (Tcl_SeekOffset) 0, SEEK_END);
 	}
 
@@ -396,7 +398,7 @@ TclpCreateProcess(interp, argc, argv, inputFile, outputFile, errorFile,
 				 * process. */
 {
     TclFile errPipeIn, errPipeOut;
-    int joinThisError, count, status, fd;
+    int count, status, fd;
     char errSpace[200 + TCL_INTEGER_SPACE];
     Tcl_DString *dsArray;
     char **newArgv;
@@ -428,9 +430,27 @@ TclpCreateProcess(interp, argc, argv, inputFile, outputFile, errorFile,
 	newArgv[i] = Tcl_UtfToExternalDString(NULL, argv[i], -1, &dsArray[i]);
     }
 
-    joinThisError = errorFile && (errorFile == outputFile);
+#ifdef USE_VFORK
+    /*
+     * After vfork(), do not call code in the child that changes global state,
+     * because it is using the parent's memory space at that point and writes
+     * might corrupt the parent: so ensure standard channels are initialized in
+     * the parent, otherwise SetupStdFile() might initialize them in the child.
+     */
+    if (!inputFile) {
+	Tcl_GetStdChannel(TCL_STDIN);
+    }
+    if (!outputFile) {
+        Tcl_GetStdChannel(TCL_STDOUT);
+    }
+    if (!errorFile) {
+        Tcl_GetStdChannel(TCL_STDERR);
+    }
+#endif
     pid = fork();
     if (pid == 0) {
+	int joinThisError = errorFile && (errorFile == outputFile);
+
 	fd = GetFd(errPipeOut);
 
 	/*
@@ -660,14 +680,12 @@ SetupStdFile(file, type)
             
             fcntl(targetFd, F_SETFD, 0);
 	} else {
-	    int result;
-
 	    /*
 	     * Since we aren't dup'ing the file, we need to explicitly clear
 	     * the close-on-exec flag.
 	     */
 
-	    result = fcntl(fd, F_SETFD, 0);
+	   fcntl(fd, F_SETFD, 0);
 	}
     } else {
 	close(targetFd);
@@ -1247,3 +1265,24 @@ Tcl_PidObjCmd(dummy, interp, objc, objv)
     }
     return TCL_OK;
 }
+
+/*
+ *----------------------------------------------------------------------
+ *
+ * TclpFinalizePipes --
+ *
+ *	Cleans up the pipe subsystem from Tcl_FinalizeThread
+ *
+ * Results:
+ *	None.
+ *
+ * This procedure carries out no operation on Unix.
+ *
+ *----------------------------------------------------------------------
+ */
+
+void
+TclpFinalizePipes()
+{
+}
+

@@ -10,7 +10,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: winFCmd.test,v 1.20.2.3 2003/11/21 16:19:15 dgp Exp $
+# RCS: @(#) $Id: winFCmd.test,v 1.20.2.9 2006/03/19 22:47:30 vincentdarley Exp $
 #
 
 if {[lsearch [namespace children] ::tcltest] == -1} {
@@ -64,20 +64,11 @@ set ::tcltest::testConstraints(exdev) 0
 # find a CD-ROM so we can test read-only filesystems.
 
 set cdrom {}
-set nodrive x:
-foreach p {d e f g h i j k l m n o p q r s t u v w x y z} {
-    set name ${p}:/dummy~~.fil
-    if [catch {set fd [open $name w]}] {
-	set err [lindex $errorCode 1]
-        if {$cdrom == "" && $err == "EACCES"} {
+if { [info commands ::testvolumetype] ne {} } {
+    foreach p {d e f g h i j k l m n o p q r s t u v w x y z} {
+        if { ! [catch { testvolumetype ${p}: } result] && $result eq {CDFS} } {
 	    set cdrom ${p}:
 	}
-	if {$err == "ENOENT"} {
-	    set nodrive ${p}:
-	}
-    } else {
-        close $fd
-	file delete $name
     }
 }
 
@@ -601,8 +592,10 @@ test winFCmd-6.11 {TclpRemoveDirectory: attr == -1} {pcOnly nt} {
     set res [list [catch {testfile rmdir /} msg] $msg]
     # WinXP returns EEXIST, WinNT seems to return EACCES.  No policy
     # decision has been made as to which is correct.
-    regsub {E(ACCES|EXIST)} $res "EACCES or EEXIST"
-} {1 {C:/ EACCES or EEXIST}}
+    regsub {E(ACCES|EXIST)} $res "EACCES or EEXIST" res
+    # Don't mind which drive we're on
+    regsub {[A-Z]:} $res ""
+} {1 {/ EACCES or EEXIST}}
 test winFCmd-6.12 {TclpRemoveDirectory: errno == EACCES} {pcOnly 95} {
     cleanup
     createfile tf1
@@ -695,11 +688,11 @@ test winFCmd-7.10 {TraverseWinTree: can't read directory: handle == INVALID} \
 test winFCmd-7.11 {TraverseWinTree: call TraversalCopy: DOTREE_PRED} {pcOnly} {
     cleanup
     file mkdir td1
-    testchmod 000 td1
     createfile td1/tf1 tf1
+    testchmod 000 td1
     testfile cpdir td1 td2
     list [file exists td2] [file writable td2]
-} {1 0}
+} {1 1}
 test winFCmd-7.12 {TraverseWinTree: call TraversalDelete: DOTREE_PRED} {pcOnly} {
     cleanup
     file mkdir td1
@@ -751,11 +744,11 @@ test winFCmd-7.18 {TraverseWinTree: recurse on files: several files and dir} \
 test winFCmd-7.19 {TraverseWinTree: call TraversalCopy: DOTREE_POSTD} {pcOnly} {
     cleanup
     file mkdir td1
-    testchmod 000 td1
     createfile td1/tf1 tf1
+    testchmod 000 td1
     testfile cpdir td1 td2
     list [file exists td2] [file writable td2]
-} {1 0}
+} {1 1}
 test winFCmd-7.20 {TraverseWinTree: call TraversalDelete: DOTREE_POSTD} \
 	{pcOnly} {
     cleanup
@@ -1014,9 +1007,74 @@ test winFCmd-16.11 {Windows file normalization} {pcOnly cdrom} {
     # Must not crash
     set result "no crash"
 } {no crash}
+test winFCmd-16.12 {Windows file normalization} {pcOnly} {
+    set oldhome ""
+    catch {set oldhome $::env(HOME)}
+    set ::env(HOME) ${d}:
+    cd
+    set result [pwd]; # <- Must not crash
+    set ::env(HOME) $oldhome
+    set result
+} ${d}:/
 
 cd $pwd
 unset d dd pwd
+
+test winFCmd-18.1 {Windows reserved path names} -constraints win -body {
+    file pathtype com1
+} -result "absolute"
+
+test winFCmd-18.1.2 {Windows reserved path names} -constraints win -body {
+    file pathtype com4
+} -result "absolute"
+
+test winFCmd-18.1.3 {Windows reserved path names} -constraints win -body {
+    file pathtype com5
+} -result "relative"
+
+test winFCmd-18.1.4 {Windows reserved path names} -constraints win -body {
+    file pathtype lpt3
+} -result "absolute"
+
+test winFCmd-18.1.5 {Windows reserved path names} -constraints win -body {
+    file pathtype lpt4
+} -result "relative"
+
+test winFCmd-18.1.6 {Windows reserved path names} -constraints win -body {
+    file pathtype nul
+} -result "absolute"
+
+test winFCmd-18.1.7 {Windows reserved path names} -constraints win -body {
+    file pathtype null
+} -result "relative"
+
+test winFCmd-18.2 {Windows reserved path names} -constraints win -body {
+    file pathtype com1:
+} -result "absolute"
+
+test winFCmd-18.3 {Windows reserved path names} -constraints win -body {
+    file pathtype COM1
+} -result "absolute"
+
+test winFCmd-18.4 {Windows reserved path names} -constraints win -body {
+    file pathtype CoM1:
+} -result "absolute"
+
+test winFCmd-18.5 {Windows reserved path names} -constraints win -body {
+    file normalize com1:
+} -result COM1
+
+test winFCmd-18.6 {Windows reserved path names} -constraints win -body {
+    file normalize COM1:
+} -result COM1
+
+test winFCmd-18.7 {Windows reserved path names} -constraints win -body {
+    file normalize cOm1
+} -result COM1
+
+test winFCmd-18.8 {Windows reserved path names} -constraints win -body {
+    file normalize cOm1:
+} -result COM1
 
 # This block of code used to occur after the "return" call, so I'm
 # commenting it out and assuming that this code is still under construction.
