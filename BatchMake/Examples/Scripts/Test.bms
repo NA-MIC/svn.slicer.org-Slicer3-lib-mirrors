@@ -1,0 +1,2 @@
+listDirInDir(dirs 'c:/Julien')
+echo(${dirs})

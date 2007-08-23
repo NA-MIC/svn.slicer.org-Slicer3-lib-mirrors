@@ -1,0 +1,7 @@
+/* 
+ * Configuration file from CMake to the EMSegmentModule using BatchMake 
+ */
+
+#define CONDORWATCHER_EXECUTABLE "@CondorWatcherTool@"
+#define EMSEGMENT_EXECUTABLE "@EMSegmentCommandLine_GUIVersion@"
+#define BATCHMAKE_WRAPPED_APPLICATION_DIR "@BATCHMAKE_WRAPPED_APPLICATION_DIR@"

@@ -1,0 +1,26 @@
+set(basedir '\\Degas\CADDLab01\Projects\Atlas\Liz-Normals\Normals\')
+listdirindir(list ${basedir})
+
+# Test LIMIR on one image
+getparam(list2 ${list} 0)
+listfileindir(files ${basedir}${list2} *.mha)
+getparam(file ${files} 0)
+
+set(fullfile ${basedir}${list2}${file})
+echo(${fullfile})
+
+set(directory e:/test/)
+set(fixedImage ${fullfile})
+set(movingImage ${fullfile})
+set(registrationTransform ${directory}Transform.txt)
+
+Run(output '$LIMIR -I 1 -R 1 -O 0 -T ${registrationTransform} ${fixedImage} ${movingImage}')
+
+#foreach(source $list)
+#   listfileindir(files '\\Degas\CADDLab01\Projects\Atlas\Liz-Normals\Normals\$source' *.mha)
+#  foreach(file $files)
+#    echo('File *.lib: ' $source $file)
+#  endforeach(file $files)
+#endforeach(source)
+
+#Run(output '$LIMIR -V')

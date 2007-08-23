@@ -1,0 +1,32 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0107 
+header_name {.h} 
+code_name {.cxx}
+class SplashScreen {open
+} {
+  Function {make_window()} {open
+  } {
+    Fl_Window g_Splashscreen {
+      label {BatchMake 1.0} open selected
+      xywh {505 236 252 357} type Double color 7 modal noborder visible
+    } {
+      Fl_Box {} {
+        xywh {0 0 250 355} box PLASTIC_THIN_UP_BOX color 228 selection_color 51
+      }
+      Fl_Button {} {
+        label Ok
+        callback {g_Splashscreen->hide();}
+        xywh {85 325 85 20} box PLASTIC_UP_BOX color 180 labelsize 12
+      }
+      Fl_Progress g_progress {
+        xywh {10 208 230 7} box PLASTIC_THIN_UP_BOX selection_color 220
+      }
+      Fl_Group {} {
+        image {../Images/logo.gif} xywh {10 5 230 200} align 17
+      } {}
+      Fl_Box copyright {
+        xywh {10 219 230 102} labelsize 11
+      }
+    }
+  }
+} 

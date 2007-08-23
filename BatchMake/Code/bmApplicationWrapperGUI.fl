@@ -1,0 +1,122 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+class ApplicationWrapperGUI {open : {bm::ApplicationWrapperGUIBase}
+} {
+  Function {make_window()} {open
+  } {
+    Fl_Window g_Applicationwrappergui {
+      label {BatchMake - Application Wrapper} open selected
+      xywh {516 127 559 370} type Double resizable
+      code0 {\#include "bmApplicationWrapperGUIBase.h"} visible
+    } {
+      Fl_Button g_selectpath {
+        label {Browse && run...}
+        callback {OnSelectPath()}
+        xywh {469 79 80 20} box PLASTIC_UP_BOX color 180 labelsize 10
+      }
+      Fl_Input g_path {
+        label {Application path:}
+        xywh {114 79 350 20} labelsize 12 textsize 12
+      }
+      Fl_Group {} {open
+        xywh {15 105 540 195}
+      } {
+        Fl_Box {} {
+          xywh {20 130 530 165} box SHADOW_BOX color 51 labelsize 12 align 5
+        }
+        Fl_Choice g_type {
+          label {Type:}
+          callback {OnSelectType()} open
+          xywh {115 140 155 20} down_box BORDER_BOX labelsize 12
+        } {}
+        Fl_Check_Button g_optional {
+          label Optional
+          xywh {280 140 90 20} down_box DOWN_BOX labelsize 12
+        }
+        Fl_Button g_delete {
+          label Delete
+          callback {OnDeleteParameters()}
+          xywh {220 270 50 20} box PLASTIC_UP_BOX color 180 labelsize 10
+        }
+        Fl_Button g_add {
+          label Ok
+          callback {OnAddParameters()}
+          xywh {280 270 50 20} box PLASTIC_UP_BOX color 180 labelsize 10
+        }
+        Fl_Choice g_parent {
+          label {Parent:} open
+          xywh {115 190 155 20} down_box BORDER_BOX labelsize 12 textsize 12
+        } {}
+        Fl_Input g_value {
+          label {Default value:}
+          xywh {115 215 375 20} labelsize 12 textsize 12
+        }
+        Fl_Button g_addenum {
+          label Add
+          callback {OnAddEnum()}
+          xywh {495 215 40 20} box PLASTIC_UP_BOX color 180 labelsize 10
+        }
+        Fl_Button g_delenum {
+          label Del
+          xywh {495 240 40 20} box PLASTIC_UP_BOX color 180 labelsize 10
+        }
+        Fl_Input g_name {
+          label {Name:}
+          xywh {115 165 155 20} labelsize 12 textsize 12
+        }
+        Fl_Check_Button g_external {
+          label {External Data}
+          xywh {365 140 100 20} down_box DOWN_BOX labelsize 12
+        }
+      }
+      Fl_Choice g_parameters {
+        label {Parameters:}
+        callback {OnSelectParameters()} open
+        xywh {113 104 185 20} down_box BORDER_BOX labelsize 12 textsize 12
+      } {}
+      Fl_Choice g_enumlist {
+        label {Enum list:}
+        callback {OnSelectEnumList()} open
+        xywh {115 245 375 20} down_box BORDER_BOX labelsize 12 textsize 12
+      } {}
+      Fl_Button g_ok {
+        label Ok
+        callback {OnSaveModule()}
+        xywh {290 340 80 20} box PLASTIC_UP_BOX color 180 labelsize 10
+      }
+      Fl_Button g_cancel {
+        label Cancel
+        callback {OnReject()}
+        xywh {195 340 80 20} box PLASTIC_UP_BOX color 180 labelsize 10
+      }
+      Fl_Text_Display g_commandline {
+        label {Command line:}
+        xywh {25 315 520 20} box NO_BOX color 49 labelsize 12 align 5 textsize 12
+      }
+      Fl_Input g_modulename {
+        label {Module name:}
+        xywh {115 10 255 20} labelsize 12 textsize 12
+      }
+      Fl_Input g_moduleversion {
+        label {Module version:}
+        xywh {115 35 40 20} labelsize 12 textsize 12
+      }
+      Fl_Button {} {
+        label U
+        callback {OnUpParam()}
+        xywh {303 104 25 20} box PLASTIC_UP_BOX down_box PLASTIC_DOWN_BOX color 180 labelsize 12
+      }
+      Fl_Button {} {
+        label D
+        callback {OnDownParam()}
+        xywh {333 104 25 20} box PLASTIC_UP_BOX down_box PLASTIC_DOWN_BOX color 180 labelsize 12
+      }
+      Fl_Check_Button g_runapp {
+        label {Run application with -vxml}
+        tooltip {Run the application with -vxml command to try to find the command line arguments} xywh {115 57 165 20} down_box DOWN_BOX value 1 labelsize 12
+      }
+    }
+  }
+} 

@@ -1,0 +1,9 @@
+Set(data x y z 1 2 3 a b c)
+
+echo($data)
+ForNFold(count trainVar testVar 3 $data)
+echo('Count = ' $count)
+echo('Train = ' $trainVar)
+echo('Test = ' $testVar)
+echo()
+EndForNFold()

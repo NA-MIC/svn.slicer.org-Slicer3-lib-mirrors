@@ -1,0 +1,5 @@
+#define BatchMake_VERSION_MAJOR @BatchMake_VERSION_MAJOR@
+#define BatchMake_VERSION_MINOR @BatchMake_VERSION_MINOR@
+#define BatchMake_VERSION_PATCH @BatchMake_VERSION_PATCH@
+#define BatchMake_VERSION_STRING "@BatchMake_VERSION_STRING@"
+#define BatchMake_EXTENDED_VERSION_STRING "@BatchMake_EXTENDED_VERSION_STRING@"

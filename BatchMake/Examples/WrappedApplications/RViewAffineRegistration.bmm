@@ -1,0 +1,41 @@
+<BatchMakeApplicationWrapper>
+	<BatchMakeApplicationWrapperVersion>1.0</BatchMakeApplicationWrapperVersion>
+	<Module>
+		<Name>RView Affine Registration</Name>
+		<Version>1.0</Version>
+		<Path>areg.exe</Path>
+		<Parameters>
+			<Param>
+				<Type>0</Type>
+				<Name>Source</Name>
+				<Value></Value>
+				<Parent>0</Parent>
+				<Optional>0</Optional>
+			</Param>
+			<Param>
+				<Type>0</Type>
+				<Name>Target</Name>
+				<Value></Value>
+				<Parent>0</Parent>
+				<Optional>0</Optional>
+			</Param>
+			<Param>
+				<Type>1</Type>
+				<Name>vebose</Name>
+				<Value>-v</Value>
+				<Parent>0</Parent>
+				<Optional>1</Optional>
+			</Param>
+			<Param>
+				<Type>5</Type>
+				<Name>Interpolation</Name>
+				<Value>2</Value>
+				<Parent>1</Parent>
+				<Optional>0</Optional>
+				<Enum>-nn</Enum>
+				<Enum>-C2Spline</Enum>
+				<Enum>-linear</Enum>
+			</Param>
+		</Parameters>
+	</Module>
+</BatchMakeApplicationWrapper>

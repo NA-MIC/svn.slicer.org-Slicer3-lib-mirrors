@@ -1,0 +1,11 @@
+From command line:
+> BatchMake -c NormalTest.bms
+> BatchMake -e NormalTest.bms
+Should be ok !
+
+> BatchMake -c CompilationErrorTest.bms
+Should generate 1 error
+
+> BatchMake -e ExecutionErrorTest.bms
+Should generate 1 error
+

@@ -1,0 +1,61 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0107 
+header_name {.h} 
+code_name {.cxx}
+class ScriptEditorGUI {open : {bm::ScriptEditorGUIBase}
+} {
+  Function {MakeWindow()} {open
+  } {
+    Fl_Window g_Scripteditorgui {
+      label BatchMake
+      callback {hide();}
+      xywh {557 290 655 660} type Double resizable
+      code0 {\#include "bmScriptEditorGUIBase.h"} visible
+    } {
+      Fl_Text_Editor g_editor {
+        xywh {0 35 655 480} when 1
+        code0 {\#include "bmEditor.h"}
+        class {bm::Editor}
+      }
+      Fl_Text_Display g_output {
+        xywh {0 525 655 135} labelsize 12 textsize 12
+      }
+      Fl_Group {} {open selected
+        xywh {0 0 640 35} align 225
+      } {
+        Fl_Button {} {
+          callback {OnOpenScript()}
+          tooltip {Open script} image {../Images/open.gif} xywh {5 5 30 25} box PLASTIC_UP_BOX color 48 labelsize 11 align 192
+        }
+        Fl_Button saveBt {
+          callback {OnSaveScript()}
+          tooltip {Save current script} image {../Images/save.gif} xywh {40 5 30 25} box PLASTIC_UP_BOX shortcut 0x40073 color 48
+        }
+        Fl_Button {} {
+          callback {OnCompile()}
+          tooltip {Compile current script} image {../Images/compilation.gif} xywh {75 5 30 25} box PLASTIC_UP_BOX color 48
+        }
+        Fl_Button {} {
+          callback {OnExecute()}
+          tooltip {Run processing} image {../Images/run.gif} xywh {110 5 30 25} box PLASTIC_UP_BOX color 48
+        }
+        Fl_Button {} {
+          callback {OnApplicationWrapper()}
+          tooltip {Application Wrapper} image {../Images/applicationwrapper.gif} xywh {145 5 30 25} box PLASTIC_UP_BOX color 48
+        }
+        Fl_Button {} {
+          callback {OnGenerateCondor()}
+          tooltip {Generate Condor Script} image {../Images/condor.gif} xywh {215 5 30 25} box PLASTIC_UP_BOX color 48
+        }
+        Fl_Button {} {
+          callback {OnGenerateGAD()}
+          tooltip {Generate KWGrid script} image {../Images/kwgrid.gif} xywh {250 5 30 25} box PLASTIC_UP_BOX color 48
+        }
+        Fl_Button {} {
+          callback {OnGenerateShell()}
+          tooltip {Generate Shell  script} image {../Images/sh.png} xywh {285 5 30 25} box PLASTIC_UP_BOX color 48
+        }
+      }
+    }
+  }
+} 

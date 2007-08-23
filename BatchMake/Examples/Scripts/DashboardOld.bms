@@ -1,0 +1,16 @@
+DashboardHost(http://caddlab.rad.unc.edu/batchmake)
+DashboardExperiment(7YF04vELWW4m1B88wHvEY97wZcEReyabmF1h1wTNj)
+
+Sequence(X -3 3 1)
+Sequence(Y -3 3 1)
+Sequence(Z -3 3 1)
+
+ForEach(x ${X})
+  ForEach(y ${Y})
+    ForEach(z ${Z})
+  Randomize(metric uniform 0 10)
+  DashboardSend(1 ${x} ${y} ${z} ${metric})
+#  DashboardNotify("End")
+    EndForEach(z)
+ EndForEach(y)
+EndForEach(x)

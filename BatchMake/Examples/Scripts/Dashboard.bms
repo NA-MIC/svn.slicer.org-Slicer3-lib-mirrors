@@ -1,0 +1,28 @@
+SetApp(test @Calculator)
+SetAppOption(test.operand +)
+SetAppOption(test.GenerateXMLMetaOutput 1)
+
+# Describe the current experiment
+DashboardHost(http://www.insight-journal.org/batchmake)
+DashboardUser('Julien Jomier')
+CreateExperiment(exp 'BatchMake Test1' 'My Experiment' 'This is a description for this experiment')
+CreateMethod(meth exp 'Calculator' 'Compute between two numbers')
+AddMethodInput(firstParam meth 'First Number')
+AddMethodInput(secondParam meth 'Second Number')
+AddMethodOutput(result meth 'Computation Result')
+
+Sequence(sequ 0 3.141597 0.2)
+foreach(i ${sequ})
+ Sin(sinus ${i})
+ SetAppOption(test.firstNumber ${sinus})
+ SetAppOption(test.secondNumber 0.5)
+ Run(output ${test})
+ Set(result test.Result)
+ Set(firstParam ${sinus})
+ Set(secondParam 0.5)
+# Echo(${result})
+ DashboardSend(meth)
+endforeach(i sequ)
+
+
+#echo(${output})

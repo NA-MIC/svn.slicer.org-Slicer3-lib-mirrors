@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>
+  BatchProcessing
+  </category>
+  <title>
+  BatchMake Module
+  </title>
+  <description>
+  Run Slicer3 modules as a batch process.
+  </description>
+  <version>0.1.0.$Revision: 1.1 $(alpha)</version>
+  <documentation-url></documentation-url>
+  <license></license>
+  <contributor>Julien Jomier</contributor>
+  <acknowledgements>http://www.batchmake.org
+  </acknowledgements>
+  <parameters>
+    <label>Filter Parameters</label>
+    <description>Parameters for the Module to be processed</description>
+
+    <file>
+      <name>module</name>
+      <longflag>module</longflag>
+      <label>Module to process</label>
+      <default>GaussianBlurModule.exe</default>
+      <element>Gaussian Blur Filter</element>
+    </file>
+
+  <string-enumeration>
+       <name>parameter1</name>
+       <longflag>parameter1</longflag>
+       <label>Parameter 1 (Sigma)</label>
+       <default>Sigma</default>
+       <element>Sigma</element>
+  </string-enumeration>
+
+  <double>
+      <name>parameter1Min</name>
+      <longflag>parameter1Min</longflag>
+      <description>parameter1 Minimum value</description>
+      <label>Minimum value</label>
+      <default>1</default>
+      <constraints>
+        <minimum>0</minimum>
+        <maximum>10</maximum>
+        <step>.1</step>
+      </constraints>
+    </double>
+
+  <double>
+      <name>parameter1Max</name>
+      <longflag>parameter1Max</longflag>
+      <description>parameter1 Maximum value</description>
+      <label>Maximum value</label>
+      <default>10</default>
+      <constraints>
+        <minimum>0</minimum>
+        <maximum>10</maximum>
+        <step>0.1</step>
+      </constraints>
+    </double>
+
+  <double>
+      <name>parameter1Step</name>
+      <longflag>parameter1Step</longflag>
+      <description>parameter1 step</description>
+      <label>Step</label>
+      <default>1.0</default>
+      <constraints>
+        <minimum>0</minimum>
+        <maximum>10</maximum>
+        <step>.01</step>
+      </constraints>
+    </double>
+
+  </parameters>
+  <parameters>
+    <label>Input Datasets</label>
+    <description>Input Datasets</description>
+    <directory>
+      <name>dataDir</name>
+      <label>Data directory</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description>Directory where to find input images</description>
+    </directory>
+
+    <string>
+      <name>dataMask</name>
+      <label>Data Mask</label>
+      <default>*.mha</default>
+   <flag>m</flag>
+   </string>
+   
+   <boolean>
+     <name>dataMaskRecursive</name>
+     <label>Recursive</label>
+     <longflag>dataMaskRecursive</longflag> 
+     <default>true</default>
+   </boolean>
+
+
+  </parameters>
+  <parameters>
+    <label>Output Directory</label>
+    <description>Output Directory</description>
+    <directory>
+      <name>outputDir</name>
+      <label>Output directory</label>
+      <channel>output</channel>
+      <index>1</index>
+      <description>Directory where to put the processed images</description>
+    </directory>
+  </parameters>
+
+ <parameters>
+    <label>BatchMake</label>
+    <description>BatchMake specific parameters</description>
+    <directory>
+      <name>BatchMakeWrappedApplication</name>
+      <label>Wrapped Application Directory</label>
+      <longflag>BatchMakeWrappedApplication</longflag> 
+      <description>Directory where the BatchMake wrapped applications are located</description>
+    </directory>
+
+    <boolean>
+     <name>runLocally</name>
+     <label>Run locally</label>
+     <longflag>local</longflag> 
+     <default>false</default>
+   </boolean>
+  
+   <file>
+      <name>condorwatcher</name>
+      <longflag>condorwatcher</longflag>
+      <label>Condor Watcher</label>
+      <default>C:/Julien/Workspace/BatchMake-VC++/bin/relwithdebinfo/CondorWatcherTool.exe</default>
+    </file>
+  </parameters>
+</executable>

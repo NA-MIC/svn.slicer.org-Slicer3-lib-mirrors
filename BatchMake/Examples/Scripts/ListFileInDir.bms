@@ -1,0 +1,6 @@
+listfileindir(list $applicationpath *.*)
+
+echo($applicationpath)
+foreach(source $list)
+  echo('File *.lib: ' $source)
+endforeach(source)

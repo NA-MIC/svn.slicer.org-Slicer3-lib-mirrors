@@ -1,0 +1,53 @@
+SetApp(pixelCounter @PixelCounter)
+SetAppOption(pixelCounter.GenerateXMLMetaOutput 1)
+SetAppOption(pixelCounter.threshold 10)
+
+GridMaxNodes(1)
+GridSetGrouping(0)
+
+GridDataHost(diaspar.kitwarein.com)
+DataDirectory(/usr/local/batchmake_demo/data/Ellipse_Images/)
+# Where to transfer the file on each node
+GridExecutableDirectory(/usr/local/batchmake_demo/bin/)
+GridTempDirectory(/tmp/)
+GridOutputHost(diaspar.kitwarein.com)
+# Output directory on the node
+OutputDirectory(/usr/local/batchmake_demo/tmp/)
+
+# Describe the current experiment
+DashboardHost(http://www.insight-journal.org/batchmake)
+DashboardUser('Julien Jomier')
+CreateExperiment(exp 'BatchMake Grid' 'ExperimentVolumeTumor' 'Demo BatchMake')
+CreateMethod(meth exp 'PixelCounter' 'Return volume of a tumor in pixels')
+AddMethodInput(filename meth 'Image to be treated')
+AddMethodInput(threshold meth 'Threshold used to compute the volume')
+AddMethodOutput(volume meth 'Volume of the tumor')
+AddMethodIdealOutput(volume meth 'Ideal output of the tumor')
+AddMethodOutput(slice meth 'Extracted mid-Axial slice' png)
+AddMethodIdealOutput(slice meth 'Ideal output of the mid-Axial slice' png)
+
+Set(workdir 'c:\Julien\demo')
+ListFileInDir(files ${workdir} '*.mha')
+
+Set(i 0)
+foreach(file ${files})
+  GridSingleNode(on)
+  Set(filename '${file}')
+  SetAppOption(pixelCounter.filename ${filename})
+  Run(output ${pixelCounter})
+  Set(slicename '${file}_slice.png')
+  ExtractSlice(${filename} ${slicename} 2 25)
+  if(${i} == 0)
+    Set(i 1)
+    SetIdealOutput(slice '${slicename}')
+    SetIdealOutput(volume pixelCounter.NPixels)
+  endif($i)
+
+  Set(slice '${slicename}')
+  Set(filename '${file}')
+  Set(volume pixelCounter.NPixels) 
+  Set(threshold 10)
+  DashboardSend(meth)
+  GridSingleNode(off)
+endforeach(filename)
+

@@ -1,0 +1,52 @@
+<BatchMakeApplicationWrapper>
+	<BatchMakeApplicationWrapperVersion>1.0</BatchMakeApplicationWrapperVersion>
+	<Module>
+		<Name>LIMIR</Name>
+		<Version>1.0</Version>
+		<Path>../../InsightApplications-VC++/LandmarkInitializedMutualInformationRegistration/RelWithDebInfo/LandmarkInitializedMutualInformationRegistration.exe</Path>
+		<Parameters>
+			<Param>
+				<Type>1</Type>
+				<Name>Registration Initalization</Name>
+				<Value>-I</Value>
+				<Parent>0</Parent>
+				<Optional>0</Optional>
+			</Param>
+			<Param>
+				<Type>1</Type>
+				<Name>Registration Method</Name>
+				<Value>-R</Value>
+				<Parent>0</Parent>
+				<Optional>0</Optional>
+			</Param>
+			<Param>
+				<Type>1</Type>
+				<Name>Optimization Method</Name>
+				<Value>-O</Value>
+				<Parent>0</Parent>
+				<Optional>0</Optional>
+			</Param>
+			<Param>
+				<Type>1</Type>
+				<Name>Landmarks file</Name>
+				<Value>-L</Value>
+				<Parent>0</Parent>
+				<Optional>1</Optional>
+			</Param>
+			<Param>
+				<Type>1</Type>
+				<Name>Save registration transform</Name>
+				<Value>-T</Value>
+				<Parent>0</Parent>
+				<Optional>1</Optional>
+			</Param>
+			<Param>
+				<Type>1</Type>
+				<Name>Save moving image registered</Name>
+				<Value>-W</Value>
+				<Parent>0</Parent>
+				<Optional>1</Optional>
+			</Param>
+		</Parameters>
+	</Module>
+</BatchMakeApplicationWrapper>

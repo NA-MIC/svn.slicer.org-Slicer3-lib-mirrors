@@ -1,0 +1,9 @@
+set(myvar 'foo-bar.h')
+regEx(test ${myvar} 'foo-.')
+echo(${test})
+
+if(${test} == 'foo-b')
+  echo("OK!")
+else(${test})
+  echo("Not found!")
+endif(${test})

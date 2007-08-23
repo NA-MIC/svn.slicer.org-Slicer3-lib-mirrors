@@ -1,0 +1,29 @@
+/CMakeLists.txt/1.20/Sun Jul 29 23:43:50 2007//
+/CheckMemory.cxx/1.2/Thu May 10 22:21:14 2007//
+/GetCPUInfo.cxx/1.2/Thu May 10 22:13:00 2007//
+/GetCPUSpeed.cxx/1.2/Fri May  4 17:53:48 2007//
+/GetMemoryInfo.cxx/1.2/Thu May 10 22:13:00 2007//
+/MString.cxx/1.10/Fri May 11 21:07:12 2007//
+/MString.h/1.8/Fri May 11 21:07:12 2007//
+/SliceExtractor.cxx/1.2/Fri Dec 15 17:40:16 2006//
+/SliceExtractor.h/1.2/Fri Dec 15 17:40:16 2006//
+/SystemInfo.cxx/1.35/Tue May 15 18:13:36 2007//
+/SystemInfo.h/1.15/Thu May 10 22:13:00 2007//
+/TCPSocket.cxx/1.2/Fri Aug  4 15:55:40 2006//
+/TCPSocket.h/1.1/Fri Apr 14 16:39:26 2006//
+/Timer.cxx/1.1/Tue Nov 30 20:04:24 2004//
+/Timer.h/1.1/Tue Nov 30 20:04:24 2004//
+/Whetstone.cxx/1.3/Fri May  4 11:11:50 2007//
+/Whetstone.h/1.3/Fri May  4 11:11:50 2007//
+/XMLBufferReader.cxx/1.1/Fri Jun 30 14:46:04 2006//
+/XMLBufferReader.h/1.1/Fri Jun 30 14:46:04 2006//
+/XMLIniIO.cxx/1.3/Mon Mar  5 23:04:56 2007//
+/XMLIniIO.h/1.2/Mon Mar  5 23:04:56 2007//
+/XMLReader.cxx/1.2/Mon Dec 18 20:54:06 2006//
+/XMLReader.h/1.1/Tue Nov 30 20:04:24 2004//
+/XMLWriter.cxx/1.1/Tue Nov 30 20:04:24 2004//
+/XMLWriter.h/1.1/Tue Nov 30 20:04:24 2004//
+D/CondorWatcher////
+D/Flu////
+D/KWStyle////
+D/Zip////

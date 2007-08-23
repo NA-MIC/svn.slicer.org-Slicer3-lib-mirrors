@@ -1,0 +1,91 @@
+#-----------------------------------------------------------------------------
+#
+# BatchMakeConfig.cmake - CMake configuration file for external projects.
+#
+# This file is configured by BatchMake and used by the UseBatchMake.cmake 
+# module to load BatchMake's settings for an external project.
+
+# The BatchMake version number.
+SET(BatchMake_VERSION_MAJOR "@BatchMake_VERSION_MAJOR@")
+SET(BatchMake_VERSION_MINOR "@BatchMake_VERSION_MINOR@")
+SET(BatchMake_VERSION_PATCH "@BatchMake_VERSION_PATCH@")
+
+# The libraries.
+SET(BatchMake_LIBRARIES "@BatchMake_LIBRARIES@")
+
+# The CMake macros dir.
+SET(BatchMake_CMAKE_DIR "@BatchMake_CMAKE_DIR_CONFIG@")
+
+# The configuration options.
+SET(BatchMake_BUILD_SHARED_LIBS "@BUILD_SHARED_LIBS@")
+SET(BatchMake_DASHBOARD_SUPPORT "@DASHBOARD_SUPPORT@")
+SET(BatchMake_GRID_SUPPORT "@GRID_SUPPORT@")
+
+# The C and C++ flags added to the cmake-configured flags.
+SET(BatchMake_REQUIRED_C_FLAGS 
+  "@BatchMake_REQUIRED_C_FLAGS@")
+SET(BatchMake_REQUIRED_CXX_FLAGS 
+  "@BatchMake_REQUIRED_CXX_FLAGS@")
+SET(BatchMake_REQUIRED_EXE_LINKER_FLAGS 
+  "@BatchMake_REQUIRED_EXE_LINKER_FLAGS@")
+SET(BatchMake_REQUIRED_SHARED_LINKER_FLAGS 
+  "@BatchMake_REQUIRED_SHARED_LINKER_FLAGS@")
+SET(BatchMake_REQUIRED_MODULE_LINKER_FLAGS 
+  "@BatchMake_REQUIRED_MODULE_LINKER_FLAGS@")
+
+# The "use" file.
+SET(BatchMake_USE_FILE "@BatchMake_USE_FILE_CONFIG@")
+
+# The build settings file.
+SET(BatchMake_BUILD_SETTINGS_FILE "@BatchMake_BUILD_SETTINGS_FILE_CONFIG@")
+
+# The library directories.
+SET(BatchMake_LIBRARY_DIRS "@BatchMake_LIBRARY_DIRS_CONFIG@")
+
+# The runtime directories.
+# Note that if BatchMake_CONFIGURATION_TYPES is set (see below) then
+# these directories will be the parent directories under which there will
+# be a directory of runtime binaries for each configuration type.
+SET(BatchMake_RUNTIME_DIRS "@BatchMake_RUNTIME_DIRS_CONFIG@")
+
+# The include directories.
+SET(BatchMake_INCLUDE_DIRS "@BatchMake_INCLUDE_DIRS_CONFIG@")
+
+# The library dependencies file.
+IF(NOT BatchMake_NO_LIBRARY_DEPENDS AND
+    EXISTS "@BatchMake_LIBRARY_DEPENDS_FILE@")
+  INCLUDE("@BatchMake_LIBRARY_DEPENDS_FILE@")
+ENDIF(NOT BatchMake_NO_LIBRARY_DEPENDS AND
+  EXISTS "@BatchMake_LIBRARY_DEPENDS_FILE@")
+
+# The ITK options.
+SET(BatchMake_ITK_DIR "@BatchMake_ITK_DIR_CONFIG@")
+
+# The FLTK options.
+SET(BatchMake_USE_FLTK "@USE_FLTK@")
+SET(BatchMake_FLTK_DIR "@BatchMake_FLTK_DIR_CONFIG@")
+
+# Utilities
+SET(BatchMake_GET_CPU_INFO_EXE "@BatchMake_GET_CPU_INFO_EXE_CONFIG@")
+SET(BatchMake_GET_CPU_SPEED_EXE "@BatchMake_GET_CPU_SPEED_EXE_CONFIG@")
+SET(BatchMake_GET_MEMORY_INFO_EXE "@BatchMake_GET_MEMORY_INFO_EXE_CONFIG@")
+SET(BatchMake_CONDOR_WATCHER_TOOL_EXE 
+    "@BatchMake_CONDOR_WATCHER_TOOL_EXE_CONFIG@")
+SET(BatchMake_GRID_SEND_EXE "@BatchMake_GRID_SEND_EXE_CONFIG@")
+SET(BatchMake_GRID_STORE_EXE "@BatchMake_GRID_STORE_EXE_CONFIG@")
+SET(BatchMake_SLICE_EXTRACTOR_EXE "@BatchMake_SLICE_EXTRACTOR_EXE_CONFIG@")
+
+# An install tree always provides one build configuration.
+# A build tree may provide either one or multiple build
+# configurations depending on the CMake generator used. Since
+# this project can be used either from a build tree or an install tree it
+# is useful for outside projects to know the configurations available.
+# If this BatchMakeConfig.cmake is in an install tree
+# BatchMake_CONFIGURATION_TYPES will be empty and BatchMake_BUILD_TYPE
+# will be set to the value of CMAKE_BUILD_TYPE used to build
+# BatchMake. If BatchMakeConfig.cmake is in a build tree
+# then BatchMake_CONFIGURATION_TYPES and BatchMake_BUILD_TYPE will
+# have values matching CMAKE_CONFIGURATION_TYPES and CMAKE_BUILD_TYPE
+# for that build tree (only one will ever be set).
+SET(BatchMake_CONFIGURATION_TYPES @BatchMake_CONFIGURATION_TYPES_CONFIG@)
+SET(BatchMake_BUILD_TYPE @BatchMake_BUILD_TYPE_CONFIG@)

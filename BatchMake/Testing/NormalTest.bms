@@ -1,0 +1,9 @@
+set(value
+ param1
+ param2
+)
+echo('Test Program: $value')
+getparam(param1 $value 0)
+getparam(param2 $value 1)
+echo('Parameter 1: $param1')
+echo('Parameter 2: $param2')
