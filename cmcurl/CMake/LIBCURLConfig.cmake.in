@@ -1,0 +1,50 @@
+#-----------------------------------------------------------------------------
+#
+# LIBCURLConfig.cmake - CMake configuration file for external projects.
+#
+# This file is configured by LIBCURL and used by the UseLIBCURL.cmake 
+# module to load LIBCURL's settings for an external project.
+
+SET(LIBCURL_SOURCE_DIR "@LIBCURL_SOURCE_DIR@")
+SET(LIBCURL_BINARY_DIR "@LIBCURL_BINARY_DIR@")
+
+# The LIBCURL version number.
+SET(LIBCURL_VERSION "@VERSION@")
+
+# The libraries.
+SET(LIBCURL_LIBRARIES "@LIBCURL_LIBRARIES_CONFIG@")
+
+# The configuration options.
+SET(LIBCURL_BUILD_SHARED_LIBS "@BUILD_SHARED_LIBS@")
+
+# The "use" file.
+SET(LIBCURL_USE_FILE "@LIBCURL_USE_FILE_CONFIG@")
+
+# The library directories.
+SET(LIBCURL_LIBRARY_DIRS "@LIBCURL_LIBRARY_DIRS_CONFIG@")
+
+# The runtime directories.
+# Note that if LIBCURL_CONFIGURATION_TYPES is set (see below) then
+# these directories will be the parent directories under which there will
+# be a directory of runtime binaries for each configuration type.
+SET(LIBCURL_RUNTIME_DIRS "@LIBCURL_RUNTIME_DIRS_CONFIG@")
+
+# The include directories.
+SET(LIBCURL_INCLUDE_DIRS "@LIBCURL_INCLUDE_DIRS_CONFIG@")
+
+# An install tree always provides one build configuration.
+# A build tree may provide either one or multiple build
+# configurations depending on the CMake generator used. Since
+# this project can be used either from a build tree or an install tree it
+# is useful for outside projects to know the configurations available.
+# If this LIBCURLConfig.cmake is in an install tree
+# LIBCURL_CONFIGURATION_TYPES will be empty and LIBCURL_BUILD_TYPE
+# will be set to the value of CMAKE_BUILD_TYPE used to build
+# LIBCURL. If LIBCURLConfig.cmake is in a build tree
+# then LIBCURL_CONFIGURATION_TYPES and LIBCURL_BUILD_TYPE will
+# have values matching CMAKE_CONFIGURATION_TYPES and CMAKE_BUILD_TYPE
+# for that build tree (only one will ever be set).
+
+SET(LIBCURL_CONFIGURATION_TYPES @LIBCURL_CONFIGURATION_TYPES_CONFIG@)
+
+SET(LIBCURL_BUILD_TYPE @LIBCURL_BUILD_TYPE_CONFIG@)
