@@ -186,7 +186,7 @@ INSTALL(FILES ${BatchMake_BINARY_DIR}/bmConfigure.h
 INSTALL(FILES CMakeLists.txt Copyright.txt ReadMe.txt DartConfig.cmake
   DESTINATION source)
 
-FILE(GLOB IMAGES Images/*.*)
+FILE(GLOB IMAGES Images/?*.*)
 INSTALL(FILES ${IMAGES} DESTINATION source/Images)
 
 #-----------------------------------------------------------------------------
