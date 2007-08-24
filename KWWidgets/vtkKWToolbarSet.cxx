@@ -26,11 +26,12 @@
 #include <vtksys/stl/list>
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/stl/algorithm>
+#include <vtksys/ios/sstream> 
 
 //----------------------------------------------------------------------------
 
 vtkStandardNewMacro(vtkKWToolbarSet);
-vtkCxxRevisionMacro(vtkKWToolbarSet, "$Revision: 1.41 $");
+vtkCxxRevisionMacro(vtkKWToolbarSet, "$Revision: 1.44 $");
 
 //----------------------------------------------------------------------------
 class vtkKWToolbarSetInternals
@@ -230,29 +231,25 @@ void vtkKWToolbarSet::Pack()
 
         if (!this->Internals->PreviousPackInfo.empty())
           {
-          ostrstream master, previous_slave, next_slave;
+          vtksys_ios::ostringstream master, previous_slave, next_slave;
           
           vtkKWTkUtilities::GetMasterInPack(this, master);
-          master << ends;
 
           vtkKWTkUtilities::GetPreviousAndNextSlaveInPack(
             this->GetApplication()->GetMainInterp(),
-            master.str(), this->GetWidgetName(), previous_slave, next_slave);
-          previous_slave << ends;
-          next_slave << ends;
-          if (*previous_slave.str())
+            master.str().c_str(), this->GetWidgetName(), previous_slave, next_slave);
+          const char* tmp_prev = previous_slave.str().c_str();
+          const char* tmp_next = next_slave.str().c_str();
+          if (*tmp_prev)
             {
             this->Internals->PreviousPackInfo += " -after ";
             this->Internals->PreviousPackInfo += previous_slave.str();
             }
-          else if (*next_slave.str())
+          else if (*tmp_next)
             {
             this->Internals->PreviousPackInfo += " -before ";
-            this->Internals->PreviousPackInfo += next_slave.str();
+            this->Internals->PreviousPackInfo += next_slave.str().c_str();
             }
-          master.rdbuf()->freeze(0);
-          previous_slave.rdbuf()->freeze(0);
-          next_slave.rdbuf()->freeze(0);
           }
         this->Script("pack forget %s", this->GetWidgetName());
         this->Internals->PreviousGridInfo.assign("");
@@ -359,7 +356,7 @@ void vtkKWToolbarSet::PackToolbars()
     return;
     }
 
-  ostrstream tk_cmd;
+  vtksys_ios::ostringstream tk_cmd;
 
   tk_cmd << "pack " << this->ToolbarsFrame->GetWidgetName() 
          << " -side top -fill both -expand y -padx 0 -pady 0" << endl;
@@ -427,9 +424,7 @@ void vtkKWToolbarSet::PackToolbars()
       }
     }
 
-  tk_cmd << ends;
-  this->Script(tk_cmd.str());
-  tk_cmd.rdbuf()->freeze(0);
+  this->Script(tk_cmd.str().c_str());
 }
 
 //----------------------------------------------------------------------------
