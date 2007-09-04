@@ -3,7 +3,7 @@
   Program:   BatchMake
   Module:    $RCSfile: bmSliceExtractor.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/08/16 20:26:51 $
+  Date:      $Date: 2007/09/03 22:03:27 $
   Version:   $Revision: 1.1 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.

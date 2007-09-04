@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: Whetstone.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/04 11:11:49 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/09/03 22:03:27 $
+  Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.

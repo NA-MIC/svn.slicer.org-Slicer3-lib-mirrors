@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmScriptActionManager.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/07/26 21:48:50 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2007/08/28 14:15:01 $
+  Version:   $Revision: 1.17 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -42,6 +42,8 @@
 #include "bmScriptGetCurrentDateTimeAction.h"
 #include "bmScriptGlobAction.h"
 #include "bmScriptGetFilenameAction.h"
+#include "bmScriptConvertImageAction.h"
+#include "bmScriptFileExistsAction.h"
 
 #ifdef BM_GRID
   #include "bmScriptGridSingleNodeAction.h"
@@ -243,6 +245,8 @@ std::vector<MString> ScriptActionManager::GetKeywordList()
   BM_NEWKEYWORD(_list, GridExecutableDirectory);
   BM_NEWKEYWORD(_list, Glob);
   BM_NEWKEYWORD(_list, GetFilename);
+  BM_NEWKEYWORD(_list, ConvertImage);
+  BM_NEWKEYWORD(_list, FileExists);
   return _list;
 }
 
@@ -277,6 +281,8 @@ ScriptAction* ScriptActionManager::CreateAction(MString option)
   BM_NEWACTION(option, GetCurrentDateTime);
   BM_NEWACTION(option, Glob);
   BM_NEWACTION(option, GetFilename);
+  BM_NEWACTION(option, ConvertImage);
+  BM_NEWACTION(option, FileExists);
 
 #ifdef BM_GRID
   BM_NEWACTION(option, GridDataHost);

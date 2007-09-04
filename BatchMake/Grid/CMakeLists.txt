@@ -1,3 +1,6 @@
+#------------------------------------------------------------------
+# Source
+
 SET(BatchMakeGrid_HDRS
   bmGrid.h
   bmScriptDataDirectoryAction.h
@@ -9,7 +12,7 @@ SET(BatchMakeGrid_HDRS
   bmScriptGridMaxNodesAction.h
   bmScriptGridTempDirectoryAction.h
   bmScriptGridExecutableDirectoryAction.h
-)
+  )
 
 SET(BatchMakeGrid_SRCS
   bmGrid.cxx
@@ -25,24 +28,31 @@ SET(BatchMakeGrid_SRCS
   bmScriptGridMaxNodesAction.cxx
   bmScriptGridTempDirectoryAction.cxx
   bmScriptGridExecutableDirectoryAction.cxx
-)
+  )
 
 IF(DASHBOARD_SUPPORT)
   SET(BatchMakeGrid_SRCS
-  ${BatchMakeGrid_SRCS}
-  bmScriptSetIdealOutputActionGrid.cxx
-  bmScriptAddMethodIdealOutputActionGrid.cxx
-  bmScriptCreateExperimentActionGrid.cxx
-  bmScriptAddMethodOutputActionGrid.cxx
-  bmScriptAddMethodInputActionGrid.cxx
-  bmScriptDashboardSendActionGrid.cxx
-  bmScriptCreateMethodActionGrid.cxx
-  )
+    ${BatchMakeGrid_SRCS}
+    bmScriptSetIdealOutputActionGrid.cxx
+    bmScriptAddMethodIdealOutputActionGrid.cxx
+    bmScriptCreateExperimentActionGrid.cxx
+    bmScriptAddMethodOutputActionGrid.cxx
+    bmScriptAddMethodInputActionGrid.cxx
+    bmScriptDashboardSendActionGrid.cxx
+    bmScriptCreateMethodActionGrid.cxx
+    )
 ENDIF(DASHBOARD_SUPPORT)
+
+
+#------------------------------------------------------------------
+# Build BatchMakeGrid library
 
 ADD_LIBRARY(BatchMakeGrid ${BatchMakeGrid_SRCS})
 
+
+#------------------------------------------------------------------
 # Installation file
+
 INSTALL(TARGETS BatchMakeGrid 
         LIBRARY DESTINATION lib/BatchMake
         ARCHIVE DESTINATION lib/BatchMake)

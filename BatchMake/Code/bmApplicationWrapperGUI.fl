@@ -7,9 +7,9 @@ class ApplicationWrapperGUI {open : {bm::ApplicationWrapperGUIBase}
   Function {make_window()} {open
   } {
     Fl_Window g_Applicationwrappergui {
-      label {BatchMake - Application Wrapper} open selected
-      xywh {516 127 559 370} type Double resizable
-      code0 {\#include "bmApplicationWrapperGUIBase.h"} visible
+      label {BatchMake - Application Wrapper} open
+      xywh {259 168 559 370} type Double resizable
+      code0 {\#include "bmApplicationWrapperGUIBase.h"} modal visible
     } {
       Fl_Button g_selectpath {
         label {Browse && run...}
@@ -66,9 +66,17 @@ class ApplicationWrapperGUI {open : {bm::ApplicationWrapperGUIBase}
           label {Name:}
           xywh {115 165 155 20} labelsize 12 textsize 12
         }
-        Fl_Check_Button g_external {
-          label {External Data}
-          xywh {365 140 100 20} down_box DOWN_BOX labelsize 12
+        Fl_Group {} {open
+          xywh {362 135 130 60}
+        } {
+          Fl_Round_Button g_outputData {
+            label {Output Data} selected
+            xywh {377 163 100 15} type Radio down_box ROUND_DOWN_BOX labelsize 12
+          }
+          Fl_Round_Button g_inputData {
+            label {Input Data}
+            xywh {377 140 100 20} type Radio down_box ROUND_DOWN_BOX labelsize 12
+          }
         }
       }
       Fl_Choice g_parameters {

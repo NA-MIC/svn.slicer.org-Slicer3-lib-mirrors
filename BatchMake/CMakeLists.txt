@@ -26,9 +26,10 @@ MARK_AS_ADVANCED(CMAKE_BACKWARDS_COMPATIBILITY)
 
 #-----------------------------------------------------------------------------
 # BatchMake version number.  An even minor number corresponds to releases.
+
 SET(BatchMake_VERSION_MAJOR "1")
 SET(BatchMake_VERSION_MINOR "0")
-SET(BatchMake_VERSION_PATCH "3")
+SET(BatchMake_VERSION_PATCH "4")
 
 # Version string should not include patch level.  The major.minor is
 # enough to distinguish available features of the toolkit.
@@ -39,6 +40,7 @@ SET(BatchMake_EXTENDED_VERSION_STRING
 
 #-----------------------------------------------------------------------------
 # Disable MSVC 8 warnings
+
 IF(WIN32)
   OPTION(DISABLE_MSVC8_DEPRECATED_WARNINGS 
     "Disable Visual Studio 8 deprecated warnings" ON)
@@ -50,6 +52,7 @@ ENDIF(WIN32)
 
 #-----------------------------------------------------------------------------
 # We need ITK
+
 FIND_PACKAGE(ITK REQUIRED)
 IF(ITK_FOUND)
   INCLUDE(${USE_ITK_FILE}) 
@@ -57,44 +60,164 @@ ENDIF(ITK_FOUND)
 LINK_LIBRARIES(${ITK_LIBRARIES})
 
 SET(BUILD_SHARED_LIBS ${ITK_BUILD_SHARED})
+
 SET(BatchMake_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 
 #-----------------------------------------------------------------------------
-# We support FLTK
+# Check for support FLTK
+
 OPTION(USE_FLTK "Add FLTK GUI support to BatchMake" OFF) 
 IF(USE_FLTK)
   FIND_PACKAGE(FLTK)
   IF(FLTK_FOUND)
     INCLUDE_DIRECTORIES(${FLTK_INCLUDE_DIR})
-    IF(CYGWIN)
-      LINK_LIBRARIES(ole32 uuid comctl32 wsock32 supc++ -lm -lgdi32)
-    ENDIF(CYGWIN)
   ENDIF(FLTK_FOUND)
   ADD_DEFINITIONS(-DBM_USE_FLTK)
 ENDIF(USE_FLTK)
 
 #-----------------------------------------------------------------------------
-# Validation dashboard Support
-OPTION(DASHBOARD_SUPPORT "Validation Dashboard Support" OFF)
-IF(DASHBOARD_SUPPORT)
-  ADD_DEFINITIONS(-DBM_DASHBOARD)
-  INCLUDE_DIRECTORIES(${BatchMake_SOURCE_DIR}/Dashboard)
-  SET(BatchMake_LIBRARIES ${BatchMake_LIBRARIES} BatchMakeDashboard)
-  SUBDIRS(Dashboard)
-ENDIF(DASHBOARD_SUPPORT)
+# Display the splashscreen or not
+
+OPTION(USE_SPLASHSCREEN "Display the splashscreen" ON)
+IF(USE_SPLASHSCREEN)
+ ADD_DEFINITIONS(-DBM_SPLASHSCREEN)
+ENDIF(USE_SPLASHSCREEN)
+
+#-----------------------------------------------------------------------------
+# Setup Paths
+
+IF(BatchMake_INCLUDE_DIR)
+  SET(BatchMake_INCLUDE_PATH
+    ${BatchMake_INCLUDE_DIR}/Code
+    ${BatchMake_INCLUDE_DIR}/Utilities
+    ${BatchMake_INCLUDE_DIR}/Utilities/Zip
+    )
+ENDIF(BatchMake_INCLUDE_DIR)
+
+SET(BatchMake_INCLUDE_PATH
+  ${BatchMake_INCLUDE_PATH}
+  ${BatchMake_SOURCE_DIR}/Code
+  ${BatchMake_SOURCE_DIR}/Utilities
+  ${BatchMake_BINARY_DIR}
+  ${BatchMake_BINARY_DIR}/Code
+  )
+
+IF(USE_FLTK)
+  IF(BatchMake_INCLUDE_DIR)
+    SET(BatchMake_INCLUDE_PATH
+      ${BatchMake_INCLUDE_PATH}
+      ${BatchMake_INCLUDE_DIR}/Utilities/Flu
+      )
+  ENDIF(BatchMake_INCLUDE_DIR)
+  SET(BatchMake_INCLUDE_PATH
+    ${BatchMake_INCLUDE_PATH}
+    ${BatchMake_SOURCE_DIR}/Utilities/Flu
+    )
+ENDIF(USE_FLTK)
+
+INCLUDE_DIRECTORIES(${BatchMake_INCLUDE_PATH})
+
+#-----------------------------------------------------------------------------
+# If this is the install version of BathMake we look for the include files
+
+FIND_PATH(BatchMake_INCLUDE_DIR 
+  Code/ApplicationWrapper.h 
+  ${BatchMake_SOURCE_DIR}/../include/BatchMake)
+MARK_AS_ADVANCED(FORCE BatchMake_INCLUDE_DIR)
+
+
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+#Compile the Utilities
+
+SUBDIRS( Utilities )
+
+#-----------------------------------------------------------------------------
+#Compile the main libraries
+
+SUBDIRS( Code )
+
+SET(BatchMake_LIBRARIES
+  BatchMakeLib
+  BatchMakeUtilities
+  )
 
 #-----------------------------------------------------------------------------
 # Grid Support
+
 OPTION(GRID_SUPPORT "Grid Support" OFF)
 IF(GRID_SUPPORT)
+
   ADD_DEFINITIONS(-DBM_GRID)
+
+  IF(BatchMake_INCLUDE_DIR)
+    SET(BatchMake_INCLUDE_PATH
+      ${BatchMake_INCLUDE_PATH}
+      ${BatchMake_INCLUDE_DIR}/Grid
+      )
+    INCLUDE_DIRECTORIES(${BatchMake_INCLUDE_DIR}/Grid)
+  ENDIF(BatchMake_INCLUDE_DIR)
+  SET(BatchMake_INCLUDE_PATH
+    ${BatchMake_INCLUDE_PATH}
+    ${BatchMake_SOURCE_DIR}/Grid
+    )
   INCLUDE_DIRECTORIES(${BatchMake_SOURCE_DIR}/Grid)
-  SET(BatchMake_LIBRARIES ${BatchMake_LIBRARIES} BatchMakeGrid)
+
+  IF(USE_FLTK)
+    IF(BatchMake_INCLUDE_DIR)
+      SET(BatchMake_INCLUDE_PATH
+        ${BatchMake_INCLUDE_PATH}
+        ${BatchMake_INCLUDE_DIR}/Utilities/CondorWatcher
+        )
+      INCLUDE_DIRECTORIES(${BatchMake_INCLUDE_DIR}/Utilities/CondorWatcher)
+    ENDIF(BatchMake_INCLUDE_DIR)
+    SET(BatchMake_INCLUDE_PATH
+      ${BatchMake_INCLUDE_PATH}
+      ${BatchMake_SOURCE_DIR}/Utilities/CondorWatcher
+      ${BatchMake_BINARY_DIR}/Utilities/CondorWatcher
+      )
+    INCLUDE_DIRECTORIES(${BatchMake_SOURCE_DIR}/Utilities/CondorWatcher)
+    INCLUDE_DIRECTORIES(${BatchMake_BINARY_DIR}/Utilities/CondorWatcher)
+  ENDIF(USE_FLTK)
+
   SUBDIRS(Grid)
+
+  SET(BatchMake_LIBRARIES ${BatchMake_LIBRARIES} BatchMakeGrid)
+
 ENDIF(GRID_SUPPORT)
 
 #-----------------------------------------------------------------------------
-# Testing
+# Build BatchBoard Support
+
+OPTION(DASHBOARD_SUPPORT "Validation Dashboard Support" OFF)
+IF(DASHBOARD_SUPPORT)
+
+  ADD_DEFINITIONS(-DBM_DASHBOARD)
+
+  IF(BatchMake_INCLUDE_DIR)
+    SET(BatchMake_INCLUDE_PATH
+      ${BatchMake_INCLUDE_PATH}
+      ${BatchMake_INCLUDE_DIR}/Dashboard
+      )
+    INCLUDE_DIRECTORIES(${BatchMake_INCLUDE_DIR}/Grid)
+  ENDIF(BatchMake_INCLUDE_DIR)
+  SET(BatchMake_INCLUDE_PATH
+    ${BatchMake_INCLUDE_PATH}
+    ${BatchMake_SOURCE_DIR}/Dashboard
+    )
+  INCLUDE_DIRECTORIES(${BatchMake_SOURCE_DIR}/Dashboard)
+
+  SUBDIRS(Dashboard)
+
+  SET(BatchMake_LIBRARIES ${BatchMake_LIBRARIES} BatchMakeDashboard)
+
+ENDIF(DASHBOARD_SUPPORT)
+
+#-----------------------------------------------------------------------------
+# Build Testing
+
+SUBDIRS( Testing/Code )
+
 MARK_AS_ADVANCED(DART_ROOT)
 INCLUDE(Dart)
 IF(NOT DART_ROOT) 
@@ -102,78 +225,33 @@ IF(NOT DART_ROOT)
 ENDIF(NOT DART_ROOT)
 
 #-----------------------------------------------------------------------------
-# Display the splashscreen or not
-OPTION(USE_SPLASHSCREEN "Display the splashscreen" ON)
-IF(USE_SPLASHSCREEN)
- ADD_DEFINITIONS(-DBM_SPLASHSCREEN)
-ENDIF(USE_SPLASHSCREEN)
+# Build the Applications
+
+SUBDIRS(Applications)
 
 #-----------------------------------------------------------------------------
-# If this is the install version of BathMake we look for the include files
-FIND_PATH(BatchMake_INCLUDE_DIR 
-  Code/ApplicationWrapper.h 
-  ${BatchMake_SOURCE_DIR}/../include/BatchMake)
-MARK_AS_ADVANCED(FORCE BatchMake_INCLUDE_DIR)
+# Build the Examples
 
-IF(BatchMake_INCLUDE_DIR)
-  SET(BatchMake_INCLUDE_PATH
-    ${BatchMake_INCLUDE_DIR}/Code
-    ${BatchMake_INCLUDE_DIR}/Grid
-    ${BatchMake_INCLUDE_DIR}/Utilities
-    ${BatchMake_INCLUDE_DIR}/Utilities/Flu
-    ${BatchMake_INCLUDE_DIR}/Utilities/Zip
-    ${BatchMake_INCLUDE_DIR}/Utilities/CondorWatcher
-    ${BatchMake_INCLUDE_DIR}/Dashboard
-    ${BatchMake_INCLUDE_DIR}/Code)
-ENDIF(BatchMake_INCLUDE_DIR)
-
-SET(BatchMake_INCLUDE_PATH
-  ${BatchMake_INCLUDE_PATH}
-  ${BatchMake_SOURCE_DIR}/Code
-  ${BatchMake_SOURCE_DIR}/Utilities
-  ${BatchMake_SOURCE_DIR}/Utilities/Flu
-  ${BatchMake_SOURCE_DIR}/Utilities/CondorWatcher
-  ${BatchMake_BINARY_DIR}/Utilities/CondorWatcher
-  ${BatchMake_SOURCE_DIR}/Dashboard
-  ${BatchMake_BINARY_DIR}
-  ${BatchMake_BINARY_DIR}/Code
-)
-
-INCLUDE_DIRECTORIES(${BatchMake_INCLUDE_PATH})
-
-#-----------------------------------------------------------------------------
-# Build the examples
 OPTION(BUILD_EXAMPLES "BatchMake Examples" ON)
 IF(BUILD_EXAMPLES)
   SUBDIRS(Examples)
 ENDIF(BUILD_EXAMPLES)
 
 #-----------------------------------------------------------------------------
-#Compile the main libraries
-SUBDIRS(
-  Utilities
-  Code
-  Testing/Code
-  )
+# Doc
+SUBDIRS(Documentation/Doxygen)
 
-SET(BatchMake_LIBRARIES
-  ${BatchMake_LIBRARIES}
-  BatchMakeLib
-  BatchMakeUtilities
-  )
 
 #-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # Use KWStyle for checking the coding style
+
 OPTION(BatchMake_USE_KWSTYLE 
   "Run KWStyle in order to check for violations of the coding standard." OFF)
 MARK_AS_ADVANCED(BatchMake_USE_KWSTYLE)
 IF(BatchMake_USE_KWSTYLE)
   SUBDIRS(Utilities/KWStyle)
 ENDIF(BatchMake_USE_KWSTYLE)
-
-#-----------------------------------------------------------------------------
-# Doc
-SUBDIRS(Documentation/Doxygen)
 
 #-----------------------------------------------------------------------------
 # Configure files with settings for use by the build.
@@ -223,3 +301,4 @@ INCLUDE(CPack)
 #-----------------------------------------------------------------------------
 # Export the configuration files
 SUBDIRS(CMake/ExportConfiguration)
+

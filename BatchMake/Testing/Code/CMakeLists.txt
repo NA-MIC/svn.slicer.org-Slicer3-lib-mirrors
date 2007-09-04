@@ -1,20 +1,24 @@
+#--------------------------------------------------------------------
+# Source
+
 SET(BATCHMAKE_TESTS ${CXX_TEST_PATH}/BatchMakeTests)
 
 ADD_EXECUTABLE(BatchMakeMemoryTest BatchMakeMemoryTest.cxx)
 
 IF(DASHBOARD_SUPPORT)
-SET(BatchMakeTest_SRCS
-bmDashboardSendTest.cxx
-bmSystemInfoTest.cxx
-)
 
-ADD_TEST(DashboardSendTest ${BATCHMAKE_TESTS} DashboardSendTest)
-ADD_TEST(SystemInfoTest ${BATCHMAKE_TESTS} SystemInfoTest)
+  SET(BatchMakeTest_SRCS
+    bmDashboardSendTest.cxx
+    bmSystemInfoTest.cxx
+    )
 
-ADD_EXECUTABLE(BatchMakeTests BatchMakeTests.cxx ${BatchMakeTest_SRCS})
-TARGET_LINK_LIBRARIES(BatchMakeTests BatchMakeDashboard BatchMakeUtilities)
+  ADD_TEST(DashboardSendTest ${BATCHMAKE_TESTS} DashboardSendTest)
+  ADD_TEST(SystemInfoTest ${BATCHMAKE_TESTS} SystemInfoTest)
 
-ADD_DEPENDENCIES(BatchMakeTests BatchMakeDashboard)
+  ADD_EXECUTABLE(BatchMakeTests BatchMakeTests.cxx ${BatchMakeTest_SRCS})
+  TARGET_LINK_LIBRARIES(BatchMakeTests ${BatchMake_LIBRARIES})
+
+  ADD_DEPENDENCIES(BatchMakeTests BatchMakeLib BatchMakeDashboard)
 
 ENDIF(DASHBOARD_SUPPORT)
 

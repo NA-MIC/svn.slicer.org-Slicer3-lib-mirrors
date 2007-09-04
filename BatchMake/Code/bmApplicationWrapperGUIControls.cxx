@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmApplicationWrapperGUIControls.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/07 21:35:32 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/08/29 12:37:44 $
+  Version:   $Revision: 1.2 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -51,7 +51,8 @@ ApplicationWrapperGUIControls::ApplicationWrapperGUIControls():ApplicationWrappe
   g_delete->hide();
 
   g_optional->value(0);
-  g_external->value(0);
+  g_inputData->value(0);
+  g_outputData->value(0);
   g_moduleversion->value("1.0");
   m_Applicationwrapper = new ApplicationWrapper();
 
@@ -172,7 +173,8 @@ void ApplicationWrapperGUIControls::OnSelectParameters()
     g_value->value("");
     g_name->value("");
     g_optional->value(0);
-    g_external->value(0);
+    g_inputData->value(0);
+    g_outputData->value(0);
     g_enumlist->clear();
     g_enumlist->add("New...");
     g_enumlist->redraw();
@@ -193,14 +195,24 @@ void ApplicationWrapperGUIControls::OnSelectParameters()
       g_type->value(m_param->GetType());
       g_parent->value(m_param->GetParent());
       g_optional->value(m_param->GetOptional());
-      if(m_param->GetExternalData()>0)
+      // input data is 1 and output data is 2
+      if(m_param->GetExternalData()==1)
         {
-        g_external->value(true);
+        g_inputData->value(true);
         }
       else
         {
-        g_external->value(false);
+        g_inputData->value(false);
         }
+      if(m_param->GetExternalData()==2)
+        {
+        g_outputData->value(true);
+        }
+      else
+        {
+        g_outputData->value(false);
+        }
+
       g_enumlist->clear();
       g_enumlist->add("New...");
       for (unsigned int i=0;i<m_param->GetEnum().size();i++)
@@ -228,7 +240,19 @@ void ApplicationWrapperGUIControls::OnAddParameters()
     m_param.SetValue(MString(g_value->value()));
     m_param.SetParent(g_parent->value());
     m_param.SetOptional(MString(g_optional->value()).toBool());
-    m_param.SetExternalData(MString(g_external->value()).toBool());
+    if(g_inputData->value()>0)
+      {
+      m_param.SetExternalData(1);
+      }
+    else if(g_outputData->value()>0)
+      {
+      m_param.SetExternalData(2);
+      }
+    else
+      {
+      m_param.SetExternalData(0);
+      }
+
     std::vector<MString> m_list;
     if (g_type->value() == 5)
     {
@@ -268,7 +292,20 @@ void ApplicationWrapperGUIControls::OnAddParameters()
     m_param->SetValue(MString(g_value->value()));
     m_param->SetParent(g_parent->value());
     m_param->SetOptional(MString(g_optional->value()).toBool());
-    m_param->SetExternalData(MString(g_external->value()).toBool());
+
+    // input data is 1 and output data is 2
+    if(g_inputData->value() > 0)
+      {
+      m_param->SetExternalData(1);
+      }
+    else if(g_outputData->value() > 0)
+      {
+      m_param->SetExternalData(2);
+      }
+    else
+      {
+      m_param->SetExternalData(0);
+      }
 
     std::vector<MString> m_list;
     if (g_type->value() == 5)
