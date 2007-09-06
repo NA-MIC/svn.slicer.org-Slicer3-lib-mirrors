@@ -89,7 +89,74 @@ SET(BatchMakeLib_SRCS
   bmScriptConvertImageAction.cxx
   bmScriptFileExistsAction.cxx
   )
-  
+
+#
+# Grid support
+#
+IF(GRID_SUPPORT)
+  SET(BatchMakeLib_SRCS
+    ${BatchMakeLib_SRCS}
+    Grid/bmGrid.cxx
+    Grid/bmScriptGridSingleNodeAction.cxx
+    Grid/bmScriptGridDataHostAction.cxx
+    Grid/bmScriptGridOutputHostAction.cxx
+    Grid/bmScriptOutputDirectoryAction.cxx
+    Grid/bmScriptDataDirectoryAction.cxx
+    Grid/bmScriptExtractSliceActionGrid.cxx
+    Grid/bmScriptRunActionGrid.cxx
+    Grid/bmScriptSetActionGrid.cxx
+    Grid/bmScriptGridSetGroupingAction.cxx
+    Grid/bmScriptGridMaxNodesAction.cxx
+    Grid/bmScriptGridTempDirectoryAction.cxx
+    Grid/bmScriptGridExecutableDirectoryAction.cxx  
+    )
+
+  IF(DASHBOARD_SUPPORT)
+    SET(BatchMakeLib_SRCS
+      ${BatchMakeLib_SRCS}
+      Grid/bmScriptSetIdealOutputActionGrid.cxx
+      Grid/bmScriptAddMethodIdealOutputActionGrid.cxx
+      Grid/bmScriptCreateExperimentActionGrid.cxx
+      Grid/bmScriptAddMethodOutputActionGrid.cxx
+      Grid/bmScriptAddMethodInputActionGrid.cxx
+      Grid/bmScriptDashboardSendActionGrid.cxx
+      Grid/bmScriptCreateMethodActionGrid.cxx
+      )
+  ENDIF(DASHBOARD_SUPPORT)
+
+ENDIF(GRID_SUPPORT)
+
+#
+# Dashboard support
+#
+IF(DASHBOARD_SUPPORT)
+  SET(BatchMakeLib_SRCS
+    ${BatchMakeLib_SRCS}   
+    Dashboard/bmScriptDbSendValueAction.cxx
+    Dashboard/bmScriptDbSendFileAction.cxx
+    Dashboard/bmScriptDbClearAction.cxx
+    Dashboard/bmScriptOpenTCPSocketAction.cxx
+    Dashboard/bmScriptSendTCPAction.cxx
+    Dashboard/bmScriptCloseTCPSocketAction.cxx
+    Dashboard/bmScriptAddMethodInputAction.cxx
+    Dashboard/bmScriptAddMethodIdealOutputAction.cxx
+    Dashboard/bmScriptSetIdealOutputAction.cxx
+    Dashboard/bmScriptDashboardHostAction.cxx
+    Dashboard/bmScriptDashboardUserAction.cxx
+    Dashboard/bmScriptDashboardKeyAction.cxx
+    Dashboard/bmScriptDashboardSendAction.cxx
+    Dashboard/bmScriptDashboardNotifyAction.cxx
+    Dashboard/bmScriptCreateExperimentAction.cxx
+    Dashboard/bmScriptCreateMethodAction.cxx
+    Dashboard/bmScriptCreateDashboardAction.cxx 
+    Dashboard/bmScriptCreateGraphAction.cxx
+    Dashboard/bmScriptAddMethodOutputAction.cxx  
+    Dashboard/bmScriptActionManagerDashboard.cxx
+    Dashboard/bmScriptAddDashboardLabelAction.cxx
+    Dashboard/bmDashboardSend.cxx
+    )
+ENDIF(DASHBOARD_SUPPORT)
+
 IF(USE_FLTK)
 
   SET(BatchMakeLib_HDRS
@@ -155,7 +222,28 @@ ELSE(USE_FLTK)
   ADD_LIBRARY(BatchMakeLib ${BatchMakeLib_SRCS})
 
 ENDIF(USE_FLTK)
+ 
+TARGET_LINK_LIBRARIES(BatchMakeLib BatchMakeUtilities)
 
+IF(DASHBOARD_SUPPORT)
+ IF(WIN32)
+  SET(BatchMakeDashboard_LIBS ws2_32)
+ ELSE(WIN32)
+  INCLUDE(${CMAKE_ROOT}/Modules/CheckLibraryExists.cmake)
+  CHECK_LIBRARY_EXISTS("c" gethostbyname "" NOT_NEED_LIBNSL)
+  IF(NOT NOT_NEED_LIBNSL)
+   CHECK_LIBRARY_EXISTS("nsl" gethostbyname "" HAVE_LIBNSL)
+  ENDIF(NOT NOT_NEED_LIBNSL)
+  IF(HAVE_LIBNSL)
+    SET(BatchMakeDashboard_LIBS
+      #socket
+      nsl
+      )
+  ENDIF(HAVE_LIBNSL)
+ ENDIF(WIN32)
+
+ TARGET_LINK_LIBRARIES(BatchMakeLib ${BatchMakeDashboard_LIBS})
+ENDIF(DASHBOARD_SUPPORT)
 
 # Installation file
 INSTALL(TARGETS BatchMakeLib

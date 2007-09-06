@@ -28,6 +28,7 @@ SET(BatchMakeUtilities_HDRS
   SliceExtractor.h
   SystemInfo.h
   Whetstone.h
+  HttpRequest.h
   )
 
 
@@ -41,6 +42,7 @@ SET(BatchMakeUtilities_SRCS
   XMLBufferReader.cxx
   SliceExtractor.cxx
   SystemInfo.cxx
+  HttpRequest.cxx
   )
 
 #---------------------------------------------------------------------

@@ -143,6 +143,29 @@ SET(BatchMake_LIBRARIES
   )
 
 #-----------------------------------------------------------------------------
+# Build BatchBoard Support
+
+OPTION(DASHBOARD_SUPPORT "Validation Dashboard Support" OFF)
+IF(DASHBOARD_SUPPORT)
+
+  ADD_DEFINITIONS(-DBM_DASHBOARD)
+
+  IF(BatchMake_INCLUDE_DIR)
+    SET(BatchMake_INCLUDE_PATH
+      ${BatchMake_INCLUDE_PATH}
+      ${BatchMake_INCLUDE_DIR}/Dashboard
+      )
+    INCLUDE_DIRECTORIES(${BatchMake_INCLUDE_DIR}/Grid)
+  ENDIF(BatchMake_INCLUDE_DIR)
+  SET(BatchMake_INCLUDE_PATH
+    ${BatchMake_INCLUDE_PATH}
+    ${BatchMake_SOURCE_DIR}/Code/Dashboard
+    )
+  INCLUDE_DIRECTORIES(${BatchMake_SOURCE_DIR}/Code/Dashboard)
+
+ENDIF(DASHBOARD_SUPPORT)
+
+#-----------------------------------------------------------------------------
 # Grid Support
 
 OPTION(GRID_SUPPORT "Grid Support" OFF)
@@ -159,9 +182,9 @@ IF(GRID_SUPPORT)
   ENDIF(BatchMake_INCLUDE_DIR)
   SET(BatchMake_INCLUDE_PATH
     ${BatchMake_INCLUDE_PATH}
-    ${BatchMake_SOURCE_DIR}/Grid
+    ${BatchMake_SOURCE_DIR}/Code/Grid
     )
-  INCLUDE_DIRECTORIES(${BatchMake_SOURCE_DIR}/Grid)
+  INCLUDE_DIRECTORIES(${BatchMake_SOURCE_DIR}/Code/Grid)
 
   IF(USE_FLTK)
     IF(BatchMake_INCLUDE_DIR)
@@ -180,38 +203,7 @@ IF(GRID_SUPPORT)
     INCLUDE_DIRECTORIES(${BatchMake_BINARY_DIR}/Utilities/CondorWatcher)
   ENDIF(USE_FLTK)
 
-  SUBDIRS(Grid)
-
-  SET(BatchMake_LIBRARIES ${BatchMake_LIBRARIES} BatchMakeGrid)
-
 ENDIF(GRID_SUPPORT)
-
-#-----------------------------------------------------------------------------
-# Build BatchBoard Support
-
-OPTION(DASHBOARD_SUPPORT "Validation Dashboard Support" OFF)
-IF(DASHBOARD_SUPPORT)
-
-  ADD_DEFINITIONS(-DBM_DASHBOARD)
-
-  IF(BatchMake_INCLUDE_DIR)
-    SET(BatchMake_INCLUDE_PATH
-      ${BatchMake_INCLUDE_PATH}
-      ${BatchMake_INCLUDE_DIR}/Dashboard
-      )
-    INCLUDE_DIRECTORIES(${BatchMake_INCLUDE_DIR}/Grid)
-  ENDIF(BatchMake_INCLUDE_DIR)
-  SET(BatchMake_INCLUDE_PATH
-    ${BatchMake_INCLUDE_PATH}
-    ${BatchMake_SOURCE_DIR}/Dashboard
-    )
-  INCLUDE_DIRECTORIES(${BatchMake_SOURCE_DIR}/Dashboard)
-
-  SUBDIRS(Dashboard)
-
-  SET(BatchMake_LIBRARIES ${BatchMake_LIBRARIES} BatchMakeDashboard)
-
-ENDIF(DASHBOARD_SUPPORT)
 
 #-----------------------------------------------------------------------------
 # Build Testing

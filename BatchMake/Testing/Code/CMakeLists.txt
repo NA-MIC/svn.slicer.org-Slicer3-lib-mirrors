@@ -18,7 +18,7 @@ IF(DASHBOARD_SUPPORT)
   ADD_EXECUTABLE(BatchMakeTests BatchMakeTests.cxx ${BatchMakeTest_SRCS})
   TARGET_LINK_LIBRARIES(BatchMakeTests ${BatchMake_LIBRARIES})
 
-  ADD_DEPENDENCIES(BatchMakeTests BatchMakeLib BatchMakeDashboard)
+  ADD_DEPENDENCIES(BatchMakeTests BatchMakeLib)
 
 ENDIF(DASHBOARD_SUPPORT)
 

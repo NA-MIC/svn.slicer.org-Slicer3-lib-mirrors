@@ -2,7 +2,6 @@ D/CondorWatcher////
 D/Flu////
 D/KWStyle////
 D/Zip////
-/CMakeLists.txt/1.22/Tue Sep  4 14:22:35 2007//
 /MString.cxx/1.10/Sun Aug 26 22:50:47 2007//
 /MString.h/1.8/Sun Aug 26 22:50:48 2007//
 /SliceExtractor.cxx/1.2/Sun Aug 26 22:50:47 2007//
@@ -21,3 +20,6 @@ D/Zip////
 /XMLReader.h/1.1/Sun Aug 26 22:50:48 2007//
 /XMLWriter.cxx/1.1/Sun Aug 26 22:50:47 2007//
 /XMLWriter.h/1.1/Sun Aug 26 22:50:47 2007//
+/CMakeLists.txt/1.23/Thu Sep  6 14:20:56 2007//
+/HttpRequest.cxx/1.1/Thu Sep  6 12:35:13 2007//
+/HttpRequest.h/1.1/Thu Sep  6 12:35:13 2007//
