@@ -49,7 +49,7 @@
 #endif
 
 #include "urldata.h"
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 #include "sendf.h"
 #include "escape.h"
 #include "transfer.h"
@@ -59,7 +59,7 @@
 #include "curl_memory.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 #include "memdebug.h"
 

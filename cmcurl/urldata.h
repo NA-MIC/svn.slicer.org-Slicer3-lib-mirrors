@@ -89,7 +89,7 @@
 #include <ares.h>
 #endif
 
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 
 #include "http_chunks.h" /* for the structs and enum stuff */
 #include "hostip.h"

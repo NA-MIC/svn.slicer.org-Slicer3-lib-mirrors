@@ -35,7 +35,7 @@
 #include <unixlib.h>
 #endif
 
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 #include "curl_memory.h"
 
 #include "memdebug.h"

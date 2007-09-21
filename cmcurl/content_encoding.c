@@ -29,7 +29,7 @@
 #include <string.h>
 
 #include "urldata.h"
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 #include "sendf.h"
 #include "content_encoding.h"
 #include "curl_memory.h"

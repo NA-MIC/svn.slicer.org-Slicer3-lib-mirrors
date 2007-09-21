@@ -11,9 +11,9 @@
 /* to make this work under windows, use the win32-functions from the
    win32socket.c file as well */
 
-#include "curl/curl.h"
-#include "curl/types.h"
-#include "curl/easy.h"
+#include "slicerlibcurl/slicerlibcurl.h"
+#include "slicerlibcurl/types.h"
+#include "slicerlibcurl/easy.h"
 
 #include "testconfig.h"
 
@@ -26,9 +26,9 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 int main(int argc, char **argv)
 {
   CURL *curl_handle;
-  char *headerfilename = LIBCURL_BINARY_DIR "/Testing/sepheaders-head.out";
+  char *headerfilename = SLICERLIBCURL_BINARY_DIR "/Testing/sepheaders-head.out";
   FILE *headerfile;
-  char *bodyfilename = LIBCURL_BINARY_DIR "/Testing/sepheaders-body.out";
+  char *bodyfilename = SLICERLIBCURL_BINARY_DIR "/Testing/sepheaders-body.out";
   FILE *bodyfile;
 
   curl_global_init(CURL_GLOBAL_DEFAULT);

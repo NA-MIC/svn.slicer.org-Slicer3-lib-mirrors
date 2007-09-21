@@ -49,7 +49,7 @@
 #include "curl_memory.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 #include <openssl/des.h>
 #include <openssl/md4.h>

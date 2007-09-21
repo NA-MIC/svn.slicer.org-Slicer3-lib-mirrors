@@ -67,7 +67,7 @@
 #include <sys/types.h>
 #endif
 
-#include "curl.h"
+#include "slicerlibcurl.h"
 
 #ifdef  __cplusplus
 extern "C" {

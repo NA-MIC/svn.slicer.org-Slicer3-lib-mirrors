@@ -12,7 +12,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 
 /*
  * This example shows a HTTP PUT operation. PUTs a file given as a command

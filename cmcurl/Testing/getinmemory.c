@@ -16,9 +16,9 @@
 /* to make this work under windows, use the win32-functions from the
    win32socket.c file as well */
 
-#include "curl/curl.h"
-#include "curl/types.h"
-#include "curl/easy.h"
+#include "slicerlibcurl/slicerlibcurl.h"
+#include "slicerlibcurl/types.h"
+#include "slicerlibcurl/easy.h"
 
 struct MemoryStruct {
   char *memory;

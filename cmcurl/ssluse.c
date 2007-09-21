@@ -48,7 +48,7 @@
 #include "strequal.h"
 
 #define _MPRINTF_REPLACE /* use the internal *printf() functions */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 #ifdef USE_SSLEAY
 #include <openssl/rand.h>

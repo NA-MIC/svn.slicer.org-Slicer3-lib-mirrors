@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 #include "urldata.h"
 #include "sendf.h"
 #include "speedcheck.h"

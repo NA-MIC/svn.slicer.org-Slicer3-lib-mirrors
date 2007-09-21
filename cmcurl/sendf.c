@@ -40,13 +40,13 @@
 #include <unistd.h>
 #endif
 
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 #include "urldata.h"
 #include "sendf.h"
 #include "connect.h" /* for the Curl_ourerrno() proto */
 
 #define _MPRINTF_REPLACE /* use the internal *printf() functions */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 #ifdef HAVE_KRB4
 #include "security.h"

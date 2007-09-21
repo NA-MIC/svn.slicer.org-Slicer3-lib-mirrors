@@ -140,7 +140,7 @@ void idn_free (void *ptr); /* prototype from idn-free.h, not provided by
 #endif
 
 #define _MPRINTF_REPLACE /* use our functions only */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 #ifdef HAVE_KRB4
 #include "security.h"

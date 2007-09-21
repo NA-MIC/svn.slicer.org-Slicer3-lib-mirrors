@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include <pthread.h>
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 
 /* silly list of test-URLs */
 char *urls[]= {

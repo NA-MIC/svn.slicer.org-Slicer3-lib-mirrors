@@ -8,9 +8,9 @@
  * $Id: ftpget.c,v 1.1.8.1 2006/07/24 15:19:36 hoffman Exp $
  */
 
-#include "curl/curl.h"
-#include "curl/types.h"
-#include "curl/easy.h"
+#include "slicerlibcurl/slicerlibcurl.h"
+#include "slicerlibcurl/types.h"
+#include "slicerlibcurl/easy.h"
 #include "setup.h"
 
 #include "testconfig.h"
@@ -45,7 +45,7 @@ int main(void)
   CURL *curl;
   CURLcode res;
   struct FtpFile ftpfile={
-    LIBCURL_BINARY_DIR "/Testing/ftpget-download.txt", /* name to store the file as if succesful */
+    SLICERLIBCURL_BINARY_DIR "/Testing/ftpget-download.txt", /* name to store the file as if succesful */
     NULL
   };
 

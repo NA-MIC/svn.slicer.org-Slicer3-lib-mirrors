@@ -22,7 +22,7 @@
 
 #include "setup.h"
 
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -30,7 +30,7 @@
 #include "strerror.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 #ifdef HAVE_NO_STRERROR_R_DECL
 #ifdef HAVE_POSIX_STRERROR_R

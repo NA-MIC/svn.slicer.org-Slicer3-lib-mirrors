@@ -83,7 +83,7 @@
 #endif
 
 #include "urldata.h"
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 #include "netrc.h"
 
 #include "content_encoding.h"
@@ -104,7 +104,7 @@
 #include "curl_memory.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 /* The last #include file should be: */
 #include "memdebug.h"

@@ -30,7 +30,7 @@
 #include <sys/time.h>
 #endif
 
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 
 struct Cookie {
   struct Cookie *next; /* next in the chain */

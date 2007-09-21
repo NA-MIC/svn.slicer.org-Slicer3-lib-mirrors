@@ -100,7 +100,7 @@ Content-Disposition: form-data; name="FILECONTENT"
  */
 
 #include "setup.h"
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 
 /* Length of the random boundary string. */
 #define BOUNDARY_LENGTH 40
@@ -118,7 +118,7 @@ Content-Disposition: form-data; name="FILECONTENT"
 #include "curl_memory.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 /* The last #include file should be: */
 #include "memdebug.h"

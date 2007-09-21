@@ -9,7 +9,7 @@
  */
 
 #include <stdio.h>
-#include <curl/curl.h>
+#include "slicerlibcurl/slicerlibcurl.h"
 
 int main(void)
 {

@@ -23,7 +23,7 @@
 
 #include "setup.h"
 
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 
 #include "urldata.h"
 #include "getinfo.h"

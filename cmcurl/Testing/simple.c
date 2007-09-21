@@ -8,7 +8,7 @@
  * $Id: simple.c,v 1.1 2005/06/24 13:02:16 andy Exp $
  */
 
-#include "curl/curl.h"
+#include "slicerlibcurl/slicerlibcurl.h"
 
 int main(void)
 {

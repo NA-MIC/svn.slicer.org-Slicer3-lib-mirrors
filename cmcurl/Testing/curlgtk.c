@@ -13,9 +13,9 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 
-#include <curl/curl.h>
-#include <curl/types.h> /* new for v7 */
-#include <curl/easy.h> /* new for v7 */
+#include "slicerlibcurl/slicerlibcurl.h"
+#include "slicerlibcurl/types.h" /* new for v7 */
+#include "slicerlibcurl/easy.h" /* new for v7 */
 
 #include <pthread.h>
 

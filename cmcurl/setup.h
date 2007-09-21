@@ -37,8 +37,8 @@
 #define WIN32
 #endif
 
-#ifdef LIBCURL_HAVE_CONFIG_H
-#include "LIBCURLConfig.h" /* the configure script results */
+#ifdef SLICERLIBCURL_HAVE_CONFIG_H
+#include "SLICERLIBCURLConfig.h" /* the configure script results */
 #else
 #ifdef WIN32
 /* hand-modified win32 config.h! */
@@ -291,4 +291,4 @@ typedef int curl_socket_t;
 #define LIBIDN_REQUIRED_VERSION "0.4.1"
 #endif
 
-#endif /* __LIBCURL_CONFIG_H */
+#endif /* __SLICERLIBCURL_CONFIG_H */

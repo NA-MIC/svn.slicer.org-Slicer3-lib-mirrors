@@ -38,7 +38,7 @@
 #include <string.h>
 
 #define _MPRINTF_REPLACE /* use our functions only */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 #include "base64.h"
 #include "curl_memory.h"

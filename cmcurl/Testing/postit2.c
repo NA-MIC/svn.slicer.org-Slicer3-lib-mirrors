@@ -27,9 +27,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <curl/curl.h>
-#include <curl/types.h>
-#include <curl/easy.h>
+#include "slicerlibcurl/slicerlibcurl.h"
+#include "slicerlibcurl/types.h"
+#include "slicerlibcurl/easy.h"
 
 #if LIBCURL_VERSION_NUM < 0x070900
 #error "curl_formadd() is not introduced until libcurl 7.9 and later"

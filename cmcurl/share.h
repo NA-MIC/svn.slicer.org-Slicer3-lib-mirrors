@@ -25,7 +25,7 @@
  ***************************************************************************/
 
 #include "setup.h"
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 #include "cookie.h"
 #include "hash.h"
 

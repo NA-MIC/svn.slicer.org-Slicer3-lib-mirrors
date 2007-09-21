@@ -25,7 +25,7 @@
 #include <errno.h>
 
 #define _MPRINTF_REPLACE /* use our functions only */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 #include "inet_ntop.h"
 

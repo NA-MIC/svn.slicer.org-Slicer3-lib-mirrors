@@ -8,9 +8,9 @@
  * $Id: ftpgetresp.c,v 1.1.8.1 2006/07/24 15:19:37 hoffman Exp $
  */
 
-#include "curl/curl.h"
-#include "curl/types.h"
-#include "curl/easy.h"
+#include "slicerlibcurl/slicerlibcurl.h"
+#include "slicerlibcurl/types.h"
+#include "slicerlibcurl/easy.h"
 
 #include "testconfig.h"
 
@@ -37,10 +37,10 @@ int main(int argc, char **argv)
   (void)argc; (void)argv;
   
   /* local file name to store the file as */
-  ftpfile = fopen(LIBCURL_BINARY_DIR "/Testing/ftpgetresp-list.txt", "wb"); /* b is binary, needed on win32 */
+  ftpfile = fopen(SLICERLIBCURL_BINARY_DIR "/Testing/ftpgetresp-list.txt", "wb"); /* b is binary, needed on win32 */
 
   /* local file name to store the FTP server's response lines in */
-  respfile = fopen(LIBCURL_BINARY_DIR "/Testing/ftpgetresp-responses.txt", "wb"); /* b is binary, needed on win32 */
+  respfile = fopen(SLICERLIBCURL_BINARY_DIR "/Testing/ftpgetresp-responses.txt", "wb"); /* b is binary, needed on win32 */
 
   curl_global_init(CURL_GLOBAL_DEFAULT);
 

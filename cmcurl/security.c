@@ -44,7 +44,7 @@
 #ifdef HAVE_KRB4
 
 #define _MPRINTF_REPLACE /* we want curl-functions instead of native ones */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 #include "security.h"
 #include <stdlib.h>

@@ -1,7 +1,7 @@
 /* Prevent warnings on Visual Studio */
 struct _RPC_ASYNC_STATE;
 
-#include "curl/curl.h"
+#include "slicerlibcurl/slicerlibcurl.h"
 #include <stdlib.h>
 #include <string.h>
 

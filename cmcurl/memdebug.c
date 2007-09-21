@@ -24,14 +24,14 @@
 
 #include "setup.h"
 
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
 
 #define _MPRINTF_REPLACE
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 #include "urldata.h"
 #include <stdio.h>
 #include <string.h>

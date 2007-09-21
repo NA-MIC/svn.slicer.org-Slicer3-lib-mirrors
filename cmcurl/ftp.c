@@ -70,7 +70,7 @@
 #define in_addr_t unsigned long
 #endif
 
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 #include "urldata.h"
 #include "sendf.h"
 
@@ -100,7 +100,7 @@
 #endif
 
 #define _MPRINTF_REPLACE /* use our functions only */
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 /* The last #include file should be: */
 #ifdef CURLDEBUG

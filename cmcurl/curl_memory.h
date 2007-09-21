@@ -23,7 +23,7 @@
  * $Id: curl_memory.h,v 1.1 2005/06/24 13:00:12 andy Exp $
  ***************************************************************************/
 
-#include <curl/curl.h> /* for the typedefs */
+#include <slicerlibcurl/slicerlibcurl.h> /* for the typedefs */
 
 extern curl_malloc_callback Curl_cmalloc;
 extern curl_free_callback Curl_cfree;

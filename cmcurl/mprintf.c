@@ -38,7 +38,7 @@
 #include <ctype.h>
 #include <string.h>
 
-#include <curl/mprintf.h>
+#include <slicerlibcurl/mprintf.h>
 
 #ifndef SIZEOF_LONG_DOUBLE
 #define SIZEOF_LONG_DOUBLE 0

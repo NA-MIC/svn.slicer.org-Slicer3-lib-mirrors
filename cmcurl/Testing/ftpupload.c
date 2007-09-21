@@ -8,7 +8,7 @@
  * $Id: ftpupload.c,v 1.1.8.1 2006/07/24 15:19:37 hoffman Exp $
  */
 
-#include "curl/curl.h"
+#include "slicerlibcurl/slicerlibcurl.h"
 #include "setup.h"
 
 #include <sys/types.h>
@@ -24,7 +24,7 @@
  * Example based on source code provided by Erick Nuwendam. Thanks!
  */
 
-#define LOCAL_FILE      LIBCURL_SOURCE_DIR "/Testing/ftpupload.c"
+#define LOCAL_FILE      SLICERLIBCURL_SOURCE_DIR "/Testing/ftpupload.c"
 #define UPLOAD_FILE_AS  "while-uploading.txt"
 #define REMOTE_URL      "ftp://public.kitware.com/incoming/"  UPLOAD_FILE_AS
 #define RENAME_FILE_TO  "renamed-and-fine.txt"

@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 
-#include "curl/curl.h"
+#include "slicerlibcurl/slicerlibcurl.h"
 
 /* to make this work under windows, use the win32-functions from the
    docs/examples/win32socket.c file as well */

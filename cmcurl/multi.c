@@ -35,7 +35,7 @@
 #include <unistd.h>
 #endif
 
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 
 #include "urldata.h"
 #include "transfer.h"

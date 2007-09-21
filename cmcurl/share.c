@@ -25,7 +25,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <curl/curl.h>
+#include <slicerlibcurl/slicerlibcurl.h>
 #include "urldata.h"
 #include "share.h"
 #include "curl_memory.h"
