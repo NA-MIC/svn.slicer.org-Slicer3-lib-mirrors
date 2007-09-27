@@ -35,6 +35,8 @@ SET(BatchMake_LIBRARY_DIRS_CONFIG ${BatchMake_LIBRARY_DIR})
 # The runtime directories.
 SET(BatchMake_RUNTIME_DIRS_CONFIG ${BatchMake_RUNTIME_DIR})
 
+SET(BatchMake_APPLICATIONS_DIRS_CONFIG ${BatchMake_APPLICATIONS_DIR})
+
 # The include directories.
 SET(BatchMake_INCLUDE_DIRS_CONFIG ${BatchMake_INCLUDE_PATH})
 

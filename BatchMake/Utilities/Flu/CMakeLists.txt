@@ -53,6 +53,9 @@ FILE(GLOB FLU_HDRS FLU/*.h)
 INSTALL(TARGETS FLU
         RUNTIME DESTINATION bin
         ARCHIVE DESTINATION lib/BatchMake)
-INSTALL(FILES ${FLU_HDRS} DESTINATION include/BatchMake/Utilities/Flu/FLU)
-INSTALL(FILES ${FLU_SRCS} ${CondorWatcherGUI_SRCS} DESTINATION source/Utilities/Flu)
-INSTALL(FILES CMakeLists.txt DESTINATION source/Utilities/Flu)
+INSTALL(FILES ${FLU_HDRS} 
+        DESTINATION include/BatchMake/Utilities/Flu/FLU)
+INSTALL(FILES ${FLU_SRCS} ${CondorWatcherGUI_SRCS} 
+        DESTINATION source/BatchMake/Utilities/Flu)
+INSTALL(FILES CMakeLists.txt 
+        DESTINATION source/BatchMake/Utilities/Flu)

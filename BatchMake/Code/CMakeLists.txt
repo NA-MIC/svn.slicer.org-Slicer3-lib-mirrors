@@ -212,8 +212,7 @@ IF(USE_FLTK)
   IF(FLTK_FOUND)
     IF(CYGWIN)
       TARGET_LINK_LIBRARIES(BatchMakeLib 
-        ole32 uuid comctl32 wsock32 supc++ -lm -lgdi32
-	)
+        ole32 uuid comctl32 wsock32 supc++ -lm -lgdi32)
     ENDIF(CYGWIN)
   ENDIF(FLTK_FOUND)
 
@@ -226,31 +225,36 @@ ENDIF(USE_FLTK)
 TARGET_LINK_LIBRARIES(BatchMakeLib BatchMakeUtilities)
 
 IF(DASHBOARD_SUPPORT)
- IF(WIN32)
-  SET(BatchMakeDashboard_LIBS ws2_32)
- ELSE(WIN32)
-  INCLUDE(${CMAKE_ROOT}/Modules/CheckLibraryExists.cmake)
-  CHECK_LIBRARY_EXISTS("c" gethostbyname "" NOT_NEED_LIBNSL)
-  IF(NOT NOT_NEED_LIBNSL)
-   CHECK_LIBRARY_EXISTS("nsl" gethostbyname "" HAVE_LIBNSL)
-  ENDIF(NOT NOT_NEED_LIBNSL)
-  IF(HAVE_LIBNSL)
-    SET(BatchMakeDashboard_LIBS
-      #socket
-      nsl
-      )
-  ENDIF(HAVE_LIBNSL)
- ENDIF(WIN32)
 
- TARGET_LINK_LIBRARIES(BatchMakeLib ${BatchMakeDashboard_LIBS})
+  IF(WIN32)
+
+    SET(BatchMakeDashboard_LIBS ws2_32)
+
+  ELSE(WIN32)
+
+    INCLUDE(${CMAKE_ROOT}/Modules/CheckLibraryExists.cmake)
+    CHECK_LIBRARY_EXISTS("c" gethostbyname "" NOT_NEED_LIBNSL)
+    IF(NOT NOT_NEED_LIBNSL)
+      CHECK_LIBRARY_EXISTS("nsl" gethostbyname "" HAVE_LIBNSL)
+    ENDIF(NOT NOT_NEED_LIBNSL)
+    IF(HAVE_LIBNSL)
+      SET(BatchMakeDashboard_LIBS
+          #socket
+          nsl
+          )
+    ENDIF(HAVE_LIBNSL)
+
+  ENDIF(WIN32)
+
+  TARGET_LINK_LIBRARIES(BatchMakeLib ${BatchMakeDashboard_LIBS})
+
 ENDIF(DASHBOARD_SUPPORT)
 
 # Installation file
 INSTALL(TARGETS BatchMakeLib
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib/BatchMake
-        ARCHIVE DESTINATION lib/BatchMake
-        )
+        ARCHIVE DESTINATION lib/BatchMake)
 INSTALL(FILES ${BatchMake_HDRS}  ${BatchMakeLib_HDRS}  
         DESTINATION include/BatchMake/Code)
 INSTALL(FILES CMakeLists.txt DESTINATION source/Code)

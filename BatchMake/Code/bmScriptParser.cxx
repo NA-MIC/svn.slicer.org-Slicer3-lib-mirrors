@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmScriptParser.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/06/21 12:54:17 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2007/09/18 19:52:06 $
+  Version:   $Revision: 1.18 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -33,6 +33,7 @@ ScriptParser::ScriptParser()
   m_ScriptActionManager->SetParser(this);
   m_Error = 0;
   m_ApplicationList = 0;
+  m_CurrentFilename = "";
 }
 
 ScriptParser::~ScriptParser()
@@ -126,8 +127,10 @@ void  ScriptParser::RemoveCodeLine(unsigned int line)
 }
 
 
-bool  ScriptParser::Compile(MString filename,unsigned long pos,bool isInclude)
+bool ScriptParser::Compile(MString filename,unsigned long pos,bool isInclude)
 {
+  m_CurrentFilename = filename.toChar();
+
   std::ifstream m_file;
   m_file.open(filename.toChar(),std::ifstream::binary);
   if(!m_file.good())
@@ -173,6 +176,7 @@ bool  ScriptParser::Compile(MString filename,unsigned long pos,bool isInclude)
 
 bool ScriptParser::Execute(MString filename,unsigned long pos)
 { 
+  m_CurrentFilename = filename.toChar();
   std::ifstream m_file;
   m_file.open(filename.toChar(),std::ifstream::binary);
   if(!m_file.good())

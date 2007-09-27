@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmScriptEditorGUIControls.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/25 18:49:43 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007/09/18 19:52:06 $
+  Version:   $Revision: 1.11 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -244,6 +244,7 @@ void ScriptEditorGUIControls::OnCompile()
   m_Parser->Reset();
   m_Errorgui->Reset();
   m_Errorgui->SetTextDisplay(g_output);
+  m_Parser->SetCurrentFilename(m_Filename.toChar());
   m_Parser->SetError(m_Errorgui);
   int m_Offset = 0;
   for (int i=0;i<g_editor->buffer()->count_lines(0,g_editor->buffer()->length())+1;i++)

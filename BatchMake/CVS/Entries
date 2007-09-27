@@ -1,9 +1,7 @@
 D/CMake////
 D/Code////
-D/Dashboard////
 D/Documentation////
 D/Examples////
-D/Grid////
 D/Images////
 D/Testing////
 D/Utilities////
@@ -12,4 +10,4 @@ D/Utilities////
 /ReadMe.txt/1.1/Sun Aug 26 22:50:50 2007//
 /bmConfigure.h.in/1.1/Sun Aug 26 22:50:50 2007//
 D/Applications////
-/CMakeLists.txt/1.38/Thu Sep  6 14:20:54 2007//
+/CMakeLists.txt/1.39/Mon Sep 17 04:07:27 2007//

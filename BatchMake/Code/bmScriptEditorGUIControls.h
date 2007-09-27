@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmScriptEditorGUIControls.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/05 22:17:00 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/09/18 19:52:06 $
+  Version:   $Revision: 1.5 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -81,7 +81,7 @@ protected:
   std::string m_SplashBuffer;
 
   XMLIniIO* m_InitFile;
-  std::string m_WrappedApplicationsPath;
+  std::string  m_WrappedApplicationsPath;
 };
 
 } // end namespace bm

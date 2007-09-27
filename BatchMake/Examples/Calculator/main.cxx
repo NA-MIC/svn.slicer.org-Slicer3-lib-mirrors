@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: main.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/09/07 02:19:56 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/09/26 14:12:36 $
+  Version:   $Revision: 1.2 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -140,9 +140,9 @@ int main(int argc, char* argv[])
   command.SetAuthor("Kitware Inc");
   command.SetDescription("Perform number calculation");
 
-  command.AddField("firstNumber","first number",MetaCommand::FLOAT);
-  command.AddField("operand","operand",MetaCommand::STRING);
-  command.AddField("secondNumber","second number",MetaCommand::FLOAT);
+  command.AddField("firstNumber", "first number", MetaCommand::FLOAT);
+  command.AddField("operand", "operand", MetaCommand::STRING);
+  command.AddField("secondNumber", "second number", MetaCommand::FLOAT);
 
   // This should be put before the parsing
   MetaOutput output;

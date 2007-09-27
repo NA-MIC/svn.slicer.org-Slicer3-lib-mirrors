@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmScriptIncludeAction.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 18:30:48 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/09/18 19:52:06 $
+  Version:   $Revision: 1.3 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -15,6 +15,7 @@
 
 #include "bmScriptIncludeAction.h"
 #include "bmScriptParser.h"
+#include <itksys/SystemTools.hxx>
 
 namespace bm {
 
@@ -44,9 +45,19 @@ bool ScriptIncludeAction::TestParam(ScriptError* error,int linenumber)
 
   MString filename = m_Manager->Convert(m_Parameters[0]);
   filename = filename.removeChar('\'');
+
+  std::string fileToInclude = filename.toChar();
+  std::string currentScriptPath = itksys::SystemTools::GetFilenamePath(static_cast<ScriptParser*>(m_Manager->GetParser())->GetCurrentFilename().c_str());
+
+  // Test if the script exists
+  if(!itksys::SystemTools::FileExists(fileToInclude.c_str()))
+    {
+    fileToInclude = currentScriptPath+"/"+fileToInclude;
+    }
+
   long line = static_cast<ScriptParser*>(m_Manager->GetParser())->GetLineNumber();
   static_cast<ScriptParser*>(m_Manager->GetParser())->RemoveCodeLine(line-1);
-  static_cast<ScriptParser*>(m_Manager->GetParser())->Compile(filename,line-1,true); // don't parse
+  static_cast<ScriptParser*>(m_Manager->GetParser())->Compile(fileToInclude.c_str(),line-1,true); // don't parse
 
   return true;
 }

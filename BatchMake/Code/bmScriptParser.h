@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmScriptParser.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/23 22:48:55 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/09/18 19:52:06 $
+  Version:   $Revision: 1.7 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -37,7 +37,11 @@ namespace bm {
 class ScriptParser
 {
 public:
+
+  /** Constructor */
   ScriptParser();
+
+  /** Destructor */
   ~ScriptParser();
   
   void Load(MString filename);
@@ -75,13 +79,23 @@ public:
 
   unsigned long GetLineNumber() {return m_LineNumber;}
 
+  /** Set the current script location. This is used by the include() command */
+  std::string GetCurrentFilename() {return m_CurrentFilename;}
+  void SetCurrentFilename(const char* filename)
+    {
+    m_CurrentFilename = filename;
+    }
+
 protected:
+  
   int m_LineNumber;
   ScriptActionManager* m_ScriptActionManager;
   std::vector<MString> m_Code;
   ScriptError* m_Error;
   MString m_ApplicationPath;
   std::vector<ApplicationWrapper*>* m_ApplicationList;
+
+  std::string m_CurrentFilename; // current path of the current script compiled
 };
 
 } // end namespace bm

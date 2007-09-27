@@ -27,7 +27,6 @@ SET(BatchMakeUtilities_HDRS
   XMLBufferReader.h
   SliceExtractor.h
   SystemInfo.h
-  Whetstone.h
   HttpRequest.h
   )
 
@@ -50,7 +49,6 @@ SET(BatchMakeUtilities_SRCS
 
 ADD_LIBRARY(BatchMakeUtilities ${BatchMakeUtilities_SRCS})
 
-
 TARGET_LINK_LIBRARIES(BatchMakeUtilities ITKCommon)
 IF(USE_FLTK)
   TARGET_LINK_LIBRARIES(BatchMakeUtilities ${FLTK_LIBRARIES} FLU)
@@ -71,6 +69,6 @@ INSTALL(TARGETS BatchMakeUtilities
 INSTALL(FILES ${BatchMakeUtilities_HDRS} 
         DESTINATION include/BatchMake/Utilities)
 INSTALL(FILES ${BatchMakeUtilities_SRCS} 
-        DESTINATION source/Utilities)
+        DESTINATION source/BatchMake/Utilities)
 INSTALL(FILES CMakeLists.txt 
-        DESTINATION source/Utilities)
+        DESTINATION source/BatchMake/Utilities)

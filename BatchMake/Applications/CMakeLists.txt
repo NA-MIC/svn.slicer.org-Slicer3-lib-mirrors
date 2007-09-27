@@ -115,22 +115,17 @@ MOVE_EXECUTABLE_TOP_BINARY(bmGetCPUInfo BatchMake_GET_CPU_INFO_EXE )
 # Installation file
 
 INSTALL(TARGETS BatchMake bmGetCPUInfo bmGetMemoryInfo bmGetCPUSpeed
-        bmSliceExtractor bmGridStore bmGridSend 
+        bmSliceExtractor bmGridStore bmGridSend bmCheckMemory
         LIBRARY DESTINATION lib/BatchMake
         ARCHIVE DESTINATION lib/BatchMake
         RUNTIME DESTINATION bin
         )
-INSTALL(FILES BatchMake.h 
-        bmGetCPUInfo.h bmGetMemoryInfo.h bmGetCPUSpeed.h Whetstone.h
-	bmGridSend.h bmGridStore.h bmSliceExtractor.h
-        DESTINATION include/BatchMake/Applications
-	)
-INSTALL(FILES BatchMake.cxx BatchMake.ico BatchMake.rc
-        bmGetCPUInfo.cxx bmGetMemoryInfo.cxx bmGetCPUSpeed.cxx Whetstone.cxx
-	bmGridSend.cxx bmGridStore.cxx bmSliceExtractor.cxx
+INSTALL(FILES BatchMake.cxx BatchMake.ico BatchMake.rc Whetstone.h
+        GetCPUInfo.cxx GetMemoryInfo.cxx GetCPUSpeed.cxx Whetstone.cxx
+        bmGridSend.cxx bmGridStore.cxx bmSliceExtractor.cxx CheckMemory.cxx
         DESTINATION source/BatchMake/Applications
-	)
+        )
 INSTALL(FILES CMakeLists.txt 
         DESTINATION source/BatchMake/Applications
-	)
+        )
 

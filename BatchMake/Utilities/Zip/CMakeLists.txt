@@ -64,8 +64,11 @@ TARGET_LINK_LIBRARIES(Unzip BatchMakeZLib)
 # Installation file
 INSTALL(TARGETS BatchMakeZLib
         RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib/BatchMake
+        LIBRARY DESTINATION lib/BatchMake
         ARCHIVE DESTINATION lib/BatchMake)
-INSTALL(FILES ${ZLib_HDRS} DESTINATION include/BatchMake/Utilities/Zip)
-INSTALL(FILES ${ZLib_SRCS} ${Zip_SRCS} ${Unzip_SRCS} DESTINATION source/Utilities/Zip)
-INSTALL(FILES CMakeLists.txt zlibDllConfig.h.in DESTINATION source/Utilities/Zip)
+INSTALL(FILES ${ZLib_HDRS} 
+        DESTINATION include/BatchMake/Utilities/Zip)
+INSTALL(FILES ${ZLib_SRCS} ${Zip_SRCS} ${Unzip_SRCS} 
+        DESTINATION source/BatchMake/Utilities/Zip)
+INSTALL(FILES CMakeLists.txt zlibDllConfig.h.in 
+        DESTINATION source/BatchMake/Utilities/Zip)

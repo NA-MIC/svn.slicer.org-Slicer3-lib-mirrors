@@ -48,6 +48,9 @@ SET(BatchMake_LIBRARY_DIRS "@BatchMake_LIBRARY_DIRS_CONFIG@")
 # be a directory of runtime binaries for each configuration type.
 SET(BatchMake_RUNTIME_DIRS "@BatchMake_RUNTIME_DIRS_CONFIG@")
 
+# The location of .bmm files
+SET(BatchMake_APPLICATIONS_DIRS "@BatchMake_APPLICATIONS_DIRS_CONFIG@")
+
 # The include directories.
 SET(BatchMake_INCLUDE_DIRS "@BatchMake_INCLUDE_DIRS_CONFIG@")
 

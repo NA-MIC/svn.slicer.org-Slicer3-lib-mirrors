@@ -58,5 +58,5 @@ INSTALL(TARGETS CondorWatcherTool CondorWatcher
 INSTALL(FILES ${CondorWatcher_HDRS} 
         DESTINATION include/BatchMake/Utilities/CondorWatcher)
 INSTALL(FILES ${CondorWatcher_SRCS} ${CondorWatcherGUI_SRCS} main.cxx 
-        DESTINATION source/Utilities/CondorWatcher)
-INSTALL(FILES CMakeLists.txt DESTINATION source/Utilities/CondorWatcher)
+        DESTINATION source/Batchmake/Utilities/CondorWatcher)
+INSTALL(FILES CMakeLists.txt DESTINATION source/Batchmake/Utilities/CondorWatcher)
