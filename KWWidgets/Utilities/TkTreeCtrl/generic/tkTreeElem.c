@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2002-2006 Tim Baker
  *
- * RCS: @(#) $Id: tkTreeElem.c,v 1.2 2007/06/25 15:49:45 barre Exp $
+ * RCS: @(#) $Id: tkTreeElem.c,v 1.5 2007/09/20 15:00:42 barre Exp $
  */
 
 #include "tkTreeCtrl.h"
@@ -361,7 +361,7 @@ static int StringTableSet(
     if ((flags & TK_OPTION_NULL_OK) && objEmpty)
   (*value) = NULL;
     else {
-  if (Tcl_GetIndexFromObj(interp, (*value), info->tablePtr,
+   if (Tcl_GetIndexFromObj(interp, (*value), (CONST84 char **)info->tablePtr,
         info->msg, 0, &new) != TCL_OK)
       return TCL_ERROR;
     }
@@ -812,7 +812,7 @@ static int ActualProcBitmap(ElementArgs *args)
     TreeCtrl *tree = args->tree;
     ElementBitmap *elemX = (ElementBitmap *) args->elem;
     ElementBitmap *masterX = (ElementBitmap *) args->elem->master;
-    static CONST char *optionName[] = {
+    static CONST84 char *optionName[] = {
   "-background", "-bitmap", "-draw", "-foreground",
   (char *) NULL };
     int index, match, matchM;
@@ -1122,7 +1122,7 @@ static int ActualProcBorder(ElementArgs *args)
     TreeCtrl *tree = args->tree;
     ElementBorder *elemX = (ElementBorder *) args->elem;
     ElementBorder *masterX = (ElementBorder *) args->elem->master;
-    static CONST char *optionName[] = {
+    static CONST84 char *optionName[] = {
   "-background", "-draw", "-relief",
   (char *) NULL };
     int index, match, matchM;
@@ -1175,7 +1175,7 @@ ElementType elemTypeBorder = {
 /*****/
 #if 0
 
-static CONST char *chkbutStateST[] = {
+static CONST84 char *chkbutStateST[] = {
     "checked", "mixed", "normal", "active", "pressed", "disabled", (char *) NULL
 };
 
@@ -1456,7 +1456,7 @@ static int ActualProcCheckButton(ElementArgs *args)
     TreeCtrl *tree = args->tree;
     ElementCheckButton *elemX = (ElementCheckButton *) args->elem;
     ElementCheckButton *masterX = (ElementCheckButton *) args->elem->master;
-    static CONST char *optionName[] = {
+    static CONST84 char *optionName[] = {
   "-image",
   (char *) NULL };
     int index, match, matchM;
@@ -1743,7 +1743,7 @@ static int ActualProcImage(ElementArgs *args)
     TreeCtrl *tree = args->tree;
     ElementImage *elemX = (ElementImage *) args->elem;
     ElementImage *masterX = (ElementImage *) args->elem->master;
-    static CONST char *optionName[] = {
+    static CONST84 char *optionName[] = {
   "-draw", "-image",
   (char *) NULL };
     int index, match, matchM;
@@ -2126,7 +2126,7 @@ static int ActualProcRect(ElementArgs *args)
     TreeCtrl *tree = args->tree;
     ElementRect *elemX = (ElementRect *) args->elem;
     ElementRect *masterX = (ElementRect *) args->elem->master;
-    static CONST char *optionName[] = {
+    static CONST84 char *optionName[] = {
   "-draw", "-fill", "-outline",
   (char *) NULL };
     int index, match, matchM;
@@ -2285,10 +2285,10 @@ ElementTextLayoutInit(
     etl->wrap = TEXT_WRAP_NULL;
 }
 
-static CONST char *textDataTypeST[] = { "double", "integer", "long", "string",
+static CONST84 char *textDataTypeST[] = { "double", "integer", "long", "string",
           "time", (char *) NULL };
-static CONST char *textJustifyST[] = { "left", "right", "center", (char *) NULL };
-static CONST char *textWrapST[] = { "char", "none", "word", (char *) NULL };
+static CONST84 char *textJustifyST[] = { "left", "right", "center", (char *) NULL };
+static CONST84 char *textWrapST[] = { "char", "none", "word", (char *) NULL };
 
 static Tk_OptionSpec textOptionSpecs[] = {
     {TK_OPTION_CUSTOM, "-data", (char *) NULL, (char *) NULL,
@@ -2722,7 +2722,7 @@ static void TextTraceSet(Tcl_Interp *interp, ElementText *elemX)
   Tcl_TraceVar2(interp, Tcl_GetString(varNameObj),
       NULL,
       TCL_GLOBAL_ONLY | TCL_TRACE_WRITES | TCL_TRACE_UNSETS,
-      VarTraceProc_Text, (ClientData) elemX);
+      (Tcl_VarTraceProc*)VarTraceProc_Text, (ClientData) elemX);
     }
 }
 
@@ -2735,7 +2735,7 @@ static void TextTraceUnset(Tcl_Interp *interp, ElementText *elemX)
   Tcl_UntraceVar2(interp, Tcl_GetString(varNameObj),
       NULL,
       TCL_GLOBAL_ONLY | TCL_TRACE_WRITES | TCL_TRACE_UNSETS,
-      VarTraceProc_Text, (ClientData) elemX);
+      (Tcl_VarTraceProc*)VarTraceProc_Text, (ClientData) elemX);
     }
 }
 
@@ -3335,7 +3335,7 @@ static int ActualProcText(ElementArgs *args)
     TreeCtrl *tree = args->tree;
 /*    ElementText *elemX = (ElementText *) args->elem;
     ElementText *masterX = (ElementText *) args->elem->master;*/
-    static CONST char *optionName[] = {
+    static CONST84 char *optionName[] = {
   "-draw", "-fill", "-font",
   (char *) NULL };
     int index;
@@ -3480,7 +3480,7 @@ WinItemLostSlaveProc(clientData, tkwin)
      * about both windows. */
     if (elemX->child != NULL) {
   Tk_DeleteEventHandler(elemX->child, StructureNotifyMask,
-    WinItemStructureProc, (ClientData) elemX);
+    (Tk_EventProc*)WinItemStructureProc, (ClientData) elemX);
   if (tkwin != elemX->child) {
       Tk_ManageGeometry(elemX->child, (Tk_GeomMgr *) NULL,
         (ClientData) NULL);
@@ -3490,7 +3490,7 @@ WinItemLostSlaveProc(clientData, tkwin)
     }
     if (elemX->tkwin != NULL) {
   Tk_DeleteEventHandler(elemX->tkwin, StructureNotifyMask,
-    WinItemStructureProc, (ClientData) elemX);
+    (Tk_EventProc*)WinItemStructureProc, (ClientData) elemX);
   if (tkwin != elemX->tkwin) {
       Tk_ManageGeometry(elemX->tkwin, (Tk_GeomMgr *) NULL,
         (ClientData) NULL);
@@ -3516,8 +3516,8 @@ WinItemLostSlaveProc(clientData, tkwin)
 
 static Tk_GeomMgr winElemGeomType = {
     "treectrl",        /* name */
-    WinItemRequestProc,      /* requestProc */
-    WinItemLostSlaveProc,    /* lostSlaveProc */
+    (Tk_GeomRequestProc*)WinItemRequestProc,      /* requestProc */
+    (Tk_GeomLostSlaveProc*)WinItemLostSlaveProc,    /* lostSlaveProc */
 };
 
 static void DeleteProcWindow(ElementArgs *args)
@@ -3531,7 +3531,7 @@ static void DeleteProcWindow(ElementArgs *args)
 #ifdef CLIP_WINDOW
   if (elemX->child != NULL) {
       Tk_DeleteEventHandler(elemX->child, StructureNotifyMask,
-        WinItemStructureProc, (ClientData) elemX);
+        (Tk_EventProc*)WinItemStructureProc, (ClientData) elemX);
       Tk_ManageGeometry(elemX->child, (Tk_GeomMgr *) NULL,
         (ClientData) NULL);
       Tk_UnmapWindow(elemX->child);
@@ -3539,7 +3539,7 @@ static void DeleteProcWindow(ElementArgs *args)
   }
 #endif
   Tk_DeleteEventHandler(elemX->tkwin, StructureNotifyMask,
-    WinItemStructureProc, (ClientData) elemX);
+    (Tk_EventProc*)WinItemStructureProc, (ClientData) elemX);
   Tk_ManageGeometry(elemX->tkwin, (Tk_GeomMgr *) NULL,
     (ClientData) NULL);
   if (tree->tkwin != Tk_Parent(elemX->tkwin)) {
@@ -3619,7 +3619,7 @@ static int ConfigProcWindow(ElementArgs *args)
 #ifdef CLIP_WINDOW
       if (elemX->child != NULL) {
     Tk_DeleteEventHandler(elemX->child, StructureNotifyMask,
-      WinItemStructureProc, (ClientData) elemX);
+      (Tk_EventProc*)WinItemStructureProc, (ClientData) elemX);
     Tk_ManageGeometry(elemX->child, (Tk_GeomMgr *) NULL,
       (ClientData) NULL);
     Tk_UnmapWindow(elemX->child);
@@ -3627,7 +3627,7 @@ static int ConfigProcWindow(ElementArgs *args)
       }
 #endif
       Tk_DeleteEventHandler(savedX.tkwin, StructureNotifyMask,
-        WinItemStructureProc, (ClientData) elemX);
+        (Tk_EventProc*)WinItemStructureProc, (ClientData) elemX);
       Tk_ManageGeometry(savedX.tkwin, (Tk_GeomMgr *) NULL,
         (ClientData) NULL);
       Tk_UnmaintainGeometry(savedX.tkwin, tree->tkwin);
@@ -3670,14 +3670,14 @@ static int ConfigProcWindow(ElementArgs *args)
     elemX->child = (Tk_Window) ((TkWindow *) elemX->tkwin)->childList;
     if (elemX->child != NULL) {
         Tk_CreateEventHandler(elemX->child, StructureNotifyMask,
-          WinItemStructureProc, (ClientData) elemX);
+          (Tk_EventProc*)WinItemStructureProc, (ClientData) elemX);
         Tk_ManageGeometry(elemX->child, &winElemGeomType,
           (ClientData) elemX);
     }
       }
 #endif
       Tk_CreateEventHandler(elemX->tkwin, StructureNotifyMask,
-        WinItemStructureProc, (ClientData) elemX);
+        (Tk_EventProc*)WinItemStructureProc, (ClientData) elemX);
       Tk_ManageGeometry(elemX->tkwin, &winElemGeomType,
         (ClientData) elemX);
   }
@@ -3931,7 +3931,7 @@ static int ActualProcWindow(ElementArgs *args)
     TreeCtrl *tree = args->tree;
     ElementWindow *elemX = (ElementWindow *) args->elem;
     ElementWindow *masterX = (ElementWindow *) args->elem->master;
-    static CONST char *optionName[] = {
+    static CONST84 char *optionName[] = {
   "-draw",
   (char *) NULL };
     int index, match, matchM;
@@ -4157,7 +4157,7 @@ int TreeElement_Init(Tcl_Interp *interp)
   1006, sizeof(ElementTextData),
   -1,
   Tk_Offset(ElementTextData, dataType),
-  StringTableCO_Alloc("-datatype", textDataTypeST),
+  StringTableCO_Alloc("-datatype", (CONST char **)textDataTypeST),
   ElementTextDataInit);
     DynamicCO_Init(elemTypeText.optionSpecs, "-format",
   1006, sizeof(ElementTextData),
@@ -4170,7 +4170,7 @@ int TreeElement_Init(Tcl_Interp *interp)
   1005, sizeof(ElementTextLayout),
   -1,
   Tk_Offset(ElementTextLayout, justify),
-  StringTableCO_Alloc("-justify", textJustifyST),
+  StringTableCO_Alloc("-justify", (CONST char **)textJustifyST),
   ElementTextLayoutInit);
     DynamicCO_Init(elemTypeText.optionSpecs, "-lines",
   1005, sizeof(ElementTextLayout),
@@ -4191,7 +4191,7 @@ int TreeElement_Init(Tcl_Interp *interp)
   1005, sizeof(ElementTextLayout),
   -1,
   Tk_Offset(ElementTextLayout, wrap),
-  StringTableCO_Alloc("-wrap", textWrapST),
+  StringTableCO_Alloc("-wrap", (CONST char **)textWrapST),
   ElementTextLayoutInit);
 
     DynamicCO_Init(elemTypeText.optionSpecs, "-draw",

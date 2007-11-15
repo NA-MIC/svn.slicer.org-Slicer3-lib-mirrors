@@ -54,10 +54,18 @@ public:
   // did not select anything (i.e., the previous selection is *not* kept).
   // If MultipleSelection is On, the above methods can also be used retrieve
   // all the file (or directory) names that were selected.
-  virtual const char* GetFileName();
+  vtkGetStringMacro(FileName);
   int GetNumberOfFileNames();
   const char *GetNthFileName(int i);
-  vtkGetObjectMacro(FileNames, vtkStringArray);  
+  vtkGetObjectMacro(FileNames, vtkStringArray); 
+
+  // Description:
+  // Set the file path that will be returned when calling GetFileName().
+  // This method will reset FileNames array if FileNames[0] is different
+  // from the FileName. It will also reset the InitialFileName and LastPath
+  // if they are not set already. The idea is that user can just use this 
+  // ONE method to initialize the dialog before invoke.
+  virtual void SetFileName(const char*);
 
   // Description:
   // This function will take an array of file names (full names with path),
@@ -132,6 +140,11 @@ public:
   virtual void SetPreviewFrameVisibility(int);
   vtkBooleanMacro(PreviewFrameVisibility, int); 
   vtkGetMacro(PreviewFrameVisibility, int); 
+
+  // Description:
+  // Save/retrieve the last geometry to/from the registry.
+  virtual void SaveGeometryToRegistry();
+  virtual void RestoreGeometryFromRegistry();
 
   // Description:
   // Save/retrieve the last path to/from the registry.
@@ -251,12 +264,12 @@ protected:
   // Description:
   // Member variables.
   char *FileTypes;
-  char *LastPath;
-  char *InitialFileName;
   char *DefaultExtension;
+
   int  PreviewFrameVisibility;
   int  SaveDialog;
   int  ChooseDirectory;
+
   vtkStringArray *FileNames;
   vtkStringArray *InitialSelecttedFileNames;
 
@@ -284,6 +297,11 @@ protected:
   virtual int OpenMultipleFileNames(const char* inputnames);
 
 private:
+
+  char *InitialFileName;
+  char *LastPath;
+  char *FileName;
+
   vtkKWFileBrowserDialog(const vtkKWFileBrowserDialog&); // Not implemented
   void operator=(const vtkKWFileBrowserDialog&); // Not implemented
 };

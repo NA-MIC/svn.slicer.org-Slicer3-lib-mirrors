@@ -55,7 +55,7 @@
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkKWDirectoryExplorer );
-vtkCxxRevisionMacro(vtkKWDirectoryExplorer, "$Revision: 1.34 $");
+vtkCxxRevisionMacro(vtkKWDirectoryExplorer, "$Revision: 1.36 $");
 
 vtkIdType vtkKWDirectoryExplorer::IdCounter = 1;
 
@@ -423,33 +423,42 @@ void vtkKWDirectoryExplorer::LoadRootDirectory()
       }
     else
       {
-      name = "";
+      continue;
       }
-    realname = name;
 
-    if (GetVolumeInformation(name.append("\\").c_str(),
-                             strVolName, MAX_PATH, &serialnum, NULL,
-                             NULL, strFS, 
-                             MAX_PATH))
+    realname = disklabel;
+
+    if(drivetype != DRIVE_REMOTE)
       {
-      name = realname;
-      if (strcmp(strVolName, "") == 0)
+      vtksys_stl::string volPath = name;
+      if (GetVolumeInformation(volPath.append("\\").c_str(),
+        strVolName, MAX_PATH, &serialnum, NULL,
+        NULL, strFS, 
+        MAX_PATH))
         {
-        realname = disklabel;
+        if (strcmp(strVolName, ""))
+          {
+          realname = strVolName;
+          }
         }
-      else
-        {
-        realname = strVolName;
-        }
-        
-      realname += " (";
-      realname += name;
-      realname += ")";
       }
     else
       {
-      name = realname;
+      DWORD dwUniSz = 1024;
+      if(!WNetGetConnection(name.c_str(),
+        strVolName,
+        &dwUniSz))
+        {
+        if (strcmp(strVolName, ""))
+          {
+          realname = strVolName;
+          }
+        }
       }
+
+    realname += " (";
+    realname += name;
+    realname += ")";
       
     // Add directory node
 

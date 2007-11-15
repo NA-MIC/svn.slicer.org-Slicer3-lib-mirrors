@@ -35,7 +35,7 @@
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/ios/sstream> 
 
-vtkCxxRevisionMacro(vtkKWWindow, "$Revision: 1.287 $");
+vtkCxxRevisionMacro(vtkKWWindow, "$Revision: 1.289 $");
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkKWWindow );
@@ -250,10 +250,6 @@ void vtkKWWindow::CreateWidget()
 
   this->Superclass::CreateWidget();
 
-  vtksys_stl::string cmd, event;
-  vtkKWMenu *menu = NULL;
-  int idx;
-
   // Main and Secondary split frames
 
   this->SecondarySplitFrame->SetSeparatorSize(
@@ -289,39 +285,28 @@ void vtkKWWindow::CreateWidget()
   this->Script("pack %s -side top -fill both -expand t",
                this->SecondarySplitFrame->GetWidgetName());
 
-  // Menu : Window
+  this->AddCallbackCommandObservers();
+}
 
-  menu = this->GetWindowMenu();
+//----------------------------------------------------------------------------
+void vtkKWWindow::PopulateWindowMenu()
+{
+  this->Superclass::PopulateWindowMenu();
+
+  int idx;
+  vtkKWMenu *menu = this->GetWindowMenu();
+  vtksys_stl::string cmd;
+
   idx = menu->AddCommand(this->GetHideMainPanelMenuLabel(), 
                          this, "MainPanelVisibilityCallback");
   menu->SetItemAccelerator(
     idx, this->GetMainPanelVisibilityKeyAccelerator());
-  menu->SetBindingForItemAccelerator(idx, menu->GetParentTopLevel());
 
-  // Menu : Window
-
-  menu = this->GetWindowMenu();
   idx = menu->AddCommand(this->GetHideSecondaryPanelMenuLabel(), 
                          this, "SecondaryPanelVisibilityCallback");
   menu->SetItemAccelerator(
     idx, this->GetSecondaryPanelVisibilityKeyAccelerator());
-  menu->SetBindingForItemAccelerator(idx, menu->GetParentTopLevel());
 
-  // Menu : View : Application Settings
-
-  menu = this->GetViewMenu();
-  idx = this->GetViewMenuInsertPosition();
-  menu->InsertSeparator(idx++);
-  cmd = "ShowApplicationSettingsUserInterface {";
-  cmd += this->GetApplicationSettingsInterface()->GetName();
-  cmd += "}";
-  menu->InsertCommand(
-    idx++, this->GetApplicationSettingsInterface()->GetName(), 
-    this, cmd.c_str());
-
-  // Menu : Window : Tcl Interactor
-
-  menu = this->GetWindowMenu();
   if (!this->GetApplication()->GetReleaseMode())
     {
     menu->AddSeparator();
@@ -340,13 +325,31 @@ void vtkKWWindow::CreateWidget()
     menu->AddSeparator();
     
     idx = menu->AddCommand(
-      this->GetTclInteractorMenuLabel(), 
-      this, "DisplayTclInteractor");
+      this->GetTclInteractorMenuLabel(), this, "DisplayTclInteractor");
     menu->SetItemHelpString(
       idx, k_("Display a prompt to interact with the Tcl engine"));
     menu->SetItemAccelerator(idx, "Ctrl+T");
-    menu->SetBindingForItemAccelerator(idx, menu->GetParentTopLevel());
     }
+}
+
+//----------------------------------------------------------------------------
+void vtkKWWindow::PopulateViewMenu()
+{
+  this->Superclass::PopulateViewMenu();
+
+  // Menu : View : Application Settings
+
+  int idx;
+  vtkKWMenu *menu = this->GetViewMenu();
+  vtksys_stl::string cmd;
+
+  idx = this->GetViewMenuInsertPosition();
+  cmd = "ShowApplicationSettingsUserInterface {";
+  cmd += this->GetApplicationSettingsInterface()->GetName();
+  cmd += "}";
+  menu->InsertCommand(
+    idx, this->GetApplicationSettingsInterface()->GetName(), 
+    this, cmd.c_str());
 }
 
 //----------------------------------------------------------------------------
@@ -1355,6 +1358,49 @@ void vtkKWWindow::UpdateMenuState()
          vtkKWOptions::StateDisabled : this->WindowMenu->GetEnabled()));
       }
     }
+}
+
+//----------------------------------------------------------------------------
+void vtkKWWindow::AddCallbackCommandObservers()
+{
+  this->Superclass::AddCallbackCommandObservers();
+
+  this->AddCallbackCommandObserver(
+    this->MainSplitFrame, vtkKWSplitFrame::FrameVisibilityChangedEvent);
+
+  this->AddCallbackCommandObserver(
+    this->SecondarySplitFrame, vtkKWSplitFrame::FrameVisibilityChangedEvent);
+}
+
+//----------------------------------------------------------------------------
+void vtkKWWindow::RemoveCallbackCommandObservers()
+{
+  this->Superclass::RemoveCallbackCommandObservers();
+
+  this->RemoveCallbackCommandObserver(
+    this->MainSplitFrame, vtkKWSplitFrame::FrameVisibilityChangedEvent);
+
+  this->RemoveCallbackCommandObserver(
+    this->SecondarySplitFrame, vtkKWSplitFrame::FrameVisibilityChangedEvent);
+}
+
+//----------------------------------------------------------------------------
+void vtkKWWindow::ProcessCallbackCommandEvents(vtkObject *caller,
+                                               unsigned long event,
+                                               void *calldata)
+{
+  if (caller == this->MainSplitFrame ||
+      caller == this->SecondarySplitFrame)
+    {
+    switch (event)
+      {
+      case vtkKWSplitFrame::FrameVisibilityChangedEvent:
+        this->UpdateMenuState(); // to reflect show/hide in the window menu
+        break;
+      }
+    }
+
+  this->Superclass::ProcessCallbackCommandEvents(caller, event, calldata);
 }
 
 //----------------------------------------------------------------------------

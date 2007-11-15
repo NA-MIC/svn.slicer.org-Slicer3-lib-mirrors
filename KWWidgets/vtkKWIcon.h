@@ -50,6 +50,7 @@ public:
     IconBugMini                   = 200,
     IconCalculator                = 79,
     IconCamera                    = 19,
+    IconCameraMini                = 175,
     IconCdRom                     = 75,
     IconColorBarAnnotation        = 12,
     IconColorSquares              = 18,
@@ -60,13 +61,18 @@ public:
     IconCropTool                  = 22,
     IconDistanceTool              = 15,
     IconDocument                  = 9,
+    IconDocumentWindowLevel       = 176,
+    IconDocumentVolumeProperty    = 177,
     IconEmpty16x16                = 6,
     IconEmpty1x1                  = 10,
     IconError                     = 2, 
     IconErrorMini                 = 3,
     IconErrorRedMini              = 4,
     IconExpand                    = 5,
+    IconExpandLeftMini            = 180,
     IconExpandMini                = 23,
+    IconExpandRightMini           = 178,
+    IconExpandUpMini              = 179,
     IconEye                       = 17,
     IconFavorites                 = 67,
     IconFileOpen                  = 8,
@@ -100,6 +106,8 @@ public:
     IconPresetDelete              = 96,
     IconPresetEmail               = 97,
     IconPresetLocate              = 98,
+    IconPresetNext                = 173,
+    IconPresetPrevious            = 174,
     IconPresetUpdate              = 99,
     IconQuestion                  = 101,
     IconReload                    = 102,
@@ -188,6 +196,21 @@ public:
   virtual void Flatten(double r, double g, double b);
   virtual void Flatten(double rgb[3])
     { this->Flatten(rgb[0], rgb[1], rgb[2]); };
+
+  // Description:
+  // Compose an icon on top of this instance.
+  // Supports only same size RGBA against same size RGBA at the moment.
+  // Return 1 on success, 0 otherwise
+  virtual int Compose(vtkKWIcon *icon);
+  virtual int Compose(int icon_index);
+
+  // Description:
+  // Trip the top or right portion of an icon (i.e. look for any fully 
+  // transparent area and shift the icon to the top or right).
+  // Supports only RGBA at the moment.
+  // Return 1 on success, 0 otherwise
+  virtual int TrimTop();
+  virtual int TrimRight();
 
 protected:
   vtkKWIcon();

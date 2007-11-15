@@ -47,6 +47,7 @@ class vtkKWPresetSelectorInternals;
 class vtkKWPushButtonSet;
 class vtkRenderWindow;
 class vtkKWMenu;
+class vtkKWToolbar;
 
 class KWWidgets_EXPORT vtkKWPresetSelector : public vtkKWCompositeWidget
 {
@@ -354,6 +355,15 @@ public:
   virtual int GetListHeight();
 
   // Description:
+  // Set/Get the base icons to use for the preset buttons (and the toolbar).
+  // The base icon has to be in RGBA format, and will be composited against
+  // a few different smaller icons to represent each action; for example,
+  // a '+' sign will be composited on top of the base icon for the 
+  // "Add Preset" button.
+  vtkGetObjectMacro(PresetButtonsBaseIcon, vtkKWIcon);
+  virtual void SetPresetButtonsBaseIcon(vtkKWIcon *icon);
+
+  // Description:
   // Set/Get the visibility of the select spin buttons.
   // The select spin button are two buttons that can be used
   // to select the next or previous preset in the list.
@@ -365,7 +375,8 @@ public:
   vtkBooleanMacro(SelectSpinButtonsVisibility,int);
 
   // Description:
-  // Set/Get the visibility of the locate preset button (hidden by default).
+  // Set/Get the visibility of the locate preset button and the "Locate" menu
+  // entry in the context menu (hidden by default).
   // If visible, triggering this button will locate all selected presets
   // by calling the GetPresetFileName method and trying to open
   // the directory they are in and select the proper file.
@@ -373,23 +384,34 @@ public:
   virtual void SetLocateButtonVisibility(int);
   vtkGetMacro(LocateButtonVisibility,int);
   vtkBooleanMacro(LocateButtonVisibility,int);
+  vtkSetMacro(LocateMenuEntryVisibility,int);
+  vtkGetMacro(LocateMenuEntryVisibility,int);
+  vtkBooleanMacro(LocateMenuEntryVisibility,int);
 
   // Description:
-  // Set/Get the visibility of the email preset button (hidden by default).
+  // Set/Get the visibility of the email preset button and the "Email" menu 
+  // entry in the context menu (hidden by default).
   // If visible, triggering this button will email all selected presets
   // as attachments. The attachment location is retrieved by calling
   // the GetPresetFileName method. Win32/MAPI only at the moment.
   virtual void SetEmailButtonVisibility(int);
   vtkGetMacro(EmailButtonVisibility,int);
   vtkBooleanMacro(EmailButtonVisibility,int);
+  vtkSetMacro(EmailMenuEntryVisibility,int);
+  vtkGetMacro(EmailMenuEntryVisibility,int);
+  vtkBooleanMacro(EmailMenuEntryVisibility,int);
 
   // Description:
-  // Set/Get the visibility of the remove preset button (visible by default).
+  // Set/Get the visibility of the remove preset button or the "Remove" entry
+  // in the context menu (visible by default).
   // If visible, triggering this button will remove all selected presets and
   // eventually call the callbacks that was set using SetPresetRemoveCommand.
   virtual void SetRemoveButtonVisibility(int);
   vtkGetMacro(RemoveButtonVisibility,int);
   vtkBooleanMacro(RemoveButtonVisibility,int);
+  vtkGetMacro(RemoveMenuEntryVisibility,int);
+  vtkSetMacro(RemoveMenuEntryVisibility,int);
+  vtkBooleanMacro(RemoveMenuEntryVisibility,int);
 
   // Description:
   // Specifies a command to associate with the widget. This command is 
@@ -413,7 +435,10 @@ public:
   // collect the relevant information to update in the preset. The application
   // is then free to update the preset's fields independently (using the
   // SetPresetGroup(), SetPresetComment(), SetPreset...() methods).
-  // Note that if not set, the "update selected preset" button is not visible.
+  // Note that if this command is not set, the corresponding 
+  // "update selected preset" button is not visible.
+  // Note that if this command is not set, the corresponding "Update" entry 
+  // is not shown in the context menu.
   // The 'object' argument is the object that will have the method called on
   // it. The 'method' argument is the name of the method to be called and any
   // arguments in string form. If the object is NULL, the method is still
@@ -430,8 +455,10 @@ public:
   // for the application to query the preset's fields independently (using the
   // GetPresetGroup(), GetPresetComment(), GetPreset...() methods) and
   // apply those values to the relevant objects.
-  // Note that if not set or ApplyPresetOnSelection is On, the 
-  // "apply selected preset" button is not visible.
+  // Note that if this command is not set or if ApplyPresetOnSelection is On, 
+  // the corresponding "apply selected preset" button is not visible.
+  // Note that if this command is not set, the corresponding "Apply" entry 
+  // is not shown in the context menu.
   // The 'object' argument is the object that will have the method called on
   // it. The 'method' argument is the name of the method to be called and any
   // arguments in string form. If the object is NULL, the method is still
@@ -540,6 +567,18 @@ public:
   virtual void PresetCellUpdatedCallback(int row, int col, const char *text);
 
   // Description:
+  // Retrieve the toolbar. Use that method to set the parent of this object to
+  // a specific widget or toolbar set (vtkKWToolbarSet), before calling 
+  // CreateToolbar.
+ virtual vtkKWToolbar* GetToolbar();
+
+  // Description:
+  // Create the toolbar. If the toolbar has to be placed in a specific location
+ // in the application, call the GetToolbar method and set the toolbar parent
+ // beforehand.
+  virtual void CreateToolbar();
+
+  // Description:
   // Some constants
   //BTX
   static const char *IdColumnName;
@@ -583,10 +622,48 @@ protected:
   virtual void CreateColumns();
 
   // Description:
-  // Create the buttons.
+  // Create the preset buttons.
   // Subclasses should override this method to add their own preset buttons
   // (do not forget to call the superclass first).
   virtual void CreatePresetButtons();
+
+  // Description:
+  // Update the preset buttons state/visibility.
+  virtual void UpdatePresetButtons();
+
+  // Description:
+  // Set the preset buttons icons.
+  // Subclasses should override this method to set their own icons
+  // (do not forget to call the superclass first).
+  virtual void SetPresetButtonsIcons();
+
+  // Description:
+  // Set the preset buttons balloon help strings
+  // Subclass can override this method to change the help strings
+  // associated to the buttons.
+  virtual void SetPresetButtonsHelpStrings();
+
+  // Description:
+  // Create the preset buttons in the toolbar.
+  // Subclasses should override this method to add their own toolbar buttons
+  // (do not forget to call the superclass first).
+  virtual void CreateToolbarPresetButtons();
+
+  // Description:
+  // Update the toolbar preset buttons state/visibility.
+  virtual void UpdateToolbarPresetButtons();
+
+  // Description:
+  // Set the toolbar preset buttons icons.
+  // Subclasses should override this method to set their own icons
+  // (do not forget to call the superclass first).
+  virtual void SetToolbarPresetButtonsIcons();
+
+  // Description:
+  // Set the toolbar preset buttons balloon help strings
+  // Subclass can override this method to change the help strings
+  // associated to the buttons.
+  virtual void SetToolbarPresetButtonsHelpStrings();
 
   // Description:
   // Deallocate a preset.
@@ -613,8 +690,11 @@ protected:
   int ApplyPresetOnSelection;
   int SelectSpinButtonsVisibility;
   int EmailButtonVisibility;
+  int EmailMenuEntryVisibility;
   int LocateButtonVisibility;
+  int LocateMenuEntryVisibility;
   int RemoveButtonVisibility;
+  int RemoveMenuEntryVisibility;
 
   int ThumbnailSize;
   int ScreenshotSize;
@@ -662,12 +742,6 @@ protected:
   virtual void Pack();
 
   // Description:
-  // Set the default balloon help strings
-  // Subclass can override this method to change the help strings
-  // associated to the buttons.
-  virtual void SetDefaultHelpStrings();
-
-  // Description:
   // Populate the pop-up context menu that is displayed when right-clicking
   // on a give preset. It should replicate the commands available through the
   // preset buttons.
@@ -691,6 +765,17 @@ protected:
   //ETX
 
   // Description:
+  // Access to the button label in the toolbar (for retrieval purposes)
+  virtual const char* GetSelectPreviousButtonLabel();
+  virtual const char* GetSelectNextButtonLabel();
+  virtual const char* GetAddButtonLabel();
+  virtual const char* GetApplyButtonLabel();
+  virtual const char* GetUpdateButtonLabel();
+  virtual const char* GetRemoveButtonLabel();
+  virtual const char* GetLocateButtonLabel();
+  virtual const char* GetEmailButtonLabel();
+  
+  // Description:
   // Delete all presets, i.e. deallocate all presets and remove them
   // from the pool. Does not delete/remove any rows, see RemoveAllPresets()
   // to both delete all presets and update the table accordingly.
@@ -698,13 +783,12 @@ protected:
   virtual int DeleteAllPresets();
 
   // Description:
-  // Update the preset buttons state/visibility
-  virtual void UpdatePresetButtons();
-
-  // Description:
   // Return the number of selected presets with filename
   virtual int GetNumberOfSelectedPresetsWithFileName();
 
+  vtkKWToolbar *Toolbar;
+  vtkKWIcon *PresetButtonsBaseIcon;
+  
 private:
 
   // Description:

@@ -28,6 +28,7 @@
 #include "vtkKWMultiColumnListWithScrollbars.h"
 #include "vtkKWPushButton.h"
 #include "vtkKWPushButtonSet.h"
+#include "vtkKWToolbar.h"
 #include "vtkObjectFactory.h"
 #include "vtkRenderWindow.h"
 #include "vtkWindowToImageFilter.h"
@@ -58,7 +59,7 @@ const char *vtkKWPresetSelector::CommentColumnName   = "Comment";
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkKWPresetSelector);
-vtkCxxRevisionMacro(vtkKWPresetSelector, "$Revision: 1.55 $");
+vtkCxxRevisionMacro(vtkKWPresetSelector, "$Revision: 1.62 $");
 
 //----------------------------------------------------------------------------
 class vtkKWPresetSelectorInternals
@@ -140,6 +141,17 @@ public:
   typedef vtksys_stl::map<UserSlotNameType, PresetFilterConstraint>::iterator PresetFilterIterator;
 
   PresetFilterType PresetFilter;
+
+  // Button label (internal purposes)
+
+  vtksys_stl::string SelectPreviousButtonLabel;
+  vtksys_stl::string SelectNextButtonLabel;
+  vtksys_stl::string AddButtonLabel;
+  vtksys_stl::string ApplyButtonLabel;
+  vtksys_stl::string UpdateButtonLabel;
+  vtksys_stl::string RemoveButtonLabel;
+  vtksys_stl::string LocateButtonLabel;
+  vtksys_stl::string EmailButtonLabel;
 };
 
 //---------------------------------------------------------------------------
@@ -207,6 +219,30 @@ vtkKWPresetSelector::vtkKWPresetSelector()
   this->Internals->ThumbnailSlotName = "DefaultThumbnailSlot";
   this->Internals->ScreenshotSlotName = "DefaultScreenshotSlot";
 
+  this->Internals->SelectPreviousButtonLabel = 
+    ks_("Preset Selector|Button|Previous");
+
+  this->Internals->SelectNextButtonLabel = 
+    ks_("Preset Selector|Button|Next");
+
+  this->Internals->AddButtonLabel = 
+    ks_("Preset Selector|Button|Add");
+
+  this->Internals->ApplyButtonLabel = 
+    ks_("Preset Selector|Button|Apply");
+
+  this->Internals->UpdateButtonLabel = 
+    ks_("Preset Selector|Button|Update");
+
+  this->Internals->RemoveButtonLabel = 
+    ks_("Preset Selector|Button|Remove");
+
+  this->Internals->LocateButtonLabel = 
+    ks_("Preset Selector|Button|Locate");
+
+  this->Internals->EmailButtonLabel = 
+    ks_("Preset Selector|Button|Email");
+
   this->PresetAddCommand        = NULL;
   this->PresetUpdateCommand     = NULL;
   this->PresetApplyCommand      = NULL;
@@ -220,14 +256,27 @@ vtkKWPresetSelector::vtkKWPresetSelector()
   this->ApplyPresetOnSelection = 1;
   this->SelectSpinButtonsVisibility = 1;
   this->LocateButtonVisibility = 0;
+  this->LocateMenuEntryVisibility = 0;
   this->RemoveButtonVisibility = 1;
+  this->RemoveMenuEntryVisibility = 1;
   this->EmailButtonVisibility = 0;
+  this->EmailMenuEntryVisibility = 0;
 
   this->ThumbnailSize = 32;
   this->ScreenshotSize = 144;
   this->PromptBeforeRemovePreset = 1;
 
   this->ContextMenu = NULL;
+
+  this->Toolbar = NULL;
+
+  this->PresetButtonsBaseIcon = NULL;
+  vtkKWIcon *icon = vtkKWIcon::New();
+  icon->SetImage(vtkKWIcon::IconDocument);
+  icon->TrimTop();
+  icon->TrimRight();
+  this->SetPresetButtonsBaseIcon(icon);
+  icon->Delete();
 }
 
 //----------------------------------------------------------------------------
@@ -295,6 +344,18 @@ vtkKWPresetSelector::~vtkKWPresetSelector()
     this->ContextMenu->Delete();
     this->ContextMenu = NULL;
     }
+
+  if (this->Toolbar)
+    {
+    this->Toolbar->Delete();
+    this->Toolbar = NULL;
+    }
+
+  if (this->PresetButtonsBaseIcon)
+    {
+    this->PresetButtonsBaseIcon->Delete();
+    this->PresetButtonsBaseIcon = NULL;
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -335,7 +396,7 @@ void vtkKWPresetSelector::CreateWidget()
     }
   else
     {
-    list->SetSelectionModeToExtended();
+    list->SetSelectionModeToBrowse();
     }
   list->SetSelectionCommand(
     this, "PresetSelectionCallback");
@@ -377,13 +438,15 @@ void vtkKWPresetSelector::CreateWidget()
   this->PresetButtons->PackHorizontallyOn();
   this->PresetButtons->SetWidgetsPadX(2);
   this->PresetButtons->SetWidgetsPadY(2);
-  this->PresetButtons->SetWidgetsInternalPadY(1);
+  this->PresetButtons->SetWidgetsInternalPadX(2);
+  this->PresetButtons->SetWidgetsInternalPadY(2);
   this->PresetButtons->ExpandWidgetsOn();
   this->PresetButtons->Create();
 
   this->CreatePresetButtons();
 
-  this->SetDefaultHelpStrings();
+  this->SetPresetButtonsIcons();
+  this->SetPresetButtonsHelpStrings();
 
   // Pack
 
@@ -392,6 +455,55 @@ void vtkKWPresetSelector::CreateWidget()
   // Update enable state
 
   this->Update();
+}
+
+//----------------------------------------------------------------------------
+void vtkKWPresetSelector::CreateToolbar()
+{
+  if (!this->Toolbar)
+    {
+    return;
+    }
+
+  if (!this->Toolbar->GetParent())
+    {
+    this->Toolbar->SetParent(this);
+    }
+
+  this->Toolbar->Create();
+  this->Toolbar->SetWidgetsFlatAdditionalPadX(
+    this->Toolbar->GetWidgetsFlatAdditionalPadX() + 3);
+
+  this->CreateToolbarPresetButtons();
+
+  this->SetToolbarPresetButtonsIcons();
+  this->SetToolbarPresetButtonsHelpStrings();
+}
+
+//----------------------------------------------------------------------------
+void vtkKWPresetSelector::SetPresetButtonsBaseIcon(vtkKWIcon *icon)
+{
+  if (this->PresetButtonsBaseIcon == icon)
+    {
+    return;
+    }
+
+  if (this->PresetButtonsBaseIcon)
+    {
+    this->PresetButtonsBaseIcon->UnRegister(this);
+    this->PresetButtonsBaseIcon = NULL;
+    }
+
+  if (icon)
+    {
+    this->PresetButtonsBaseIcon = icon;
+    this->PresetButtonsBaseIcon->Register(this);
+    }
+
+  this->Modified();
+
+  this->SetPresetButtonsIcons();
+  this->SetToolbarPresetButtonsIcons();
 }
 
 //----------------------------------------------------------------------------
@@ -404,56 +516,46 @@ void vtkKWPresetSelector::CreatePresetButtons()
 
   vtkKWPushButton *pb = NULL;
 
-  // select previous preset
+  // Select previous preset
 
   pb = this->PresetButtons->AddWidget(
     vtkKWPresetSelector::SelectPreviousButtonId);
-  pb->SetImageToPredefinedIcon(vtkKWIcon::IconSpinUp);
-  pb->SetHeight(12);
   pb->SetCommand(this, "SelectPreviousPreset");
 
-  // select next preset
+  // Select next preset
 
   pb = this->PresetButtons->AddWidget(
     vtkKWPresetSelector::SelectNextButtonId);
-  pb->SetImageToPredefinedIcon(vtkKWIcon::IconSpinDown);
-  pb->SetHeight(12);
   pb->SetCommand(this, "SelectNextPreset");
 
-  // add preset
+  // Add preset
 
   pb = this->PresetButtons->AddWidget(vtkKWPresetSelector::AddButtonId);
-  pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetAdd);
   pb->SetCommand(this, "PresetAddCallback");
 
-  // apply preset
+  // Apply preset
 
   pb = this->PresetButtons->AddWidget(vtkKWPresetSelector::ApplyButtonId);
-  pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetApply);
   pb->SetCommand(this, "PresetApplyCallback");
 
-  // update preset
+  // Update preset
 
   pb = this->PresetButtons->AddWidget(vtkKWPresetSelector::UpdateButtonId);
-  pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetUpdate);
   pb->SetCommand(this, "PresetUpdateCallback");
 
-  // remove preset
+  // Remove preset
 
   pb = this->PresetButtons->AddWidget(vtkKWPresetSelector::RemoveButtonId);
-  pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetDelete);
   pb->SetCommand(this, "PresetRemoveCallback");
 
-  // locate preset
+  // Locate preset
 
   pb = this->PresetButtons->AddWidget(vtkKWPresetSelector::LocateButtonId);
-  pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetLocate);
   pb->SetCommand(this, "PresetLocateCallback");
 
-  // email preset
+  // Email preset
 
   pb = this->PresetButtons->AddWidget(vtkKWPresetSelector::EmailButtonId);
-  pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetEmail);
   pb->SetCommand(this, "PresetEmailCallback");
 }
 
@@ -476,7 +578,7 @@ void vtkKWPresetSelector::UpdatePresetButtons()
 
   int has_presets = this->GetNumberOfVisiblePresets();
 
-  // Select prev/next
+  // Select prev
 
   this->PresetButtons->SetWidgetVisibility(
     vtkKWPresetSelector::SelectPreviousButtonId, 
@@ -485,6 +587,8 @@ void vtkKWPresetSelector::UpdatePresetButtons()
   this->PresetButtons->GetWidget(
     vtkKWPresetSelector::SelectPreviousButtonId)->SetEnabled(
       has_presets ? this->PresetButtons->GetEnabled() : 0);
+
+  // Select next
 
   this->PresetButtons->SetWidgetVisibility(
     vtkKWPresetSelector::SelectNextButtonId, 
@@ -523,13 +627,13 @@ void vtkKWPresetSelector::UpdatePresetButtons()
 
   // Remove
 
-  this->PresetButtons->GetWidget(
-    vtkKWPresetSelector::RemoveButtonId)->SetEnabled(
-      has_selection ? this->PresetButtons->GetEnabled() : 0);
-
   this->PresetButtons->SetWidgetVisibility(
     vtkKWPresetSelector::RemoveButtonId, 
     this->RemoveButtonVisibility ? 1 : 0);
+
+  this->PresetButtons->GetWidget(
+    vtkKWPresetSelector::RemoveButtonId)->SetEnabled(
+      has_selection ? this->PresetButtons->GetEnabled() : 0);
 
   // Locate
 
@@ -553,37 +657,661 @@ void vtkKWPresetSelector::UpdatePresetButtons()
 }
 
 //----------------------------------------------------------------------------
-void vtkKWPresetSelector::SetDefaultHelpStrings()
+void vtkKWPresetSelector::SetPresetButtonsIcons()
 {
   if (!this->PresetButtons)
     {
     return;
     }
 
-  this->PresetButtons->GetWidget(vtkKWPresetSelector::SelectPreviousButtonId)->
-    SetBalloonHelpString(
-      ks_("Preset Selector|Select and apply previous preset"));
+  vtkKWPushButton *pb;
+  vtkKWIcon *icon = NULL;
+
+  if (this->PresetButtonsBaseIcon)
+    {
+    icon = vtkKWIcon::New();
+    }
+      
+  // Select prev
+
+  pb = 
+    this->PresetButtons->GetWidget(vtkKWPresetSelector::SelectPreviousButtonId);
+  if (this->PresetButtonsBaseIcon)
+    {
+    icon->SetImage(this->PresetButtonsBaseIcon);
+    icon->Compose(vtkKWIcon::IconPresetPrevious);
+    pb->SetImageToIcon(icon);
+    }
+  else
+    {
+    pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetPrevious);
+    }
   
+  // Select next
+
+  pb = 
+    this->PresetButtons->GetWidget(vtkKWPresetSelector::SelectNextButtonId);
+  if (this->PresetButtonsBaseIcon)
+    {
+    icon->SetImage(this->PresetButtonsBaseIcon);
+    icon->Compose(vtkKWIcon::IconPresetNext);
+    pb->SetImageToIcon(icon);
+    }
+  else
+    {
+    pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetNext);
+    }
+
+  // Add
+
+  pb = 
+    this->PresetButtons->GetWidget(vtkKWPresetSelector::AddButtonId);
+  if (this->PresetButtonsBaseIcon)
+    {
+    icon->SetImage(this->PresetButtonsBaseIcon);
+    icon->Compose(vtkKWIcon::IconPresetAdd);
+    pb->SetImageToIcon(icon);
+    }
+  else
+    {
+    pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetAdd);
+    }
+
+  // Apply
+
+  pb = 
+    this->PresetButtons->GetWidget(vtkKWPresetSelector::ApplyButtonId);
+  if (this->PresetButtonsBaseIcon)
+    {
+    icon->SetImage(this->PresetButtonsBaseIcon);
+    icon->Compose(vtkKWIcon::IconPresetApply);
+    pb->SetImageToIcon(icon);
+    }
+  else
+    {
+    pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetApply);
+    }
+
+  // Update
+
+  pb = 
+    this->PresetButtons->GetWidget(vtkKWPresetSelector::UpdateButtonId);
+  if (this->PresetButtonsBaseIcon)
+    {
+    icon->SetImage(this->PresetButtonsBaseIcon);
+    icon->Compose(vtkKWIcon::IconPresetUpdate);
+    pb->SetImageToIcon(icon);
+    }
+  else
+    {
+    pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetUpdate);
+    }
+    
+  // Remove
+
+  pb = 
+    this->PresetButtons->GetWidget(vtkKWPresetSelector::RemoveButtonId);
+  if (this->PresetButtonsBaseIcon)
+    {
+    icon->SetImage(this->PresetButtonsBaseIcon);
+    icon->Compose(vtkKWIcon::IconPresetDelete);
+    pb->SetImageToIcon(icon);
+    }
+  else
+    {
+    pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetDelete);
+    }
+    
+  // Locate
+
+  pb = 
+    this->PresetButtons->GetWidget(vtkKWPresetSelector::LocateButtonId);
+  if (this->PresetButtonsBaseIcon)
+    {
+    icon->SetImage(this->PresetButtonsBaseIcon);
+    icon->Compose(vtkKWIcon::IconPresetLocate);
+    pb->SetImageToIcon(icon);
+    }
+  else
+    {
+    pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetLocate);
+    }
+
+  // Email
+
+  pb = 
+    this->PresetButtons->GetWidget(vtkKWPresetSelector::EmailButtonId);
+  if (this->PresetButtonsBaseIcon)
+    {
+    icon->SetImage(this->PresetButtonsBaseIcon);
+    icon->Compose(vtkKWIcon::IconPresetEmail);
+    pb->SetImageToIcon(icon);
+    }
+  else
+    {
+    pb->SetImageToPredefinedIcon(vtkKWIcon::IconPresetEmail);
+    }
+
+  // Release icon
+
+  if (icon)
+    {
+    icon->Delete();
+    }
+}
+
+//----------------------------------------------------------------------------
+void vtkKWPresetSelector::SetPresetButtonsHelpStrings()
+{
+  if (!this->PresetButtons)
+    {
+    return;
+    }
+
+  // Select prev
+
+  this->PresetButtons->GetWidget(vtkKWPresetSelector::SelectPreviousButtonId)->
+    SetBalloonHelpString(ks_("Preset Selector|Select previous preset"));
+  
+  // Select next
+
   this->PresetButtons->GetWidget(vtkKWPresetSelector::SelectNextButtonId)->
-    SetBalloonHelpString(ks_("Preset Selector|Select and apply next preset"));
+    SetBalloonHelpString(ks_("Preset Selector|Select next preset"));
+
+  // Add
 
   this->PresetButtons->GetWidget(vtkKWPresetSelector::AddButtonId)->
     SetBalloonHelpString(ks_("Preset Selector|Add a preset"));
 
+  // Apply
+
   this->PresetButtons->GetWidget(vtkKWPresetSelector::ApplyButtonId)->
     SetBalloonHelpString(ks_("Preset Selector|Apply the selected preset(s)"));
+
+  // Update
 
   this->PresetButtons->GetWidget(vtkKWPresetSelector::UpdateButtonId)->
     SetBalloonHelpString(ks_("Preset Selector|Update the selected preset(s)"));
     
+  // Remove
+
   this->PresetButtons->GetWidget(vtkKWPresetSelector::RemoveButtonId)->
     SetBalloonHelpString(ks_("Preset Selector|Delete the selected preset(s)"));
 
+  // Locate
+
   this->PresetButtons->GetWidget(vtkKWPresetSelector::LocateButtonId)->
-    SetBalloonHelpString(ks_("Preset Selector|Locate the selected preset(s)"));
+    SetBalloonHelpString(
+      ks_("Preset Selector|Locate the selected preset(s) on disk"));
+
+  // Email
 
   this->PresetButtons->GetWidget(vtkKWPresetSelector::EmailButtonId)->
     SetBalloonHelpString(ks_("Preset Selector|Email the selected preset(s)"));
+}
+
+//----------------------------------------------------------------------------
+void vtkKWPresetSelector::CreateToolbarPresetButtons()
+{
+  if (!this->Toolbar || !this->PresetButtons)
+    {
+    return;
+    }
+
+  vtkKWPushButton *toolbar_pb;
+  vtkKWPushButton *pb;
+
+  // Select previous preset
+
+  toolbar_pb = vtkKWPushButton::New();
+  toolbar_pb->SetParent(this->Toolbar->GetFrame());
+  toolbar_pb->Create();
+  toolbar_pb->SetText(this->GetSelectPreviousButtonLabel());
+  pb = vtkKWPushButton::SafeDownCast(
+    this->PresetButtons->GetWidget(
+      vtkKWPresetSelector::SelectPreviousButtonId));
+  toolbar_pb->SetConfigurationOption(
+    "-command", pb->GetConfigurationOption("-command"));
+  this->Toolbar->AddWidget(toolbar_pb);
+  toolbar_pb->Delete();
+
+  // Select next preset
+
+  toolbar_pb = vtkKWPushButton::New();
+  toolbar_pb->SetParent(this->Toolbar->GetFrame());
+  toolbar_pb->Create();
+  toolbar_pb->SetText(this->GetSelectNextButtonLabel());
+  pb = vtkKWPushButton::SafeDownCast(
+    this->PresetButtons->GetWidget(
+      vtkKWPresetSelector::SelectNextButtonId));
+  toolbar_pb->SetConfigurationOption(
+    "-command", pb->GetConfigurationOption("-command"));
+  this->Toolbar->AddWidget(toolbar_pb);
+  toolbar_pb->Delete();
+
+  // Add preset
+
+  toolbar_pb = vtkKWPushButton::New();
+  toolbar_pb->SetParent(this->Toolbar->GetFrame());
+  toolbar_pb->Create();
+  toolbar_pb->SetText(this->GetAddButtonLabel());
+  pb = vtkKWPushButton::SafeDownCast(
+    this->PresetButtons->GetWidget(
+      vtkKWPresetSelector::AddButtonId));
+  toolbar_pb->SetConfigurationOption(
+    "-command", pb->GetConfigurationOption("-command"));
+  this->Toolbar->AddWidget(toolbar_pb);
+  toolbar_pb->Delete();
+
+  // Apply preset
+
+  toolbar_pb = vtkKWPushButton::New();
+  toolbar_pb->SetParent(this->Toolbar->GetFrame());
+  toolbar_pb->Create();
+  toolbar_pb->SetText(this->GetApplyButtonLabel());
+  pb = vtkKWPushButton::SafeDownCast(
+    this->PresetButtons->GetWidget(
+      vtkKWPresetSelector::ApplyButtonId));
+  toolbar_pb->SetConfigurationOption(
+    "-command", pb->GetConfigurationOption("-command"));
+  this->Toolbar->AddWidget(toolbar_pb);
+  toolbar_pb->Delete();
+
+  // Update preset
+
+  toolbar_pb = vtkKWPushButton::New();
+  toolbar_pb->SetParent(this->Toolbar->GetFrame());
+  toolbar_pb->Create();
+  toolbar_pb->SetText(this->GetUpdateButtonLabel());
+  pb = vtkKWPushButton::SafeDownCast(
+    this->PresetButtons->GetWidget(
+      vtkKWPresetSelector::UpdateButtonId));
+  toolbar_pb->SetConfigurationOption(
+    "-command", pb->GetConfigurationOption("-command"));
+  this->Toolbar->AddWidget(toolbar_pb);
+  toolbar_pb->Delete();
+
+  // Remove preset
+
+  toolbar_pb = vtkKWPushButton::New();
+  toolbar_pb->SetParent(this->Toolbar->GetFrame());
+  toolbar_pb->Create();
+  toolbar_pb->SetText(this->GetRemoveButtonLabel());
+  pb = vtkKWPushButton::SafeDownCast(
+    this->PresetButtons->GetWidget(
+      vtkKWPresetSelector::RemoveButtonId));
+  toolbar_pb->SetConfigurationOption(
+    "-command", pb->GetConfigurationOption("-command"));
+  this->Toolbar->AddWidget(toolbar_pb);
+  toolbar_pb->Delete();
+
+  // Locate preset
+
+  toolbar_pb = vtkKWPushButton::New();
+  toolbar_pb->SetParent(this->Toolbar->GetFrame());
+  toolbar_pb->Create();
+  toolbar_pb->SetText(this->GetLocateButtonLabel());
+  pb = vtkKWPushButton::SafeDownCast(
+    this->PresetButtons->GetWidget(
+      vtkKWPresetSelector::LocateButtonId));
+  toolbar_pb->SetConfigurationOption(
+    "-command", pb->GetConfigurationOption("-command"));
+  this->Toolbar->AddWidget(toolbar_pb);
+  toolbar_pb->Delete();
+
+  // Email preset
+
+  toolbar_pb = vtkKWPushButton::New();
+  toolbar_pb->SetParent(this->Toolbar->GetFrame());
+  toolbar_pb->Create();
+  toolbar_pb->SetText(this->GetEmailButtonLabel());
+  pb = vtkKWPushButton::SafeDownCast(
+    this->PresetButtons->GetWidget(
+      vtkKWPresetSelector::EmailButtonId));
+  toolbar_pb->SetConfigurationOption(
+    "-command", pb->GetConfigurationOption("-command"));
+  this->Toolbar->AddWidget(toolbar_pb);
+  toolbar_pb->Delete();
+}
+
+//---------------------------------------------------------------------------
+void vtkKWPresetSelector::UpdateToolbarPresetButtons()
+{
+  if (!this->PresetButtons || !this->Toolbar)
+    {
+    return;
+    }
+
+  this->Toolbar->SetEnabled(this->GetEnabled());
+
+  vtkKWPushButton *toolbar_pb;
+
+  // Select prev
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetSelectPreviousButtonLabel()));
+  if (toolbar_pb)
+    {
+    this->Toolbar->SetWidgetVisibility(
+      toolbar_pb, 
+      this->PresetButtons->GetWidgetVisibility(
+        vtkKWPresetSelector::SelectPreviousButtonId));
+    toolbar_pb->SetEnabled(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::SelectPreviousButtonId)->GetEnabled());
+    }
+
+  // Select next
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetSelectNextButtonLabel()));
+  if (toolbar_pb)
+    {
+    this->Toolbar->SetWidgetVisibility(
+      toolbar_pb,
+      this->PresetButtons->GetWidgetVisibility(
+        vtkKWPresetSelector::SelectNextButtonId));
+    toolbar_pb->SetEnabled(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::SelectNextButtonId)->GetEnabled());
+    }
+
+  // Add
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetAddButtonLabel()));
+  if (toolbar_pb)
+    {
+    this->Toolbar->SetWidgetVisibility(
+      toolbar_pb,
+      this->PresetButtons->GetWidgetVisibility(
+        vtkKWPresetSelector::AddButtonId));
+    toolbar_pb->SetEnabled(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::AddButtonId)->GetEnabled());
+    }
+
+  // Apply
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetApplyButtonLabel()));
+  if (toolbar_pb)
+    {
+    this->Toolbar->SetWidgetVisibility(
+      toolbar_pb,
+      this->PresetButtons->GetWidgetVisibility(
+        vtkKWPresetSelector::ApplyButtonId));
+    toolbar_pb->SetEnabled(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::ApplyButtonId)->GetEnabled());
+    }
+
+  // Update
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetUpdateButtonLabel()));
+  if (toolbar_pb)
+    {
+    this->Toolbar->SetWidgetVisibility(
+      toolbar_pb,
+      this->PresetButtons->GetWidgetVisibility(
+        vtkKWPresetSelector::UpdateButtonId));
+    toolbar_pb->SetEnabled(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::UpdateButtonId)->GetEnabled());
+    }
+
+  // Remove
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetRemoveButtonLabel()));
+  if (toolbar_pb)
+    {
+    this->Toolbar->SetWidgetVisibility(
+      toolbar_pb,
+      this->PresetButtons->GetWidgetVisibility(
+        vtkKWPresetSelector::RemoveButtonId));
+    toolbar_pb->SetEnabled(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::RemoveButtonId)->GetEnabled());
+    }
+
+  // Locate
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetLocateButtonLabel()));
+  if (toolbar_pb)
+    {
+    this->Toolbar->SetWidgetVisibility(
+      toolbar_pb,
+      this->PresetButtons->GetWidgetVisibility(
+        vtkKWPresetSelector::LocateButtonId));
+    toolbar_pb->SetEnabled(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::LocateButtonId)->GetEnabled());
+    }
+
+  // Email
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetEmailButtonLabel()));
+  if (toolbar_pb)
+    {
+    this->Toolbar->SetWidgetVisibility(
+      toolbar_pb,
+      this->PresetButtons->GetWidgetVisibility(
+        vtkKWPresetSelector::EmailButtonId));
+    toolbar_pb->SetEnabled(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::EmailButtonId)->GetEnabled());
+    }
+}
+
+//----------------------------------------------------------------------------
+void vtkKWPresetSelector::SetToolbarPresetButtonsIcons()
+{
+  if (!this->PresetButtons || !this->Toolbar)
+    {
+    return;
+    }
+
+  vtkKWPushButton *toolbar_pb;
+  vtkKWPushButton *pb;
+
+  // Select previous preset
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetSelectPreviousButtonLabel()));
+  if (toolbar_pb)
+    {
+    pb = vtkKWPushButton::SafeDownCast(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::SelectPreviousButtonId));
+    toolbar_pb->SetConfigurationOption(
+      "-image", pb->GetConfigurationOption("-image"));
+    }
+
+  // Select next preset
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetSelectNextButtonLabel()));
+  if (toolbar_pb)
+    {
+    pb = vtkKWPushButton::SafeDownCast(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::SelectNextButtonId));
+    toolbar_pb->SetConfigurationOption(
+      "-image", pb->GetConfigurationOption("-image"));
+    }
+  
+  // Add preset
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetAddButtonLabel()));
+  if (toolbar_pb)
+    {
+    pb = vtkKWPushButton::SafeDownCast(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::AddButtonId));
+    toolbar_pb->SetConfigurationOption(
+      "-image", pb->GetConfigurationOption("-image"));
+    }
+
+  // Apply preset
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetApplyButtonLabel()));
+  if (toolbar_pb)
+    {
+    pb = vtkKWPushButton::SafeDownCast(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::ApplyButtonId));
+    toolbar_pb->SetConfigurationOption(
+      "-image", pb->GetConfigurationOption("-image"));
+    }
+  
+  // Update preset
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetUpdateButtonLabel()));
+  if (toolbar_pb)
+    {
+    pb = vtkKWPushButton::SafeDownCast(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::UpdateButtonId));
+    toolbar_pb->SetConfigurationOption(
+      "-image", pb->GetConfigurationOption("-image"));
+    }
+
+  // Remove preset
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetRemoveButtonLabel()));
+  if (toolbar_pb)
+    {
+    pb = vtkKWPushButton::SafeDownCast(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::RemoveButtonId));
+    toolbar_pb->SetConfigurationOption(
+      "-image", pb->GetConfigurationOption("-image"));
+    }
+  
+  // Locate preset
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetLocateButtonLabel()));
+  if (toolbar_pb)
+    {
+    pb = vtkKWPushButton::SafeDownCast(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::LocateButtonId));
+    toolbar_pb->SetConfigurationOption(
+      "-image", pb->GetConfigurationOption("-image"));
+    }
+  
+  // Email preset
+
+  toolbar_pb = vtkKWPushButton::SafeDownCast(
+    this->Toolbar->GetWidget(this->GetEmailButtonLabel()));
+  if (toolbar_pb)
+    {
+    pb = vtkKWPushButton::SafeDownCast(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::EmailButtonId));
+    toolbar_pb->SetConfigurationOption(
+      "-image", pb->GetConfigurationOption("-image"));
+    }
+}
+
+//----------------------------------------------------------------------------
+void vtkKWPresetSelector::SetToolbarPresetButtonsHelpStrings()
+{
+  if (!this->PresetButtons || !this->Toolbar)
+    {
+    return;
+    }
+
+  vtkKWWidget *toolbar_pb;
+
+  // Select previous preset
+
+  toolbar_pb = this->Toolbar->GetWidget(this->GetSelectPreviousButtonLabel());
+  if (toolbar_pb)
+    {
+    toolbar_pb->SetBalloonHelpString(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::SelectPreviousButtonId)->GetBalloonHelpString());
+    }
+
+  // Select next preset
+
+  toolbar_pb = this->Toolbar->GetWidget(this->GetSelectNextButtonLabel());
+  if (toolbar_pb)
+    {
+    toolbar_pb->SetBalloonHelpString(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::SelectNextButtonId)->GetBalloonHelpString());
+    }
+  
+  // Add preset
+
+  toolbar_pb = this->Toolbar->GetWidget(this->GetAddButtonLabel());
+  if (toolbar_pb)
+    {
+    toolbar_pb->SetBalloonHelpString(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::AddButtonId)->GetBalloonHelpString());
+    }
+
+  // Apply preset
+
+  toolbar_pb = this->Toolbar->GetWidget(this->GetApplyButtonLabel());
+  if (toolbar_pb)
+    {
+    toolbar_pb->SetBalloonHelpString(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::ApplyButtonId)->GetBalloonHelpString());
+    }
+  
+  // Update preset
+
+  toolbar_pb = this->Toolbar->GetWidget(this->GetUpdateButtonLabel());
+  if (toolbar_pb)
+    {
+    toolbar_pb->SetBalloonHelpString(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::UpdateButtonId)->GetBalloonHelpString());
+    }
+
+  // Remove preset
+
+  toolbar_pb = this->Toolbar->GetWidget(this->GetRemoveButtonLabel());
+  if (toolbar_pb)
+    {
+    toolbar_pb->SetBalloonHelpString(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::RemoveButtonId)->GetBalloonHelpString());
+    }
+  
+  // Locate preset
+
+  toolbar_pb = this->Toolbar->GetWidget(this->GetLocateButtonLabel());
+  if (toolbar_pb)
+    {
+    toolbar_pb->SetBalloonHelpString(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::LocateButtonId)->GetBalloonHelpString());
+    }
+  
+  // Email preset
+
+  toolbar_pb = this->Toolbar->GetWidget(this->GetEmailButtonLabel());
+  if (toolbar_pb)
+    {
+    toolbar_pb->SetBalloonHelpString(
+      this->PresetButtons->GetWidget(
+        vtkKWPresetSelector::EmailButtonId)->GetBalloonHelpString());
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -594,13 +1322,13 @@ void vtkKWPresetSelector::PopulatePresetContextMenu(vtkKWMenu *menu, int id)
     return;
     }
 
-  char command[256];
+  char command[256], label[256];
 
   const char *filename = this->GetPresetFileName(id);
   int has_file = 
     (filename && *filename && vtksys::SystemTools::FileExists(filename));
   
-  // apply preset
+  // Apply preset
 
   if (this->PresetApplyCommand)
     {
@@ -608,7 +1336,7 @@ void vtkKWPresetSelector::PopulatePresetContextMenu(vtkKWMenu *menu, int id)
     menu->AddCommand("Apply", this, command);
     }
 
-  // update preset
+  // Update preset
 
   if (this->PresetUpdateCommand)
     {
@@ -616,25 +1344,64 @@ void vtkKWPresetSelector::PopulatePresetContextMenu(vtkKWMenu *menu, int id)
     menu->AddCommand("Update", this, command);
     }
 
-  // remove preset
+  // Remove preset
 
-  sprintf(command, "PresetRemoveCallback %d", id);
-  menu->AddCommand("Remove", this, command);
+  if (this->RemoveMenuEntryVisibility)
+    {
+    sprintf(command, "PresetRemoveCallback %d", id);
+    menu->AddCommand("Remove", this, command);
+    }
 
-  // locate preset
+  // Locate preset
 
-  if (has_file)
+  if (has_file && this->LocateMenuEntryVisibility)
     {
     sprintf(command, "PresetLocateCallback %d", id);
     menu->AddCommand("Locate", this, command);
     }
 
-  // email preset
+  // Email preset
 
-  if (has_file)
+  if (has_file && this->EmailMenuEntryVisibility)
     {
     sprintf(command, "PresetEmailCallback %d", id);
     menu->AddCommand("Email", this, command);
+    }
+
+  // now the editable fields
+
+  vtkKWMultiColumnList *list = this->PresetList->GetWidget();
+  int added_editable = 0, col_vis = 0, nb_columns = list->GetNumberOfColumns();
+  for (int col = 0; col < nb_columns; col++)
+    {
+    if (list->GetColumnVisibility(col))
+      {
+      col_vis++;
+      if (list->GetColumnEditable(col))
+        {
+        int row = this->GetPresetRow(id);
+        if (row >= 0 && list->GetCellEditable(row, col))
+          
+          {
+          sprintf(command, "EditCell %d %d", row, col);
+          const char *col_name = list->GetColumnName(col);
+          if (col_name)
+            {
+            sprintf(label, "Edit %s", col_name);
+            }
+          else
+            {
+            sprintf(label, "Edit column %d", col_vis);
+            }
+          if (!added_editable)
+            {
+            menu->AddSeparator();
+            added_editable = 1;
+            }
+          menu->AddCommand(label, list, command);
+          }
+        }
+      }
     }
 }
 
@@ -653,7 +1420,7 @@ void vtkKWPresetSelector::Pack()
 
   if (this->PresetButtons && this->PresetButtons->IsCreated())
     {
-    this->Script("pack %s -side top -anchor nw -fill x -expand t",
+    this->Script("pack %s -side top -anchor nw -fill none -expand t",
                  this->PresetButtons->GetWidgetName());
     }
 }
@@ -752,7 +1519,7 @@ void vtkKWPresetSelector::SetApplyPresetOnSelection(int arg)
       }
     else
       {
-      this->PresetList->GetWidget()->SetSelectionModeToExtended();
+      this->PresetList->GetWidget()->SetSelectionModeToBrowse();
       }
     }
 }
@@ -2155,6 +2922,7 @@ void vtkKWPresetSelector::SelectPreset(int id)
     this->PresetList->GetWidget()->SelectSingleRow(row);
     this->PresetList->GetWidget()->SeeRow(row);
     this->UpdatePresetButtons();
+    this->UpdateToolbarPresetButtons();
     }
 }
 
@@ -2180,6 +2948,7 @@ void vtkKWPresetSelector::SelectPreviousPreset()
       list->SelectSingleRow(prev_row);
       list->SeeRow(prev_row);
       this->UpdatePresetButtons();
+      this->UpdateToolbarPresetButtons();
       }
     }
 }
@@ -2206,6 +2975,7 @@ void vtkKWPresetSelector::SelectNextPreset()
       list->SelectSingleRow(next_row);
       list->SeeRow(next_row);
       this->UpdatePresetButtons();
+      this->UpdateToolbarPresetButtons();
       }
     }
 }
@@ -2217,6 +2987,7 @@ void vtkKWPresetSelector::ClearSelection()
     {
     this->PresetList->GetWidget()->ClearSelection();
     this->UpdatePresetButtons();
+    this->UpdateToolbarPresetButtons();
     }
 }
 
@@ -3010,12 +3781,72 @@ void vtkKWPresetSelector::InvokePresetHasChangedCommand(int id)
     }
 }
 
+//----------------------------------------------------------------------------
+vtkKWToolbar* vtkKWPresetSelector::GetToolbar()
+{
+  if (!this->Toolbar)
+    {
+    this->Toolbar = vtkKWToolbar::New();
+    }
+
+  return this->Toolbar;
+}
+
+//---------------------------------------------------------------------------
+const char* vtkKWPresetSelector::GetSelectPreviousButtonLabel()
+{
+  return this->Internals->SelectPreviousButtonLabel.c_str();
+}
+
+//---------------------------------------------------------------------------
+const char* vtkKWPresetSelector::GetSelectNextButtonLabel()
+{
+  return this->Internals->SelectNextButtonLabel.c_str();
+}
+
+//---------------------------------------------------------------------------
+const char* vtkKWPresetSelector::GetAddButtonLabel()
+{
+  return this->Internals->AddButtonLabel.c_str();
+}
+
+//---------------------------------------------------------------------------
+const char* vtkKWPresetSelector::GetApplyButtonLabel()
+{
+  return this->Internals->ApplyButtonLabel.c_str();
+}
+
+//---------------------------------------------------------------------------
+const char* vtkKWPresetSelector::GetUpdateButtonLabel()
+{
+  return this->Internals->UpdateButtonLabel.c_str();
+}
+
+//---------------------------------------------------------------------------
+const char* vtkKWPresetSelector::GetRemoveButtonLabel()
+{
+  return this->Internals->RemoveButtonLabel.c_str();
+}
+
+//---------------------------------------------------------------------------
+const char* vtkKWPresetSelector::GetLocateButtonLabel()
+{
+  return this->Internals->LocateButtonLabel.c_str();
+}
+
+//---------------------------------------------------------------------------
+const char* vtkKWPresetSelector::GetEmailButtonLabel()
+{
+  return this->Internals->EmailButtonLabel.c_str();
+}
+
 //---------------------------------------------------------------------------
 void vtkKWPresetSelector::Update()
 {
   this->UpdateEnableState();
 
   this->UpdatePresetButtons();
+  this->UpdateToolbarPresetButtons();
 }
 
 //----------------------------------------------------------------------------
@@ -3037,6 +3868,8 @@ void vtkKWPresetSelector::UpdateEnableState()
     {
     this->PresetButtons->SetEnabled(this->GetEnabled());
     }
+
+  this->PropagateEnableState(this->Toolbar);
 }
 
 //----------------------------------------------------------------------------

@@ -34,6 +34,8 @@ MACRO(TkDnD_GET_LIBRARY supported sources include_path libs)
         ${_tkdnd_path}/win/tkShape.cpp
         )
       SET(_tkdnd_srcs ${_tkdnd_srcs} ${_tkdnd_win32_srcs})
+      #SET_SOURCE_FILES_PROPERTIES(${_tkdnd_win32_srcs}
+      #  PROPERTIES LANGUAGE CXX)
       IF(NOT BORLAND)
         # Can't use ATL because it is not support by Visual Studio Express 2005
         # We should either detect if we are using Express or Full 2005. This
@@ -63,12 +65,13 @@ MACRO(TkDnD_GET_LIBRARY supported sources include_path libs)
       SET(_tkdnd_srcs ${_tkdnd_srcs} ${_tkdnd_unix_srcs})
     ENDIF(WIN32)
 
+    # It does not seem possible to easily mix-match C/C++ within that library
     SET_SOURCE_FILES_PROPERTIES(${_tkdnd_srcs}
       PROPERTIES LANGUAGE CXX)
 
     SET(${sources} ${_tkdnd_srcs})
     SET(${include_path} ${_tkdnd_include_path})
-    SET(${libs} ${TCL_LIBRARY} ${TK_LIBRARY})
+    SET(${libs})
 
   ENDIF(${supported})
 

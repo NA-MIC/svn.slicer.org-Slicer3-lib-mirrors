@@ -339,8 +339,6 @@ protected:
   int RenderState;
   int Printing;
 
-  Tcl_TimerToken InteractorTimerToken;
-  
   char *DistanceUnits;
 
   int CollapsingRenders;
@@ -388,6 +386,10 @@ protected:
   // annotation relevant entries.
   virtual void PopulateContextMenu(vtkKWMenu*);
   virtual void PopulateAnnotationMenu(vtkKWMenu*);
+
+  // Description:
+  // Update the render window interactor size
+  virtual void UpdateRenderWindowInteractorSize(int width, int height);
 
   // PIMPL Encapsulation for STL containers
 
