@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ModelToImageRegistration2.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/04/25 00:37:04 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -403,7 +403,7 @@ int main( int argc, char * argv [] )
   std::cout << "Parameters = " << transformParameters << std::endl;
 
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 

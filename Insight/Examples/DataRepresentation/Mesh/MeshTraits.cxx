@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: MeshTraits.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/02/08 03:51:53 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007/09/06 19:59:59 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -202,12 +202,11 @@ int main(int, char *[])
 
   //  Software Guide : BeginLatex
   //
-  //  Data associated with cells is inserted in the Mesh by using
-  //  the \code{SetCellData()} method.  It requires the user to provide an
+  //  Data associated with cells is inserted in the Mesh by using the
+  //  \code{SetCellData()} method.  It requires the user to provide an
   //  identifier and the value to be inserted. The identifier should match one
-  //  of the inserted cells. In this simple example, the square of the cell
-  //  identifier is used as cell data. Note the use of \code{static\_cast} to
-  //  \code{PixelType} in the assignment.
+  //  of the inserted cells. In this example, we simply store a CellDataType
+  //  dummy variable named \code{value}.
   //
   //  Software Guide : EndLatex 
 

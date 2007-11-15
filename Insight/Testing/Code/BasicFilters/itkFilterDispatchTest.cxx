@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFilterDispatchTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:32 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2007/08/20 13:23:56 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -42,6 +42,7 @@
 
 #include <itkImage.h>
 #include <itkImageToImageFilter.h>
+#include <itksys/ios/sstream>
 
 /**
  * An example filter.
@@ -132,7 +133,7 @@ void ExampleImageFilter<TInputImage, TOutputImage>
   // Make sure the correct Execute() method has been called.
   if((ImageDimension == 2) || (ImageDimension == 3))
     {
-    itk::OStringStream err;
+    itksys_ios::ostringstream err;
     err << "Error: N-d filter implementation called for "
         << ImageDimension
         << "-d filter, even though specific implementation exists."
@@ -156,7 +157,7 @@ void ExampleImageFilter<TInputImage, TOutputImage>
   // Make sure the correct Execute() method has been called.
   if(ImageDimension != 2)
     {
-    itk::OStringStream err;
+    itksys_ios::ostringstream err;
     err << "Error: 2-d filter implementation called for "
         << ImageDimension
         << "-d filter." << std::endl;
@@ -179,7 +180,7 @@ void ExampleImageFilter<TInputImage, TOutputImage>
   // Make sure the correct Execute() method has been called.
   if(ImageDimension != 3)
     {
-    itk::OStringStream err;
+    itksys_ios::ostringstream err;
     err << "Error: 3-d filter implementation called for "
         << ImageDimension
         << "-d filter." << std::endl;
@@ -254,12 +255,12 @@ int itkFilterDispatchTest(int, char* [] )
   if(passed)
     {
     std::cout << "The test has passed." << std::endl;
-    return 0;
+    return EXIT_SUCCESS;
     }
   else
     {
     std::cout << "The test has failed." << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 }
 

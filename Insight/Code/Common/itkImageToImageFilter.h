@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:08 $
-  Version:   $Revision: 1.46 $
+  Date:      $Date: 2007/08/17 12:51:36 $
+  Version:   $Revision: 1.47 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -47,7 +47,7 @@ namespace itk
  *
  * ImageToImageFilter provides an implementation of
  * GenerateInputRequestedRegion().  The base assumption to this point in the
- * heirarchy is that a process object would ask for the largest possible
+ * hierarchy is that a process object would ask for the largest possible
  * region on input in order to produce any output.  Imaging filters,
  * however, can usually answer this question more precisely.  The default
  * implementation of GenerateInputRequestedRegion() in this class is to

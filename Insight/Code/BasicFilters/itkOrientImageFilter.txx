@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkOrientImageFilter.txx,v $
 Language:  C++
-Date:      $Date: 2006/11/02 23:30:36 $
-Version:   $Revision: 1.13 $
+Date:      $Date: 2007/08/20 18:06:27 $
+Version:   $Revision: 1.15 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -508,9 +508,9 @@ OrientImageFilter<TInputImage, TOutputImage>
   typename FlipFilterType::Pointer flip = FlipFilterType::New();
   typename CastToOutputFilterType::Pointer cast = CastToOutputFilterType::New();
 
-  progress->RegisterInternalFilter(permute,.3333333);
-  progress->RegisterInternalFilter(flip,.3333333);
-  progress->RegisterInternalFilter(cast,.3333333);
+  progress->RegisterInternalFilter(permute,.3333333f);
+  progress->RegisterInternalFilter(flip,.3333333f);
+  progress->RegisterInternalFilter(cast,.3333333f);
 
   InputImagePointer permuteInput = const_cast< TInputImage *> (this->GetInput());
   InputImagePointer flipInput = permuteInput;
@@ -691,12 +691,12 @@ OrientImageFilter<TInputImage, TOutputImage>
 
   axes = m_CodeToString.find(m_DesiredCoordinateOrientation);
   os << indent << "Desired Coordinate Orientation: "
-     << m_DesiredCoordinateOrientation
+     << static_cast<long>(this->GetDesiredCoordinateOrientation())
      << " (" << (*axes).second << ")"
      << std::endl;
   axes = m_CodeToString.find(m_GivenCoordinateOrientation);
   os << indent << "Given Coordinate Orientation: "
-     << m_GivenCoordinateOrientation
+     << static_cast<long>(this->GetGivenCoordinateOrientation())
      << " (" << (*axes).second << ")"
      << std::endl;
   os << indent << "Use Image Direction: "

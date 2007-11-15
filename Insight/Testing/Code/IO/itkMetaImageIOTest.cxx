@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaImageIOTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:10 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/09/10 15:00:43 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -27,7 +27,7 @@ int itkMetaImageIOTest(int ac, char* av[])
 {
   if(ac < 3)
     {
-    std::cerr << "Usage: " << av[0] << " Input Output\n";
+    std::cerr << "Usage: " << av[0] << " Input Output [ShouldFail]\n";
     return EXIT_FAILURE;
     }
   
@@ -49,6 +49,10 @@ int itkMetaImageIOTest(int ac, char* av[])
     std::cerr << "exception in file reader " << std::endl;
     std::cerr << e.GetDescription() << std::endl;
     std::cerr << e.GetLocation() << std::endl;
+    if(ac == 3) // should fail
+      {
+      return EXIT_SUCCESS;
+      }
     return EXIT_FAILURE;
     }
   
@@ -60,10 +64,10 @@ int itkMetaImageIOTest(int ac, char* av[])
 
   // Generate test image
   itk::ImageFileWriter<myImage>::Pointer writer;
-    writer = itk::ImageFileWriter<myImage>::New();
-    writer->SetInput( reader->GetOutput() );
-    writer->SetFileName( av[2] );
-    writer->Update();
+  writer = itk::ImageFileWriter<myImage>::New();
+  writer->SetInput( reader->GetOutput() );
+  writer->SetFileName( av[2] );
+  writer->Update();
 
   return EXIT_SUCCESS;
 }

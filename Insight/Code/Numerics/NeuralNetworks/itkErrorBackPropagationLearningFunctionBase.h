@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkErrorBackPropagationLearningFunctionBase.h,v $
   Language:  C++
-  Date:      $Date: 2005/08/02 19:17:37 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/09/03 21:17:59 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -34,16 +34,17 @@ namespace itk
 {
 namespace Statistics
 {
-template<class LayerType, class TOutput>
-class ErrorBackPropagationLearningFunctionBase : public LearningFunctionBase<LayerType, TOutput>
+template<class LayerType, class TTargetVector>
+class ErrorBackPropagationLearningFunctionBase : public LearningFunctionBase<typename LayerType::LayerInterfaceType, TTargetVector>
 {
 public:
   typedef ErrorBackPropagationLearningFunctionBase Self;
-  typedef LearningFunctionBase<LayerType, TOutput> Superclass;
+  typedef LearningFunctionBase<typename LayerType::LayerInterfaceType, TTargetVector> Superclass;
   typedef SmartPointer<Self> Pointer;
   typedef SmartPointer<const Self> ConstPointer;
 
   typedef typename Superclass::ValueType ValueType;
+  typedef typename LayerType::LayerInterfaceType LayerInterfaceType;
 
   /** Method for creation through the object factory. */
   itkTypeMacro(ErrorBackPropagationLearningFunctionBase, LearningFunctionBase);
@@ -51,14 +52,14 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  void Learn(LayerType* layer,ValueType learningrate);
-  void Learn(LayerType* layer, TOutput error, ValueType learningrate);
+  virtual void Learn( LayerInterfaceType * layer, ValueType learningrate);
+  virtual void Learn( LayerInterfaceType * layer, TTargetVector error, ValueType learningrate);
 
 protected:
 
   ErrorBackPropagationLearningFunctionBase() {};
   ~ErrorBackPropagationLearningFunctionBase() {};
-  
+
   virtual void PrintSelf( std::ostream& os, Indent indent ) const;
 
 };

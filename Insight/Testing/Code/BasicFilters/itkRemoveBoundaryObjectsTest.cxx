@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRemoveBoundaryObjectsTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/02/08 03:18:41 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -36,7 +36,7 @@ int itkRemoveBoundaryObjectsTest( int argc, char * argv[] )
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  ";
     std::cerr << " outputImageFile  " << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
 
@@ -110,7 +110,7 @@ int itkRemoveBoundaryObjectsTest( int argc, char * argv[] )
   std::cout << "<DartMeasurement name=\"NumberOfIterations\" type=\"numeric/integer\">" << fillhole->GetNumberOfIterationsUsed() << "</DartMeasurement>" << std::endl;
   
 
-  return 0;
+  return EXIT_SUCCESS;
 
 }
 

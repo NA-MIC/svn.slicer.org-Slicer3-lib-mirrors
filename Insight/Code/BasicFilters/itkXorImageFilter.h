@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkXorImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/04 13:13:52 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/08/30 15:01:09 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -66,7 +66,7 @@ public:
 }; 
 
 }
-template <class TInputImage1, class TInputImage2, class TOutputImage>
+template <class TInputImage1, class TInputImage2=TInputImage1, class TOutputImage=TInputImage1>
 class ITK_EXPORT XorImageFilter :
     public
 BinaryFunctorImageFilter<TInputImage1,TInputImage2,TOutputImage, 

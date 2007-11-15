@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHistogramMatchingImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/02/09 18:13:03 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007/07/31 23:09:16 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -29,8 +29,8 @@ namespace itk
 /*
  *
  */
-template <class TInputImage, class TOutputImage>
-HistogramMatchingImageFilter<TInputImage,TOutputImage>
+template <class TInputImage, class TOutputImage, class THistogramMeasurement>
+HistogramMatchingImageFilter<TInputImage,TOutputImage,THistogramMeasurement>
 ::HistogramMatchingImageFilter()
 {
   this->SetNumberOfRequiredInputs( 2 );
@@ -59,9 +59,9 @@ HistogramMatchingImageFilter<TInputImage,TOutputImage>
 /*
  *
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class THistogramMeasurement>
 void 
-HistogramMatchingImageFilter<TInputImage,TOutputImage>
+HistogramMatchingImageFilter<TInputImage,TOutputImage,THistogramMeasurement>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
@@ -99,9 +99,9 @@ HistogramMatchingImageFilter<TInputImage,TOutputImage>
 /*
  *
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class THistogramMeasurement>
 void 
-HistogramMatchingImageFilter<TInputImage,TOutputImage>
+HistogramMatchingImageFilter<TInputImage,TOutputImage,THistogramMeasurement>
 ::SetReferenceImage( const InputImageType * reference )
 {
   this->ProcessObject::SetNthInput(1, 
@@ -112,10 +112,10 @@ HistogramMatchingImageFilter<TInputImage,TOutputImage>
 /*
  *
  */
-template <class TInputImage, class TOutputImage>
-const typename HistogramMatchingImageFilter<TInputImage,TOutputImage>
+template <class TInputImage, class TOutputImage, class THistogramMeasurement>
+const typename HistogramMatchingImageFilter<TInputImage,TOutputImage,THistogramMeasurement>
 ::InputImageType *
-HistogramMatchingImageFilter<TInputImage,TOutputImage>
+HistogramMatchingImageFilter<TInputImage,TOutputImage,THistogramMeasurement>
 ::GetReferenceImage()
 {
   if ( this->GetNumberOfInputs() < 2 )
@@ -132,9 +132,9 @@ HistogramMatchingImageFilter<TInputImage,TOutputImage>
  * This filter requires all of the input images to be
  * in the buffer.
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class THistogramMeasurement>
 void
-HistogramMatchingImageFilter<TInputImage,TOutputImage>
+HistogramMatchingImageFilter<TInputImage,TOutputImage,THistogramMeasurement>
 ::GenerateInputRequestedRegion()
 {
   this->Superclass::GenerateInputRequestedRegion();
@@ -154,9 +154,9 @@ HistogramMatchingImageFilter<TInputImage,TOutputImage>
 /*
  * 
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class THistogramMeasurement>
 void
-HistogramMatchingImageFilter<TInputImage,TOutputImage>
+HistogramMatchingImageFilter<TInputImage,TOutputImage,THistogramMeasurement>
 ::BeforeThreadedGenerateData()
 {
 
@@ -253,9 +253,9 @@ HistogramMatchingImageFilter<TInputImage,TOutputImage>
 /*
  * 
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class THistogramMeasurement>
 void
-HistogramMatchingImageFilter<TInputImage,TOutputImage>
+HistogramMatchingImageFilter<TInputImage,TOutputImage,THistogramMeasurement>
 ::AfterThreadedGenerateData()
 {
 
@@ -294,9 +294,9 @@ HistogramMatchingImageFilter<TInputImage,TOutputImage>
 /*
  *
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class THistogramMeasurement>
 void
-HistogramMatchingImageFilter<TInputImage,TOutputImage>
+HistogramMatchingImageFilter<TInputImage,TOutputImage,THistogramMeasurement>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        int threadId )
 {
@@ -377,14 +377,14 @@ HistogramMatchingImageFilter<TInputImage,TOutputImage>
 /*
  * Compute min, max and mean of an image.
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class THistogramMeasurement>
 void
-HistogramMatchingImageFilter<TInputImage,TOutputImage>
+HistogramMatchingImageFilter<TInputImage,TOutputImage,THistogramMeasurement>
 ::ComputeMinMaxMean(
   const InputImageType * image,
-  double& minValue,
-  double& maxValue,
-  double& meanValue )
+  THistogramMeasurement& minValue,
+  THistogramMeasurement& maxValue,
+  THistogramMeasurement& meanValue )
 {
   typedef ImageRegionConstIterator<InputImageType> ConstIterator;
   ConstIterator iter( image, image->GetBufferedRegion() );
@@ -392,14 +392,13 @@ HistogramMatchingImageFilter<TInputImage,TOutputImage>
   double sum = 0.0;
   long int count = 0;
  
-  minValue = static_cast<double>( iter.Get() );
+  minValue = static_cast<THistogramMeasurement>( iter.Get() );
   maxValue = minValue;
 
-  double value;
   while ( !iter.IsAtEnd() )
     {
-    value = static_cast<double>( iter.Get() );
-    sum += value;
+    const THistogramMeasurement value = static_cast<THistogramMeasurement>( iter.Get() );
+    sum += static_cast<double>(value);
 
     if ( value < minValue ) { minValue = value; }
     if ( value > maxValue ) { maxValue = value; }
@@ -409,65 +408,60 @@ HistogramMatchingImageFilter<TInputImage,TOutputImage>
 
     }
 
-  meanValue = ( sum / count );
+  meanValue = static_cast<THistogramMeasurement>( sum / static_cast<double>(count) );
 
 }
-
 
 /*
  * Construct a histogram from an image.
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage, class THistogramMeasurement>
 void
-HistogramMatchingImageFilter<TInputImage,TOutputImage>
+HistogramMatchingImageFilter<TInputImage,TOutputImage,THistogramMeasurement>
 ::ConstructHistogram(
   const InputImageType * image,
   HistogramType  * histogram,
-  double minValue,
-  double maxValue )
+  const THistogramMeasurement minValue,
+  const THistogramMeasurement maxValue )
 {
+  {
   // allocate memory for the histogram
   typename HistogramType::SizeType size;
   size[0] = m_NumberOfHistogramLevels;
+  typename HistogramType::MeasurementVectorType lowerBound ;
+  lowerBound.Fill(minValue) ;
+  typename HistogramType::MeasurementVectorType upperBound ;
+  upperBound.Fill(maxValue) ;
 
-  histogram->Initialize( size );
-
-  // set up min/max values in the histogram
-  const double stepSize = ( maxValue - minValue ) /
-    static_cast<double>( m_NumberOfHistogramLevels );
-
-  unsigned long ibin;
-  for ( ibin = 0; ibin < m_NumberOfHistogramLevels - 1; ibin++ )
-    {
-    histogram->SetBinMin( 0, ibin, static_cast<InputPixelType>( (ibin      ) * stepSize + minValue ) );
-    histogram->SetBinMax( 0, ibin, static_cast<InputPixelType>( ( ibin + 1 ) * stepSize + minValue ) );
-    }
-
-  histogram->SetBinMin( 0, ibin, static_cast<InputPixelType>( ibin * stepSize + minValue ) );
-  histogram->SetBinMax( 0, ibin, static_cast<InputPixelType>(        stepSize + maxValue ) );
-
-
-  // put each image pixel into the histogram
-  typedef ImageRegionConstIterator<InputImageType> ConstIterator;
-  ConstIterator iter( image, image->GetBufferedRegion() );
+  //Initialize with equally spaced bins.
+  histogram->Initialize( size , lowerBound, upperBound );
+  histogram->SetToZero();
+  }
 
   typename HistogramType::MeasurementVectorType measurement;
   typedef typename HistogramType::MeasurementType MeasurementType;
   measurement[0] = NumericTraits<MeasurementType>::Zero;
-  while ( !iter.IsAtEnd() )
+
     {
-    InputPixelType value = iter.Get();
+    // put each image pixel into the histogram
+    typedef ImageRegionConstIterator<InputImageType> ConstIterator;
+    ConstIterator iter( image, image->GetBufferedRegion() );
 
-    if ( static_cast<double>(value) >= minValue &&
-         static_cast<double>(value) <= maxValue )
+    iter.GoToBegin();
+    while ( !iter.IsAtEnd() )
       {
-      // add sample to histogram
-      measurement[0] = value;
-      histogram->IncreaseFrequency( measurement, 1 );
-      }
-    ++iter;
-    }
+      InputPixelType value = iter.Get();
 
+      if ( static_cast<double>(value) >= minValue &&
+        static_cast<double>(value) <= maxValue )
+        {
+        // add sample to histogram
+        measurement[0] = value;
+        histogram->IncreaseFrequency( measurement, 1 );
+        }
+      ++iter;
+      }
+    }
 }
 
 

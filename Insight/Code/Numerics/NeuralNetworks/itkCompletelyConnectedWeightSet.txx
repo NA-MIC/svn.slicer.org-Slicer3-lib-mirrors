@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCompletelyConnectedWeightSet.txx,v $
   Language:  C++
-  Date:      $Date: 2006/04/17 19:35:36 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/08/17 13:10:57 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -25,32 +25,33 @@ namespace itk
 namespace Statistics
 {
 
-template<class TVector, class TOutput>
-CompletelyConnectedWeightSet<TVector,TOutput>
+template<class TMeasurementVector, class TTargetVector>
+CompletelyConnectedWeightSet<TMeasurementVector,TTargetVector>
 ::CompletelyConnectedWeightSet()
 {
 }
 
-template<class TVector, class TOutput>
+template<class TMeasurementVector, class TTargetVector>
 void
-CompletelyConnectedWeightSet<TVector,TOutput>
+CompletelyConnectedWeightSet<TMeasurementVector,TTargetVector>
 ::SetCompleteConnectivity()
 {
   vnl_matrix<int> c;
-  unsigned int rows = WeightSetBase<TVector, TOutput>::GetNumberOfOutputNodes();
-  unsigned int cols = WeightSetBase<TVector, TOutput>::GetNumberOfInputNodes();
+  const unsigned int rows = WeightSetBase<TMeasurementVector, TTargetVector>::GetNumberOfOutputNodes();
+  const unsigned int cols = WeightSetBase<TMeasurementVector, TTargetVector>::GetNumberOfInputNodes();
   std::cout << "Connectivity matrix size= " << rows << " " << cols << std::endl;
   c.set_size(rows, cols);
   c.fill(1);
-  WeightSetBase<TVector, TOutput> ::SetConnectivityMatrix(c);
+//WeightSetBase<TMeasurementVector, TTargetVector>::SetConnectivityMatrix(c);
+  this->SetConnectivityMatrix(c);
   this->Modified();
 }
 
 
 /** Print the object */
-template<class TVector, class TOutput>
+template<class TMeasurementVector, class TTargetVector>
 void  
-CompletelyConnectedWeightSet<TVector,TOutput>
+CompletelyConnectedWeightSet<TMeasurementVector,TTargetVector>
 ::PrintSelf( std::ostream& os, Indent indent ) const 
 { 
   os << indent << "CompletelyConnectedWeightSet(" << this << ")" << std::endl; 

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: DeformationFieldJacobian.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/31 14:14:15 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -33,7 +33,7 @@ int main( int argc, char * argv[] )
     { 
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  outputImageFile " << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   // For now, this program runs on 3D deformation fields
@@ -74,6 +74,6 @@ int main( int argc, char * argv[] )
     std::cerr << excp << std::endl;
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 

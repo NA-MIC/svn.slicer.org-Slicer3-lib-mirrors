@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGibbsTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/08/06 13:37:51 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2007/08/20 12:47:12 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -375,8 +375,8 @@ int itkGibbsTest(int, char*[] )
   else 
     {
     std::cout<< "Gibbs Prior Test failed" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

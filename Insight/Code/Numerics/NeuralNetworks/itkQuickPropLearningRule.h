@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuickPropLearningRule.h,v $
   Language:  C++
-  Date:      $Date: 2005/08/02 19:17:37 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/08/17 13:10:57 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -34,13 +34,13 @@ namespace itk
 namespace Statistics
 {
 
-template<class LayerType, class TOutput>
-class QuickPropLearningRule : public LearningFunctionBase<LayerType, TOutput>
+template<class LayerType, class TTargetVector>
+class QuickPropLearningRule : public LearningFunctionBase<LayerType, TTargetVector>
 {
 public:
 
   typedef QuickPropLearningRule Self;
-  typedef LearningFunctionBase<LayerType, TOutput> Superclass;
+  typedef LearningFunctionBase<LayerType, TTargetVector> Superclass;
   typedef SmartPointer<Self> Pointer;
   typedef SmartPointer<const Self> ConstPointer;
 
@@ -51,9 +51,8 @@ public:
   itkNewMacro(Self);
 
   typedef typename Superclass::ValueType ValueType;
-  void Learn(LayerType* layer, ValueType learningrate);
-
-  void Learn(LayerType* layer, TOutput errors, ValueType learningrate);
+  virtual void Learn(LayerType* layer, ValueType learningrate);
+  virtual void Learn(LayerType* layer, TTargetVector errors, ValueType learningrate);
 
   itkSetMacro(Max_Growth_Factor, ValueType);
   itkGetConstReferenceMacro(Max_Growth_Factor,ValueType);
@@ -63,7 +62,7 @@ public:
 
 protected:
   QuickPropLearningRule();
-  ~QuickPropLearningRule(){};
+  virtual ~QuickPropLearningRule(){};
 
   ValueType m_Momentum;
   ValueType m_Max_Growth_Factor;

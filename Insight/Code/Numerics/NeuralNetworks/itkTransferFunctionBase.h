@@ -3,14 +3,14 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransferFunctionBase.h,v $
   Language:  C++
-  Date:      $Date: 2005/08/02 19:17:37 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/08/17 13:10:57 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -49,19 +49,19 @@ public:
 
   /** Evaluate at the specified input position */
   virtual OutputType Evaluate(const InputType& input) const = 0;
- 
+
   /** Evaluate the derivative at the specified input position */
   virtual OutputType EvaluateDerivative(const InputType& input) const = 0;
- 
+
 protected:
   TransferFunctionBase() {};
-  virtual ~TransferFunctionBase(){};
-  
+  ~TransferFunctionBase(){};
+
   /** Method to print the object. */
   virtual void PrintSelf( std::ostream& os, Indent indent ) const
     {
-    os << indent << "TransferFunctionBase(" << this << ")" << std::endl; 
-    Superclass::PrintSelf( os, indent ); 
+    os << indent << "TransferFunctionBase(" << this << ")" << std::endl;
+    Superclass::PrintSelf( os, indent );
     }
 
 private:

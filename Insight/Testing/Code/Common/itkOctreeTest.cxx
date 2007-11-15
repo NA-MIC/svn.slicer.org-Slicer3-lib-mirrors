@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOctreeTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:09 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -72,7 +72,7 @@ int itkOctreeTest(int, char *[])
   catch(itk::ExceptionObject & ex)
     {
     ex.Print(std::cerr);
-    return -1;
+    return EXIT_FAILURE;
     }
   
   typedef itk::Octree<unsigned int,16384,IdentityMap<unsigned int,16384> > OctreeType;
@@ -102,14 +102,14 @@ int itkOctreeTest(int, char *[])
     if(!ri.IsAtEnd() || !ri2.IsAtEnd())
       {
       std::cerr << "Error, inconsistent image sizes in Octree" << std::endl;
-      return -1;
+      return EXIT_FAILURE;
       }
     }
   catch(itk::ExceptionObject & ex)
     {
     ex.Print(std::cerr);
-    return -1;
+    return EXIT_FAILURE;
     }
-  return 0;
+  return EXIT_SUCCESS;
 
 }

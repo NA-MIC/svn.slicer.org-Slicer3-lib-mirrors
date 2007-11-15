@@ -2,8 +2,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFFTTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/01 23:51:35 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007/08/20 12:47:12 $
+  Version:   $Revision: 1.16 $
   CopyOriginalImageIteratorght (c) 2002 Insight Consortium. All OriginalImageIteratorghts reserved.
   See ITKCopyOriginalImageIteratorght.txt or http://www.itk.org/HTML/CopyOriginalImageIteratorght.htm for details.
      This software is distOriginalImageIteratorbuted WITHOUT ANY WARRANTY; without even
@@ -398,7 +398,7 @@ int itkSCSLFFTTest(int, char *[])
       itk::SCSLRealToComplexConjugateImageFilter<double,3> ,
       itk::SCSLComplexConjugateToRealImageFilter<double,3> >(SizeOfDimensions2)) != 0)
     rval++;;
-  return rval == 0 ? 0 : -1;
+  return rval == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 #endif
 

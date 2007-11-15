@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkErrorBackPropagationLearningWithMomentum.h,v $
   Language:  C++
-  Date:      $Date: 2005/08/02 19:17:37 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/09/03 21:17:59 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -35,13 +35,13 @@ namespace itk
 namespace Statistics
 {
 
-template<class LayerType, class TOutput>
-class ErrorBackPropagationLearningWithMomentum : public LearningFunctionBase<LayerType, TOutput>
+template<class LayerType, class TTargetVector>
+class ErrorBackPropagationLearningWithMomentum : public LearningFunctionBase<typename LayerType::LayerInterfaceType, TTargetVector>
 {
 public:
 
   typedef ErrorBackPropagationLearningWithMomentum Self;
-  typedef LearningFunctionBase<LayerType, TOutput> Superclass;
+  typedef LearningFunctionBase<typename LayerType::LayerInterfaceType, TTargetVector> Superclass;
   typedef SmartPointer<Self> Pointer;
   typedef SmartPointer<const Self> ConstPointer;
 
@@ -51,15 +51,16 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
-  typedef typename Superclass::ValueType ValueType;      
-  void Learn(LayerType* layer, ValueType learningrate);
+  typedef typename Superclass::ValueType           ValueType;
+  typedef typename LayerType::LayerInterfaceType   LayerInterfaceType;
 
-  void Learn(LayerType* layer, TOutput errors, ValueType learningrate);
+  virtual void Learn( LayerInterfaceType * layer, ValueType learningrate );
+  virtual void Learn( LayerInterfaceType * layer, TTargetVector errors, ValueType learningrate );
 
 
 protected:
   ErrorBackPropagationLearningWithMomentum();
-  ~ErrorBackPropagationLearningWithMomentum() {};
+  virtual ~ErrorBackPropagationLearningWithMomentum() {};
 
   virtual void PrintSelf( std::ostream& os, Indent indent ) const;
 

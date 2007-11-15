@@ -25,6 +25,7 @@ SET(TEMP ${ITKTesting_BINARY_DIR}/Temporary)
 SET(ReviewTest_SRCS
   itkFlatStructuringElementTest.cxx
   itkLabelOverlayImageFilterTest.cxx
+
   itkQuadEdgeTest1.cxx
   itkGeometricalQuadEdgeTest1.cxx
   itkQuadEdgeMeshAddFaceTest1.cxx
@@ -32,11 +33,18 @@ SET(ReviewTest_SRCS
   itkQuadEdgeMeshBasicLayerTest.cxx
   itkQuadEdgeMeshDeleteEdgeTest.cxx
   itkQuadEdgeMeshFrontIteratorTest.cxx
-  #  OppositeOrientationTest.cxx
   itkQuadEdgeMeshPointTest1.cxx
   itkQuadEdgeMeshTest1.cxx
   itkQuadEdgeMeshTest2.cxx
   itkQuadEdgeMeshTest3.cxx
+  itkQuadEdgeMeshEulerOperatorsTest.cxx
+  itkQuadEdgeMeshCellInterfaceTest.cxx
+  itkQuadEdgeMeshIteratorTest.cxx
+  itkQuadEdgeMeshPolygonCellTest.cxx
+  itkDynamicQuadEdgeMeshTest.cxx
+  itkAutomaticTopologyQuadEdgeMeshSourceTest.cxx
+  itkRegularSphereQuadEdgeMeshSourceTest.cxx
+
   itkContourExtractor2DImageFilterTest.cxx
   itkSumProjectionImageFilterTest.cxx
   itkMaximumProjectionImageFilterTest.cxx
@@ -61,30 +69,54 @@ SET(ReviewTest_SRCS
 
   itkConformalFlatteningMeshFilterTest.cxx
 
+  itkVTKPolyDataReaderQuadEdgeMeshTest.cxx
   itkVTKPolyDataReaderTest.cxx
   itkVTKPolyDataWriterTest.cxx
 
   itkMorphologicalWatershedImageFilterTest.cxx
   itkMorphologicalWatershedFromMarkersImageFilterTest.cxx
+
+  itkBinaryMorphologicalClosingImageFilterTest.cxx
+  itkBinaryMorphologicalOpeningImageFilterTest.cxx
 )
+
+IF(ITK_USE_MINC2 AND MINC2_FOUND)
+  SET(ReviewTest_SRCS ${ReviewTest_SRCS} itkMINC2ImageIOTest.cxx)
+ENDIF(ITK_USE_MINC2 AND MINC2_FOUND)
 
 ADD_TEST(itkFlatStructuringElementTest ${REVIEW_TESTS}
   itkFlatStructuringElementTest
   )
 ADD_TEST(itkQuadEdgeTest1 ${REVIEW_TESTS} itkQuadEdgeTest1)
-ADD_TEST(itkGeometricalQuadEdgeTest1 ${REVIEW_TESTS} itkGeometricalQuadEdgeTest1)
-ADD_TEST(itkQuadEdgeMeshPointTest1 ${REVIEW_TESTS} itkQuadEdgeMeshPointTest1)
-
-#Temporarily disabled ADD_TEST(itkQuadEdgeMeshAddFaceTest1 ${REVIEW_TESTS} itkQuadEdgeMeshAddFaceTest1)
-#Temporarily disabled ADD_TEST(itkQuadEdgeMeshAddFaceTest2 ${REVIEW_TESTS} itkQuadEdgeMeshAddFaceTest2)
-#Temporarily disabled ADD_TEST(itkQuadEdgeMeshBasicLayerTest ${REVIEW_TESTS} itkQuadEdgeMeshBasicLayerTest)
-#Temporarily disabled ADD_TEST(itkQuadEdgeMeshDeleteEdgeTest ${REVIEW_TESTS} itkQuadEdgeMeshDeleteEdgeTest)
-#Temporarily disabled ADD_TEST(itkQuadEdgeMeshFrontIteratorTest ${REVIEW_TESTS} itkQuadEdgeMeshFrontIteratorTest)
-#Temporarily disabled ADD_TEST(itkQuadEdgeMeshTest1 ${REVIEW_TESTS} itkQuadEdgeMeshTest1)
-#Temporarily disabled ADD_TEST(itkQuadEdgeMeshTest2 ${REVIEW_TESTS} itkQuadEdgeMeshTest2)
-#Temporarily disabled ADD_TEST(itkQuadEdgeMeshTest3 ${REVIEW_TESTS} itkQuadEdgeMeshTest3)
-
-#ADD_TEST(OppositeOrientationTest ${REVIEW_TESTS} OppositeOrientationTest)
+ADD_TEST(itkGeometricalQuadEdgeTest1 ${REVIEW_TESTS}
+  itkGeometricalQuadEdgeTest1)
+ADD_TEST(itkQuadEdgeMeshPointTest1 ${REVIEW_TESTS}
+  itkQuadEdgeMeshPointTest1)
+ADD_TEST(itkQuadEdgeMeshAddFaceTest1 ${REVIEW_TESTS}
+  itkQuadEdgeMeshAddFaceTest1)
+ADD_TEST(itkQuadEdgeMeshAddFaceTest2 ${REVIEW_TESTS}
+  itkQuadEdgeMeshAddFaceTest2)
+ADD_TEST(itkQuadEdgeMeshDeleteEdgeTest ${REVIEW_TESTS}
+  itkQuadEdgeMeshDeleteEdgeTest)
+ADD_TEST(itkQuadEdgeMeshFrontIteratorTest ${REVIEW_TESTS}
+  itkQuadEdgeMeshFrontIteratorTest)
+ADD_TEST(itkQuadEdgeMeshTest1 ${REVIEW_TESTS} itkQuadEdgeMeshTest1)
+ADD_TEST(itkQuadEdgeMeshTest2 ${REVIEW_TESTS} itkQuadEdgeMeshTest2)
+ADD_TEST(itkQuadEdgeMeshTest3 ${REVIEW_TESTS} itkQuadEdgeMeshTest3)
+ADD_TEST(itkQuadEdgeMeshEulerOperatorsTest ${REVIEW_TESTS}
+  itkQuadEdgeMeshEulerOperatorsTest)
+ADD_TEST(itkQuadEdgeMeshCellInterfaceTest ${REVIEW_TESTS}
+  itkQuadEdgeMeshCellInterfaceTest)
+ADD_TEST(itkQuadEdgeMeshIteratorTest ${REVIEW_TESTS}
+  itkQuadEdgeMeshIteratorTest)
+ADD_TEST(itkQuadEdgeMeshPolygonCellTest ${REVIEW_TESTS}
+  itkQuadEdgeMeshPolygonCellTest)
+ADD_TEST(itkDynamicQuadEdgeMeshTest ${REVIEW_TESTS}
+  itkDynamicQuadEdgeMeshTest)
+ADD_TEST(itkAutomaticTopologyQuadEdgeMeshSourceTest.cxx ${REVIEW_TESTS}
+  itkAutomaticTopologyQuadEdgeMeshSourceTest)
+ADD_TEST(itkRegularSphereQuadEdgeMeshSourceTest.cxx ${REVIEW_TESTS}
+  itkRegularSphereQuadEdgeMeshSourceTest)
 
 FOREACH(opacity 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0)
   STRING(REGEX REPLACE "\\." "_" op ${opacity})
@@ -219,6 +251,7 @@ ADD_TEST(itkNeuralNetworkIOTest ${REVIEW_TESTS}
                   itkNeuralNetworkIOTest
                   ${INPUTDATA}/xornet.txt
                   ${INPUTDATA}/xortest.txt
+                  ${TEMP}
                   )
 
 ADD_TEST(itkConformalFlatteningMeshFilterTest1 ${REVIEW_TESTS}
@@ -321,6 +354,11 @@ ADD_TEST(itkRegionalMaximaImageFilterTest2_2 ${REVIEW_TESTS}
                   ${TEMP}/cthead1RegionalMaximal-ref2_2.png
                   )
 
+ADD_TEST(itkVTKPolyDataReaderQuadEdgeMeshTest ${REVIEW_TESTS}
+  itkVTKPolyDataReaderQuadEdgeMeshTest
+  ${INPUTDATA}/genusZeroSurface01.vtk
+  )
+
 ADD_TEST(itkVTKPolyDataReaderTest ${REVIEW_TESTS}
   itkVTKPolyDataReaderTest
   ${INPUTDATA}/genusZeroSurface01.vtk
@@ -392,12 +430,37 @@ FOREACH(level 00 10 20 30 40 50)
                     )
 ENDFOREACH(level)
 
+ADD_TEST(itkBinaryMorphologicalClosingImageFilterTest$ ${REVIEW_TESTS}
+        --compare ${BASELINE}/itkBinaryMorphologicalClosingImageFilterTest.png
+                  ${TEMP}/itkBinaryMorphologicalClosingImageFilterTest.png
+                  itkBinaryMorphologicalClosingImageFilterTest
+                  ${INPUTDATA}/2th_cthead1.png
+                  ${TEMP}/itkBinaryMorphologicalClosingImageFilterTest.png
+                  40 1 200
+                  )
+
+ADD_TEST(itkBinaryMorphologicalClosingImageFilterTestUnsafe$ ${REVIEW_TESTS}
+        --compare ${BASELINE}/itkBinaryMorphologicalClosingImageFilterTestUnsafe.png
+                  ${TEMP}/itkBinaryMorphologicalClosingImageFilterTestUnsafe.png
+                  itkBinaryMorphologicalClosingImageFilterTest
+                  ${INPUTDATA}/2th_cthead1.png
+                  ${TEMP}/itkBinaryMorphologicalClosingImageFilterTestUnsafe.png
+                  40 0 200
+                  )
+
+ADD_TEST(itkBinaryMorphologicalOpeningImageFilterTest$ ${REVIEW_TESTS}
+        --compare ${BASELINE}/itkBinaryMorphologicalOpeningImageFilterTest.png
+                  ${TEMP}/itkBinaryMorphologicalOpeningImageFilterTest.png
+                  itkBinaryMorphologicalOpeningImageFilterTest
+                  ${INPUTDATA}/2th_cthead1.png
+                  ${TEMP}/itkBinaryMorphologicalOpeningImageFilterTest.png
+                  8 150 200
+                  )
+
 
 ADD_EXECUTABLE(itkReviewPrintTest itkReviewPrintTest.cxx)
 TARGET_LINK_LIBRARIES(itkReviewPrintTest
   ITKAlgorithms
-  ITKIO
-  ITKBasicFilters
   ITKFEM
   ITKQuadEdgeMesh
   )
@@ -405,8 +468,6 @@ TARGET_LINK_LIBRARIES(itkReviewPrintTest
 ADD_EXECUTABLE(itkReviewHeaderTest itkReviewHeaderTest.cxx)
 TARGET_LINK_LIBRARIES(itkReviewHeaderTest
   ITKAlgorithms
-  ITKIO
-  ITKBasicFilters
   ITKFEM
   ITKQuadEdgeMesh
   )
@@ -415,13 +476,18 @@ ADD_TEST(itkReviewHeaderTest ${REVIEW_HEADER_TESTS})
 
 ADD_EXECUTABLE(itkReviewTests itkReviewTests.cxx ${ReviewTest_SRCS})
 
-TARGET_LINK_LIBRARIES(itkReviewTests
+SET(ReviewTest_LIBS 
   ITKAlgorithms
-  ITKIO
-  ITKBasicFilters
   ITKFEM
   ITKStatistics
   ITKQuadEdgeMesh
   )
+
+IF(ITK_USE_MINC2 AND MINC2_FOUND)
+  SET(ReviewTest_LIBS ${ReviewTest_LIBS} ITKIOMINC2)
+ENDIF(ITK_USE_MINC2 AND MINC2_FOUND)
+
+
+TARGET_LINK_LIBRARIES(itkReviewTests ${ReviewTest_LIBS})
 
 ENDIF(NOT ITK_DISABLE_CXX_TESTING)

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkContourSpatialObject.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:21 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/07/16 23:15:51 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -22,7 +22,7 @@
 #endif
 
 #include "itkContourSpatialObject.h" 
-#include <itkNumericTraits.h>
+#include "itkNumericTraits.h"
 
 namespace itk  
 {

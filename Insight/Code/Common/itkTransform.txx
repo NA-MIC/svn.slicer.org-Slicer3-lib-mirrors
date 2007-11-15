@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2005/03/29 13:36:30 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2007/08/20 18:06:55 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,9 +14,18 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-
 #ifndef _itkTransform_txx
 #define _itkTransform_txx
+
+// First, make sure that we include the configuration file.
+// This line may be removed once the ThreadSafeTransform gets
+// integrated into ITK.
+#include "itkConfigure.h"
+
+// Second, redirect to the optimized version if necessary
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+#include "itkThreadSafeTransform.txx"
+#else
 
 #include "itkTransform.h"
 
@@ -80,7 +89,7 @@ std::string Transform< TScalarType,NInputDimensions,NOutputDimensions>
     {
       n << "other";
     }
-  n << "_" << InputSpaceDimension << "_" << OutputSpaceDimension;
+  n << "_" << this->GetInputSpaceDimension() << "_" << this->GetOutputSpaceDimension();
   return n.str();
 }
 
@@ -90,3 +99,4 @@ std::string Transform< TScalarType,NInputDimensions,NOutputDimensions>
 
 #endif
 
+#endif

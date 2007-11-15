@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageRegistrationHistogramPlotter.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/21 22:54:58 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -650,7 +650,7 @@ int main( int argc, char *argv[] )
     { 
     std::cout << "ExceptionObject caught !" << std::endl; 
     std::cout << err << std::endl; 
-    return -1;
+    return EXIT_FAILURE;
     } 
 
   ParametersType finalParameters = registration->GetLastTransformParameters();

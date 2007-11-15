@@ -54,14 +54,20 @@ SET(ITKIO_SRCS
   itkStimulateImageIOFactory.cxx
   itkTIFFImageIO.cxx
   itkTIFFImageIOFactory.cxx
-  itkTransformFileReader.cxx
-  itkTransformFileWriter.cxx
   itkVTKImageIO.cxx
   itkVTKImageIOFactory.cxx
   itkXMLFile.cxx
   itkMetaArrayReader.cxx
   itkMetaArrayWriter.cxx
 )
+
+IF( NOT ITK_USE_TRANSFORM_IO_FACTORIES )
+SET(ITKIO_SRCS
+  ${ITKIO_SRCS}
+  itkTransformFileReader.cxx
+  itkTransformFileWriter.cxx
+  )
+ENDIF( NOT ITK_USE_TRANSFORM_IO_FACTORIES )
 
 # Add ITKIO library
 ADD_LIBRARY(ITKIO ${ITKIO_SRCS})
@@ -82,6 +88,10 @@ ITKDICOMParser
 ITKEXPAT
 ITKniftiio)
 
+IF( ITK_USE_TRANSFORM_IO_FACTORIES )
+    TARGET_LINK_LIBRARIES(ITKIO ITKReview)
+ENDIF( ITK_USE_TRANSFORM_IO_FACTORIES )
+
 IF(CMAKE_COMPILER_IS_GNUCXX)
   SET_SOURCE_FILES_PROPERTIES(itkTestDriver.cxx PROPERTIES COMPILE_FLAGS -w)
   SET_SOURCE_FILES_PROPERTIES(itkPolygonGroupSpatialObjectXMLFile.cxx PROPERTIES COMPILE_FLAGS -w)
@@ -89,8 +99,10 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 ADD_EXECUTABLE(itkTestDriver itkTestDriver.cxx) 
 TARGET_LINK_LIBRARIES(itkTestDriver ITKIO)
-INSTALL(TARGETS itkTestDriver
-        RUNTIME DESTINATION ${ITK_INSTALL_BIN_DIR_CM24} COMPONENT Development)
+IF(NOT ITK_INSTALL_NO_DEVELOPMENT)
+  INSTALL(TARGETS itkTestDriver
+    RUNTIME DESTINATION ${ITK_INSTALL_BIN_DIR_CM24} COMPONENT Development)
+ENDIF(NOT ITK_INSTALL_NO_DEVELOPMENT)
 SET(ITK_TEST_DRIVER "${EXECUTABLE_OUTPUT_PATH}/itkTestDriver" 
     CACHE INTERNAL "itkTestDriver path to be used by subprojects")
 

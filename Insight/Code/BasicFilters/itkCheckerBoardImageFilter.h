@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCheckerBoardImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/02 20:08:58 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/08/24 12:45:32 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -72,14 +72,13 @@ public:
   /** Connect one of the operands for checker board */
   void SetInput2( const TImage * image2);
 
-
   /** Set array with number of checks to make per image dimension */
   itkSetMacro( CheckerPattern, PatternArrayType );
   itkGetConstReferenceMacro( CheckerPattern, PatternArrayType );
 
 protected:
   CheckerBoardImageFilter();
-  ~CheckerBoardImageFilter() {};
+  ~CheckerBoardImageFilter() {}
   void PrintSelf(std::ostream& os, Indent indent) const;
 
   /** CheckerBoardImageFilter can be implemented as a multithreaded filter.  Therefore,

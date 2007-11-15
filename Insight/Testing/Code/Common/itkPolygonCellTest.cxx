@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPolygonCellTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/10/10 17:50:43 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -151,6 +151,6 @@ int itkPolygonCellTest(int, char* [] )
       }
   }
   
-  return 0;  
+  return EXIT_SUCCESS;  
 }
 

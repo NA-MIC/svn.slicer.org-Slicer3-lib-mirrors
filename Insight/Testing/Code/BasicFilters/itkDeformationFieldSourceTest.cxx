@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDeformationFieldSourceTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/02/08 03:18:41 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/08/10 14:34:01 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -37,7 +37,7 @@ int itkDeformationFieldSourceTest( int argc, char * argv[] )
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " landmarksFile outputImage" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   const     unsigned int   Dimension = 2;

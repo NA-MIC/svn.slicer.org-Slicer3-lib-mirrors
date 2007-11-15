@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMultiplyImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/31 14:31:04 $
-  Version:   $Revision: 1.23 $
+  Date:      $Date: 2007/08/30 15:01:09 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -33,7 +33,7 @@ namespace itk
  */
 namespace Function {  
 
-template< class TInput1, class TInput2, class TOutput>
+template< class TInput1, class TInput2=TInput1, class TOutput=TInput1>
 class Mult
 {
 public:
@@ -52,7 +52,7 @@ public:
 }; 
 }
 
-template <class TInputImage1, class TInputImage2, class TOutputImage>
+template <class TInputImage1, class TInputImage2=TInputImage1, class TOutputImage=TInputImage1>
 class ITK_EXPORT MultiplyImageFilter :
     public
 BinaryFunctorImageFilter<TInputImage1,TInputImage2,TOutputImage, 

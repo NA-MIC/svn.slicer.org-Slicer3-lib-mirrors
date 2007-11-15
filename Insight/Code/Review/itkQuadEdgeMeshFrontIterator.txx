@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshFrontIterator.txx,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 15:46:55 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/07/02 21:56:53 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -145,16 +145,12 @@ typename QuadEdgeMeshFrontBaseIterator< TMesh, TQE >::QEType*
 QuadEdgeMeshFrontBaseIterator< TMesh, TQE >::
 FindDefaultSeed( )
 {
-  //QEType* edgeFound = (QEType*)0;
-  //(void)edgeFound;
-  typename MeshType::CellsContainerIterator cellIterator;
-  cellIterator = m_Mesh->GetCells()->Begin();
-  if( QEType* edge = dynamic_cast< QEType* >( cellIterator.Value()) )
+  if( QEType* edge = dynamic_cast< QEType* >( m_Mesh->GetEdge( ) ) )
     {
     return edge;
     }
   typedef typename QEType::DualType QEDual;
-  if( QEDual* edge = dynamic_cast< QEDual* >( cellIterator.Value()) )
+  if( QEDual* edge = dynamic_cast< QEDual* >( m_Mesh->GetEdge( ) ) )
     {
     return edge->GetRot( );
     }

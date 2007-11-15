@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSegmentationLevelSetImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/16 15:44:15 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2007/09/21 20:05:09 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -135,6 +135,10 @@ namespace itk {
  * equation. Setting this value will  override any value already set by
  * FeatureScaling.
  *
+ * \warning This is an abstract class. It is not intended to be instantiated
+ * by itself. Instead, you should use the derived classes. This is the reason
+ * why the New() operator (itkNewMacro) is missing from the class API.
+ * 
  * \par
  *  See LevelSetFunction for more information.*/
 template <class TInputImage,

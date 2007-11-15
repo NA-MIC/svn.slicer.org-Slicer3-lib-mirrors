@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkInterpolateImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:51 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/08/17 12:50:39 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,7 @@
 =========================================================================*/
 #ifndef _itkInterpolateImageFilter_txx
 #define _itkInterpolateImageFilter_txx
+
 #include "itkInterpolateImageFilter.h"
 
 #include "itkLinearInterpolateImageFunction.h"
@@ -186,7 +187,7 @@ InterpolateImageFilter<TInputImage,TOutputImage>
 ::AfterThreadedGenerateData()
 {
 
-  // Clean up intermediat memory usage
+  // Clean up intermediate memory usage
   m_IntermediateImage = NULL;
 
 }

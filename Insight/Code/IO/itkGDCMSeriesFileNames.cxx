@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGDCMSeriesFileNames.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:49 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2007/07/19 10:27:01 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -67,6 +67,11 @@ void GDCMSeriesFileNames::SetInputDirectory (std::string const &name)
     {
     return;
     }
+  if( !itksys::SystemTools::FileIsDirectory(name.c_str()) )
+    {
+    itkWarningMacro( << name << " is not a directory" );
+    return;
+    }
   m_InputDirectory = name;
   m_SerieHelper->Clear();
   m_SerieHelper->SetUseSeriesDetails( m_UseSeriesDetails );
@@ -110,7 +115,8 @@ const FilenamesContainer &GDCMSeriesFileNames::GetFileNames(const std::string se
   gdcm::FileList *flist = m_SerieHelper->GetFirstSingleSerieUIDFileSet();
   if( !flist )
     {
-    itkWarningMacro(<<"No Series can be found, make sure you restiction are not too strong");
+    itkWarningMacro(
+      << "No Series can be found, make sure your restrictions are not too strong");
     return m_InputFileNames;
     }
   if( serie != "" ) // user did not specify any sub selection based on UID

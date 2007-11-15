@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshBoundaryEdgesMeshFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 15:46:55 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/06/27 19:06:04 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -51,8 +51,9 @@ Evaluate( const InputType& mesh )
   CellsContainerConstIterator cellEnd      = mesh.GetCells()->End();
   while( cellIterator != cellEnd )
     {
-    if( QEPrimal* edge = dynamic_cast< QEPrimal* >( cellIterator.Value()) )
+       if( EdgeCellType* cell = dynamic_cast< EdgeCellType* >( cellIterator.Value( ) ) )
       {
+           QEPrimal* edge = cell->GetQEGeom( );
       if( !edge->IsInternal( ) )
         {
         boundaryList.push_front( edge );

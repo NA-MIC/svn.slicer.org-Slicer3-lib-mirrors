@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransform.h,v $
   Language:  C++
-  Date:      $Date: 2006/11/03 20:09:08 $
-  Version:   $Revision: 1.50 $
+  Date:      $Date: 2007/07/19 18:09:48 $
+  Version:   $Revision: 1.55 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,15 @@
 =========================================================================*/
 #ifndef __itkTransform_h
 #define __itkTransform_h
+
+// First make sure that the configuration is available.
+// This line can be removed once the optimized versions
+// gets integrated into the main directories.
+#include "itkConfigure.h"
+
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+#include "itkThreadSafeTransform.h"
+#else
 
 #include "itkTransformBase.h"
 #include "itkPoint.h"
@@ -257,5 +266,4 @@ private:
 
 #endif
 
-
-
+#endif

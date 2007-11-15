@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNaryMaximumImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/01/15 04:28:36 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -194,7 +194,7 @@ int itkNaryMaximumImageFilterTest(int, char* [] )
   
   std::cerr << "Test Passed!" << std::endl;
   // All objects should be automatically destroyed at this point
-  return 0;
+  return EXIT_SUCCESS;
 
 }
 

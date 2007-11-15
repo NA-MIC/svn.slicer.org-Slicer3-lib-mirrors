@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTileImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/03/05 13:19:13 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -40,7 +40,7 @@ int itkTileImageFilterTest(int argc, char *argv[] )
     {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  iSize jSize kSize input1 input2 ... inputn output" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   itk::FixedArray<unsigned int,3> layout;

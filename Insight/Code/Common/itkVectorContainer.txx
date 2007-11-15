@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorContainer.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/07 17:13:53 $
-  Version:   $Revision: 1.41 $
+  Date:      $Date: 2007/08/17 18:01:41 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -131,10 +131,10 @@ VectorContainer< TElementIdentifier , TElement >
 template <typename TElementIdentifier, typename TElement>
 bool
 VectorContainer< TElementIdentifier , TElement >
-::IndexExists(ElementIdentifier id) const
+::IndexExists(ElementIdentifier identifier) const
 {
-  return (NumericTraits<ElementIdentifier>::IsNonnegative(id)
-          && (id < this->VectorType::size()));
+  return (NumericTraits<ElementIdentifier>::IsNonnegative(identifier)
+          && (identifier < this->VectorType::size()));
 }
 
 
@@ -147,14 +147,14 @@ VectorContainer< TElementIdentifier , TElement >
 template <typename TElementIdentifier, typename TElement>
 bool
 VectorContainer< TElementIdentifier , TElement >
-::GetElementIfIndexExists(ElementIdentifier id, Element* element) const
+::GetElementIfIndexExists(ElementIdentifier identifier, Element* element) const
 {
-  if (NumericTraits<ElementIdentifier>::IsNonnegative(id)
-      && (id < this->VectorType::size()))
+  if (NumericTraits<ElementIdentifier>::IsNonnegative(identifier)
+      && (identifier < this->VectorType::size()))
     {
     if(element)
       {
-      *element = this->VectorType::operator[](id);
+      *element = this->VectorType::operator[](identifier);
       }
     return true;
     }

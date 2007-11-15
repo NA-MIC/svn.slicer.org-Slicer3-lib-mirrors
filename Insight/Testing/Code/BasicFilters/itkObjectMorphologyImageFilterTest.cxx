@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkObjectMorphologyImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/07/26 12:19:43 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -336,7 +336,7 @@ int itkObjectMorphologyImageFilterTest(int, char* [] )
   std::cout << "    Time = " << elapsedTime << std::endl;
 
   // All objects should be automatically destroyed at this point
-  return 0;
+  return EXIT_SUCCESS;
 
 }
 

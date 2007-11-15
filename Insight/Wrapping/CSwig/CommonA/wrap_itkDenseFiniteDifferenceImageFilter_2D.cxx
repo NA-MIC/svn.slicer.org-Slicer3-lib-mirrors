@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_itkDenseFiniteDifferenceImageFilter_2D.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/05/10 14:37:07 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/09/20 16:20:01 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -36,12 +36,12 @@ namespace _cable_
     //===========2D Wrapped Filters==============
     ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::F2 , image::F2 , itkDenseFiniteDifferenceImageFilterF2F2  );
     ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::D2 , image::D2 , itkDenseFiniteDifferenceImageFilterD2D2  );
-    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::UC2, image::UC2, itkDenseFiniteDifferenceImageFilterUC2UC2);
-    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::US2, image::US2, itkDenseFiniteDifferenceImageFilterUS2US2);
-    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::UI2, image::UI2, itkDenseFiniteDifferenceImageFilterUI2UI2);
-    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::SC2, image::SC2, itkDenseFiniteDifferenceImageFilterSC2SC2);
-    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::SS2, image::SS2, itkDenseFiniteDifferenceImageFilterSS2SS2);
-    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::SI2, image::SI2, itkDenseFiniteDifferenceImageFilterSI2SI2);
+    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::UC2, image::F2, itkDenseFiniteDifferenceImageFilterUC2F2);
+    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::US2, image::F2, itkDenseFiniteDifferenceImageFilterUS2F2);
+    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::UI2, image::F2, itkDenseFiniteDifferenceImageFilterUI2F2);
+    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::SC2, image::F2, itkDenseFiniteDifferenceImageFilterSC2F2);
+    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::SS2, image::F2, itkDenseFiniteDifferenceImageFilterSS2F2);
+    ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::SI2, image::F2, itkDenseFiniteDifferenceImageFilterSI2F2);
     ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::F2 , image::VF2 ,itkDenseFiniteDifferenceImageFilterF2VF2  );
     ITK_WRAP_OBJECT2(DenseFiniteDifferenceImageFilter, image::US2, image::VF2, itkDenseFiniteDifferenceImageFilterUS2VF2);
   }

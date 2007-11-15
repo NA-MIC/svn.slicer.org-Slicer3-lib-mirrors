@@ -3,8 +3,8 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmConfigure.h.in,v $
   Language:  C++
-  Date:      $Date: 2006/07/11 14:08:41 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007/08/20 07:46:05 $
+  Version:   $Revision: 1.11 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de
   l'Image). All rights reserved. See Doc/License.txt or
@@ -41,7 +41,7 @@
 #define GDCM_EXECUTABLE_OUTPUT_PATH "@EXECUTABLE_OUTPUT_PATH@"
 #define GDCM_LIBRARY_OUTPUT_PATH    "@LIBRARY_OUTPUT_PATH@"
 
-/* For older gcc / broken plateform */
+/* For older gcc / broken platform */
 #cmakedefine GDCM_NO_ANSI_STRING_STREAM
 
 /* I guess something important */

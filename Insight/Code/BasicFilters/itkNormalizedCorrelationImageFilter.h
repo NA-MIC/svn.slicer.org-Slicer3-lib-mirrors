@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNormalizedCorrelationImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/30 21:14:31 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/08/24 12:45:32 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -24,7 +24,7 @@ namespace itk
 /** \class NormalizedCorrelationImageFilter
  * \brief Computes the normalized correlation of an image and a template. 
  *
- * This filter calculated the normalized correlation between an image
+ * This filter calculates the normalized correlation between an image
  * and the template.  Normalized correlation is frequently use in
  * feature detection because it is invariant to local changes in
  * constrast.

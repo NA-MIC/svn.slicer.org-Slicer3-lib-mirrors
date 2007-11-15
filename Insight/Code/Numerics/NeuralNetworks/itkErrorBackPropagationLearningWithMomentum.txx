@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkErrorBackPropagationLearningWithMomentum.txx,v $
   Language:  C++
-  Date:      $Date: 2005/08/03 17:30:12 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/09/04 00:19:20 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -18,7 +18,7 @@
 #ifndef __itkErrorBackPropagationLearningingWithMomentum_txx
 #define __itkErrorBackPropagationLearningingWithMomentum_txx
 
-#include "itkErrorBackPropagationLearningFunctionBase.h"
+#include "itkErrorBackPropagationLearningWithMomentum.h"
 #include <fstream>
 
 
@@ -27,28 +27,30 @@ namespace itk
 namespace Statistics
 {
 
-template<class LayerType, class TOutput>
-ErrorBackPropagationLearningWithMomentum <LayerType,TOutput>
+template<class LayerType, class TTargetVector>
+ErrorBackPropagationLearningWithMomentum <LayerType,TTargetVector>
 ::ErrorBackPropagationLearningWithMomentum()
 {
   m_Momentum = 0.9; //Default
 }
 
-template<class LayerType, class TOutput>
+template<class LayerType, class TTargetVector>
 void
-ErrorBackPropagationLearningWithMomentum<LayerType,TOutput>
-::Learn(LayerType* layer, ValueType lr)
+ErrorBackPropagationLearningWithMomentum<LayerType,TTargetVector>
+::Learn(LayerInterfaceType * layer, ValueType lr)
 {
-  typename LayerType::WeightSetType::Pointer outputweightset;
-  typename LayerType::WeightSetType::Pointer inputweightset;
+  typedef typename LayerInterfaceType::WeightSetType::Pointer WeightSetPointer;
+  WeightSetPointer outputweightset;
+  WeightSetPointer inputweightset;
   outputweightset = layer->GetOutputWeightSet();
   inputweightset = layer->GetInputWeightSet();
 
-  typename LayerType::ValuePointer DWvalues_m_1 = inputweightset->GetPrevDWValues();
-  typename LayerType::ValuePointer DWvalues_m_2 = inputweightset->GetPrev_m_2DWValues();
-  typename LayerType::ValuePointer currentdeltavalues = inputweightset->GetTotalDeltaValues();
-  typename LayerType::ValuePointer DBValues = inputweightset->GetTotalDeltaBValues();
-  typename LayerType::ValuePointer PrevDBValues = inputweightset->GetPrevDBValues();
+  typedef typename LayerInterfaceType::ValuePointer InterfaceValuePointer;
+  InterfaceValuePointer DWvalues_m_1 = inputweightset->GetPrevDWValues();
+  InterfaceValuePointer DWvalues_m_2 = inputweightset->GetPrev_m_2DWValues();
+  InterfaceValuePointer currentdeltavalues = inputweightset->GetTotalDeltaValues();
+  InterfaceValuePointer DBValues = inputweightset->GetTotalDeltaBValues();
+  InterfaceValuePointer PrevDBValues = inputweightset->GetPrevDBValues();
 
   int input_cols = inputweightset->GetNumberOfInputNodes();
   int input_rows = inputweightset->GetNumberOfOutputNodes();
@@ -100,17 +102,19 @@ ErrorBackPropagationLearningWithMomentum<LayerType,TOutput>
   inputweightset->SetDBValues(DB_temp.data_block());
 }
 
-template<class LayerType, class TOutput>
+template<class LayerType, class TTargetVector>
 void
-ErrorBackPropagationLearningWithMomentum<LayerType,TOutput>
-::Learn(LayerType* itkNotUsed(layer), TOutput itkNotUsed(errors),ValueType itkNotUsed(lr))
+ErrorBackPropagationLearningWithMomentum<LayerType,TTargetVector>
+::Learn( LayerInterfaceType * itkNotUsed(layer), TTargetVector itkNotUsed(errors),ValueType itkNotUsed(lr))
 {
+  //It appears that this interface should not be called.
+  //itkExceptionMacrto(<< "This should never be called");
 }
 
 /** Print the object */
-template<class LayerType, class TOutput>
+template<class LayerType, class TTargetVector>
 void  
-ErrorBackPropagationLearningWithMomentum<LayerType,TOutput>
+ErrorBackPropagationLearningWithMomentum<LayerType,TTargetVector>
 ::PrintSelf( std::ostream& os, Indent indent ) const 
 { 
   os << indent << "ErrorBackPropagationLearningWithMomentum(" << this << ")" << std::endl; 

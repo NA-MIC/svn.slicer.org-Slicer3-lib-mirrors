@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkArray2D.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/16 11:43:26 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007/08/20 15:16:33 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -32,8 +32,8 @@ Array2D<TValueType >
 /** Constructor with number of rows and columns as arguments */
 template < typename TValueType >
 Array2D<TValueType >
-::Array2D(unsigned int rows,unsigned int cols)
-                                            :vnl_matrix<TValueType>(rows,cols)
+::Array2D(unsigned int numberOfRows,unsigned int numberOfCols)
+                                            :vnl_matrix<TValueType>(numberOfRows,numberOfCols)
 {
 }
 

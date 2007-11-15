@@ -3,8 +3,8 @@
   Program:   MetaIO
   Module:    $RCSfile: metaImageUtils.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/10/27 12:25:53 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/05/31 13:53:13 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,6 +17,7 @@
 #include <stdio.h>
 
 #include "metaImageTypes.h"
+#include <string.h>
 
 #if (METAIO_USE_NAMESPACE)
 namespace METAIO_NAMESPACE {

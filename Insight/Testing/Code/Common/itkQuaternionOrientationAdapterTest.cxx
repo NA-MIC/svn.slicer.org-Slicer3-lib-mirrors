@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuaternionOrientationAdapterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/03 21:00:58 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -241,10 +241,10 @@ int itkQuaternionOrientationAdapterTest(int argc, char *argv[])
         if(dir[ii][jj] != dir2[ii][jj])
           {
           std::cerr << "Input and output matrices don't match" << std::endl;
-          return -1;
+          return EXIT_FAILURE;
           }
         }
       }
     }
-  return 0;
+  return EXIT_SUCCESS;
 }

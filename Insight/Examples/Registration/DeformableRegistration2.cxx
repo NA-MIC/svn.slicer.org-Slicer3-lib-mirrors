@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: DeformableRegistration2.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/19 16:31:50 $
-  Version:   $Revision: 1.34 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -106,7 +106,7 @@ int main( int argc, char *argv[] )
     std::cerr << " fixedImageFile movingImageFile ";
     std::cerr << " outputImageFile " << std::endl;
     std::cerr << " [outputDeformationFieldFile] " << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   // Software Guide : BeginLatex
@@ -511,7 +511,7 @@ int main( int argc, char *argv[] )
   catch( itk::ExceptionObject & excp )
     {
     std::cerr << excp << std::endl;
-    return -1;
+    return EXIT_FAILURE;
     }
 
 
@@ -519,6 +519,6 @@ int main( int argc, char *argv[] )
 
 
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 

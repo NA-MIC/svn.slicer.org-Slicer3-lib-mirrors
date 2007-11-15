@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLog10ImageFilterAndAdaptorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/01/15 04:28:36 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -133,7 +133,7 @@ int itkLog10ImageFilterAndAdaptorTest(int, char* [] )
       std::cerr << " log10( " << input << ") = " << naturallog << std::endl;
       std::cerr << " differs from " << output;
       std::cerr << " by more than " << epsilon << std::endl;
-      return 1;
+      return EXIT_FAILURE;
     }
     ++ot;
     ++it;
@@ -185,7 +185,7 @@ int itkLog10ImageFilterAndAdaptorTest(int, char* [] )
       std::cerr << " difference = " << diff << std::endl;
       std::cerr << " differs from 0 ";
       std::cerr << " by more than " << epsilon << std::endl;
-      return 1;
+      return EXIT_FAILURE;
     }
     ++dt;
   }
@@ -193,7 +193,7 @@ int itkLog10ImageFilterAndAdaptorTest(int, char* [] )
 
 
   
-  return 0;
+  return EXIT_SUCCESS;
 
 }
 

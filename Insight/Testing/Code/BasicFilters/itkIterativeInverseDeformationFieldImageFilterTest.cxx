@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkIterativeInverseDeformationFieldImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/01/19 13:11:49 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -35,7 +35,7 @@ int itkIterativeInverseDeformationFieldImageFilterTest( int argc, char * argv[] 
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " outputImage" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   const     unsigned int   Dimension = 2;

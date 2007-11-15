@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMaskNeighborhoodOperatorImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/12/06 12:17:37 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -143,5 +143,5 @@ int itkMaskNeighborhoodOperatorImageFilterTest(int ac, char* av[] )
     return -2;
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

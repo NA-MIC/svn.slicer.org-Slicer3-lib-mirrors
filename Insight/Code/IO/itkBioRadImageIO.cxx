@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBioRadImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:47 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/08/27 13:46:29 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -70,7 +70,7 @@ bool BioRadImageIO::OpenBioRadFileForReading(std::ifstream& os,
                                        
 {
   // Make sure that we have a file to 
-  if ( filename == "" )
+  if ( *filename == 0 )
     {
     itkExceptionMacro(<<"A FileName must be specified.");
     return false;
@@ -101,7 +101,7 @@ bool BioRadImageIO::OpenBioRadFileForWriting(std::ofstream& os,
                                              const char* filename)
 {
   // Make sure that we have a file to 
-  if ( filename == "" )
+  if ( *filename == 0 )
     {
     itkExceptionMacro(<<"A FileName must be specified.");
     return false;
@@ -224,7 +224,7 @@ void BioRadImageIO::InternalReadImageInformation(std::ifstream& file)
   p = &h;
   if( sizeof(h) != BIORAD_HEADER_LENGTH )
     {
-    itkExceptionMacro(<< "Problem of alignement on your plateform");
+    itkExceptionMacro(<< "Problem of alignement on your platform");
     }
   file.seekg(0, std::ios::beg);
   file.read((char*)p, BIORAD_HEADER_LENGTH);
@@ -297,7 +297,7 @@ bool BioRadImageIO::CanWriteFile( const char* name )
 {
   std::string filename = name;
 
-  if(  filename == "" )
+  if( filename == "" )
     {
     itkDebugMacro(<<"No filename specified.");
     return false;
@@ -342,7 +342,7 @@ void BioRadImageIO::Write(const void* buffer)
   p = &header;
   if( sizeof(header) != BIORAD_HEADER_LENGTH )
     {
-    itkExceptionMacro(<< "Problem of alignement on your plateform");
+    itkExceptionMacro(<< "Problem of alignement on your platform");
     }
   memset(p,0,BIORAD_HEADER_LENGTH); // Set everything to zero
   // In particular `notes' needs to be set to zero to indicate there is no notes

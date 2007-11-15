@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEventObject.h,v $
   Language:  C++
-  Date:      $Date: 2006/12/28 22:02:32 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2007/06/05 20:34:22 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -125,7 +125,7 @@ inline std::ostream& operator<<(std::ostream& os, EventObject &e)
      classname(const Self&s) :super(s){}; \
    private: \
      void operator=(const Self&); \
- }
+ };
 
 
 

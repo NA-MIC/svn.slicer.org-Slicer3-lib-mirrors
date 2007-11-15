@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryThresholdImageFunctionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:08 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -106,10 +106,11 @@ int itkBinaryThresholdImageFunctionTest(int, char* [] )
   if (failed)
     {
     std::cout << "Failed!" << std::endl;
+    return EXIT_FAILURE;
     }
   else
     {
     std::cout << "Passed!" << std::endl;
     }
-  return 0;
+  return EXIT_SUCCESS;
 }

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSimpleFuzzyConnectednessImageFilterBase.h,v $
   Language:  C++
-  Date:      $Date: 2004/11/04 20:40:42 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/09/19 11:43:27 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -162,7 +162,7 @@ private:
 };
 
 
-} /** end namespace itk. */
+} // end namespace itk.
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "itkSimpleFuzzyConnectednessImageFilterBase.txx"

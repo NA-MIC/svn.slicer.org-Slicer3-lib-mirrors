@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorConfidenceConnectedImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/11/09 12:58:18 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -128,5 +128,5 @@ int itkVectorConfidenceConnectedImageFilterTest(int ac, char* av[] )
   filter->SetSeed( seed1 );
 
 
-    return 0;
+    return EXIT_SUCCESS;
 }

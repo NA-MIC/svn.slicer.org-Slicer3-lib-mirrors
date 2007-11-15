@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshPolygonCell.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 15:46:56 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/08/28 15:53:46 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -71,26 +71,31 @@ public:
   /** Multivisitor type. */
   typedef typename CellType::MultiVisitor MultiVisitor;
   
+  typedef QuadEdgeMeshLineCell< CellType >               EdgeCellType;
+  typedef std::vector< EdgeCellType* >                   EdgeCellListType; 
+
+  //** */
+  typedef typename CellTraits::PointIdIterator              PointIdIterator;
+  typedef typename CellTraits::PointIdConstIterator         PointIdConstIterator;
+  typedef typename CellTraits::PointIdInternalIterator      PointIdInternalIterator;
+  typedef typename CellTraits::PointIdInternalConstIterator PointIdInternalConstIterator;
+
   /** QE types. */
-  typedef typename Superclass::CellTraits::QuadEdgeType  QuadEdgeType;
+  typedef typename CellTraits::QuadEdgeType              QuadEdgeType;
   typedef typename QuadEdgeType::OriginRefType           VertexRefType;
   typedef typename QuadEdgeType::DualOriginRefType       FaceRefType;
   typedef typename QuadEdgeType::PrimalDataType          PrimalDataType;
   typedef typename QuadEdgeType::DualDataType            DualDataType;
   typedef typename QuadEdgeType::DualType                QEDual;
-  
-  /** Iterator types. */
-  typedef typename QuadEdgeType::IteratorGeom      PointIdIterator;
-  typedef typename QuadEdgeType::ConstIteratorGeom PointIdConstIterator;
-  
+   
 public:
   /** Standard part of every itk Object. */
   itkTypeMacro( QuadEdgeMeshPolygonCell, TCellInterface );
   
   /** Object memory management methods. */
-  QuadEdgeMeshPolygonCell( unsigned int nPoints );
+  QuadEdgeMeshPolygonCell( PointIdentifier nPoints = 0 );
   QuadEdgeMeshPolygonCell( QuadEdgeType* e );
-  virtual ~QuadEdgeMeshPolygonCell() { }
+  virtual ~QuadEdgeMeshPolygonCell();
   
   /** Accessors for m_Ident. */
   void SetIdent( CellIdentifier cid ) { m_Ident = cid; }
@@ -124,28 +129,111 @@ public:
   
   /** Useless methods. */
   virtual void MakeCopy( CellAutoPointer& cell ) const 
-    { (void)cell; }
+    { 
+    const unsigned long numberOfPoints = this->GetNumberOfPoints();
+    Self * newPolygonCell = new Self( numberOfPoints );
+    cell.TakeOwnership( newPolygonCell );
+    if ( numberOfPoints ) 
+      {
+      for( unsigned long i = 0; i < numberOfPoints; i++ )
+        { 
+        newPolygonCell->SetPointId( i, this->GetPointId( i ) );
+        }
+      }
+    }
+
   
-  /** Iterator-related methods. */
+  /** ITK Cell API - Iterator-related methods.*/
   virtual void SetPointIds( PointIdConstIterator first );
   virtual void SetPointIds( PointIdConstIterator first,
                             PointIdConstIterator last );
   virtual void SetPointId( int localId, PointIdentifier pId );
   
-  virtual PointIdIterator PointIdsBegin();
-  virtual PointIdIterator PointIdsEnd();
-  
-  virtual PointIdConstIterator GetPointIds() const;
-  virtual PointIdConstIterator PointIdsBegin() const;
-  virtual PointIdConstIterator PointIdsEnd() const;
-  
+  virtual PointIdentifier GetPointId( int localId ) const;
+
+  virtual PointIdIterator PointIdsBegin()
+    {
+    if (m_PointIds.size() >0)
+      {
+      return &*(m_PointIds.begin());
+      }
+    else
+      {
+      return NULL;
+      }
+    }
+
+  virtual PointIdIterator PointIdsEnd()
+    {
+    if (m_PointIds.size() >0)
+      {
+      return &m_PointIds[m_PointIds.size()-1] + 1;
+      }
+    else
+      {
+      return NULL;
+      }
+    }
+
+  virtual PointIdConstIterator PointIdsBegin() const
+    {
+    if (m_PointIds.size() >0)
+      {
+      return &*(m_PointIds.begin());
+      }
+    else
+      {
+      return NULL;
+      }
+
+    }
+
+  virtual PointIdConstIterator PointIdsEnd() const
+    {
+    if (m_PointIds.size() >0)
+      {
+      return &m_PointIds[m_PointIds.size()-1] + 1;
+      }
+    else
+      {
+      return NULL;
+      }
+    }
+
+  /** QuadEdge internal flavor of cell API */
+  virtual void InternalSetPointIds( PointIdInternalConstIterator first );
+  virtual void InternalSetPointIds( PointIdInternalConstIterator first,
+                            PointIdInternalConstIterator last );
+
+  virtual PointIdInternalIterator InternalPointIdsBegin();
+  virtual PointIdInternalIterator InternalPointIdsEnd();
+
+  virtual PointIdInternalConstIterator InternalGetPointIds() const;
+  virtual PointIdInternalConstIterator InternalPointIdsBegin() const;
+  virtual PointIdInternalConstIterator InternalPointIdsEnd() const;
+
+protected:
+  std::vector<PointIdentifier>  m_PointIds;
+  //std::vector<EdgeInfo> m_Edges;
+
 private:
-  QuadEdgeMeshPolygonCell( const Self& );    // Not impl.
+  QuadEdgeMeshPolygonCell( const Self& ); // Not impl.
   void operator=( const Self& ); // Not impl.
 
-  QuadEdgeType * MakeQuadEdges();
+  void MakePointIds()
+    {
+    if( !this->GetNumberOfPoints( ) )
+      {
+      return;
+      }
 
-private:
+    // NOTE ALEX: very inefficient way of doing it ...
+    for( PointIdentifier i = 0; i < this->GetNumberOfPoints( ); i++ )
+      {
+      m_PointIds.push_back( GetPointId( i ) );
+      }
+    }
+
   /** In order to have constant time access at the itk level instead of
    * doing a search in the Mesh::Cell container.
    */
@@ -155,6 +243,12 @@ private:
    * Entry point into the edge ring.
    */
   QuadEdgeType * m_EdgeRingEntry;
+
+  /**
+   * List of EdgeCells created by the constructor for proper deletion
+   */
+  EdgeCellListType m_EdgeCellList;
+
 };
 
 } // end namespace itk

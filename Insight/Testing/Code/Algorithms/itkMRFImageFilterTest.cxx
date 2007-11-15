@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMRFImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/30 21:00:41 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007/08/20 12:47:12 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -446,13 +446,15 @@ int itkMRFImageFilterTest(int, char* [] )
   //Loop through the data set
 
   if( sum == 22 )
+    {
     std::cout<< "MRF labeller Test Passed" << std::endl;
+    }
   else 
+    {
     std::cout<< "MRF labeller Test failed" << std::endl;
+    return EXIT_FAILURE;
+    }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
-
-
-  

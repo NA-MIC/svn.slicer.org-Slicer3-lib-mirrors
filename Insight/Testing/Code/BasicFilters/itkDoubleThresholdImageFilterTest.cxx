@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDoubleThresholdImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:06 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/08/10 14:34:01 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -36,7 +36,7 @@ int itkDoubleThresholdImageFilterTest( int argc, char * argv[] )
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  ";
     std::cerr << " outputImageFile threshold1 threshold2 threshold3 threshold4 " << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
 
@@ -101,7 +101,7 @@ int itkDoubleThresholdImageFilterTest( int argc, char * argv[] )
   std::cout << "<DartMeasurement name=\"NumberOfIterations\" type=\"numeric/integer\">" << threshold->GetNumberOfIterationsUsed() << "</DartMeasurement>" << std::endl;
   
 
-  return 0;
+  return EXIT_SUCCESS;
 
 }
 

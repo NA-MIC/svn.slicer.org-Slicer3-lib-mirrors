@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSubtractImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/03 15:07:51 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2007/08/30 15:01:09 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -35,7 +35,7 @@ namespace itk
  */
 namespace Function {  
   
-template< class TInput1, class TInput2, class TOutput>
+template< class TInput1, class TInput2=TInput1, class TOutput=TInput1>
 class Sub2
 {
 public:
@@ -54,7 +54,7 @@ public:
 }; 
 }
 
-template <class TInputImage1, class TInputImage2, class TOutputImage>
+template <class TInputImage1, class TInputImage2=TInputImage1, class TOutputImage=TInputImage1>
 class ITK_EXPORT SubtractImageFilter :
     public
 BinaryFunctorImageFilter<TInputImage1,TInputImage2,TOutputImage, 

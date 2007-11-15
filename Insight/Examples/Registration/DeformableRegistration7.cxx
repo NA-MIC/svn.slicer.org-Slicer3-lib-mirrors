@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: DeformableRegistration7.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/09/16 23:22:43 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -128,7 +128,7 @@ int main( int argc, char *argv[] )
     std::cerr << " fixedImageFile  movingImageFile outputImagefile  ";
     std::cerr << " [differenceOutputfile] [differenceBeforeRegistration] ";
     std::cerr << " [deformationField] ";
-    return 1;
+    return EXIT_FAILURE;
     }
   
   const    unsigned int    ImageDimension = 3;
@@ -340,7 +340,7 @@ int main( int argc, char *argv[] )
     { 
     std::cerr << "ExceptionObject caught !" << std::endl; 
     std::cerr << err << std::endl; 
-    return -1;
+    return EXIT_FAILURE;
     } 
   
   OptimizerType::ParametersType finalParameters = 
@@ -402,7 +402,7 @@ int main( int argc, char *argv[] )
     { 
     std::cerr << "ExceptionObject caught !" << std::endl; 
     std::cerr << err << std::endl; 
-    return -1;
+    return EXIT_FAILURE;
     } 
  
 
@@ -433,7 +433,7 @@ int main( int argc, char *argv[] )
       { 
       std::cerr << "ExceptionObject caught !" << std::endl; 
       std::cerr << err << std::endl; 
-      return -1;
+      return EXIT_FAILURE;
       } 
     }
 
@@ -453,7 +453,7 @@ int main( int argc, char *argv[] )
       { 
       std::cerr << "ExceptionObject caught !" << std::endl; 
       std::cerr << err << std::endl; 
-      return -1;
+      return EXIT_FAILURE;
       } 
     }
 
@@ -514,6 +514,6 @@ int main( int argc, char *argv[] )
       }
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 

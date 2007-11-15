@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNumericTraitsRGBPixel.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/28 22:03:51 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/09/19 22:32:46 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,7 +30,7 @@ namespace itk
 template <>
 class NumericTraits<RGBPixel<unsigned char> > {
 public:
-  typedef RGBPixel<unsigned char> ValueType;
+  typedef unsigned char ValueType;
   typedef RGBPixel<unsigned char> PrintType;
   typedef RGBPixel<unsigned char> AbsType;
   typedef RGBPixel<unsigned short> AccumulateType;
@@ -39,26 +39,26 @@ public:
   typedef RGBPixel<float>  FloatType;
   static const RGBPixel<unsigned char> ITKCommon_EXPORT Zero;
   static const RGBPixel<unsigned char> ITKCommon_EXPORT One;
-  static ValueType ZeroValue() { return Zero; }
+  static RGBPixel<unsigned char> ZeroValue() { return Zero; }
   
 };
 /** \class NumericTraits<RGBPixel<unsigned short> >
- * \brief Define traits for type RGBPixel<unsigned char>.
+ * \brief Define traits for type RGBPixel<unsigned short>.
  * \ingroup DataRepresentation
  */
 template <>
 class NumericTraits<RGBPixel<unsigned short> > {
 public:
-  typedef RGBPixel<unsigned char> ValueType;
-  typedef RGBPixel<unsigned char> PrintType;
-  typedef RGBPixel<unsigned char> AbsType;
-  typedef RGBPixel<unsigned short> AccumulateType;
+  typedef unsigned short           ValueType;
+  typedef RGBPixel<unsigned short> PrintType;
+  typedef RGBPixel<unsigned short> AbsType;
+  typedef RGBPixel<unsigned int>   AccumulateType;
   typedef RGBPixel<double> RealType;
   typedef double           ScalarRealType;
   typedef RGBPixel<float>  FloatType;
   static const RGBPixel<unsigned short> ITKCommon_EXPORT Zero;
   static const RGBPixel<unsigned short> ITKCommon_EXPORT One;
-  static ValueType ZeroValue() { return Zero; }
+  static RGBPixel<unsigned short> ZeroValue() { return Zero; }
   
 };
 

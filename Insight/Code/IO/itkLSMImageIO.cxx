@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLSMImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/04/15 03:17:58 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007/08/20 07:46:23 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -165,7 +165,7 @@ void LSMImageIO::ReadImageInformation()
   const zeiss_info *zi = reinterpret_cast<zeiss_info*>(praw);
   if( sizeof(*zi) != TIF_CZ_LSMINFO_SIZE)
     {
-    itkExceptionMacro( << "Problem of alignement on your plateform" );
+    itkExceptionMacro( << "Problem of alignement on your platform" );
     return;
     }
   m_Spacing[0] = zi->F64VoxelSizeX;

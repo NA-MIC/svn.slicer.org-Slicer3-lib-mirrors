@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkActiveShapeModelGradientSearchMethod.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:37:20 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/08/17 18:06:26 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -124,10 +124,10 @@ ActiveShapeModelGradientSearchMethod<TImage>
           maximumGrad = constIterator.Get();
           newPosition2D = position2D;
 
-          for (unsigned int id = 0; id<2; id++)
+          for (unsigned int identifier = 0; identifier<2; identifier++)
            {
-               posRight[ id ] = position2D [ id ];
-               posLeft[ id ] = position2D [ id ];
+               posRight[ identifier ] = position2D [ identifier ];
+               posLeft[ identifier ] = position2D [ identifier ];
            }
          if (j == 0)
            {

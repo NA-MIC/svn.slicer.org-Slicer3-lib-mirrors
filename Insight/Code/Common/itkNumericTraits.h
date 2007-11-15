@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNumericTraits.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:59 $
-  Version:   $Revision: 1.49 $
+  Date:      $Date: 2007/08/31 15:12:13 $
+  Version:   $Revision: 1.51 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -125,7 +125,7 @@ public:
 
 /** \class NumericTraits<char>
  * \brief Define traits for type char.
- * NOTE: char is not guarenteed to be signed. On SGI's, thge default is unsigned
+ * NOTE: char is not guaranteed to be signed. On SGI's, the default is unsigned
  */
 template <>
 class NumericTraits<char> : public vcl_numeric_limits<char> {
@@ -152,7 +152,7 @@ public:
 
 /** \class NumericTraits<char>
  * \brief Define traits for type char.
- * NOTE: char is not guarenteed to be signed. On SGI's, thge default is unsigned
+ * NOTE: char is not guaranteed to be signed. On SGI's, the default is unsigned
  */
 template <>
 class NumericTraits<signed char> : public vcl_numeric_limits<signed char> {
@@ -446,7 +446,7 @@ public:
   static const TheType ITKCommon_EXPORT One;
 
   static TheType NonpositiveMin() { 
-    return TheType(-NumericTraits<float>::NonpositiveMin(),0.0); }
+    return TheType(-NumericTraits<float>::NonpositiveMin(),0.0f); }
   static bool IsPositive(TheType val) { return val.real() > 0.0; }
   static bool IsNonpositive(TheType val) { return val.real() <= 0.0; }
   static bool IsNegative(TheType val) { return val.real() < 0.0; }

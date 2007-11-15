@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: LandmarkWarping2.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/31 14:14:16 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -57,7 +57,7 @@ int main( int argc, char * argv[] )
     std::cerr << "Usage: " << argv[0];
     std::cerr << " landmarksFile fixedImage ";
     std::cerr << "movingImage deformedMovingImage" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   const     unsigned int   Dimension = 2;

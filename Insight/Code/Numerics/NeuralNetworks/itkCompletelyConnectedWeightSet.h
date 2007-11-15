@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCompletelyConnectedWeightSet.h,v $
   Language:  C++
-  Date:      $Date: 2005/08/02 19:17:37 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/08/17 13:10:57 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -24,29 +24,27 @@ namespace itk
 {
 namespace Statistics
 {
-template<class TVector, class TOutput>
-class CompletelyConnectedWeightSet : public WeightSetBase<TVector, TOutput>
+template<class TMeasurementVector, class TTargetVector>
+class CompletelyConnectedWeightSet : public WeightSetBase<TMeasurementVector, TTargetVector>
 {
 public:
- 
   #define MAX_SIZE 1000
 
   typedef CompletelyConnectedWeightSet Self;
-  typedef WeightSetBase<TVector, TOutput> Superclass;
+  typedef WeightSetBase<TMeasurementVector, TTargetVector> Superclass;
   typedef SmartPointer<Self> Pointer;
   typedef SmartPointer<const Self> ConstPointer;
 
-  itkTypeMacro(CompletelyConnectedWeightSet, WeightSetBase);      
+  itkTypeMacro(CompletelyConnectedWeightSet, WeightSetBase);
   itkNewMacro(Self);
 
   void SetCompleteConnectivity();
-
   void SetRandomConnectivity(int[][MAX_SIZE]);
 
 protected:
 
   CompletelyConnectedWeightSet();
-  ~CompletelyConnectedWeightSet(){};
+  virtual ~CompletelyConnectedWeightSet(){};
 
   /** Method to print the object. */
   virtual void PrintSelf( std::ostream& os, Indent indent ) const;

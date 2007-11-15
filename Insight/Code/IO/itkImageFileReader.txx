@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageFileReader.txx,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 18:39:27 $
-  Version:   $Revision: 1.70 $
+  Date:      $Date: 2007/09/08 17:33:53 $
+  Version:   $Revision: 1.77 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -38,6 +38,7 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
   m_ImageIO = 0;
   m_FileName = "";
   m_UserSpecifiedImageIO = false;
+  m_UseStreaming = false;
 }
 
 template <class TOutputImage, class ConvertPixelTraits>
@@ -64,6 +65,7 @@ void ImageFileReader<TOutputImage, ConvertPixelTraits>
 
   os << indent << "UserSpecifiedImageIO flag: " << m_UserSpecifiedImageIO << "\n";
   os << indent << "m_FileName: " << m_FileName << "\n";
+  os << indent << "m_UseStreaming: " << m_UseStreaming << "\n";
 }
 
 
@@ -87,7 +89,6 @@ void
 ImageFileReader<TOutputImage, ConvertPixelTraits>
 ::GenerateOutputInformation(void)
 {
-
   typename TOutputImage::Pointer output = this->GetOutput();
 
   itkDebugMacro(<<"Reading file for GenerateOutputInformation()" << m_FileName);
@@ -210,8 +211,6 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
   output->SetMetaDataDictionary(m_ImageIO->GetMetaDataDictionary());
   this->SetMetaDataDictionary(m_ImageIO->GetMetaDataDictionary());
 
-  typedef typename TOutputImage::IndexType   IndexType;
-
   IndexType start;
   start.Fill(0);
 
@@ -271,22 +270,45 @@ void
 ImageFileReader<TOutputImage, ConvertPixelTraits>
 ::EnlargeOutputRequestedRegion(DataObject *output)
 {
+  itkDebugMacro (<< "Starting EnlargeOutputRequestedRegion() ");
   typename TOutputImage::Pointer out = dynamic_cast<TOutputImage*>(output);
 
-  // the ImageIO object cannot stream, then set the RequestedRegion to the
-  // LargestPossibleRegion
-  if (!m_ImageIO->CanStreamRead())
+  // Delegate to the ImageIO the computation of how much the 
+  // requested region must be enlarged.
+
+  //
+  // The following code converts the ImageRegion (templated over dimension)
+  // into an ImageIORegion (not templated over dimension).
+  //
+  ImageRegionType imageRequestedRegion = out->GetRequestedRegion();
+
+  ImageIORegion ioRequestedRegion( TOutputImage::ImageDimension );
+
+  typedef ImageIORegionAdaptor< TOutputImage::ImageDimension >  ImageIOAdaptor;
+  
+  ImageIOAdaptor::Convert( imageRequestedRegion, ioRequestedRegion );
+
+  // Tell the IO if we should use streaming while reading
+  m_ImageIO->SetUseStreamedReading(m_UseStreaming);
+
+  ImageIORegion ioStreamableRegion  = 
+    m_ImageIO->GenerateStreamableReadRegionFromRequestedRegion( ioRequestedRegion );
+
+
+  ImageIOAdaptor::Convert( ioStreamableRegion, this->m_StreamableRegion );
+
+  //
+  // Check whether the imageRequestedRegion is fully contained inside the
+  // streamable region or not.
+  if( !this->m_StreamableRegion.IsInside( imageRequestedRegion ) )
     {
-    if (out)
-      {
-      out->SetRequestedRegion( out->GetLargestPossibleRegion() );
-      }
-    else
-      {
-      throw ImageFileReaderException(__FILE__, __LINE__,
-                                     "Invalid output object type");
-      }
+    itkExceptionMacro(
+      << "ImageIO returns IO region that does not fully contain the requested region" << std::ends
+      << "Requested region: " << imageRequestedRegion << std::ends
+      << "StreamableRegion region: " << this->m_StreamableRegion);
     }
+    
+  itkDebugMacro (<< "StreamableRegion set to =" << this->m_StreamableRegion );
 }
 
 
@@ -297,8 +319,11 @@ void ImageFileReader<TOutputImage, ConvertPixelTraits>
 
   typename TOutputImage::Pointer output = this->GetOutput();
 
-  // allocate the output buffer
-  output->SetBufferedRegion( output->GetRequestedRegion() );
+  itkDebugMacro ( << "ImageFileReader::GenerateData() \n" 
+     << "Allocating the buffer with the StreamableRegion \n" 
+     << this->m_StreamableRegion << "\n");
+
+  output->SetBufferedRegion( this->m_StreamableRegion );
   output->Allocate();
 
   // Test if the file exist and if it can be open.
@@ -315,50 +340,20 @@ void ImageFileReader<TOutputImage, ConvertPixelTraits>
 
   // Tell the ImageIO to read the file
   //
-  OutputImagePixelType *buffer = 
-    output->GetPixelContainer()->GetBufferPointer();
+  OutputImagePixelType *buffer = output->GetPixelContainer()->GetBufferPointer();
+
   m_ImageIO->SetFileName(m_FileName.c_str());
 
   ImageIORegion ioRegion(TOutputImage::ImageDimension);
+
+  typedef ImageIORegionAdaptor< TOutputImage::ImageDimension >  ImageIOAdaptor;
   
-  ImageIORegion::SizeType ioSize = ioRegion.GetSize();
-  ImageIORegion::IndexType ioStart = ioRegion.GetIndex();
-
-  SizeType dimSize;
-  for(unsigned int i=0; i<TOutputImage::ImageDimension; i++)
-    {
-    if (i < m_ImageIO->GetNumberOfDimensions())
-      {
-      dimSize[i] = m_ImageIO->GetDimensions(i);
-      }
-    else
-      {
-      // Number of dimensions in the output is more than number of dimensions
-      // in the ImageIO object (the file).  Use default values for the size,
-      // spacing, and origin for the final (degenerate) dimensions.
-      dimSize[i] = 1;
-      }
-    }
-
-  for(unsigned int i = 0; i < dimSize.GetSizeDimension(); ++i)
-    {
-    ioSize[i] = dimSize[i];
-    }
-
-  typedef typename TOutputImage::IndexType   IndexType;
-  IndexType start;
-  start.Fill(0);
-  for(unsigned int i = 0; i < start.GetIndexDimension(); ++i)
-    {
-    ioStart[i] = start[i];
-    }
-
-  ioRegion.SetSize(ioSize);
-  ioRegion.SetIndex(ioStart);
+  // Convert the m_StreamableRegion from ImageRegion type to ImageIORegion type
+  ImageIOAdaptor::Convert( this->m_StreamableRegion, ioRegion );
 
   itkDebugMacro (<< "ioRegion: " << ioRegion);
  
-  m_ImageIO->SetIORegion(ioRegion);
+  m_ImageIO->SetIORegion( ioRegion );
 
   if ( m_ImageIO->GetComponentTypeInfo()
        == typeid(ITK_TYPENAME ConvertPixelTraits::ComponentType)
@@ -431,7 +426,7 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
         static_cast<type*>(inputData),                  \
         m_ImageIO->GetNumberOfComponents(),             \
         outputData,                                     \
-        numberOfPixels);                                \
+        static_cast<int>(numberOfPixels));              \
      } \
    else \
      { \
@@ -444,7 +439,7 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
         static_cast<type*>(inputData),                  \
         m_ImageIO->GetNumberOfComponents(),             \
         outputData,                                     \
-        numberOfPixels);                                \
+        static_cast<int>(numberOfPixels));              \
       } \
     }
   if(0)

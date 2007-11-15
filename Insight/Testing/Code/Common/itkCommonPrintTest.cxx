@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCommonPrintTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/04 13:36:02 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -553,9 +553,11 @@ int itkCommonPrintTest(int , char* [])
     itk::TorusInteriorExteriorSpatialFunction<>::New();
   std::cout << "------------TorusInteriorExteriorSpatialFunction" << TorusInteriorExteriorSpatialFunctionObj;
   
-  itk::Transform<double,3,3>::Pointer TransformObj =
+#ifndef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+  itk::Transform<double,3,3>::Pointer TransformObj =  // In the thread-safe version, this class is now abstract
     itk::Transform<double,3,3>::New();
   std::cout << "------------Transform" << TransformObj;
+#endif
   
   itk::TranslationTransform<double,3>::Pointer TranslationTransformObj =
     itk::TranslationTransform<double,3>::New();
@@ -610,5 +612,5 @@ int itkCommonPrintTest(int , char* [])
   std::cout << "------------XMLFileOutputWindow" << XMLFileOutputWindowObj;
 
   
-  return 0;
+  return EXIT_SUCCESS;
 }

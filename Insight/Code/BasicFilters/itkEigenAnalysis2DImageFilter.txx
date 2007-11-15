@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEigenAnalysis2DImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:56 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2007/07/16 14:04:10 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -244,9 +244,6 @@ EigenAnalysis2DImageFilter<TInputImage,TEigenValueImage,TEigenVectorImage>
 
     eigenVector[0] = static_cast<VectorComponentType>(( -dxy - S ) / 2.0 );
     eigenVector[1] = static_cast<VectorComponentType>( -xy );
-
-
-    outputIt3.Set( eigenVector );
 
     const VectorComponentType norm = eigenVector.GetNorm();
     if( norm > 1e-30 ) 

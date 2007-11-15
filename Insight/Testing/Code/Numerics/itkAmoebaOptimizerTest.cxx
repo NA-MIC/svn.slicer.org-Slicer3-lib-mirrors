@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAmoebaOptimizerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/30 22:53:19 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2007/09/10 15:22:47 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -167,13 +167,13 @@ public:
     {
       OptimizerPointer optimizer = 
         dynamic_cast< OptimizerPointer >( object );
-      if( typeid( event ) == typeid( itk::FunctionEvaluationIterationEvent() ) )
+      if( m_FunctionEvent.CheckEvent( &event ) )
         {
         std::cout << m_IterationNumber++ << "   ";
         std::cout << optimizer->GetCachedValue() << "   ";
         std::cout << optimizer->GetCachedCurrentPosition() << std::endl;
         }
-      else if( typeid( event ) == typeid( itk::GradientEvaluationIterationEvent() ) )
+      else if( m_GradientEvent.CheckEvent( &event ) )
         {
         std::cout << "Gradient " << optimizer->GetCachedDerivative() << "   ";
         }
@@ -181,6 +181,9 @@ public:
     }
 private:
   unsigned long m_IterationNumber;
+
+  itk::FunctionEvaluationIterationEvent m_FunctionEvent;
+  itk::GradientEvaluationIterationEvent m_GradientEvent;
 };
 
 

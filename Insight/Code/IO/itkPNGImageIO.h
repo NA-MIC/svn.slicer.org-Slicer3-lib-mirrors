@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPNGImageIO.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/17 21:02:11 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2007/08/13 21:39:37 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -58,7 +58,7 @@ public:
    * file specified. */
   virtual bool CanReadFile(const char*);
   
-  /** Set the spacing and diemention information for the set filename. */
+  /** Set the spacing and dimension information for the set filename. */
   virtual void ReadImageInformation();
   
   /** Reads the data from disk into the memory buffer provided. */
@@ -69,7 +69,7 @@ public:
 
   /*-------- This part of the interfaces deals with writing data. ----- */
 
-  /** Determine the file type. Returns true if this ImageIO can read the
+  /** Determine the file type. Returns true if this ImageIO can write the
    * file specified. */
   virtual bool CanWriteFile(const char*);
 

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageRegionConstIteratorWithIndex.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/11 20:29:18 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/09/16 20:55:10 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -80,7 +80,6 @@ ImageRegionConstIteratorWithIndex<TImage>
       }
     else 
       {
-      this->m_PositionIndex[ in  ]--;
       this->m_Position += this->m_OffsetTable[ in ]
         * ( static_cast<long>(this->m_Region.GetSize()[in])-1 );
       this->m_PositionIndex[ in ] = this->m_EndIndex[ in ] - 1; 

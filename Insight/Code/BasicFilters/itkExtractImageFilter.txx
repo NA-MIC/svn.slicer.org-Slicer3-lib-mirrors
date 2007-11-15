@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkExtractImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/09/14 17:59:41 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2007/08/24 12:45:32 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -117,7 +117,7 @@ ExtractImageFilter<TInputImage,TOutputImage>
 ::GenerateOutputInformation()
 {
   // do not call the superclass' implementation of this method since
-  // this filter allows the input the output to be of different dimensions
+  // this filter allows the input and the output to be of different dimensions
  
   // get pointers to the input and output
   typename Superclass::OutputImagePointer      outputPtr = this->GetOutput();

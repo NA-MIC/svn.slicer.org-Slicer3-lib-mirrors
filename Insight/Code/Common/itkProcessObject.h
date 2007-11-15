@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkProcessObject.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/04 16:46:32 $
-  Version:   $Revision: 1.76 $
+  Date:      $Date: 2007/08/17 20:16:10 $
+  Version:   $Revision: 1.77 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -150,7 +150,7 @@ public:
    * a floating number in [0,1] with 0 meaning no progress and 1 meaning
    * the filter has completed execution.  The ProgressEvent is NOT
    * invoked. */
-  itkSetClampMacro(Progress,float,0.0,1.0);
+  itkSetClampMacro(Progress,float,0.0f,1.0f);
 
   /** Get the execution progress of a process object. The progress is
    * a floating number in [0,1] with 0 meaning no progress and 1 meaning

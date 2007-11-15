@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkThresholdSegmentationLevelSetImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/01/06 17:53:36 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2007/08/20 12:47:12 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -26,7 +26,7 @@
 
 namespace TSIFTN {
 
- typedef itk::Image<float, 3> ImageType;
+typedef itk::Image<float, 3> ImageType;
 typedef itk::Image<char, 3> SeedImageType;
 
 const int V_WIDTH  = 64;
@@ -35,14 +35,14 @@ const int V_DEPTH  = 64;
 
 float sphere(float x, float y, float z)
 {
-    float dis;
-    dis = (x - (float)V_WIDTH/2.0)*(x - (float)V_WIDTH/2.0)
-      /((0.2f*V_WIDTH)*(0.2f*V_WIDTH)) + 
-      (y - (float)V_HEIGHT/2.0)*(y - (float)V_HEIGHT/2.0)
-      /((0.2f*V_HEIGHT)*(0.2f*V_HEIGHT)) + 
-      (z - (float)V_DEPTH/2.0)*(z - (float)V_DEPTH/2.0)
-      /((0.2f*V_DEPTH)*(0.2f*V_DEPTH));
-    return(1.0f-dis);
+  float dis;
+  dis = (x - (float)V_WIDTH/2.0)*(x - (float)V_WIDTH/2.0)
+    /((0.2f*V_WIDTH)*(0.2f*V_WIDTH)) + 
+    (y - (float)V_HEIGHT/2.0)*(y - (float)V_HEIGHT/2.0)
+    /((0.2f*V_HEIGHT)*(0.2f*V_HEIGHT)) + 
+    (z - (float)V_DEPTH/2.0)*(z - (float)V_DEPTH/2.0)
+    /((0.2f*V_DEPTH)*(0.2f*V_DEPTH));
+  return(1.0f-dis);
 }
 
 void evaluate_function(itk::Image<char, 3> *im,
@@ -236,8 +236,9 @@ int itkThresholdSegmentationLevelSetImageFilterTest(int, char * [] )
   }
   catch (itk::ExceptionObject &e)
     {
-      std::cerr << e << std::endl;
+    std::cerr << e << std::endl;
+    return EXIT_FAILURE;
     }
   
-  return 0;
+  return EXIT_SUCCESS;
 }

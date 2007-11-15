@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLineIteratorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/07/16 12:44:44 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -39,7 +39,7 @@ int itkLineIteratorTest(int argc, char*argv[])
     {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  outputfilename" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   // Set up a test image

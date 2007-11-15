@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshTopologyChecker.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/25 15:07:14 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/07/26 06:30:28 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -18,6 +18,7 @@
 #ifndef __itkQuadEdgeMeshTopologyChecker_h
 #define __itkQuadEdgeMeshTopologyChecker_h
 
+#include "itkQuadEdgeMeshBoundaryEdgesMeshFunction.h"
 
 namespace itk
 {
@@ -47,6 +48,12 @@ public:
   typedef SmartPointer< const Self >           ConstPointer;
 
   typedef TMesh                                MeshType;
+  typedef typename MeshType::QEPrimal          QEPrimal;  
+  typedef typename MeshType::EdgeCellType      EdgeCellType;
+  typedef typename MeshType::CellsContainerConstIterator
+                                               CellsContainerConstIterator; 
+  typedef typename itk::QuadEdgeMeshBoundaryEdgesMeshFunction< MeshType >
+                                               BoundaryEdges;
 
 public:
   itkNewMacro( Self );
@@ -65,7 +72,6 @@ public:
 
   bool ValidateEulerCharacteristic() const;
 
-protected:
   QuadEdgeMeshTopologyChecker();
   void PrintSelf(std::ostream& os, Indent indent) const;
 
@@ -75,7 +81,7 @@ private:
 
   typedef typename MeshType::ConstPointer   MeshPointer;
 
-  MeshPointer   m_Mesh;
+  MeshPointer     m_Mesh;
  
   IdentifierType  m_ExpectedNumberOfPoints;
   IdentifierType  m_ExpectedNumberOfEdges;

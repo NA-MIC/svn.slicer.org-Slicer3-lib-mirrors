@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineDeformableTransform.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 23:39:50 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2007/05/24 22:39:12 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -243,6 +243,8 @@ public:
 
   /** Get the array of coefficient images. */
   virtual ImagePointer * GetCoefficientImage()
+    { return m_CoefficientImage; }
+  virtual const ImagePointer * GetCoefficientImage() const
     { return m_CoefficientImage; }
 
   /** Set the array of coefficient images.

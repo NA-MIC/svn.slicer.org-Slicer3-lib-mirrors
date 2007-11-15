@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAffineGeometryFrame.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:21 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/07/16 23:09:53 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,10 +17,10 @@
 #ifndef __itkAffineGeometryFrame_h
 #define __itkAffineGeometryFrame_h
 
-#include <itkObject.h>
-#include <itkMacro.h>
-#include <itkScalableAffineTransform.h>
-#include <itkBoundingBox.h>
+#include "itkObject.h"
+#include "itkMacro.h"
+#include "itkScalableAffineTransform.h"
+#include "itkBoundingBox.h"
 
 namespace itk 
 {

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRandomImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:54 $
-  Version:   $Revision: 1.40 $
+  Date:      $Date: 2007/08/24 12:45:32 $
+  Version:   $Revision: 1.41 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -34,7 +34,7 @@ namespace itk
  * drand48, although thread-safe, is very slow in a threaded environment.
  * The output image may be of any dimension. 
  *
- * \ingroup DataSources
+ * \ingroup DataSources Multithreaded
  */
 template <typename TOutputImage>
 class ITK_EXPORT RandomImageSource : public ImageSource<TOutputImage>

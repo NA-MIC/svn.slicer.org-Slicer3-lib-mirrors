@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSimilarity3DTransformTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/08/09 04:35:32 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/09/16 21:10:31 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -537,7 +537,6 @@ int itkSimilarity3DTransformTest(int, char* [] )
     }
   std::cout << "Input/Output parameter check Passed !"  << std::endl;
   }
-  std::cout << std::endl << "Test PASSED ! " << std::endl;
 
 
   {
@@ -563,6 +562,10 @@ int itkSimilarity3DTransformTest(int, char* [] )
         }
 
      Ok = false;
+
+     std::cout << "Setting non-orthogonal matrix = " << std::endl;
+     std::cout << matrix << std::endl;
+
      try
       {
       t->SetMatrix( matrix );
@@ -653,6 +656,8 @@ int itkSimilarity3DTransformTest(int, char* [] )
 
     std::cout << "[ PASSED ]" << std::endl;
     }
+
+  std::cout << std::endl << "Test PASSED ! " << std::endl;
 
   return EXIT_SUCCESS;
 

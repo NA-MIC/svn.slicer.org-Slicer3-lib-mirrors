@@ -1,11 +1,10 @@
-
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTestMain.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/05 13:35:53 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2007/07/09 01:19:33 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -185,14 +184,14 @@ int main(int ac, char* av[] )
           ++baseline;
           }
         // if the best we can do still has errors, generate the error images
-        if (bestBaselineStatus)
+         if (bestBaselineStatus)
           {
-          baseline->second = RegressionTestImage(testFilename,
-                                                 bestBaseline.c_str(),
-                                                 1, 
-                                                 intensityTolerance,
-                                                 numberOfPixelsTolerance, 
-                                                 radiusTolerance );
+          RegressionTestImage(testFilename,
+                              bestBaseline.c_str(),
+                              1, 
+                              intensityTolerance,
+                              numberOfPixelsTolerance, 
+                              radiusTolerance );
           }
 
         // output the matching baseline

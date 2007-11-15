@@ -123,12 +123,19 @@ itkTDistributionTest.cxx
 )
 
 ADD_EXECUTABLE(itkStatisticsTests itkStatisticsTests.cxx ${Statistics_SRCS})
-TARGET_LINK_LIBRARIES(itkStatisticsTests ITKIO ITKCommon ITKNumerics ITKStatistics)
+TARGET_LINK_LIBRARIES(itkStatisticsTests ITKIO ITKStatistics ITKNumerics)
 
 ADD_EXECUTABLE(itkStatisticsHeaderTest itkStatisticsHeaderTest.cxx)
-TARGET_LINK_LIBRARIES(itkStatisticsHeaderTest ITKIO ITKCommon ITKNumerics ITKStatistics)
+TARGET_LINK_LIBRARIES(itkStatisticsHeaderTest ITKIO ITKStatistics ITKNumerics)
 
 ADD_TEST(itkStatisticsHeaderTest ${STATISTICS_HEADER_TESTS})
+
+IF(ITK_OBJCXX_COMPILER_WORKS)
+  SET(STATISTICS_OBJCXX_TEST ${CXX_TEST_PATH}/itkStatisticsHeaderObjCxxTest)
+  ADD_TEST(itkStatisticsHeaderObjCxxTest ${STATISTICS_OBJCXX_TEST})
+  ADD_EXECUTABLE(itkStatisticsHeaderObjCxxTest itkStatisticsHeaderObjCxxTest.mm)
+  TARGET_LINK_LIBRARIES(itkStatisticsHeaderObjCxxTest ITKIO ITKStatistics ITKNumerics)
+ENDIF(ITK_OBJCXX_COMPILER_WORKS)
 
 
 

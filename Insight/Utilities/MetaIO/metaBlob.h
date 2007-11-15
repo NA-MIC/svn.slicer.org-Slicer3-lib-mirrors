@@ -3,8 +3,8 @@
   Program:   MetaIO
   Module:    $RCSfile: metaBlob.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/27 12:25:52 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007/05/31 13:53:13 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,6 +21,10 @@
 
 #include "metaUtils.h"
 #include "metaObject.h"
+
+#ifdef _MSC_VER
+#pragma warning ( disable: 4251 )
+#endif
 
 #include <list>
 
@@ -47,25 +51,8 @@ class METAIO_EXPORT BlobPnt
 {
 public:
 
-  BlobPnt(int dim)
-  { 
-    m_Dim = dim;
-    m_X = new float[m_Dim];
-    for(unsigned int i=0;i<m_Dim;i++)
-    {
-      m_X[i] = 0;
-    }
-    
-    //Color is red by default
-    m_Color[0]=1.0;
-    m_Color[1]=0.0;
-    m_Color[2]=0.0;
-    m_Color[3]=1.0;
-  }
-  ~BlobPnt()
-  { 
-    delete []m_X;
-  };
+  BlobPnt(int dim);
+  ~BlobPnt();
   
   unsigned int m_Dim;
   float* m_X;

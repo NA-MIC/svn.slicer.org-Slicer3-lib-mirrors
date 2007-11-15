@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGeometricalQuadEdge.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/25 15:03:11 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/07/06 00:57:25 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -81,6 +81,9 @@ public:
   typedef TFRef               DualOriginRefType;
   typedef TPrimalData         PrimalDataType;
   typedef TDualData           DualDataType;
+  // Line Cell Id in Mesh Cell Container
+  // used to go up to LineCell level
+  typedef TFRef  LineCellIdentifier;
 
 public:
 
@@ -110,7 +113,7 @@ public:
 public:
   /** Memory creation methods. */
   GeometricalQuadEdge();
-  virtual ~GeometricalQuadEdge();
+  virtual ~GeometricalQuadEdge() {};
 
   /** Set methods. */
   void SetOrigin( const OriginRefType v )
@@ -143,10 +146,10 @@ public:
   /** Get methods. */
   //ORIENTATION_NOTE: this definition of GetLeft (or GetRight)
   // implicitely assumes that the Onext order is counter-clockwise !
-  OriginRefType     GetOrigin()   { return( m_Origin ); }
-  OriginRefType     GetDestination()  { return( this->GetSym()->GetOrigin() ); }
-  DualOriginRefType GetRight() { return( this->GetRot()->GetOrigin() ); }
-  DualOriginRefType GetLeft()  { return( this->GetInvRot()->GetOrigin() ); }
+  const OriginRefType GetOrigin() const  { return( m_Origin ); }
+  const OriginRefType GetDestination()  const { return( GetSym()->GetOrigin() ); }
+  const DualOriginRefType GetRight() const { return( GetRot()->GetOrigin() ); }
+  const DualOriginRefType GetLeft() const  { return( GetInvRot()->GetOrigin() ); }
 
   /** Boolean accessors. */
   bool IsOriginSet() const;
@@ -224,14 +227,19 @@ public:
               this->IsDestinationDisconnected() ); }
   void Disconnect();
 
+  void SetIdent( const LineCellIdentifier& User_Value ) { this->m_LineCellIdent = User_Value; };
+  LineCellIdentifier GetIdent( ) { return( this->m_LineCellIdent ); };
+
 public:
   // Reserved OriginRefType designated to represent the absence of Origin
   static const OriginRefType m_NoPoint;
 
 protected:
-  OriginRefType     m_Origin;    // Geometrical information
-  PrimalDataType    m_Data;      // User data associated to this edge.
-  bool              m_DataSet;   // Indicates if the data is set.
+  OriginRefType      m_Origin;    // Geometrical information
+  PrimalDataType     m_Data;      // User data associated to this edge.
+  bool               m_DataSet;   // Indicates if the data is set.
+  LineCellIdentifier m_LineCellIdent;
+
 };
 
 } 

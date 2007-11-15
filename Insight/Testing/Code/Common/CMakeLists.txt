@@ -419,13 +419,20 @@ CONFIGURE_FILE(${ITKTesting_SOURCE_DIR}/Code/Common/itkSystemInformationTest.h.i
                @ONLY IMMEDIATE)
 INCLUDE_DIRECTORIES("${ITKTesting_BINARY_DIR}")
 
+IF(ITK_OBJCXX_COMPILER_WORKS)
+  SET(COMMON_OBJCXX_TEST ${CXX_TEST_PATH}/itkCommonHeaderObjCxxTest)
+  ADD_TEST(itkCommonHeaderObjCxxTest ${COMMON_OBJCXX_TEST})
+  ADD_EXECUTABLE(itkCommonHeaderObjCxxTest itkCommonHeaderObjCxxTest.mm)
+  TARGET_LINK_LIBRARIES(itkCommonHeaderObjCxxTest ITKCommon)
+ENDIF(ITK_OBJCXX_COMPILER_WORKS)
+
 ADD_EXECUTABLE(itkSystemInformationTest itkSystemInformationTest.cxx)
 ADD_EXECUTABLE(itkCommonHeaderTest itkCommonHeaderTest.cxx)
 ADD_EXECUTABLE(itkCommonTests itkCommonTests.cxx ${BasicTests_SRCS})
 ADD_EXECUTABLE(itkCommonTests2 itkCommonTests2.cxx ${BasicTests2_SRCS})
 TARGET_LINK_LIBRARIES(itkCommonHeaderTest ITKCommon)
-TARGET_LINK_LIBRARIES(itkCommonTests ITKIO ITKCommon)
-TARGET_LINK_LIBRARIES(itkCommonTests2 ITKIO ITKCommon)
+TARGET_LINK_LIBRARIES(itkCommonTests ITKIO)
+TARGET_LINK_LIBRARIES(itkCommonTests2 ITKIO)
 
 ENDIF( NOT ITK_DISABLE_CXX_TESTING )
 

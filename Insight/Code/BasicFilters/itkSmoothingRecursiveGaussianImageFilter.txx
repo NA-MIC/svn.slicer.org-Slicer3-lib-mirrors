@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSmoothingRecursiveGaussianImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/08/01 19:16:18 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/08/14 19:30:08 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -60,7 +60,13 @@ SmoothingRecursiveGaussianImageFilter<TInputImage,TOutputImage>
   
   m_CastingFilter = CastingFilterType::New();
   m_CastingFilter->SetInput(m_SmoothingFilters[ImageDimension-2]->GetOutput());
-  
+
+  //
+  // NB: We must call SetSigma in order to initialize the smoothing
+  // filters with the default scale.  However, m_Sigma must first be
+  // initialized (it is used inside SetSigma) and it must be different
+  // from 1.0 or the call will be ignored.
+  this->m_Sigma = 0.0;
   this->SetSigma( 1.0 );
 }
 
@@ -74,14 +80,17 @@ void
 SmoothingRecursiveGaussianImageFilter<TInputImage,TOutputImage>
 ::SetSigma( ScalarRealType sigma )
 {
-
-  for( unsigned int i = 0; i<ImageDimension-1; i++ )
+  if (sigma != this->m_Sigma)
     {
-    m_SmoothingFilters[ i ]->SetSigma( sigma );
+    this->m_Sigma = sigma;
+    for( unsigned int i = 0; i<ImageDimension-1; i++ )
+      {
+      m_SmoothingFilters[ i ]->SetSigma( sigma );
+      }
+    m_FirstSmoothingFilter->SetSigma( sigma );
+    
+    this->Modified();
     }
-  m_FirstSmoothingFilter->SetSigma( sigma );
-
-  this->Modified();
 
 }
 
@@ -198,6 +207,7 @@ SmoothingRecursiveGaussianImageFilter<TInputImage,TOutputImage>
   Superclass::PrintSelf(os,indent);
 
   os << "NormalizeAcrossScale: " << m_NormalizeAcrossScale << std::endl;
+  os << "Sigma: " << m_Sigma << std::endl;
 }
 
 

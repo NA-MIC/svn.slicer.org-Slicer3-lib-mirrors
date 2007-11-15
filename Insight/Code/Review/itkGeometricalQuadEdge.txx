@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGeometricalQuadEdge.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/16 23:35:10 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2007/09/05 23:09:18 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -43,33 +43,6 @@ GeometricalQuadEdge< TVRef, TFRef, TPrimalData, TDualData, PrimalDual >
 {
   this->m_Origin     = m_NoPoint;
   this->m_DataSet = false;
-}
-
-
-/**
- *   Destructor
- */
-template< typename TVRef, typename TFRef,
-          typename TPrimalData, typename TDualData, bool PrimalDual >
-GeometricalQuadEdge< TVRef, TFRef, TPrimalData, TDualData, PrimalDual >
-::~GeometricalQuadEdge()
-{
-  DualType * e1 = this->GetRot();
-  if( e1 )
-    {
-    Self * e2 = e1->GetRot();
-    if( e2 )
-      {
-      DualType * e3 = e2->GetRot();
-      if( e3 )
-        {
-        delete e3;
-        }
-      delete e2;
-      }
-    delete e1;
-    }
-  std::cout << "GeometricalQuadEdge::Destructor" << std::endl;
 }
 
 
@@ -130,7 +103,7 @@ template< typename TVRef, typename TFRef,
                       it++ )
     {
     if( b == it.Value() )
-      {
+       {
       return true;
       }
     }
@@ -216,6 +189,29 @@ template< typename TVRef, typename TFRef,
     bool facesAreSet = this->IsLeftSet() && it.Value()->IsLeftSet();
     //
     // FIXME: This boolean expression can be simplified.
+    // ALEX : what about the version below ?
+    //
+    // if ( this->IsLeftSet() )         // one left set
+    // {
+    //     if (it.Value()->IsLeftSet()) // two left set
+    //     {
+    //         if( !(this->GetLeft() == it.Value()->GetLeft()) )
+    //          {
+    //              return( false );    // not same face
+    //           }
+    //      }
+    //      else                        // only one set
+    //      {
+    //          return( false );
+    //       }
+    // }
+    // else // one not set
+    // {
+    //     if(it.Value()->IsLeftSet()) // only one set
+    //     {
+    //         return( false );
+    //     }
+    // }
     // 
     if( !( facesAreNotSet || ( facesAreSet && facesAreTheSame ) ) )
       {
@@ -561,7 +557,7 @@ template< typename TVRef, typename TFRef,
   //                            p-------p                            //
   //
   Self* first = this;
-  Self* bsplice;
+  Self* bsplice; // Does not require initialisation (says borland compiler)
 
   // Making sure point adjacency is correct:
   if( first->GetOrigin() != second->GetOrigin() )
@@ -572,7 +568,6 @@ template< typename TVRef, typename TFRef,
 
   if( first->GetOnext() == second )
     {
-    itkQEDebugMacro( "Nothing to be done." );
     return( true );
     } 
 
@@ -582,9 +577,9 @@ template< typename TVRef, typename TFRef,
     return( false );
     } 
 
+  // Second is an internal edge.
   if( second->IsInternal() )
     {
-    itkQEDebugMacro( "Second is an internal edge." );
     return( false );
     } 
 
@@ -597,9 +592,6 @@ template< typename TVRef, typename TFRef,
   else
     {
     // Orientation is localy clockwise:
-    itkQEDebugMacro( "Clockwise orientation case." );
-    itkQEWarningMacro( "This code was never tested (it requires "
-                       "heterogenously oriented triangles)." );
     bsplice = second;
     second->GetOprev()->Splice( bsplice );
     }
@@ -617,7 +609,6 @@ template< typename TVRef, typename TFRef,
 {
   if( this->IsDisconnected() )
     {
-    itkQEDebugMacro( "Edge already disconnected." );
     return;
     } 
 
@@ -700,19 +691,13 @@ bool
 GeometricalQuadEdge< TVRef, TFRef, TPrimalData, TDualData, PrimalDual >
 ::IsRightSet() const
 {
-  const Superclass * p1 = this->GetRot();
+  const DualType * p1 = this->GetRot();
   if( p1 == NULL )
     {
     return false;  // FIXME: Is this the right answer ?
     }
 
-  const Self * p2 = dynamic_cast< const Self * >( p1 );
-  if( p2 == NULL )
-    {
-    return false;  // FIXME: Is this the right answer ?
-    }
-
-  return p2->IsOriginSet();
+  return p1->IsOriginSet();
 }
 
 
@@ -723,21 +708,14 @@ bool
 GeometricalQuadEdge< TVRef, TFRef, TPrimalData, TDualData, PrimalDual >
 ::IsLeftSet() const
 {
-  const Superclass * p1 = this->GetInvRot();
+  const DualType * p1 = this->GetInvRot();
   if( p1 == NULL )
     {
     return false;  // FIXME: Is this the right answer ?
     }
 
-  const Self * p2 = dynamic_cast< const Self * >( p1 );
-  if( p2 == NULL )
-    {
-    return false;  // FIXME: Is this the right answer ?
-    }
-
-  return p2->IsOriginSet();
+  return p1->IsOriginSet();
 }
-
 
 } // end of namespace itk 
 

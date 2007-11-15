@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshFrontIteratorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/27 14:13:25 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/09/05 18:46:45 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,15 +14,19 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#if defined(_MSC_VER)
+#pragma warning ( disable : 4786 )
+#endif
+
 /**
- * This test verifies that a \ref itkQE::Mesh::FrontIterator walkthrough on
+ * This test verifies that a \ref itk::QuadEdgeMesh::FrontIterator walkthrough on
  * a Mesh correctly visits all the points. Therefore, we count the points
  * and assert that the result is identical to the one obtained with
- * \ref itkQE::Mesh::ComputeNumberOfPoints .
+ * \ref itk::QuadEdgeMesh::ComputeNumberOfPoints .
  * This can only work when the instance of the Mesh we are considering has
  * a single component (possibly multiply connected). In order to verify
  * this assumption we use \ref MeshExtractComponentFilter which is based
- * on a \ref itkQE::Mesh::FrontDualIterator. Hence we shall have tested
+ * on a \ref itk::QuadEdgeMesh::FrontDualIterator. Hence we shall have tested
  * both primal and dual version of the front iterator.
  */
 #include <set>

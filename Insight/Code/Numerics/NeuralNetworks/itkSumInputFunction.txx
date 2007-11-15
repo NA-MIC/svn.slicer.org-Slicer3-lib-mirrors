@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSumInputFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/06/28 18:05:24 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/08/17 13:10:57 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -26,24 +26,24 @@ namespace Statistics
 {
 
 /** Constructor */
-template<class TVector, class ScalarType>
-SumInputFunction<TVector,ScalarType>
+template<class TMeasurementVector, class ScalarType>
+SumInputFunction<TMeasurementVector,ScalarType>
 ::SumInputFunction()
 {
   m_Size = 0;
 }
 
 /** Destructor */
-template<class TVector, class ScalarType>
-SumInputFunction<TVector,ScalarType>
+template<class TMeasurementVector, class ScalarType>
+SumInputFunction<TMeasurementVector,ScalarType>
 ::~SumInputFunction()
 {
 }
 
 /** Set the size */
-template<class TVector, class ScalarType>
+template<class TMeasurementVector, class ScalarType>
 void
-SumInputFunction<TVector,ScalarType>
+SumInputFunction<TMeasurementVector,ScalarType>
 ::SetSize(unsigned int n)
 {
   m_Size = n;
@@ -51,19 +51,19 @@ SumInputFunction<TVector,ScalarType>
 }
 
 /** Evaluate */
-template<class TVector, class ScalarType>
+template<class TMeasurementVector, class ScalarType>
 ScalarType
-SumInputFunction<TVector,ScalarType>
-::Evaluate(const TVector& input)  const
+SumInputFunction<TMeasurementVector,ScalarType>
+::Evaluate(const TMeasurementVector& input)  const
 {
   vnl_vector<ScalarType> temp(input, m_Size);
   return temp.sum();
 }
 
 /** Print the object */
-template<class TVector, class ScalarType>
+template<class TMeasurementVector, class ScalarType>
 void  
-SumInputFunction <TVector,ScalarType>
+SumInputFunction <TMeasurementVector,ScalarType>
 ::PrintSelf( std::ostream& os, Indent indent ) const 
 { 
   os << indent << "SumInputFunction(" << this << ")" << std::endl;

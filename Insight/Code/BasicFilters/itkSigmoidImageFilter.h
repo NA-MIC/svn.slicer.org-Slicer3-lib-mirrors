@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSigmoidImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/31 14:31:04 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2007/09/16 14:41:02 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -131,6 +131,9 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
   
+  /** Macro that provides the GetNameOfClass() method */
+  itkTypeMacro( SigmoidImageFilter, UnaryFunctorImageFilter );
+
   void SetAlpha( double alpha )
   {
     if( alpha == this->GetFunctor().GetAlpha() ) 

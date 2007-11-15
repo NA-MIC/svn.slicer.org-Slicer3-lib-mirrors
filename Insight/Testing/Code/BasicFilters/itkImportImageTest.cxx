@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImportImageTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:06 $
-  Version:   $Revision: 1.23 $
+  Date:      $Date: 2007/08/24 15:20:10 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -55,7 +55,16 @@ int itkImportImageTest(int, char* [] )
   shrink = itk::ShrinkImageFilter<ImportImageFilter::OutputImageType, ShortImage>::New();
   shrink->SetInput( import->GetOutput() );
   shrink->SetShrinkFactors(2);
-  shrink->Update();
+  try
+    {
+    shrink->Update();
+    }
+  catch (itk::ExceptionObject& e)
+    {
+    std::cerr << "Exception detected: "  << e.GetDescription();
+    return EXIT_FAILURE;
+    }
+
 
 
   // Test the SetVectorMacros and GetVectorMacros

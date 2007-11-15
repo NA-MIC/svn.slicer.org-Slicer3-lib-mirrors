@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAccumulateImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/08/01 19:16:16 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/08/24 12:45:32 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -32,8 +32,7 @@ template <class TInputImage, class TOutputImage >
 AccumulateImageFilter<TInputImage,TOutputImage >
 ::AccumulateImageFilter()
 {
-  this->SetNumberOfRequiredInputs( 1 );
-  m_AccumulateDimension=InputImageDimension-1;
+  m_AccumulateDimension = InputImageDimension-1;
   m_Average = false;
 }
 

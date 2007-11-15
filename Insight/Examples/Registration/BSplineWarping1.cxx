@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: BSplineWarping1.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/14 12:16:21 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007/09/07 14:17:41 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -52,7 +52,7 @@ int main( int argc, char * argv[] )
     std::cerr << " coefficientsFile fixedImage ";
     std::cerr << "movingImage deformedMovingImage" << std::endl;
     std::cerr << "[deformationField]" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   const     unsigned int   ImageDimension = 2;

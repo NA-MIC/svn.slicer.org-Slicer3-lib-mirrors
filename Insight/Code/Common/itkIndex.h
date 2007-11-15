@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkIndex.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/13 17:57:25 $
-  Version:   $Revision: 1.52 $
+  Date:      $Date: 2007/08/27 12:47:59 $
+  Version:   $Revision: 1.53 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -253,7 +253,7 @@ public:
     { for(unsigned int i=0;i < VIndexDimension; ++i) m_Index[i] = value; }
 
   /** Index is an "aggregate" class.  Its data is public (m_Index)
-   * allowing for fast and convienent instantiations/assignments.
+   * allowing for fast and convenient instantiations/assignments.
    *
    * The following syntax for assigning an index is allowed/suggested:
    *    Index<3> index = {5, 2, 7}; */

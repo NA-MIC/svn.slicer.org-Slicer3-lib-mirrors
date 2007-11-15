@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConstrainedValueAdditionImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/01/10 18:16:26 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/08/10 14:34:01 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -146,7 +146,7 @@ int itkConstrainedValueAdditionImageFilterTest(int, char* [] )
 
 
   // All objects should be automatically destroyed at this point
-  return 0;
+  return EXIT_SUCCESS;
 
 }
 

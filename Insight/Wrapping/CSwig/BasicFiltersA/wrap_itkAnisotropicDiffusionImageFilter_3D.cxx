@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_itkAnisotropicDiffusionImageFilter_3D.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/03 13:45:42 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/09/21 17:55:26 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -29,12 +29,12 @@ namespace _cable_
     //===========3D Wrapped Filters==============
     ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::F3 , image::F3 , itkAnisotropicDiffusionImageFilterF3F3  );
     ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::D3 , image::D3 , itkAnisotropicDiffusionImageFilterD3D3  );
-    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::UC3, image::UC3, itkAnisotropicDiffusionImageFilterUC3UC3);
-    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::US3, image::US3, itkAnisotropicDiffusionImageFilterUS3US3);
-    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::UI3, image::UI3, itkAnisotropicDiffusionImageFilterUI3UI3);
-    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::SC3, image::SC3, itkAnisotropicDiffusionImageFilterSC3SC3);
-    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::SS3, image::SS3, itkAnisotropicDiffusionImageFilterSS3SS3);
-    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::SI3, image::SI3, itkAnisotropicDiffusionImageFilterSI3SI3);
+    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::UC3, image::F3, itkAnisotropicDiffusionImageFilterUC3F3);
+    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::US3, image::F3, itkAnisotropicDiffusionImageFilterUS3F3);
+    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::UI3, image::F3, itkAnisotropicDiffusionImageFilterUI3F3);
+    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::SC3, image::F3, itkAnisotropicDiffusionImageFilterSC3F3);
+    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::SS3, image::F3, itkAnisotropicDiffusionImageFilterSS3F3);
+    ITK_WRAP_OBJECT2(AnisotropicDiffusionImageFilter, image::SI3, image::F3, itkAnisotropicDiffusionImageFilterSI3F3);
   }
 }
 #endif

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRawImageIOTest2.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/02/24 17:03:22 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/09/22 23:46:20 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -46,8 +46,8 @@ int itkRawImageIOTest2(int argc, char * argv [])
   itk::RawImageIO<RGBPixelType>::Pointer io;
   io = itk::RawImageIO<RGBPixelType>::New();
   io->SetFileName(argv[1]);
-  unsigned int dim[3] = {570,670,1};
-  double spacing[3] = {0.8, 0.8, 1.5};
+  unsigned int dim[3] = {50,50,10};
+  double spacing[3] = {1.0, 1.0, 1.0};
   double origin[3] = {0.0,0.0,0.0};
   for(unsigned int i=0; i<3; i++)
     {

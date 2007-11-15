@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageAdaptorInterpolateImageFunctionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/10/16 01:34:11 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -344,8 +344,8 @@ int itkImageAdaptorInterpolateImageFunctionTest(int, char* [] )
   else 
     {
     std::cout << "All tests successfully passed" << std::endl;
-    return 0;
     }
 
+  return EXIT_SUCCESS;
 }
 

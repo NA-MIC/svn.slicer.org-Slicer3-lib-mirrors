@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSpatialOrientationAdapter.h,v $
   Language:  C++
-  Date:      $Date: 2006/11/03 13:44:33 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/08/20 18:02:11 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -86,6 +86,9 @@ public:
 
   /** typedef for direction cosines */
   typedef SuperClass::DirectionType DirectionType;
+  
+  /** Constructor */
+  SpatialOrientationAdapter() {};
 
   /** convert from direction cosines. */
   virtual OrientationType FromDirectionCosines(const DirectionType &Dir);

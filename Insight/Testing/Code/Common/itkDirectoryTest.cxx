@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDirectoryTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/07 23:41:49 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -26,7 +26,7 @@ int itkDirectoryTest(int argc, char *argv[])
   if (argc < 2)
     {
     std::cerr << "Usage: " << argv[0] << " directory" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   if (directory->Load("qwerty"))

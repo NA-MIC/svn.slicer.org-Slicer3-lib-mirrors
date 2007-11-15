@@ -3,8 +3,8 @@
   Program:   MetaIO
   Module:    $RCSfile: metaMesh.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/10/27 12:25:53 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2007/06/02 17:48:25 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,6 +14,11 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#ifdef _MSC_VER
+#pragma warning(disable:4702)
+#pragma warning(disable:4284)
+#endif
+
 #include "metaMesh.h"
 
 #include <stdio.h>
@@ -23,6 +28,43 @@
 #if (METAIO_USE_NAMESPACE)
 namespace METAIO_NAMESPACE {
 #endif
+
+
+MeshPoint::
+MeshPoint(int dim)
+{ 
+  m_Dim = dim;
+  m_X = new float[m_Dim];
+  for(unsigned int i=0;i<m_Dim;i++)
+    {
+    m_X[i] = 0;
+    }
+}
+
+MeshPoint::
+~MeshPoint()
+{ 
+  delete []m_X;
+}
+
+MeshCell::
+MeshCell(int dim)
+{ 
+  m_Dim = dim;
+  m_Id = -1;
+  m_PointsId = new int[m_Dim];
+  for(unsigned int i=0;i<m_Dim;i++)
+    {
+    m_PointsId[i] = -1;
+    }
+}
+
+MeshCell::
+~MeshCell()
+{ 
+  delete []m_PointsId;
+}
+  
 
 //
 // MetaMesh Constructors
@@ -429,7 +471,7 @@ M_Read(void)
       
       for(d=0; d<m_NDims; d++)
         {
-        char* num = new char[elementSize];
+        num = new char[elementSize];
         for(k=0;k<static_cast<unsigned int>(elementSize);k++)
           {
           num[k] = _data[i+k];
@@ -548,7 +590,8 @@ M_Read(void)
   
    if(!MET_Read(*m_ReadStream, & m_Fields))
       {
-      METAIO_STREAM::cout << "MetaObject: Read: MET_Read Failed" << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "MetaObject: Read: MET_Read Failed" 
+                          << METAIO_STREAM::endl;
       return false;
       }
 
@@ -584,8 +627,9 @@ M_Read(void)
       if(gc != readSize)
         {
         METAIO_STREAM::cout << "MetaMesh: m_Read: Cells not read completely" 
-                  << METAIO_STREAM::endl;
-        METAIO_STREAM::cout << "   ideal = " << readSize << " : actual = " << gc << METAIO_STREAM::endl;
+                            << METAIO_STREAM::endl;
+        METAIO_STREAM::cout << "   ideal = " << readSize << " : actual = " << gc
+                            << METAIO_STREAM::endl;
         return false;
         }
 
@@ -597,6 +641,7 @@ M_Read(void)
         int n = MET_CellSize[celltype];
         MeshCell* cell = new MeshCell(n);
         unsigned int k;
+
         char* num = new char[sizeof(int)];
         for(k=0;k<sizeof(int);k++)
           {
@@ -607,9 +652,10 @@ M_Read(void)
         cell->m_Id = td;
         i+= sizeof(int);
         delete [] num;
+
         for(d=0; d<n; d++)
           {
-          char* num = new char[sizeof(int)];
+          num = new char[sizeof(int)];
           for(k=0;k<static_cast<unsigned int>(sizeof(int));k++)
              {
              num[k] = _data[i+k];
@@ -738,7 +784,6 @@ M_Read(void)
       
       for(d=0; d<n; d++)
         {
-        unsigned int k;
         for(k=0;k<sizeof(int);k++)
           {
           num[k] = _data[i+k];
@@ -1145,13 +1190,14 @@ M_Write(void)
   if(m_BinaryData)
     {
     PointListType::const_iterator it = m_PointList.begin();
+    PointListType::const_iterator itEnd = m_PointList.end();
     int elementSize;
     MET_SizeOfType(m_PointType, &elementSize);
 
     char* data = new char[(m_NDims)*m_NPoints*elementSize+m_NPoints*sizeof(int)];
     int i=0;
     int d;
-    while(it != m_PointList.end())
+    while(it != itEnd)
       {
       int pntId = (*it)->m_Id;
       MET_SwapByteIfSystemMSB(&pntId,MET_INT);
@@ -1172,8 +1218,9 @@ M_Write(void)
   else
     {
     PointListType::const_iterator it = m_PointList.begin();
+    PointListType::const_iterator itEnd = m_PointList.end();
     int d;
-    while(it != m_PointList.end())
+    while(it != itEnd)
     {
       *m_WriteStream << (*it)->m_Id << " ";
       for(d = 0; d < m_NDims; d++)
@@ -1225,7 +1272,8 @@ M_Write(void)
         unsigned int d;
         int j=0;
         CellListType::const_iterator it = m_CellListArray[i]->begin();
-        while(it != m_CellListArray[i]->end())
+        CellListType::const_iterator itEnd = m_CellListArray[i]->end();
+        while(it != itEnd)
         {
         int cellId = (*it)->m_Id;
         MET_SwapByteIfSystemMSB(&cellId,MET_INT);
@@ -1246,9 +1294,10 @@ M_Write(void)
       else
         {
         CellListType::const_iterator it = m_CellListArray[i]->begin();
+        CellListType::const_iterator itEnd = m_CellListArray[i]->end();
   
         unsigned int d;
-        while(it != m_CellListArray[i]->end())
+        while(it != itEnd)
           {
            *m_WriteStream << (*it)->m_Id << " ";
           for(d = 0; d < (*it)->m_Dim; d++)
@@ -1277,7 +1326,8 @@ M_Write(void)
     if(m_BinaryData)
       {    
       CellLinkListType::const_iterator it = m_CellLinks.begin();
-      while(it != m_CellLinks.end())
+      CellLinkListType::const_iterator itEnd = m_CellLinks.end();
+      while(it != itEnd)
         {
         cellLinksSize += 2+(*it)->m_Links.size();
         it++;
@@ -1305,7 +1355,8 @@ M_Write(void)
       char* data = new char[cellLinksSize*sizeof(int)];
       int j=0;
       CellLinkListType::const_iterator it = m_CellLinks.begin();
-      while(it != m_CellLinks.end())
+      CellLinkListType::const_iterator itEnd = m_CellLinks.end();
+      while(it != itEnd)
         {
         int clId = (*it)->m_Id;
         MET_SwapByteIfSystemMSB(&clId,MET_INT);
@@ -1316,7 +1367,8 @@ M_Write(void)
         MET_DoubleToValue((double)linkSize,MET_INT,data,j++);
 
         METAIO_STL::list<int>::const_iterator it2 = (*it)->m_Links.begin();
-        while(it2 != (*it)->m_Links.end())
+        METAIO_STL::list<int>::const_iterator it2End = (*it)->m_Links.end();
+        while(it2 != it2End)
           {
           int links = (*it2);
           MET_SwapByteIfSystemMSB(&links,MET_INT);
@@ -1332,13 +1384,15 @@ M_Write(void)
     else
       {
       CellLinkListType::const_iterator it = m_CellLinks.begin();
+      CellLinkListType::const_iterator itEnd = m_CellLinks.end();
   
-      while(it != m_CellLinks.end())
+      while(it != itEnd)
         {
         *m_WriteStream << (*it)->m_Id << " ";
         *m_WriteStream << (*it)->m_Links.size() << " ";
         METAIO_STL::list<int>::const_iterator it2 = (*it)->m_Links.begin();
-        while(it2 != (*it)->m_Links.end())
+        METAIO_STL::list<int>::const_iterator it2End = (*it)->m_Links.end();
+        while(it2 != it2End)
           {
           *m_WriteStream << (*it2) << " ";
           it2++;
@@ -1362,7 +1416,8 @@ M_Write(void)
 
     int pointDataSize = 0;    
     PointDataListType::const_iterator it = m_PointData.begin();
-    while(it != m_PointData.end())
+    PointDataListType::const_iterator itEnd = m_PointData.end();
+    while(it != itEnd)
       {
       pointDataSize += (*it)->GetSize();
       it++;
@@ -1378,14 +1433,16 @@ M_Write(void)
 
     if(!MetaObject::M_Write())
       {
-      METAIO_STREAM::cout << "MetaMesh: M_Write: Error parsing file" << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "MetaMesh: M_Write: Error parsing file" 
+                          << METAIO_STREAM::endl;
       return false;
       }
 
     // Then copy all Point data : 
     // Always binary to be compatible with everything
     it = m_PointData.begin();
-    while(it != m_PointData.end())
+    itEnd = m_PointData.end();
+    while(it != itEnd)
       {
       (*it)->Write(m_WriteStream);
       it++;
@@ -1407,7 +1464,8 @@ M_Write(void)
 
     int cellDataSize = 0;    
     CellDataListType::const_iterator it = m_CellData.begin();
-    while(it != m_CellData.end())
+    CellDataListType::const_iterator itEnd = m_CellData.end();
+    while(it != itEnd)
       {
       cellDataSize += (*it)->GetSize();
       it++;
@@ -1424,14 +1482,16 @@ M_Write(void)
 
     if(!MetaObject::M_Write())
       {
-      METAIO_STREAM::cout << "MetaMesh: M_Write: Error parsing file" << METAIO_STREAM::endl;
+      METAIO_STREAM::cout << "MetaMesh: M_Write: Error parsing file" 
+                          << METAIO_STREAM::endl;
       return false;
       }
 
     // Then copy all Cell data : 
     // Always binary to be compatible with everything
     it = m_CellData.begin();
-    while(it != m_CellData.end())
+    itEnd = m_CellData.end();
+    while(it != itEnd)
       {
       (*it)->Write(m_WriteStream);
       it++;

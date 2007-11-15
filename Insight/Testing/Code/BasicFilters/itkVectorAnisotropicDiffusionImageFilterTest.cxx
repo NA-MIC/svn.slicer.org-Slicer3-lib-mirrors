@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorAnisotropicDiffusionImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:08 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -87,7 +87,7 @@ int itkVectorAnisotropicDiffusionImageFilterTest(int itkNotUsed(argc), char *itk
   catch(itk::ExceptionObject &err)
     {
       (&err)->Print(std::cerr);
-      return 1;
+      return EXIT_FAILURE;
     } 
-  return 0;   
+  return EXIT_SUCCESS;   
 }

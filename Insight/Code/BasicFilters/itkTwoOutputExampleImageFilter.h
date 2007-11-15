@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTwoOutputExampleImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/03 15:07:52 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007/08/20 07:50:04 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -37,10 +37,11 @@ namespace itk
  *
  * The pixels must support the operators >= and <=.
  * 
- * \ingroup IntensityImageFilters
+ * \ingroup IntensityImageFilters Multithreaded
  */
 template <class TImage>
-class ITK_EXPORT TwoOutputExampleImageFilter:public ImageToImageFilter<TImage,TImage>
+class ITK_EXPORT TwoOutputExampleImageFilter:
+    public ImageToImageFilter<TImage, TImage>
 {
 public:
   /** Standard class typedefs. */
@@ -83,7 +84,8 @@ public:
   typedef typename OutputImageType::PixelType OutputImagePixelType;
   
   /** Get the image output of this process object.  */
-  OutputImagePointer GetInverseOutput();
+  OutputImagePointer GetInverseOutput()
+  { return static_cast<TImage *>(this->ProcessObject::GetOutput(1)); }
 
   /** Set the image output of this process object.  */
   void SetInverseOutput(OutputImageType *output)

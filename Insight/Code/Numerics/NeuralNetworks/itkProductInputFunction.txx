@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkProductInputFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/06/28 18:05:24 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/08/17 13:10:57 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -26,24 +26,24 @@ namespace Statistics
 {
 
 /** Constructor */
-template<class TVector, class ScalarType>
-ProductInputFunction<TVector,ScalarType>
+template<class TMeasurementVector, class ScalarType>
+ProductInputFunction<TMeasurementVector,ScalarType>
 ::ProductInputFunction()
 {
 }
 
 /** Destructor */
-template<class TVector, class ScalarType>
-ProductInputFunction <TVector,ScalarType>
+template<class TMeasurementVector, class ScalarType>
+ProductInputFunction <TMeasurementVector,ScalarType>
 ::~ProductInputFunction()
 {
 }
 
 /** Evaluate */
-template<class TVector, class ScalarType>
+template<class TMeasurementVector, class ScalarType>
 ScalarType
-ProductInputFunction <TVector,ScalarType>
-::Evaluate(const TVector& input)  const
+ProductInputFunction <TMeasurementVector,ScalarType>
+::Evaluate(const TMeasurementVector& input)  const
 {
   vnl_vector<ScalarType> temp(input);
   ScalarType product = temp[0];
@@ -55,9 +55,9 @@ ProductInputFunction <TVector,ScalarType>
 }
 
 /** Print the object */
-template<class TVector, class ScalarType>
+template<class TMeasurementVector, class ScalarType>
 void  
-ProductInputFunction <TVector,ScalarType>
+ProductInputFunction <TMeasurementVector,ScalarType>
 ::PrintSelf( std::ostream& os, Indent indent ) const 
 { 
   os << indent << "ProductInputFunction(" << this << ")" << std::endl; 

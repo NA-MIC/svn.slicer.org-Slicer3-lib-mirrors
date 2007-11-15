@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSparseFieldFourthOrderLevelSetImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:32 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -165,5 +165,5 @@ int itkSparseFieldFourthOrderLevelSetImageFilterTest(int, char* [] )
   filter->Update();
   filter->Print(std::cout);
   std::cout<<"Passed.\n";
-  return 0;
+  return EXIT_SUCCESS;
 }

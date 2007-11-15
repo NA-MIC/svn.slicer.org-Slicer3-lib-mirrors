@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSpatialObject.txx,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 19:33:42 $
-  Version:   $Revision: 1.70 $
+  Date:      $Date: 2007/08/05 23:52:14 $
+  Version:   $Revision: 1.73 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -19,7 +19,7 @@
 #define __itkSpatialObject_txx
 
 #include "itkSpatialObject.h"
-#include <itkNumericTraits.h>
+#include "itkNumericTraits.h"
 #include <algorithm>
 #include <string>
 
@@ -556,8 +556,28 @@ SpatialObject< TDimension >
       (*it)->Get()->SetBoundingBoxChildrenName(m_BoundingBoxChildrenName);
       (*it)->Get()->ComputeBoundingBox();
 
-      m_Bounds->ConsiderPoint((*it)->Get()->GetBoundingBox()->GetMinimum());
-      m_Bounds->ConsiderPoint((*it)->Get()->GetBoundingBox()->GetMaximum());
+      // If the bounding box is not defined we set the minimum and maximum
+      bool bbDefined = false;
+      for(unsigned int i=0;i<m_Dimension;i++)
+        {
+        if(m_Bounds->GetBounds()[2*i] != 0
+          || m_Bounds->GetBounds()[2*i+1] != 0)
+          {
+          bbDefined = true;
+          break;
+          }
+        }
+
+      if(!bbDefined)
+        {
+        m_Bounds->SetMinimum((*it)->Get()->GetBoundingBox()->GetMinimum());
+        m_Bounds->SetMaximum((*it)->Get()->GetBoundingBox()->GetMaximum());
+        }
+      else
+        {
+        m_Bounds->ConsiderPoint((*it)->Get()->GetBoundingBox()->GetMinimum());
+        m_Bounds->ConsiderPoint((*it)->Get()->GetBoundingBox()->GetMaximum());
+        }
       it++;
       }
     delete children;

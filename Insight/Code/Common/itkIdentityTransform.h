@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkIdentityTransform.h,v $
   Language:  C++
-  Date:      $Date: 2006/11/03 20:09:08 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007/07/18 20:12:24 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -163,8 +163,6 @@ public:
    * **/
   virtual const JacobianType & GetJacobian(const InputPointType  & ) const
     { 
-    this->m_Jacobian = JacobianType(NDimensions,1); 
-    this->m_Jacobian.Fill(0.0); 
     return this->m_Jacobian;
     }
 
@@ -176,7 +174,12 @@ public:
   virtual bool IsLinear() const { return true; }
 
 protected:
-  IdentityTransform():Transform<TScalarType,NDimensions,NDimensions>(NDimensions,1) {}; 
+  IdentityTransform():Transform<TScalarType,NDimensions,NDimensions>(NDimensions,1) 
+   {
+   // The Jacobian is constant, therefore it can be initialized in the constructor.
+   this->m_Jacobian = JacobianType(NDimensions,1); 
+   this->m_Jacobian.Fill(0.0); 
+   }; 
   virtual ~IdentityTransform() {};
 
 

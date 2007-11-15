@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkIOTests.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/15 16:52:13 $
-  Version:   $Revision: 1.50 $
+  Date:      $Date: 2007/09/21 18:01:45 $
+  Version:   $Revision: 1.53 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -43,12 +43,14 @@ void RegisterTests()
   REGISTER_TEST(itkJPEGImageIOTest);
   REGISTER_TEST(itkMeshSpatialObjectIOTest);
   REGISTER_TEST(itkMetaImageIOTest);
+  REGISTER_TEST(itkMetaImageStreamingIOTest);
   REGISTER_TEST(itkNrrdImageIOTest);
   REGISTER_TEST(itkNrrdImageReadWriteTest);
   REGISTER_TEST(itkNrrdRGBImageReadWriteTest);
   REGISTER_TEST(itkNrrdRGBAImageReadWriteTest);
   REGISTER_TEST(itkNrrdDiffusionTensor3DImageReadTest);
   REGISTER_TEST(itkNrrdDiffusionTensor3DImageReadWriteTest);
+  REGISTER_TEST(itkNrrdDiffusionTensor3DImageReadTensorDoubleWriteTensorDoubleTest);
   REGISTER_TEST(itkNrrdComplexImageReadTest);
   REGISTER_TEST(itkNrrdComplexImageReadWriteTest);
   REGISTER_TEST(itkNrrdVectorImageReadTest);
@@ -94,4 +96,6 @@ void RegisterTests()
   REGISTER_TEST(itkNiftiImageIOTest);
   REGISTER_TEST(itkNiftiImageIOTest2);
   REGISTER_TEST(itkNiftiImageIOTest3);
+  REGISTER_TEST(itkNiftiImageIOTest4);
+  REGISTER_TEST(itkNiftiImageIOTest5);
 }

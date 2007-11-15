@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshLineCell.txx,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 15:46:55 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/08/25 22:28:11 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -27,14 +27,22 @@ namespace itk
 // ---------------------------------------------------------------------
 template< class TCellInterface >
 QuadEdgeMeshLineCell< TCellInterface >
-::QuadEdgeMeshLineCell( bool makeEdge )
+::QuadEdgeMeshLineCell( )
 {
   m_Identifier = 0;
+  m_QuadEdgeGeom = new QEType;
 
-  if( makeEdge )
-    {
-    this->MakeEdge();
-    }
+  QEType* e2 = new QEType;
+  QEDual* e1 = new QEDual;
+  QEDual* e3 = new QEDual;
+  this->m_QuadEdgeGeom->SetRot( e1 );
+  e1->SetRot( e2 );
+  e2->SetRot( e3 );
+  e3->SetRot( this->m_QuadEdgeGeom );
+  this->m_QuadEdgeGeom->SetOnext( this->m_QuadEdgeGeom );
+  e1->SetOnext( e3 );
+  e2->SetOnext( e2 );
+  e3->SetOnext( e1 );
 }
 
 // ---------------------------------------------------------------------
@@ -42,6 +50,52 @@ template< class TCellInterface >
 QuadEdgeMeshLineCell< TCellInterface >
 ::~QuadEdgeMeshLineCell()
 {
+  // ALEX: for performance issues,
+  // we will assume the user calls Disconnect beforehand
+  // or else it is the mesh destructor, and we can proceed.
+  // if( !m_QuadEdgeGeom->IsDisconnected( ) )
+  //  {
+  //  m_QuadEdgeGeom->Disconnect( );
+  //  }
+
+  bool FoundNullPointer = false;
+  if( m_QuadEdgeGeom )
+    {
+    if( m_QuadEdgeGeom->GetRot( ) )
+      {
+      if( m_QuadEdgeGeom->GetRot( )->GetRot( ) )
+        {
+        if( m_QuadEdgeGeom->GetRot( )->GetRot( )->GetRot( ) )
+          {
+          delete m_QuadEdgeGeom->GetRot( )->GetRot( )->GetRot( ); //e3
+          delete m_QuadEdgeGeom->GetRot( )->GetRot( );            //e2
+          delete m_QuadEdgeGeom->GetRot( );                       //e1
+          delete m_QuadEdgeGeom;
+          }
+        else
+          {
+          FoundNullPointer = true;
+          }
+        }
+      else
+        {
+        FoundNullPointer = true;
+        }
+      }
+    else
+      {
+      FoundNullPointer = true;
+      }
+    }
+  else
+    {
+    FoundNullPointer = true;
+    }
+
+  if( FoundNullPointer )
+    {
+    //Throw exception here
+    }
 }
 
 // ---------------------------------------------------------------------
@@ -99,7 +153,7 @@ QuadEdgeMeshLineCell< TCellInterface >
   (void)dimension;
   (void)cellId;
   (void)cell;
-  return false;
+  return( false );
 }
 
 // ---------------------------------------------------------------------
@@ -109,9 +163,21 @@ QuadEdgeMeshLineCell< TCellInterface >
 ::SetPointIds( PointIdConstIterator first )
 {
   PointIdConstIterator i = first;
-  this->SetOrigin( *i );
+  this->GetQEGeom( )->SetOrigin( *i );
   i++;
-  this->SetDestination( *i );
+  this->GetQEGeom( )->SetDestination( *i );
+}
+
+// ---------------------------------------------------------------------
+template< class TCellInterface >
+void
+QuadEdgeMeshLineCell< TCellInterface >
+::InternalSetPointIds( PointIdInternalConstIterator first )
+{
+  PointIdInternalConstIterator i = first;
+  this->GetQEGeom( )->SetOrigin( *i );
+  i++;
+  this->GetQEGeom( )->SetDestination( *i );
 }
 
 // ---------------------------------------------------------------------
@@ -121,8 +187,23 @@ QuadEdgeMeshLineCell< TCellInterface >
 ::SetPointIds( PointIdConstIterator first,
                PointIdConstIterator last )
 {
-  this->SetOrigin( *first );
-  this->SetDestination( *last );
+  (void)last;
+  this->GetQEGeom( )->SetOrigin( *first );
+  first++;
+  this->GetQEGeom( )->SetDestination( *first );
+}
+
+// ---------------------------------------------------------------------
+template< class TCellInterface >
+void
+QuadEdgeMeshLineCell< TCellInterface >
+::InternalSetPointIds( PointIdInternalConstIterator first,
+               PointIdInternalConstIterator last )
+{
+  (void)last;
+  this->GetQEGeom( )->SetOrigin( *first );
+  first++;
+  this->GetQEGeom( )->SetDestination( *first );
 }
 
 // ---------------------------------------------------------------------
@@ -131,86 +212,60 @@ void
 QuadEdgeMeshLineCell< TCellInterface >
 ::SetPointId( int localId, PointIdentifier pId )
 {
-  switch( localId )
-    {
-    case 0:
-      {
-      this->SetOrigin( pId );
-      break;
-      }
-    case 1:
-      {
-      this->SetDestination( pId );
-      break;
-      }
-    }
+  if( localId == 0 )      this->GetQEGeom( )->SetOrigin( pId );
+  else if( localId == 1 ) this->GetQEGeom( )->SetDestination( pId );
 }
 
 // ---------------------------------------------------------------------
 template< class TCellInterface >
-typename QuadEdgeMeshLineCell< TCellInterface >::PointIdIterator
+typename QuadEdgeMeshLineCell< TCellInterface >::PointIdInternalIterator
 QuadEdgeMeshLineCell< TCellInterface >
-::PointIdsBegin()
+::InternalPointIdsBegin()
 {
-  return this->BeginGeomSym();
+  return( PointIdInternalIterator( this->m_QuadEdgeGeom,
+                                   PointIdInternalIterator::OperatorSym, true ) );
 }
 
 // ---------------------------------------------------------------------
 template< class TCellInterface >
-typename QuadEdgeMeshLineCell< TCellInterface >::PointIdIterator
+typename QuadEdgeMeshLineCell< TCellInterface >::PointIdInternalIterator
 QuadEdgeMeshLineCell< TCellInterface >
-::PointIdsEnd()
+::InternalPointIdsEnd()
 {
-  return this->EndGeomSym();
+  return( PointIdInternalIterator( this->m_QuadEdgeGeom,
+                                   PointIdInternalIterator::OperatorSym, false ) );
 }
 
 // ---------------------------------------------------------------------
 template< class TCellInterface >
-typename QuadEdgeMeshLineCell< TCellInterface >::PointIdConstIterator
+typename QuadEdgeMeshLineCell< TCellInterface >::PointIdInternalConstIterator
 QuadEdgeMeshLineCell< TCellInterface >
-::GetPointIds() const
+::InternalGetPointIds() const
 {
-  return this->BeginGeomSym();
+  return( PointIdInternalConstIterator( this->m_QuadEdgeGeom,
+                                        PointIdInternalConstIterator::OperatorSym, true ) );
 }
 
 // ---------------------------------------------------------------------
 template< class TCellInterface >
-typename QuadEdgeMeshLineCell< TCellInterface >::PointIdConstIterator
+typename QuadEdgeMeshLineCell< TCellInterface >::PointIdInternalConstIterator
 QuadEdgeMeshLineCell< TCellInterface >
-::PointIdsBegin() const
+::InternalPointIdsBegin() const
 {
-  return this->BeginGeomSym();
+  return( PointIdInternalConstIterator( this->m_QuadEdgeGeom,
+                                        PointIdInternalConstIterator::OperatorSym, true ) );
 }
 
 // ---------------------------------------------------------------------
 template< class TCellInterface >
-typename QuadEdgeMeshLineCell< TCellInterface >::PointIdConstIterator
+typename QuadEdgeMeshLineCell< TCellInterface >::PointIdInternalConstIterator
 QuadEdgeMeshLineCell< TCellInterface >
-::PointIdsEnd() const
+::InternalPointIdsEnd() const
 {
-  return this->EndGeomSym();
+  return( PointIdInternalConstIterator( this->m_QuadEdgeGeom,
+                                        PointIdInternalConstIterator::OperatorSym, false ) );
 }
 
-// ---------------------------------------------------------------------
-template< class TCellInterface >
-void
-QuadEdgeMeshLineCell< TCellInterface >
-::MakeEdge()
-{
-  Self *   e2 = new Self( false );
-  QEDual * e1 = new QEDual();
-  QEDual * e3 = new QEDual();
-
-  this->SetRot( e1 );
-  e1->SetRot( e2 );
-  e2->SetRot( e3 );
-  e3->SetRot( this );
-
-  this->SetOnext( this );
-  e1->SetOnext( e3 );
-  e2->SetOnext( e2 );
-  e3->SetOnext( e1 );
-}
 
 // ---------------------------------------------------------------------
 template< class TCellInterface >
@@ -219,6 +274,8 @@ QuadEdgeMeshLineCell< TCellInterface >
 ::SetIdent( CellIdentifier cid )
 {
   this->m_Identifier = cid;
+  this->m_QuadEdgeGeom->SetIdent( cid );
+  this->m_QuadEdgeGeom->GetSym( )->SetIdent( cid );
 }
 
 // ---------------------------------------------------------------------

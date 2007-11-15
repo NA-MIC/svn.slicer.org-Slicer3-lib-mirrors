@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSymmetricSecondRankTensorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/05/06 18:53:40 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -46,7 +46,7 @@ int itkSymmetricSecondRankTensorTest(int, char* [] )
   if (sizeof(pixel) != 6 * sizeof(Float3DTensorType::ComponentType))
     {
     std::cerr << "ERROR: sizeof(pixel) == " << sizeof(pixel) << " but is should be " << 6 * sizeof(Float3DTensorType::ComponentType) << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
   std::cout << "pixel.GetNumberOfComponents = " << pixel.GetNumberOfComponents() << std::endl;
   std::cout << "pixel.GetNthComponent()" << std::endl;

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaSurfaceConverter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:56 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/08/17 18:09:06 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -67,7 +67,7 @@ MetaSurfaceConverter<NDimensions>
     
   vnl_vector<double> v(ndims);
   
-  for(unsigned int id=0;id< Surface->GetPoints().size();id++)
+  for(unsigned int identifier=0;identifier< Surface->GetPoints().size();identifier++)
     {
     SurfacePointType pnt;
     

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHMaximaMinimaImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:06 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/08/10 14:34:01 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -35,7 +35,7 @@ int itkHMaximaMinimaImageFilterTest( int argc, char * argv[] )
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  inputImageFile  ";
     std::cerr << " outputImageFile  height" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
 
@@ -107,7 +107,7 @@ int itkHMaximaMinimaImageFilterTest( int argc, char * argv[] )
   std::cout << "<DartMeasurement name=\"HMinimaNumberOfIterations\" type=\"numeric/integer\">" << hminima->GetNumberOfIterationsUsed() << "</DartMeasurement>" << std::endl;
 
 
-  return 0;
+  return EXIT_SUCCESS;
 
 }
 

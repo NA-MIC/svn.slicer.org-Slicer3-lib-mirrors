@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryFunctorImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/11/03 13:52:31 $
-  Version:   $Revision: 1.38 $
+  Date:      $Date: 2007/08/30 15:01:09 $
+  Version:   $Revision: 1.39 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -48,7 +48,7 @@ BinaryFunctorImageFilter<TInputImage1,TInputImage2,TOutputImage,TFunction>
 ::SetInput1( const TInputImage1 * image1 ) 
 {
   // Process object is not const-correct so the const casting is required.
-  SetNthInput(0, const_cast<TInputImage1 *>( image1 ));
+  this->SetNthInput(0, const_cast<TInputImage1 *>( image1 ));
 }
 
 
@@ -62,7 +62,7 @@ BinaryFunctorImageFilter<TInputImage1,TInputImage2,TOutputImage,TFunction>
 ::SetInput2( const TInputImage2 * image2 ) 
 {
   // Process object is not const-correct so the const casting is required.
-  SetNthInput(1, const_cast<TInputImage2 *>( image2 ));
+  this->SetNthInput(1, const_cast<TInputImage2 *>( image2 ));
 }
 
 

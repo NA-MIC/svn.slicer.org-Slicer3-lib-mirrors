@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageFileReader.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/17 21:02:10 $
-  Version:   $Revision: 1.29 $
+  Date:      $Date: 2007/09/06 18:31:36 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -107,6 +107,9 @@ public:
   /** The size of the output image. */
   typedef typename TOutputImage::SizeType  SizeType;
 
+  /** The size of the output image. */
+  typedef typename TOutputImage::IndexType  IndexType;
+
   /** The region of the output image. */
   typedef typename TOutputImage::RegionType  ImageRegionType;
 
@@ -136,6 +139,11 @@ public:
    * cannot read a portion of an image), so the ImageFileReader must
    * enlarge the RequestedRegion to the size of the image on disk. */
   virtual void EnlargeOutputRequestedRegion(DataObject *output);
+  
+  /** Set the stream On or Off */
+  itkSetMacro(UseStreaming,bool);
+  itkGetConstReferenceMacro(UseStreaming,bool);
+  itkBooleanMacro(UseStreaming);
 
 protected:
   ImageFileReader();
@@ -160,11 +168,17 @@ protected:
                                                // ImageIO is user specified 
 
   std::string m_FileName; // The file to be read
+
+  bool m_UseStreaming;
   
 private:
   ImageFileReader(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
   std::string m_ExceptionMessage;  
+
+  // The region that the ImageIO class will return when we ask it to produce a
+  // requested region.
+  ImageRegionType m_StreamableRegion; 
 };
 
 

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaVesselTubeConverter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:56 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/08/17 18:09:51 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -70,7 +70,7 @@ MetaVesselTubeConverter<NDimensions>
   itk::CovariantVector<double,NDimensions> v; 
   itk::Vector<double,NDimensions> t;
   
-  for(unsigned int id=0;id< tube->GetPoints().size();id++)
+  for(unsigned int identifier=0;identifier< tube->GetPoints().size();identifier++)
     {
     TubePointType pnt;
     

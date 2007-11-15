@@ -3,8 +3,8 @@
   Program:   MetaIO
   Module:    $RCSfile: metaContour.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/27 12:25:52 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/05/31 13:53:13 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,6 +21,11 @@
 
 #include "metaUtils.h"
 #include "metaObject.h"
+
+#ifdef _MSC_VER
+#pragma warning ( disable: 4786 )
+#pragma warning ( disable: 4251 )
+#endif
 
 #include <list>
 
@@ -41,31 +46,8 @@ class METAIO_EXPORT ContourControlPnt
 {
 public:
 
-  ContourControlPnt(int dim)
-    {
-    m_Id = 0;
-    m_Dim = dim;
-    m_X = new float[m_Dim];
-    m_XPicked = new float[m_Dim];
-    m_V = new float[m_Dim];
-    for(unsigned int i=0;i<m_Dim;i++)
-      {
-      m_X[i] = 0;
-      m_XPicked[i] = 0;
-      m_V[i] = 0;
-      } 
-    //Color is red by default
-    m_Color[0]=1.0;
-    m_Color[1]=0.0;
-    m_Color[2]=0.0;
-    m_Color[3]=1.0;
-    }
-  ~ContourControlPnt()
-    {
-    delete [] m_X;
-    delete [] m_XPicked;
-    delete [] m_V;
-    };
+  ContourControlPnt(int dim);
+  ~ContourControlPnt();
   
   unsigned int m_Dim;
   unsigned int m_Id;

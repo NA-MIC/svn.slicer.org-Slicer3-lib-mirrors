@@ -1,6 +1,19 @@
-#include "itkWin32Header.h"
-#include <iostream>
-#include <fstream>
+/*=========================================================================
+
+  Program:   Insight Segmentation & Registration Toolkit
+  Module:    $RCSfile: ImageCompare.cxx,v $
+  Language:  C++
+  Date:      $Date: 2007/08/20 12:21:34 $
+  Version:   $Revision: 1.7 $
+
+  Copyright (c) Insight Software Consortium. All rights reserved.
+  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+
+     This software is distributed WITHOUT ANY WARRANTY; without even 
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     PURPOSE.  See the above copyright notices for more information.
+
+=========================================================================*/
 #include "itkNumericTraits.h"
 #include "itkImage.h"
 #include "itkImageFileReader.h"
@@ -9,9 +22,14 @@
 #include "itkExtractImageFilter.h"
 #include "itkDifferenceImageFilter.h"
 
-using namespace std;
+#include <iostream>
+#include <fstream>
 
+#ifdef __BORLANDC__
+#define ITK_TEST_DIMENSION_MAX 5
+#else
 #define ITK_TEST_DIMENSION_MAX 6
+#endif
 
 int RegressionTestImage (const char *, const char *, int, bool);
 
@@ -19,10 +37,10 @@ int main(int argc, char **argv)
 {
   if(argc < 3)
     {
-    cerr << "Usage:" << endl;
-    cerr << "testImage, baselineImage1, [baselineImage2, baselineImage3, ...]" << endl;
-    cerr << "Note that if you supply more than one baselineImage, this test will pass if any" << endl;
-    cerr << "of them match the testImage" << endl;
+    std::cerr << "Usage:" << std::endl;
+    std::cerr << "testImage, baselineImage1, [baselineImage2, baselineImage3, ...]" << std::endl;
+    std::cerr << "Note that if you supply more than one baselineImage, this test will pass if any" << std::endl;
+    std::cerr << "of them match the testImage" << std::endl;
     return -1;
     }
   int bestBaselineStatus = 2001;
@@ -78,7 +96,7 @@ int main(int argc, char **argv)
     std::cerr << "ITK test driver caught an unknown exception!!!\n";
     bestBaselineStatus = -1;
     }
-  cout << bestBaselineStatus << endl;
+  std::cout << bestBaselineStatus << std::endl;
   return bestBaselineStatus;
 }
 
@@ -183,8 +201,8 @@ int RegressionTestImage (const char *testImageFilename, const char *baselineImag
       std::cout << status;
       std::cout <<  "</DartMeasurement>" << std::endl;
 
-      ::itk::OStringStream diffName;
-        diffName << testImageFilename << ".diff.png";
+      itksys_ios::ostringstream diffName;
+      diffName << testImageFilename << ".diff.png";
       try
         {
         rescale->SetInput(diff->GetOutput());
@@ -208,7 +226,7 @@ int RegressionTestImage (const char *testImageFilename, const char *baselineImag
       std::cout << diffName.str();
       std::cout << "</DartMeasurementFile>" << std::endl;
       }
-    ::itk::OStringStream baseName;
+    itksys_ios::ostringstream baseName;
     baseName << testImageFilename << ".base.png";
     try
       {
@@ -233,7 +251,7 @@ int RegressionTestImage (const char *testImageFilename, const char *baselineImag
     std::cout << baseName.str();
     std::cout << "</DartMeasurementFile>" << std::endl;
 
-    ::itk::OStringStream testName;
+    itksys_ios::ostringstream testName;
     testName << testImageFilename << ".test.png";
     try
       {

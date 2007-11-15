@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkJointDomainImageToListAdaptor.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/14 19:58:32 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2007/08/23 20:01:10 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -279,30 +279,27 @@ JointDomainImageToListAdaptor< TImage >
 template < class TImage >
 inline void
 JointDomainImageToListAdaptor< TImage >
-::Search(const MeasurementVectorType& mv, 
-         const double radius, 
+::Search(const MeasurementVectorType& mv,
+         const double radius,
          InstanceIdentifierVectorType& result) const
 {
   ImageRegionType region ;
   this->ComputeRegion( mv, radius, region ) ;
 
-  InstanceIdentifier id ;
   result.clear() ;
   ImageIteratorType iter( this->GetImage(), region ) ;
   iter.GoToBegin() ;
-  bool isWithinRange ;
-  double sum ;
   double squaredRadius = radius * radius ;
-  double temp ;
+  InstanceIdentifier instanceID;
   while ( !iter.IsAtEnd() )
     {
-    id = this->GetImage()->ComputeOffset(iter.GetIndex()) ;
-    m_TempVector = this->GetMeasurementVector( id ) ;
-    isWithinRange = true ; 
-    sum = 0.0 ;
+    instanceID  = this->GetImage()->ComputeOffset(iter.GetIndex()) ;
+    m_TempVector = this->GetMeasurementVector( instanceID ) ;
+    bool isWithinRange = true ;
+    double sum = 0.0 ;
     for ( unsigned int i = 0 ; i < MeasurementVectorSize ; ++i )
       {
-      temp = (m_TempVector[i] - mv[i]) ;
+      const double temp = (m_TempVector[i] - mv[i]) ;
       sum += temp * temp ;
       if ( sum > squaredRadius )
         {
@@ -313,7 +310,7 @@ JointDomainImageToListAdaptor< TImage >
 
     if ( isWithinRange )
       {
-      result.push_back(id) ;
+      result.push_back(instanceID) ;
       }
     ++iter ;
     }

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageIOBase.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:51 $
-  Version:   $Revision: 1.63 $
+  Date:      $Date: 2007/09/15 18:29:56 $
+  Version:   $Revision: 1.70 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -54,6 +54,8 @@ void ImageIOBase::Reset(const bool)
     }
   m_NumberOfDimensions = 0;
   m_UseCompression = false;
+  m_UseStreamedReading = false;
+  m_UseStreamedWriting = false;
 }
 
 ImageIOBase::~ImageIOBase()
@@ -386,10 +388,12 @@ void ImageIOBase::ComputeStrides()
 }
 
 // Calculates the image size in PIXELS
-unsigned int ImageIOBase::GetImageSizeInPixels() const
+ImageIOBase::SizeType 
+ImageIOBase
+::GetImageSizeInPixels() const
 {
   unsigned int i;
-  unsigned int numPixels = 1;
+  SizeType numPixels = 1;
 
   for (i = 0; i < m_NumberOfDimensions; i++)
     {
@@ -399,32 +403,44 @@ unsigned int ImageIOBase::GetImageSizeInPixels() const
   return numPixels;
 }
 
-unsigned int ImageIOBase::GetImageSizeInComponents() const
+ImageIOBase::SizeType 
+ImageIOBase
+::GetImageSizeInComponents() const
 {
   return (this->GetImageSizeInPixels() * m_NumberOfComponents);
 }
 
-unsigned int ImageIOBase::GetImageSizeInBytes () const
+ImageIOBase::SizeType 
+ImageIOBase
+::GetImageSizeInBytes () const
 {
   return (this->GetImageSizeInComponents() * this->GetComponentSize());
 }
 
-unsigned int ImageIOBase::GetComponentStride() const
+ImageIOBase::SizeType 
+ImageIOBase
+::GetComponentStride() const
 {
   return m_Strides[0];
 }
 
-unsigned int ImageIOBase::GetPixelStride () const
+ImageIOBase::SizeType 
+ImageIOBase
+::GetPixelStride () const
 {
   return m_Strides[1];
 }
 
-unsigned int ImageIOBase::GetRowStride () const
+ImageIOBase::SizeType 
+ImageIOBase
+::GetRowStride () const
 {
   return m_Strides[2];
 }
 
-unsigned int ImageIOBase::GetSliceStride () const
+ImageIOBase::SizeType 
+ImageIOBase
+::GetSliceStride () const
 {
   return m_Strides[3];
 }
@@ -461,14 +477,15 @@ void ImageIOBase::SetNumberOfDimensions(unsigned int dim)
 }
 
 bool 
-ImageIOBase ::ReadBufferAsBinary(std::istream& is, void *buffer, unsigned int num)
+ImageIOBase
+::ReadBufferAsBinary(std::istream& is, void *buffer, ImageIOBase::SizeType num)
 {
 
-  const unsigned int numberOfBytesToBeRead = num;
+  const SizeType numberOfBytesToBeRead = num;
 
   is.read( static_cast<char *>( buffer ), numberOfBytesToBeRead );
 
-  const unsigned int numberOfBytesRead = is.gcount();
+  const SizeType numberOfBytesRead = is.gcount();
 
 #ifdef __APPLE_CC__
   // fail() is broken in the Mac. It returns true when reaches eof().
@@ -631,10 +648,10 @@ std::string ImageIOBase::GetPixelTypeAsString(IOPixelType t) const
 
 namespace {
 template <class TComponent>
-void WriteBuffer(std::ostream& os, const TComponent *buffer, unsigned int num)
+void WriteBuffer(std::ostream& os, const TComponent *buffer, ImageIOBase::SizeType num)
 {
   const TComponent *ptr = buffer;
-  for (unsigned int i=0; i < num; i++)
+  for (ImageIOBase::SizeType i=0; i < num; i++)
     {
     if ( !(i%6) && i ) os << "\n";
     os << *ptr++ << " ";
@@ -643,7 +660,7 @@ void WriteBuffer(std::ostream& os, const TComponent *buffer, unsigned int num)
 }
 void ImageIOBase::WriteBufferAsASCII(std::ostream& os, const void *buffer, 
                                      IOComponentType ctype,
-                                     unsigned int numComp)
+                                     ImageIOBase::SizeType numComp)
 {
   switch (ctype)
     {
@@ -734,10 +751,10 @@ void ImageIOBase::WriteBufferAsASCII(std::ostream& os, const void *buffer,
 
 
 template <class TComponent>
-void ReadBuffer(std::istream& is, TComponent *buffer, unsigned int num)
+void ReadBuffer(std::istream& is, TComponent *buffer, ImageIOBase::SizeType num)
 {
   TComponent *ptr = buffer;
-  for (unsigned int i=0; i < num; i++, ptr++)
+  for( ImageIOBase::SizeType i=0; i < num; i++, ptr++ )
     {
     is >> *ptr;
     }
@@ -745,7 +762,7 @@ void ReadBuffer(std::istream& is, TComponent *buffer, unsigned int num)
 
 void ImageIOBase::ReadBufferAsASCII(std::istream& is, void *buffer, 
                                     IOComponentType ctype,
-                                    unsigned int numComp)
+                                    ImageIOBase::SizeType numComp)
 {
   switch (ctype)
     {
@@ -824,6 +841,51 @@ void ImageIOBase::ReadBufferAsASCII(std::istream& is, void *buffer,
 
 }
 
+
+/** Given a requested region, determine what could be the region that we can
+ * read from the file. This is called the streamable region, which will be
+ * smaller than the LargestPossibleRegion and greater or equal to the
+ * RequestedRegion */
+ImageIORegion 
+ImageIOBase
+::GenerateStreamableReadRegionFromRequestedRegion( 
+    const ImageIORegion & requested ) const
+{
+  //
+  // The default implementations determines that the streamable region is
+  // equal to the largest possible region of the image.
+  //
+  
+  // Since the image in the file may have a dimension lower
+  // than the image type over which the ImageFileReader/Writer is
+  // being instantiated, we must fill in the co-dimensions in a
+  // consistent way.
+
+  // First: allocate with the image IO number of dimensions
+  ImageIORegion streamableRegion( requested.GetImageDimension() );
+
+  // Second: copy only the number of dimension that the image has.
+  unsigned int maxDimensionToCopy =
+    this->m_NumberOfDimensions > requested.GetImageDimension() ?
+    requested.GetImageDimension() : this->m_NumberOfDimensions;
+  for( unsigned int i=0; i < maxDimensionToCopy; i++ )
+    {
+    streamableRegion.SetSize( i, this->m_Dimensions[i] );
+    streamableRegion.SetIndex( i, 0 );
+    }
+
+  // Third: set the rest to the default : start = 0, size = 1
+  for( unsigned int j=maxDimensionToCopy; j<requested.GetImageDimension(); j++ )
+    {
+    streamableRegion.SetSize( j, 1 );
+    streamableRegion.SetIndex( j, 0 );
+    }
+
+  // Finally: return the streamable region
+  return streamableRegion;
+}
+
+
 void ImageIOBase::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
@@ -852,7 +914,22 @@ void ImageIOBase::PrintSelf(std::ostream& os, Indent indent) const
     {
     os << indent << "UseCompression: Off" << std::endl;
     }
-
+  if (m_UseStreamedReading)
+    {
+    os << indent << "UseStreamedReading: On" << std::endl;
+    }
+  else
+    {
+    os << indent << "UseStreamedReading: Off" << std::endl;
+    }
+  if (m_UseStreamedWriting)
+    {
+    os << indent << "UseStreamedWriting: On" << std::endl;
+    }
+  else
+    {
+    os << indent << "UseStreamedWriting: Off" << std::endl;
+    }
 }
 
 } //namespace itk

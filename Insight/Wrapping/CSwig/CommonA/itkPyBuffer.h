@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPyBuffer.h,v $
   Language:  C++
-  Date:      $Date: 2005/03/25 13:17:57 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/09/21 19:44:44 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -25,6 +25,7 @@
 #undef _POSIX_C_SOURCE
 #include <Python.h>
 #include <arrayobject.h>
+#include <libnumarray.h>
 
 
 

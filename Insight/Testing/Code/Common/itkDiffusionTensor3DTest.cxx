@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDiffusionTensor3DTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/05/07 00:23:58 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -45,7 +45,7 @@ int itkDiffusionTensor3DTest(int, char* [] )
   if (sizeof(pixel) != 6 * sizeof(Float3DTensorType::ComponentType))
     {
     std::cerr << "ERROR: sizeof(pixel) == " << sizeof(pixel) << " but is should be " << 6 * sizeof(Float3DTensorType::ComponentType) << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
   std::cout << "pixel.GetNumberOfComponents = " << pixel.GetNumberOfComponents() << std::endl;
   std::cout << "pixel.GetNthComponent()" << std::endl;

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageSliceConstIteratorWithIndex.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/11 20:29:18 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007/08/17 12:51:35 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,8 +16,8 @@
 =========================================================================*/
 #ifndef _itkImageSliceConstIteratorWithIndex_txx
 #define _itkImageSliceConstIteratorWithIndex_txx
-#include "itkImageSliceConstIteratorWithIndex.h"
 
+#include "itkImageSliceConstIteratorWithIndex.h"
 
 namespace itk
 {

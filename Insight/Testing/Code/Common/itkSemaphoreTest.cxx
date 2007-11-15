@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSemaphoreTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:10 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -68,7 +68,7 @@ int itkSemaphoreTest(int, char*[])
       if ( sem.m_Flag == true ) // flag should always be false
         {
         std::cerr << "[TEST FAILED]" << std::endl;
-        return 1;
+        return EXIT_FAILURE;
         }
       }
     

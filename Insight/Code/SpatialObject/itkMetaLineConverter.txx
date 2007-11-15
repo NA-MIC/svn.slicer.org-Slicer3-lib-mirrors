@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaLineConverter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:56 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/08/17 18:08:41 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -66,7 +66,7 @@ MetaLineConverter<NDimensions>
     
   vnl_vector<double> v(ndims);
   
-  for(unsigned int id=0;id< Line->GetPoints().size();id++)
+  for(unsigned int identifier=0;identifier< Line->GetPoints().size();identifier++)
     {
     LinePointType pnt;
     

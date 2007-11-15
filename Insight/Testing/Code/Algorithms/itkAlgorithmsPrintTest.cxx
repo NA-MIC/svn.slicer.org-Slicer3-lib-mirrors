@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAlgorithmsPrintTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/06/01 14:21:16 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007/08/20 12:47:11 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -126,6 +126,6 @@ int main (int , char* [])
     itk::FastMarchingImageFilter<InputType>::New();
   std:: cout << "-------------FastMarchingImageFilter " << FastMarchingImageFilterObj;
 
-  return 0;
+  return EXIT_SUCCESS;
 
 }

@@ -3,8 +3,8 @@
   Program:   MetaIO
   Module:    $RCSfile: metaUtils.h,v $
   Language:  C++
-  Date:      $Date: 2006/11/02 20:36:53 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2007/09/11 15:19:35 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -41,17 +41,41 @@
 #ifndef ITKMetaIO_METAUTILS_H
 #define ITKMetaIO_METAUTILS_H
 
+#ifdef _MSC_VER
+#pragma warning( disable:4251 )
+#pragma warning( disable:4511 )
+#pragma warning( disable:4512 )
+#pragma warning( disable:4284 )
+#pragma warning( disable:4702 )
+#pragma warning( disable:4786 )
+#endif
 
 #include <vector>
 #include <string>
 #include <typeinfo>
-
 
 #if (METAIO_USE_NAMESPACE)
 namespace METAIO_NAMESPACE {
 #endif
 
 extern int META_DEBUG;
+
+// Types used for storing the compression table
+typedef struct MET_CompressionOffset
+  {
+  unsigned long uncompressedOffset;
+  unsigned long compressedOffset;
+  } MET_CompressionOffsetType;
+
+typedef METAIO_STL::vector<MET_CompressionOffsetType> MET_CompressionOffsetListType;
+
+typedef struct MET_CompressionTable
+  {
+  MET_CompressionOffsetListType offsetList;
+  z_stream* compressedStream;
+  char*     buffer;
+  unsigned long bufferSize;
+  } MET_CompressionTableType;
 
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
@@ -259,6 +283,16 @@ bool MET_PerformUncompression(const unsigned char * sourceCompressed,
                               unsigned char * uncompressedData,
                               int uncompressedDataSize);
 
+// Uncompress a stream given an uncompressedSeekPosition
+METAIO_EXPORT 
+long MET_UncompressStream(METAIO_STREAM::ifstream * stream,
+                          unsigned long uncompressedSeekPosition,
+                          unsigned char * uncompressedData,
+                          long uncompressedDataSize,
+                          long compressedDataSize,
+                          MET_CompressionTableType * compressionTable);
+
+
 /////////////////////////////////////////////////////////
 // FILES NAMES
 /////////////////////////////////////////////////////////
@@ -286,7 +320,8 @@ bool MET_InitWriteField(MET_FieldRecordType * _mf,
                                    int _length, 
                                    T *_v)
   {
-  strcpy(_mf->name, _name);
+  strncpy(_mf->name, _name,254);
+  _mf->name[254] = '\0';
   _mf->type = _type;
   _mf->defined = true;
   _mf->length = _length;
@@ -296,7 +331,7 @@ bool MET_InitWriteField(MET_FieldRecordType * _mf,
   if(_type == MET_FLOAT_MATRIX)
     {
     int i;
-    for(i=0; i<_length*_length; i++)
+    for(i=0; i < 255 && i < _length*_length; i++)
       {
       _mf->value[i] = (double)(_v[i]);
       }
@@ -304,14 +339,16 @@ bool MET_InitWriteField(MET_FieldRecordType * _mf,
   else if(_type != MET_STRING)
     {
     int i;
-    for(i=0; i<_length; i++)
+    for(i=0; i < 255 && i < _length; i++)
       {
       _mf->value[i] = (double)(_v[i]);
       }
     }
   else
     {
-    strcpy((char *)(_mf->value), (const char *)_v);
+    strncpy((char *)(_mf->value), (const char *)_v,
+            (sizeof(_mf->value)-1));
+    ((char *)(_mf->value))[(sizeof(_mf->value)-1)] = '\0';
     }
   return true;
   }

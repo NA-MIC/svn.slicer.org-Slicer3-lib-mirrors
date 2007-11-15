@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientRecursiveGaussianImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/28 19:59:02 $
-  Version:   $Revision: 1.35 $
+  Date:      $Date: 2007/09/16 15:29:35 $
+  Version:   $Revision: 1.36 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -23,6 +23,7 @@
 #include "itkCovariantVector.h"
 #include "itkPixelTraits.h"
 #include "itkProgressAccumulator.h"
+#include <vector>
 
 
 namespace itk
@@ -156,9 +157,9 @@ private:
   GradientRecursiveGaussianImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
   
-  GaussianFilterPointer         m_SmoothingFilters[ImageDimension-1];
-  DerivativeFilterPointer       m_DerivativeFilter;
-  OutputImageAdaptorPointer     m_ImageAdaptor;
+  std::vector<GaussianFilterPointer>   m_SmoothingFilters;
+  DerivativeFilterPointer              m_DerivativeFilter;
+  OutputImageAdaptorPointer            m_ImageAdaptor;
 
   /** Normalize the image across scale space */
   bool m_NormalizeAcrossScale; 

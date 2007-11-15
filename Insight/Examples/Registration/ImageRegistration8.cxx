@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageRegistration8.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/12/10 17:54:30 $
-  Version:   $Revision: 1.34 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -150,7 +150,7 @@ int main( int argc, char *argv[] )
     std::cerr << " [differenceAfterRegistration] ";
     std::cerr << " [sliceBeforeRegistration] ";
     std::cerr << " [sliceAfterRegistration] "<< std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
   
   const    unsigned int    Dimension = 3;
@@ -381,7 +381,7 @@ int main( int argc, char *argv[] )
     { 
     std::cerr << "ExceptionObject caught !" << std::endl; 
     std::cerr << err << std::endl; 
-    return -1;
+    return EXIT_FAILURE;
     } 
   
   OptimizerType::ParametersType finalParameters = 
@@ -730,6 +730,6 @@ int main( int argc, char *argv[] )
 
 
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 

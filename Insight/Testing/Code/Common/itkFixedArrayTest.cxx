@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFixedArrayTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/04/13 17:57:26 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -76,8 +76,8 @@ int itkFixedArrayTest(int, char* [] )
   Print_Array(array4, std::cout);
   
   // Test operator!= and operator==
-  if ( array4 != array4 ) return 1; //should be equal
-  if ( !(array4 == array4) ) return 1; //should be equal
+  if ( array4 != array4 ) return EXIT_FAILURE; //should be equal
+  if ( !(array4 == array4) ) return EXIT_FAILURE; //should be equal
 
   // Test Get/Set element
   const unsigned int n = 20;
@@ -134,5 +134,5 @@ int itkFixedArrayTest(int, char* [] )
       TRY_INDEX(unsigned int);
       TRY_INDEX(long);
       TRY_INDEX(unsigned long);
-  return 0;
+  return EXIT_SUCCESS;
 }

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMultiResolutionPDEDeformableRegistration.h,v $
   Language:  C++
-  Date:      $Date: 2005/08/03 22:51:17 $
-  Version:   $Revision: 1.28 $
+  Date:      $Date: 2007/07/31 23:12:20 $
+  Version:   $Revision: 1.29 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -149,10 +149,10 @@ public:
   const MovingImageType * GetMovingImage(void) const;
 
   /** Set initial deformation field. */
-  virtual void SetInitialDeformationField( DeformationFieldType * itkNotUsed(ptr) )
+  virtual void SetInitialDeformationField( DeformationFieldType * ptr )
   {
-    itkExceptionMacro( << "This feature not implemented yet"  );
-    // this->SetInput( ptr ); 
+    this->m_InitialDeformationField=ptr;
+    // itkExceptionMacro( << "This feature not implemented yet"  );
   }
 
   /** Get output deformation field. */
@@ -243,6 +243,7 @@ private:
   FixedImagePyramidPointer   m_FixedImagePyramid;
   MovingImagePyramidPointer  m_MovingImagePyramid;
   FieldExpanderPointer       m_FieldExpander;
+  DeformationFieldPointer    m_InitialDeformationField;
 
   unsigned int               m_NumberOfLevels;
   unsigned int               m_CurrentLevel;

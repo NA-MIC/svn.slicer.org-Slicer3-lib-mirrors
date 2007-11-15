@@ -1,6 +1,6 @@
-/CMakeLists.txt/1.10/Sun Dec 10 18:59:56 2006//THEAD
-/Makefile/1.2/Fri Aug  5 16:40:22 2005//THEAD
-/nifti1.h/1.1.1.1/Mon Jun  6 21:14:09 2005//THEAD
-/nifti1_io.c/1.15/Thu Apr  5 17:03:57 2007//THEAD
-/nifti1_io.h/1.10/Wed Dec  7 15:05:50 2005//THEAD
+/CMakeLists.txt/1.11/Thu Nov 15 15:55:56 2007//TITK-3-4
+/Makefile/1.2/Thu Nov 15 15:24:11 2007//TITK-3-4
+/nifti1.h/1.2/Thu Nov 15 15:55:56 2007//TITK-3-4
+/nifti1_io.c/1.19/Thu Nov 15 15:55:56 2007//TITK-3-4
+/nifti1_io.h/1.12/Thu Nov 15 15:55:56 2007//TITK-3-4
 D

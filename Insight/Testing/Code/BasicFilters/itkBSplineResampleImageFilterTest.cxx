@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineResampleImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/04/08 17:08:29 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2007/08/10 14:34:01 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -700,10 +700,10 @@ itkBSplineResampleImageFilterTest(
   if (flag != 0) {
     std::cout << "*** " << flag << " tests failed" << std::endl;
   
-    return 1; }
+    return EXIT_FAILURE; }
   else {
     std::cout << "All tests successfully passed" << std::endl;
-    return 0; }
+    return EXIT_SUCCESS; }
 
 }
 

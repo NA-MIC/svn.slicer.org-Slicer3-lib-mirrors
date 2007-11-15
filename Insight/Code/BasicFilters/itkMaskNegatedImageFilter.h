@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMaskNegatedImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/16 13:35:01 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/08/30 15:01:09 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -52,7 +52,7 @@ namespace itk
  */
 namespace Functor {  
   
-template< class TInput, class TMask, class TOutput >
+template< class TInput, class TMask, class TOutput=TInput >
 class MaskNegatedInput
 {
 public:
@@ -82,7 +82,7 @@ public:
 }; 
 
 }
-template <class TInputImage, class TMaskImage, class TOutputImage>
+template <class TInputImage, class TMaskImage, class TOutputImage=TInputImage>
 class ITK_EXPORT MaskNegatedImageFilter :
     public
 BinaryFunctorImageFilter<TInputImage,TMaskImage,TOutputImage, 

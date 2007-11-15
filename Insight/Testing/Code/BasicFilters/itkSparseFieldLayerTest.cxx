@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSparseFieldLayerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:08 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -71,7 +71,7 @@ int itkSparseFieldLayerTest(int , char *[] )
       i = 3999;
       while (cit != layer->End() )
         {
-          if ( (*cit).value != i || cit->value != i) return 1;
+          if ( (*cit).value != i || cit->value != i) return EXIT_FAILURE;
           ++cit;
           --i;
         }
@@ -81,9 +81,9 @@ int itkSparseFieldLayerTest(int , char *[] )
       i = 3999;
       while (it != layer->End())
         {
-          if ( (*it).value != i || it->value != i) return 1;
+          if ( (*it).value != i || it->value != i) return EXIT_FAILURE;
           (*it).value = 32567;
-          if ( (*it).value != 32567 || it->value != 32567) return 1;
+          if ( (*it).value != 32567 || it->value != 32567) return EXIT_FAILURE;
           ++it;
           --i;
         }

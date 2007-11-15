@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshLineCell.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 15:46:55 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007/07/26 06:30:26 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -75,35 +75,36 @@ public:
 
   /** Multivisitor type. */
   typedef typename CellType::MultiVisitor MultiVisitor;
+  
+  //** */
+  typedef typename CellTraits::PointIdIterator              PointIdIterator;
+  typedef typename CellTraits::PointIdConstIterator         PointIdConstIterator;
+  typedef typename CellTraits::PointIdInternalIterator      PointIdInternalIterator;
+  typedef typename CellTraits::PointIdInternalConstIterator PointIdInternalConstIterator;
 
   /** QE types. */
-  typedef typename Superclass::CellTraits::QuadEdgeType  QEType;
+  typedef typename CellTraits::QuadEdgeType              QEType;
   typedef typename QEType::OriginRefType                 VertexRefType;
   typedef typename QEType::DualOriginRefType             FaceRefType;
   typedef typename QEType::PrimalDataType                PrimalDataType;
   typedef typename QEType::DualDataType                  DualDataType;
   typedef typename QEType::DualType                      QEDual;
 
-  /** Iterator types. */
-  typedef typename QEType::IteratorGeom      PointIdIterator;
-  typedef typename QEType::ConstIteratorGeom PointIdConstIterator;
-
 public:
   /** Standard part of every itk Object. */
   itkTypeMacro( QuadEdgeMeshLineCell, TCellInterface );
 
-  /** Methods for a QECell. */
-  virtual void MakeEdge();
- 
-  itkQEAccessorsMacro( QEType, Self, QEDual );
+  // accessor to the new QEGeom link that replaces now inheritance.
+  QEType* GetQEGeom( ) const { return( m_QuadEdgeGeom ); };
 
 public:
   /** Object memory management methods. */
-  QuadEdgeMeshLineCell( bool makeEdge = true );
+  QuadEdgeMeshLineCell( );
   virtual ~QuadEdgeMeshLineCell();
 
   /** Accessors for m_Identifier. */
   void SetIdent( CellIdentifier cid );
+  
   CellIdentifier GetIdent();
 
   /** Implement the standard CellInterface. */
@@ -114,7 +115,7 @@ public:
   virtual CellGeometry GetType() const;
 
   /** Topology related methods. */
-  static int GetTopologyId();
+  static int GetTopologyId( );
   virtual unsigned int GetDimension() const;
   virtual unsigned int GetNumberOfPoints() const;
   
@@ -124,20 +125,40 @@ public:
                                    CellAutoPointer& cell );
 
   /** Useless methods. */
-  virtual void MakeCopy( CellAutoPointer& cell ) const { (void)cell; }
+  virtual void MakeCopy( CellAutoPointer& cell ) const
+    {
+    cell.TakeOwnership( new Self );
+    cell->SetPointId( 0, this->GetQEGeom( )->GetOrigin( ) );
+    cell->SetPointId( 1, this->GetQEGeom( )->GetDestination( ) );
+    }
 
-  /** Iterator-related methods. */
+  /** ITK Cell API - Iterator-related methods.
+   *  The Set methods will work, not the Get.
+   *  Hopefully never used ...
+   */
   virtual void SetPointIds( PointIdConstIterator first );
   virtual void SetPointIds( PointIdConstIterator first,
                             PointIdConstIterator last );
   virtual void SetPointId( int localId, PointIdentifier pId );
 
-  virtual PointIdIterator PointIdsBegin();
-  virtual PointIdIterator PointIdsEnd();
+  virtual PointIdIterator PointIdsBegin(){return (PointIdIterator)0; }
+  virtual PointIdIterator PointIdsEnd(){return (PointIdIterator)0; }
 
-  virtual PointIdConstIterator GetPointIds() const;
-  virtual PointIdConstIterator PointIdsBegin() const;
-  virtual PointIdConstIterator PointIdsEnd() const;
+  virtual PointIdConstIterator GetPointIds() const {return (PointIdIterator)0; }
+  virtual PointIdConstIterator PointIdsBegin() const {return (PointIdIterator)0; }
+  virtual PointIdConstIterator PointIdsEnd() const {return (PointIdIterator)0; }
+
+  /** QuadEdge internal flavor of cell API **/
+  virtual void InternalSetPointIds( PointIdInternalConstIterator first );
+  virtual void InternalSetPointIds( PointIdInternalConstIterator first,
+                            PointIdInternalConstIterator last );
+
+  virtual PointIdInternalIterator InternalPointIdsBegin();
+  virtual PointIdInternalIterator InternalPointIdsEnd();
+
+  virtual PointIdInternalConstIterator InternalGetPointIds() const;
+  virtual PointIdInternalConstIterator InternalPointIdsBegin() const;
+  virtual PointIdInternalConstIterator InternalPointIdsEnd() const;
 
 private:
   QuadEdgeMeshLineCell( const Self& );  //purposely not implemented
@@ -148,6 +169,7 @@ private:
    * of doing a search in the Mesh::Cell container.
    */
   CellIdentifier m_Identifier;
+  QEType*        m_QuadEdgeGeom;
 };
 
 } // end namespace itk

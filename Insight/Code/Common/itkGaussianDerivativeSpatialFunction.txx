@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianDerivativeSpatialFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:58 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007/06/11 15:12:09 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -53,14 +53,14 @@ GaussianDerivativeSpatialFunction<TOutput, VImageDimension, TInput>
 
   if (m_Normalized)
     {
-    prefixDenom = m_Sigma[0]*m_Sigma[0]*m_Sigma[0];
+    prefixDenom = m_Sigma[m_Direction]*m_Sigma[m_Direction];
 
-    for(unsigned int i = 1; i < VImageDimension; i++)
+    for(unsigned int i = 0; i < VImageDimension; i++)
       {
-      prefixDenom *= m_Sigma[i]*m_Sigma[i]*m_Sigma[i];
+      prefixDenom *= m_Sigma[i];
       }
 
-    prefixDenom *= 2 * 3.1415927;
+    prefixDenom *= 2*vcl_pow( 2 * 3.1415927, VImageDimension / 2.0); 
     }
   else
     {

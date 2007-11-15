@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageIOBase.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 18:39:27 $
-  Version:   $Revision: 1.43 $
+  Date:      $Date: 2007/09/15 18:29:56 $
+  Version:   $Revision: 1.47 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -135,7 +135,7 @@ public:
    * region within the image. Make sure that the IORegion lies within
    * the image. */
   itkSetMacro(IORegion, ImageIORegion);
-  itkGetMacro(IORegion, ImageIORegion);
+  itkGetConstMacro(IORegion, ImageIORegion);
 
   /** Set/Get the type of the pixel. The PixelTypes provides context
    * to the IO mechanisms for data conversions.  PixelTypes can be
@@ -169,6 +169,17 @@ public:
   /** Set/Get a boolean to use the compression or not. */
   itkSetMacro(UseCompression,bool);
   itkGetConstReferenceMacro(UseCompression,bool);
+  itkBooleanMacro(UseCompression);
+
+  /** Set/Get a boolean to use streaming while reading or not. */
+  itkSetMacro(UseStreamedReading,bool);
+  itkGetConstReferenceMacro(UseStreamedReading,bool);
+  itkBooleanMacro(UseStreamedReading);
+
+  /** Set/Get a boolean to use use streaming while writing or not. */
+  itkSetMacro(UseStreamedWriting,bool);
+  itkGetConstReferenceMacro(UseStreamedWriting,bool);
+  itkBooleanMacro(UseStreamedWriting);
 
   /** Convenience method returns the IOComponentType as a string. This can be
    * used for writing output files. */
@@ -229,19 +240,22 @@ public:
    * used for writing output files. */
   std::string GetByteOrderAsString(ByteOrder) const;
 
+  /** Type for representing size of bytes, and or positions along a file */
+  typedef std::streamoff SizeType;
+
   /** Convenient method for accessing the number of bytes to get to
    * the next pixel. Returns m_Strides[1]; */
-  virtual unsigned int GetPixelStride () const;
+  virtual SizeType GetPixelStride () const;
 
   /** Return the number of pixels in the image. */
-  unsigned int GetImageSizeInPixels() const;
+  SizeType GetImageSizeInPixels() const;
 
   /** Return the number of bytes in the image. */
-  unsigned int GetImageSizeInBytes() const;
+  SizeType GetImageSizeInBytes() const;
 
   /** Return the number of pixels times the number
    * of components in the image. */
-  unsigned int GetImageSizeInComponents() const;
+  SizeType GetImageSizeInComponents() const;
 
   /*-------- This part of the interfaces deals with reading data ----- */
 
@@ -298,6 +312,14 @@ public:
     return (dim == 2);
     }
 
+  /** Method for supporting streaming.  Given a requested region, determine what
+   * could be the region that we can read from the file. This is called the
+   * streamable region, which will be smaller than the LargestPossibleRegion and
+   * greater or equal to the RequestedRegion */
+  virtual ImageIORegion 
+  GenerateStreamableReadRegionFromRequestedRegion( const ImageIORegion & requested ) const;
+
+
 protected:
   ImageIOBase();
   ~ImageIOBase();
@@ -330,6 +352,12 @@ protected:
   /** Should we compress the data? */
   bool m_UseCompression;
 
+  /** Should we use streaming for reading */
+  bool m_UseStreamedReading;
+  
+  /** Should we use streaming for writing */
+  bool m_UseStreamedWriting;
+
   /** The region to read or write. The region contains information about the
    * data within the region to read or write. */
   ImageIORegion m_IORegion;
@@ -349,7 +377,7 @@ protected:
 
   /** Stores the number of bytes it takes to get to the next 'thing'
    * e.g. component, pixel, row, slice, etc. */
-  std::vector<unsigned int> m_Strides;
+  std::vector< SizeType > m_Strides;
 
   /** Return the object to an initialized state, ready to be used */
   virtual void Reset(const bool freeDynamic = true);
@@ -378,28 +406,28 @@ protected:
 
   /** Convenient method for accessing number of bytes to get to the next pixel 
    * component. Returns m_Strides[0]. */
-  unsigned int GetComponentStride() const;
+  SizeType GetComponentStride() const;
 
   /** Convenient method for accessing the number of bytes to get to the 
    * next row. Returns m_Strides[2]. */
-  unsigned int GetRowStride () const;
+  SizeType GetRowStride () const;
 
   /** Convenient method for accessing the number of bytes to get to the 
    * next slice. Returns m_Strides[3]. */
-  unsigned int GetSliceStride () const;
+  SizeType GetSliceStride () const;
 
   /** Convenient method to write a buffer as ASCII text. */
   void WriteBufferAsASCII(std::ostream& os, const void *buffer,
                           IOComponentType ctype,
-                          unsigned int numComp);
+                          SizeType numberOfBytesToWrite);
 
   /** Convenient method to read a buffer as ASCII text. */
   void ReadBufferAsASCII(std::istream& os, void *buffer,
                          IOComponentType ctype,
-                         unsigned int numComp);
+                         SizeType numberOfBytesToBeRead);
 
   /** Convenient method to read a buffer as binary. Return true on success. */
-  bool ReadBufferAsBinary(std::istream& os, void *buffer,unsigned int numComp);
+  bool ReadBufferAsBinary(std::istream& os, void *buffer, SizeType numberOfBytesToBeRead);
 
   
 private:

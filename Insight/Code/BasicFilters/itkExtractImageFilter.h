@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkExtractImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/17 14:22:26 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007/08/27 13:29:02 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -49,6 +49,7 @@ namespace itk
  * This filter is implemented as a multithreaded filter.  It provides a 
  * ThreadedGenerateData() method for its implementation.
  * 
+ * \sa CropImageFilter
  * \ingroup GeometricTransforms
  */
 template <class TInputImage, class TOutputImage>
@@ -92,9 +93,9 @@ public:
   itkStaticConstMacro(OutputImageDimension, unsigned int,
                       TOutputImage::ImageDimension);
 
-  typedef 
-  ImageToImageFilterDetail::ExtractImageFilterRegionCopier<itkGetStaticConstMacro(InputImageDimension), 
-                                                           itkGetStaticConstMacro(OutputImageDimension)> ExtractImageFilterRegionCopierType;
+  typedef ImageToImageFilterDetail::ExtractImageFilterRegionCopier<
+    itkGetStaticConstMacro(InputImageDimension), 
+    itkGetStaticConstMacro(OutputImageDimension)> ExtractImageFilterRegionCopierType;
 
   /** Set/Get the output image region. 
    *  If any of the ExtractionRegion.Size = 0 for any particular dimension dim,

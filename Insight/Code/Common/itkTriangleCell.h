@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTriangleCell.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/18 14:31:13 $
-  Version:   $Revision: 1.56 $
+  Date:      $Date: 2007/09/21 21:02:10 $
+  Version:   $Revision: 1.57 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -115,6 +115,8 @@ public:
   TriangleCell(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
+  /** Computes the SQUARED distance between a point and a line segment defined
+   * by two other points */
   double DistanceToLine(PointType x, PointType p1, PointType p2, 
                               double &t, CoordRepType *closestPoint);
   double DistanceToLine(PointType x, PointType p1, PointType p2, 

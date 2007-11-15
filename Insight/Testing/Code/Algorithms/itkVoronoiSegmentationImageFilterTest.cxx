@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVoronoiSegmentationImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/12/09 22:41:45 $
-  Version:   $Revision: 1.26 $
+  Date:      $Date: 2007/08/20 12:47:12 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -126,6 +126,6 @@ int itkVoronoiSegmentationImageFilterTest(int, char* [] ){
   fclose(imgfile);
 */
   std::cout<<"Test Succeed!"<<std::endl;
-  return 0;
+  return EXIT_SUCCESS;
 }
 

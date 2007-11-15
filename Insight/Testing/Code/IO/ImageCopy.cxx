@@ -1,19 +1,34 @@
+/*=========================================================================
 
-#include "itkWin32Header.h"
-#include <iostream>
-#include <fstream>
+  Program:   Insight Segmentation & Registration Toolkit
+  Module:    $RCSfile: ImageCopy.cxx,v $
+  Language:  C++
+  Date:      $Date: 2007/08/20 12:21:34 $
+  Version:   $Revision: 1.3 $
+
+  Copyright (c) Insight Software Consortium. All rights reserved.
+  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+
+     This software is distributed WITHOUT ANY WARRANTY; without even 
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     PURPOSE.  See the above copyright notices for more information.
+
+=========================================================================*/
+
 #include "itkNumericTraits.h"
 #include "itkImage.h"
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 
+#include <iostream>
+#include <fstream>
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
   if( argc < 2 )
     {
     std::cerr << "You must supply a filename to be copied" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   const unsigned int Dimension = 2;
@@ -38,15 +53,14 @@ int main(int argc, char **argv)
     {
     std::cerr << "Exception detected while reading " << argv[1];
     std::cerr << " : "  << e.GetDescription();
-    return 1;
+    return EXIT_FAILURE;
     }
 
   WriterType::Pointer writer = WriterType::New();
 
   writer->SetInput(baselineReader->GetOutput());
 
-  ::itk::OStringStream baseName;
-
+  itksys_ios::ostringstream baseName;
   baseName << argv[1] << ".base.png";
 
   try
@@ -57,10 +71,10 @@ int main(int argc, char **argv)
   catch (...)
     {
     std::cerr << "Error during write of " << baseName.str() << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkExceptionObjectTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/09/29 16:12:07 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007/08/20 16:52:56 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -112,6 +112,7 @@ int itkExceptionObjectTest(int, char* [] )
   std::cout << *Fp << std::endl;
   
   // ** BE SURE TO CATCH BY REFERENCE TO AVOID SLICING **
+  bool raised = false;
   try {
     lookup(4);  // OK
     lookup(12); // ERROR
@@ -119,8 +120,14 @@ int itkExceptionObjectTest(int, char* [] )
   catch (itk::ExceptionObject &e) 
     { 
     std::cout << e << std::endl; 
+    raised = true;
+    }
+  if( !raised )
+    {
+    return EXIT_FAILURE;
     }
 
+  raised = false;
   try
     {
     human john, jane;
@@ -132,6 +139,11 @@ int itkExceptionObjectTest(int, char* [] )
   catch (itk::IncompatibleOperandsError &e) 
     { 
     std::cout << e << std::endl; 
+    raised = true;
+    }
+  if( !raised )
+    {
+    return EXIT_FAILURE;
     }
 
   /*
@@ -157,6 +169,6 @@ int itkExceptionObjectTest(int, char* [] )
 
   delete Fp;
 
-  return 0;
+  return EXIT_SUCCESS;
   
 }

@@ -3,8 +3,8 @@
   Program:   MetaIO
   Module:    $RCSfile: metaTube.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/10/27 12:25:53 $
-  Version:   $Revision: 1.29 $
+  Date:      $Date: 2007/05/31 13:53:13 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,6 +14,11 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#ifdef _MSC_VER
+#pragma warning(disable:4702)
+#pragma warning(disable:4284)
+#endif
+
 #include "metaTube.h"
 
 #include <stdio.h>
@@ -23,6 +28,39 @@
 #if (METAIO_USE_NAMESPACE)
 namespace METAIO_NAMESPACE {
 #endif
+
+TubePnt::
+TubePnt(int dim)
+  {
+  m_Dim = dim;
+  m_X = new float[m_Dim];
+  m_T = new float[m_Dim];
+  m_V1= new float[m_Dim];
+  m_V2= new float[m_Dim];
+  for(unsigned int i=0;i<m_Dim;i++)
+    {
+    m_X[i] = 0;
+    m_V1[i]= 0;
+    m_V2[i]= 0;
+    m_T[i]= 0;
+    }
+  m_R=0;
+  //Color is red by default
+  m_Color[0]=1.0;
+  m_Color[1]=0.0;
+  m_Color[2]=0.0;
+  m_Color[3]=1.0;
+  m_ID = -1;
+  }
+
+TubePnt::
+~TubePnt()
+  {
+  delete []m_X;
+  delete []m_V1;
+  delete []m_V2;
+  delete []m_T;
+  }
 
 /** MetaTube Constructors */
 MetaTube::
@@ -508,12 +546,12 @@ M_Read(void)
 
       for(d = 0; d < m_NDims; d++)
         {
-        char* num = new char[sizeof(float)];
+        num = new char[sizeof(float)];
         for(k=0;k<sizeof(float);k++)
           {
           num[k] = _data[i+k];
           }
-        float td = (float)((float*)num)[0];
+        td = (float)((float*)num)[0];
         MET_SwapByteIfSystemMSB(&td,MET_FLOAT);
         i+=sizeof(float);
         pnt->m_V1[d] = (float)td;
@@ -524,12 +562,12 @@ M_Read(void)
         {
         for(d = 0; d < m_NDims; d++)
           {
-          char* num = new char[sizeof(float)];
+          num = new char[sizeof(float)];
           for(k=0;k<sizeof(float);k++)
             {
             num[k] = _data[i+k];
             }
-          float td = (float)((float*)num)[0];
+          td = (float)((float*)num)[0];
           MET_SwapByteIfSystemMSB(&td,MET_FLOAT);
           i+=sizeof(float);
           pnt->m_V2[d] = (float)td;
@@ -539,12 +577,12 @@ M_Read(void)
       
       for(d = 0; d < m_NDims; d++)
         {
-        char* num = new char[sizeof(float)];
+        num = new char[sizeof(float)];
         for(k=0;k<sizeof(float);k++)
           {
           num[k] = _data[i+k];
           }
-        float td = (float)((float*)num)[0];
+        td = (float)((float*)num)[0];
         MET_SwapByteIfSystemMSB(&td,MET_FLOAT);
         i+=sizeof(float);
         pnt->m_T[d] = (float)td;
@@ -553,12 +591,12 @@ M_Read(void)
            
       for(d=0; d<4; d++)
         {
-        char* num = new char[sizeof(float)];
+        num = new char[sizeof(float)];
         for(k=0;k<sizeof(float);k++)
           {
           num[k] = _data[i+k];
           }
-        float td = (float)((float*)num)[0];
+        td = (float)((float*)num)[0];
         MET_SwapByteIfSystemMSB(&td,MET_FLOAT);
         i+=sizeof(float);
         pnt->m_Color[d] = (float)td;
@@ -712,13 +750,14 @@ M_Write(void)
   if(m_BinaryData)
     {
     PointListType::const_iterator it = m_PointList.begin();
+    PointListType::const_iterator itEnd = m_PointList.end();
     int elementSize;
     MET_SizeOfType(m_ElementType, &elementSize);
 
     char* data = new char[(m_NDims*(2+m_NDims)+10)*m_NPoints*elementSize];
     int i=0;
     int d;
-    while(it != m_PointList.end())
+    while(it != itEnd)
       {
       for(d = 0; d < m_NDims; d++)
         {
@@ -776,9 +815,10 @@ M_Write(void)
   else
     {
     PointListType::const_iterator it = m_PointList.begin();
+    PointListType::const_iterator itEnd = m_PointList.end();
   
     int d;
-    while(it != m_PointList.end())
+    while(it != itEnd)
       {
       for(d = 0; d < m_NDims; d++)
         {

@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkNiftiImageIO.h,v $
 Language:  C++
-Date:      $Date: 2007/03/29 20:11:16 $
-Version:   $Revision: 1.5 $
+Date:      $Date: 2007/09/22 10:07:51 $
+Version:   $Revision: 1.9 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -91,14 +91,20 @@ public:
    * that the IORegions has been set properly. */
   virtual void Write(const void* buffer);
 
+  /** Calculate the region of the image that can be efficiently read 
+   *  in response to a given requested region. */
+  virtual ImageIORegion 
+  GenerateStreamableReadRegionFromRequestedRegion( const ImageIORegion & requestedRegion ) const;
 
 protected:
   NiftiImageIO();
   ~NiftiImageIO();
   void PrintSelf(std::ostream& os, Indent indent) const;
 private:
+  bool  MustRescale();
   void  DefineHeaderObjectDataType();
-
+  void  SetNIfTIOrientationFromImageIO(int origdims, int dims);
+  void  SetImageIOOrientationFromNIfTI(int dims);
   /**
    * \enum ValidAnalyzeOrientationFlags
    * Valid Orientation values for objects
@@ -123,9 +129,10 @@ private:
     ITK_ANALYZE_ORIENTATION_PIL_SAGITTAL_FLIPPED=5   /**<  */
   } ValidNiftiOrientationFlags;
 
-  nifti_image * m_NiftiImage;
-  double        m_RescaleSlope;
-  double        m_RescaleIntercept;
+  nifti_image *     m_NiftiImage;
+  double            m_RescaleSlope;
+  double            m_RescaleIntercept;
+  IOComponentType   m_OnDiskComponentType;
 
   NiftiImageIO(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented

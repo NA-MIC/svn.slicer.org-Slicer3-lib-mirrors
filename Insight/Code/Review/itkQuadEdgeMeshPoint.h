@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshPoint.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 15:46:55 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/09/06 17:45:53 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -54,7 +54,8 @@ public:
   
   /** Types & values defined in superclass. */
   itkStaticConstMacro( PointDimension, unsigned int,
-                       Superclass::PointDimension );
+                       VPointDimension );
+
   typedef typename Superclass::ValueType     ValueType;
   typedef typename Superclass::CoordRepType  CoordRepType;
   typedef typename Superclass::RealType      RealType;
@@ -74,14 +75,17 @@ public:
 
 public:
   QuadEdgeMeshPoint();
+  virtual ~QuadEdgeMeshPoint() {};
   QuadEdgeMeshPoint( const Self & r );
-  QuadEdgeMeshPoint( const ValueArrayType & r );
-  // FIXME: It shouldn't be here:    QuadEdgeMeshPoint( const VectorType & vec );
+  QuadEdgeMeshPoint( const ValueType r[VPointDimension] ):Superclass( r )
+    {
+    this->Initialize();
+    } 
   Self & operator=( const Self & r );
   Self & operator=( const Superclass & r );
-  Self & operator=( const ValueArrayType & r );
-  // FIXME: It shouldn't be here:    Self & operator=( const VectorType & vec );
-
+  Self & operator=( const ValueType r[VPointDimension] );
+  
+ 
   /** Accessor on \ref m_Edge */
   void SetEdge( const TQuadEdge * inputEdge );
 

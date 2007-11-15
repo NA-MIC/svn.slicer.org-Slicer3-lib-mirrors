@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBoundingBoxTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/28 19:20:13 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -64,13 +64,13 @@ int itkBoundingBoxTest (int, char*[])
   
   if ( myBox->GetDiagonalLength2 ( ) != itk::NumericTraits<double>::Zero )
     {
-    return 1;
+    return EXIT_FAILURE;
     }
   std::cout << "Null GetDiagonalLength2 test passed" <<std::endl;
   
   if ( myBox->GetPoints () )
     {
-    return 1;
+    return EXIT_FAILURE;
     }
   std::cout << "Null GetPoints test passed" <<std::endl;
 
@@ -85,7 +85,7 @@ int itkBoundingBoxTest (int, char*[])
   myBox->SetPoints ( Points );
   if ( !myBox->ComputeBoundingBox() )
     {
-    return 1;
+    return EXIT_FAILURE;
     }
   std::cout << "Compute Bounding Box passed" <<std::endl;
 
@@ -122,7 +122,7 @@ int itkBoundingBoxTest (int, char*[])
   diagonal = myBox->GetDiagonalLength2();
   if ( diagonal != 81.0 )
     {
-    return 1;
+    return EXIT_FAILURE;
     }
   std::cout << "GetDiagonalLength2 passed" << std::endl;
   

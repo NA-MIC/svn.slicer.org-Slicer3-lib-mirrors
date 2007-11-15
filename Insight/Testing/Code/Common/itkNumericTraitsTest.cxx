@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNumericTraitsTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/08/23 17:20:21 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -50,5 +50,5 @@ int itkNumericTraitsTest(int, char* [] )
   CheckTraits("float", static_cast<float>(0));
   CheckTraits("double", static_cast<double>(0));
 
-  return 0;
+  return EXIT_SUCCESS;
 }

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCurvatureFlowTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:02 $
-  Version:   $Revision: 1.35 $
+  Date:      $Date: 2007/08/20 12:47:11 $
+  Version:   $Revision: 1.36 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -96,7 +96,7 @@ int itkCurvatureFlowTest(int argc, char* argv[] )
     { 
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  outputFile" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
    itk::OutputWindow::SetInstance(itk::TextOutput::New().GetPointer());

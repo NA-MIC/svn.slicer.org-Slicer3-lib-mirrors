@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegularStepGradientDescentBaseOptimizer.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:29:14 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2007/08/14 17:08:31 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -51,7 +51,8 @@ public:
     StepTooSmall = 2,
     ImageNotAvailable = 3,
     CostFunctionError = 4,
-    MaximumNumberOfIterations = 5
+    MaximumNumberOfIterations = 5,
+    Unknown = 6
   } StopConditionType;
 
   /** Specify whether to minimize or maximize the cost function. */

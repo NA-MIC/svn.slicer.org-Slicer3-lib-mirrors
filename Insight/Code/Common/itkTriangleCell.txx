@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTriangleCell.txx,v $
   Language:  C++
-  Date:      $Date: 2007/05/17 21:00:09 $
-  Version:   $Revision: 1.44 $
+  Date:      $Date: 2007/09/21 21:55:11 $
+  Version:   $Revision: 1.47 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -313,11 +313,23 @@ TriangleCell< TCellInterface >
                               double &t, CoordRepType *closestPoint)
 {
   PointType temp;
+
+  // convert from CoordRepType * to PointType:
   for (unsigned int i = 0; i < PointDimension; i++)
     {
     temp[i] = closestPoint[i];
     } 
-  return this->DistanceToLine (x, p1, p2, t, temp);
+
+  // Compute the squared distance to the line:
+  const double distance2 = this->DistanceToLine (x, p1, p2, t, temp);
+
+  // convert from PointType to CoordRepType * :
+  for (unsigned int j = 0; j < PointDimension; j++)
+    {
+    closestPoint[j] = temp[j];
+    } 
+
+  return distance2;
 }
 
 template <typename TCellInterface>
@@ -374,10 +386,9 @@ TriangleCell< TCellInterface >
     }
   else
     {
-    closest = p21;
     for(i=0;i<PointDimension;i++)
       {
-      p21[i] = p1[i] + t*p21[i];
+      closest[i] = p1[i] + t*p21[i];
       }
     }
     
@@ -390,7 +401,8 @@ TriangleCell< TCellInterface >
       
   for(i=0;i<PointDimension;i++)
     {
-    dist += closest[i]-x[i]*closest[i]-x[i];
+    const double value = closest[i] - x[i];
+    dist += value * value;
     }
 
   return dist;
@@ -535,9 +547,11 @@ TriangleCell< TCellInterface >
     return false;
     }
 
-  pcoords[0] = (rhs[0]*c2[1] - c2[0]*rhs[1]) / det;
-  pcoords[1] = (c1[0]*rhs[1] - rhs[0]*c1[1]) / det;
-  pcoords[2] = 1.0 - (pcoords[0] + pcoords[1]);
+  const double _t1 = rhs[0]*c2[1] - c2[0]*rhs[1];
+  const double _t2 = c1[0]*rhs[1] - rhs[0]*c1[1];
+  pcoords[0] = _t1 / det;
+  pcoords[1] = _t2 / det;
+  pcoords[2] = (det - (_t1 + _t2))/det;
 
   // Okay, now find closest point to element
   //
@@ -548,9 +562,14 @@ TriangleCell< TCellInterface >
     weights[2] = pcoords[1];
     }
 
-  if ( pcoords[0] >= 0.0 && pcoords[0] <= 1.0 &&
-       pcoords[1] >= 0.0 && pcoords[1] <= 1.0 &&
-       pcoords[2] >= 0.0 && pcoords[2] <= 1.0 )
+  // Zero with epsilon
+  const double zwe = -NumericTraits<double>::min();
+  // One with epsilon
+  const double owe = 1.0 + NumericTraits<double>::min();
+
+  if ( pcoords[0] >= zwe  && pcoords[0] <= owe &&
+       pcoords[1] >= zwe  && pcoords[1] <= owe &&
+       pcoords[2] >= zwe  && pcoords[2] <= owe )
     {
     //projection distance
     if (closestPoint)
@@ -558,7 +577,8 @@ TriangleCell< TCellInterface >
       *minDist2 = 0;
       for(i=0;i<PointDimension;i++)
         {
-        *minDist2 += (cp[i]-x[i])*(cp[i]-x[i]);
+        const double val = cp[i] - x[i];
+        *minDist2 += val * val;
         closestPoint[i] = cp[i];
         }
       }
@@ -581,7 +601,8 @@ TriangleCell< TCellInterface >
         dist2Point = 0;
         for(i=0;i<PointDimension;i++)
           {
-          dist2Point += x[i]-pt3[i]*x[i]-pt3[i];
+          const double value = x[i] - pt3[i];
+          dist2Point += value * value;
           }
         dist2Line1 = this->DistanceToLine(x,pt1,pt3,t,closestPoint1);
         dist2Line2 = this->DistanceToLine(x,pt3,pt2,t,closestPoint2);

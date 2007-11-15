@@ -43,7 +43,7 @@ ENDIF("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" MATCHES "^2\\.4$")
 #-----------------------------------------------------------------------------
 # ITK version number.  An even minor number corresponds to releases.
 SET(ITK_VERSION_MAJOR "3")
-SET(ITK_VERSION_MINOR "3")
+SET(ITK_VERSION_MINOR "4")
 SET(ITK_VERSION_PATCH "0")
 
 # Version string should not include patch level.  The major.minor is
@@ -110,6 +110,17 @@ IF( USE_SCSL )
     FIND_PACKAGE( SCSL )
 ENDIF( USE_SCSL )
 
+# Deal with MINC2 options
+MARK_AS_ADVANCED(ITK_USE_MINC2)
+OPTION(ITK_USE_MINC2 "Use MINC2 File Format" OFF)
+IF( ITK_USE_MINC2 )
+  FIND_PACKAGE( MINC2 )
+  IF( NOT MINC2_FOUND )
+    MESSAGE("You requested to use MINC2 but some components are missing")
+  ENDIF( NOT MINC2_FOUND )
+ENDIF( ITK_USE_MINC2 )
+
+
 # Put "." in the rpath of all ITK shared libraries.
 LINK_DIRECTORIES(.)
 
@@ -173,12 +184,37 @@ ENDIF(ITK_USE_KWSTYLE)
 #-----------------------------------------------------------------------------
 # ITK turn on concept checking
 IF( NOT BORLAND )
-  OPTION(ITK_USE_CONCEPT_CHECKING "Turn on concept checking to give helpful errors at compile time if a type cannot be used as a template parameter." OFF)
+  OPTION(ITK_USE_CONCEPT_CHECKING "Turn on concept checking to give helpful errors at compile time if a type cannot be used as a template parameter." ON)
   MARK_AS_ADVANCED(ITK_USE_CONCEPT_CHECKING)
+  OPTION(ITK_USE_STRICT_CONCEPT_CHECKING "Turn on Strict concept checking to give more stringent errors at compile time if a type cannot be used as a template parameter." OFF)
+  MARK_AS_ADVANCED(ITK_USE_STRICT_CONCEPT_CHECKING)
 ELSE( NOT BORLAND )
   SET(ITK_USE_CONCEPT_CHECKING OFF)
   MARK_AS_ADVANCED(ITK_USE_CONCEPT_CHECKING)
+  SET(ITK_USE_STRICT_CONCEPT_CHECKING OFF)
+  MARK_AS_ADVANCED(ITK_USE_STRICT_CONCEPT_CHECKING)
 ENDIF( NOT BORLAND )
+
+#-----------------------------------------------------------------------------
+# ITK turn on experimental version of accelerated image registration
+OPTION(ITK_USE_OPTIMIZED_REGISTRATION_METHODS "Turn on the experimental version of accelerated registration methods." OFF)
+MARK_AS_ADVANCED(ITK_USE_OPTIMIZED_REGISTRATION_METHODS)
+IF(ITK_USE_OPTIMIZED_REGISTRATION_METHODS)
+  IF(NOT ITK_USE_REVIEW)
+    MESSAGE(FATAL_ERROR "ITK_USE_REVIEW is currently OFF but it should be ON if you want to use the experimental optimized registration methods.")
+  ENDIF(NOT ITK_USE_REVIEW)
+ENDIF(ITK_USE_OPTIMIZED_REGISTRATION_METHODS)
+
+#-----------------------------------------------------------------------------
+# ITK turn on the use of experimental IO factories for the TransformFileReader and TransformFileWriter
+OPTION(ITK_USE_TRANSFORM_IO_FACTORIES "Turn on the experimental IO factories for reading and writing transforms." OFF)
+MARK_AS_ADVANCED(ITK_USE_TRANSFORM_IO_FACTORIES)
+IF(ITK_USE_TRANSFORM_IO_FACTORIES)
+  IF(NOT ITK_USE_REVIEW)
+    MESSAGE(FATAL_ERROR "ITK_USE_REVIEW is currently OFF but it should be ON if you want to use the experimental transform IO factories.")
+  ENDIF(NOT ITK_USE_REVIEW)
+ENDIF(ITK_USE_TRANSFORM_IO_FACTORIES)
+
 
 #-----------------------------------------------------------------------------
 # Installation vars.
@@ -370,6 +406,25 @@ ENDIF(CMAKE_USE_PTHREADS)
 IF(WIN32)
   SET(ITK_REQUIRED_CXX_FLAGS "${ITK_REQUIRED_CXX_FLAGS} -DNOMINMAX")
 ENDIF(WIN32)
+
+#-----------------------------------------------------------------------------
+# Test for an Objective-C++ compiler.
+SET(ITK_OBJCXX_COMPILER_WORKS 0)
+IF(APPLE)
+  TRY_COMPILE(ITK_OBJCXX_COMPILER_WORKS
+              ${ITK_BINARY_DIR}/CMakeTmp
+              ${ITK_SOURCE_DIR}/CMake/itkTestObjCxxCompiler.mm
+              OUTPUT_VARIABLE ITK_OBJCXX_TRY_COMPILE_OUTPUT)
+  IF( ITK_OBJCXX_COMPILER_WORKS )
+    FILE(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log
+        "Determining if the Objective-C compiler works passed with "
+        "the following output:\n${ITK_OBJCXX_TRY_COMPILE_OUTPUT}\n\n")
+  ELSE( ITK_OBJCXX_COMPILER_WORKS )
+    FILE(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
+      "Determining if the Objective-C compiler works failed with "
+      "the following output:\n${ITK_OBJCXX_TRY_COMPILE_OUTPUT}\n\n")
+  ENDIF( ITK_OBJCXX_COMPILER_WORKS )
+ENDIF(APPLE)
 
 # mingw thread support
 IF(MINGW)

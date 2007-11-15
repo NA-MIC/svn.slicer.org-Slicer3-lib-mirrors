@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeshFstreamTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/24 14:51:53 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -34,5 +34,5 @@ int itkMeshFstreamTest(int argc, char* argv[] )
   ofs << "Testing Mesh & fstream" << std::endl;
   ofs.close();
   
-  return 0; 
+  return EXIT_SUCCESS; 
 }

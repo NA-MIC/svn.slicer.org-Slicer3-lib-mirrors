@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkKmeansModelEstimatorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:03 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/08/20 12:47:12 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -281,9 +281,15 @@ int itkKmeansModelEstimatorTest(int, char* [] )
   //Check if the mean codebook is within error limits and the first pixel 
   //is labeled to belong to class 2
   if( (error < 0.1 * meanCDBKvalue) && (minidx == 2) )
+    {
     std::cout << "Kmeans algorithm passed (with initial input)"<<std::endl;
+    }
   else
+    {
     std::cout << "Kmeans algorithm failed (with initial input)"<<std::endl;
+    return EXIT_FAILURE;
+    }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
+

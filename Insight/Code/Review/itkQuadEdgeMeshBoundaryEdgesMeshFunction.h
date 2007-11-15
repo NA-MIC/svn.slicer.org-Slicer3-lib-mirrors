@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshBoundaryEdgesMeshFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 15:46:55 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/07/02 21:56:53 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -68,6 +68,7 @@ public:
   // Local aliases
   typedef InputType                       MeshType;
   typedef typename MeshType::QEPrimal     QEPrimal;
+  typedef typename MeshType::EdgeCellType EdgeCellType;
   typedef typename MeshType::EdgeListType EdgeListType;
 
   itkNewMacro( Self );

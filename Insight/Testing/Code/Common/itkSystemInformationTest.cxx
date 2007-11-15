@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSystemInformationTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/01/09 15:46:12 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -176,10 +176,10 @@ int main(int,char *[])
   else
     {
     std::cerr << "Error writing this information to file " << ITK_SYSTEM_INFORMATION_NOTES << "\n";
-    return 1;
+    return EXIT_FAILURE;
     }
   
-  return 0;
+  return EXIT_SUCCESS;
 } 
 
 // This test has been derived from the equivalent test in VTK:
@@ -188,8 +188,8 @@ int main(int,char *[])
   Program:   Visualization Toolkit
   Module:    $RCSfile: itkSystemInformationTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/01/09 15:46:12 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) 1993-2002 Ken Martin, Will Schroeder, Bill Lorensen 
   All rights reserved.

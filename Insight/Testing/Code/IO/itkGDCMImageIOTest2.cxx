@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGDCMImageIOTest2.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/07/12 14:30:32 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/08/20 12:21:34 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,7 +30,7 @@ int main(int argc, char *argv[] )
   if( argc < 3 )
     {
     std::cerr << "Usage: " << argv[0] << " InputFile OutputDicomRoot\n";
-    return 1;
+    return EXIT_FAILURE;
     }
   const char *input = argv[1];
   const char *output = argv[2];

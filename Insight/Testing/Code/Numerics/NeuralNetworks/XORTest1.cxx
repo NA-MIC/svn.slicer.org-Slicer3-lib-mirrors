@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: XORTest1.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/20 15:32:04 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/08/17 13:10:57 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -81,10 +81,10 @@ XORTest1(int argc, char* argv[])
   typedef itk::Statistics::OneHiddenLayerBackPropagationNeuralNetwork<MeasurementVectorType, TargetVectorType> OneHiddenLayerBackPropagationNeuralNetworkType;
   OneHiddenLayerBackPropagationNeuralNetworkType::Pointer net1 = OneHiddenLayerBackPropagationNeuralNetworkType::New();
   net1->SetNumOfInputNodes(num_input_nodes);
-  net1->SetNumOfHiddenNodes(num_hidden_nodes);
+  net1->SetNumOfFirstHiddenNodes(num_hidden_nodes);
   net1->SetNumOfOutputNodes(num_output_nodes);
  
-  net1->SetHiddenLayerBias(1.0);
+  net1->SetFirstHiddenLayerBias(1.0);
   net1->SetOutputLayerBias(1.0);
 
   net1->Initialize();

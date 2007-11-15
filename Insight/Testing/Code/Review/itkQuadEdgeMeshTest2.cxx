@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshTest2.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/24 12:37:02 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/09/05 18:46:45 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,6 +14,9 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#if defined(_MSC_VER)
+#pragma warning ( disable : 4786 )
+#endif
 
 #include "itkQuadEdgeMesh.h"
 #include "itkQuadEdgeMeshLineCell.h"
@@ -26,6 +29,7 @@ int itkQuadEdgeMeshTest2( int , char* [] )
   typedef itk::QuadEdgeMesh< PixelType, 3 >        MeshType;
   typedef MeshType::CellType                       CellType;
   typedef itk::QuadEdgeMeshLineCell< CellType >    LineType;
+  typedef LineType::QEType                         QuadEdgeType;
   typedef CellType::CellAutoPointer                CellAutoPointer;
 
   MeshType::Pointer  mesh = MeshType::New();
@@ -80,9 +84,11 @@ int itkQuadEdgeMeshTest2( int , char* [] )
   while( cellIterator != mesh->GetCells()->End() )
     {
     MeshType::CellType* cellptr = cellIterator.Value();
-    LineType* line = dynamic_cast< LineType* >( cellptr );
-    LineType::IteratorGeom git = line->BeginGeomLnext();
-    while( git != line->EndGeomLnext() )
+    LineType* lineCell = dynamic_cast< LineType* >( cellptr );
+    lineCell->GetNameOfClass();
+    QuadEdgeType* QEGeom = lineCell->GetQEGeom( );
+    QuadEdgeType::IteratorGeom git = QEGeom->BeginGeomLnext();
+    while( git != QEGeom->EndGeomLnext() )
       {
       if( ids[ itIds ] != *git )
         {

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImportImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/05/22 02:27:16 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2007/08/24 15:23:28 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -37,6 +37,7 @@ ImportImageFilter<TPixel, VImageDimension>
     m_Spacing[idx] = 1.0;
     m_Origin[idx] = 0.0;
     }
+  m_Direction.SetIdentity();
 
   m_ImportPointer = 0;
   m_FilterManageMemory = false;
@@ -94,6 +95,7 @@ ImportImageFilter<TPixel, VImageDimension>
     os << m_Origin[i] << ", ";
     }
   os << m_Origin[i] << "]" << std::endl;
+  os << indent << "Direction: " << std::endl << this->GetDirection() << std::endl;
 }
 
 
@@ -169,6 +171,7 @@ ImportImageFilter<TPixel, VImageDimension>
   // output image size, and the output image start index
   outputPtr->SetSpacing( m_Spacing );
   outputPtr->SetOrigin( m_Origin );
+  outputPtr->SetDirection( m_Direction );
   outputPtr->SetLargestPossibleRegion( m_Region );
 }
 
@@ -233,6 +236,30 @@ ImportImageFilter<TPixel, VImageDimension>
     dorigin[i] = origin[i];
     }
   this->SetOrigin( dorigin );
+}
+
+//----------------------------------------------------------------------------
+template <class TPixel, unsigned int VImageDimension>
+void 
+ImportImageFilter<TPixel, VImageDimension>
+::SetDirection(const DirectionType direction )
+{
+  bool modified = false;
+  for (unsigned int r = 0; r < VImageDimension; r++)
+    {
+    for (unsigned int c = 0; c < VImageDimension; c++)
+      {
+      if (m_Direction[r][c] != direction[r][c])
+        {
+        m_Direction[r][c] = direction[r][c];
+        modified = true;
+        }
+      }
+    }
+  if (modified)
+    {
+    this->Modified();
+    }
 }
 
 

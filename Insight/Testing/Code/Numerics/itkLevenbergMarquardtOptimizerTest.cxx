@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLevenbergMarquardtOptimizerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/10 17:55:33 $
-  Version:   $Revision: 1.31 $
+  Date:      $Date: 2007/09/10 15:22:47 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -174,6 +174,51 @@ private:
 
 };
 
+class CommandIterationUpdateLevenbergMarquardt : public itk::Command 
+{
+public:
+  typedef  CommandIterationUpdateLevenbergMarquardt   Self;
+  typedef  itk::Command                               Superclass;
+  typedef itk::SmartPointer<Self>                     Pointer;
+  itkNewMacro( Self );
+protected:
+  CommandIterationUpdateLevenbergMarquardt() 
+  {
+    m_IterationNumber=0;
+  }
+public:
+  typedef itk::LevenbergMarquardtOptimizer   OptimizerType;
+  typedef   const OptimizerType   *          OptimizerPointer;
+
+  void Execute(itk::Object *caller, const itk::EventObject & event)
+    {
+      Execute( (const itk::Object *)caller, event);
+    }
+
+  void Execute(const itk::Object * object, const itk::EventObject & event)
+    {
+    std::cout << "Observer::Execute() " << std::endl;
+      OptimizerPointer optimizer = 
+        dynamic_cast< OptimizerPointer >( object );
+      if( m_FunctionEvent.CheckEvent( &event ) )
+        {
+        std::cout << m_IterationNumber++ << "   ";
+        std::cout << optimizer->GetCachedValue() << "   ";
+        std::cout << optimizer->GetCachedCurrentPosition() << std::endl;
+        }
+      else if( m_GradientEvent.CheckEvent( &event ) )
+        {
+        std::cout << "Gradient " << optimizer->GetCachedDerivative() << "   ";
+        }
+
+    }
+private:
+  unsigned long m_IterationNumber;
+
+  itk::FunctionEvaluationIterationEvent m_FunctionEvent;
+  itk::GradientEvaluationIterationEvent m_GradientEvent;
+};
+
 
 
 int itkRunLevenbergMarquardOptimization( bool useGradient, 
@@ -187,7 +232,7 @@ int itkRunLevenbergMarquardOptimization( bool useGradient,
   typedef  OptimizerType::InternalOptimizerType  vnlOptimizerType;
   
   // Declaration of a itkOptimizer
-  OptimizerType::Pointer  Optimizer = OptimizerType::New();
+  OptimizerType::Pointer  optimizer = OptimizerType::New();
 
   // Declaration of the CostFunction adaptor
   LMCostFunction::Pointer costFunction = LMCostFunction::New();
@@ -201,7 +246,7 @@ int itkRunLevenbergMarquardOptimization( bool useGradient,
  
   try 
     {
-    Optimizer->SetCostFunction( costFunction.GetPointer() );
+    optimizer->SetCostFunction( costFunction.GetPointer() );
     }
   catch( itk::ExceptionObject & e )
     {
@@ -212,13 +257,13 @@ int itkRunLevenbergMarquardOptimization( bool useGradient,
     }
   
   // this following call is equivalent to invoke: costFunction->SetUseGradient( useGradient );
-  Optimizer->GetUseCostFunctionGradient();
-  Optimizer->UseCostFunctionGradientOn();
-  Optimizer->UseCostFunctionGradientOff();
-  Optimizer->SetUseCostFunctionGradient( useGradient );
+  optimizer->GetUseCostFunctionGradient();
+  optimizer->UseCostFunctionGradientOn();
+  optimizer->UseCostFunctionGradientOff();
+  optimizer->SetUseCostFunctionGradient( useGradient );
 
 
-  vnlOptimizerType * vnlOptimizer = Optimizer->GetOptimizer();
+  vnlOptimizerType * vnlOptimizer = optimizer->GetOptimizer();
 
   vnlOptimizer->set_f_tolerance( fTolerance );
   vnlOptimizer->set_g_tolerance( gTolerance );
@@ -238,11 +283,16 @@ int itkRunLevenbergMarquardOptimization( bool useGradient,
 
   currentValue = initialValue;
 
-  Optimizer->SetInitialPosition( currentValue );
+  optimizer->SetInitialPosition( currentValue );
+
+  CommandIterationUpdateLevenbergMarquardt::Pointer observer = 
+    CommandIterationUpdateLevenbergMarquardt::New();
+  optimizer->AddObserver( itk::IterationEvent(), observer );
+  optimizer->AddObserver( itk::FunctionEvaluationIterationEvent(), observer );
 
   try 
     {
-    Optimizer->StartOptimization();
+    optimizer->StartOptimization();
     }
   catch( itk::ExceptionObject & e )
     {
@@ -286,7 +336,7 @@ int itkRunLevenbergMarquardOptimization( bool useGradient,
 
 
   OptimizerType::ParametersType finalPosition;
-  finalPosition = Optimizer->GetCurrentPosition();
+  finalPosition = optimizer->GetCurrentPosition();
 
   std::cout << "Solution        = (";
   std::cout << finalPosition[0] << "," ;
@@ -313,7 +363,7 @@ int itkRunLevenbergMarquardOptimization( bool useGradient,
 
    // Get the final value of the optimizer
   std::cout << "Testing GetValue() : ";
-  OptimizerType::MeasureType finalValue = Optimizer->GetValue();
+  OptimizerType::MeasureType finalValue = optimizer->GetValue();
 
   // We compare only the first value for this test
   if(fabs(finalValue[0]-0.0)>0.01)

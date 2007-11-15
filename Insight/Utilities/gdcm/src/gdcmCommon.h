@@ -3,8 +3,8 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmCommon.h,v $
   Language:  C++
-  Date:      $Date: 2006/07/10 20:08:21 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2007/08/20 07:46:05 $
+  Version:   $Revision: 1.27 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de
   l'Image). All rights reserved. See Doc/License.txt or
@@ -54,7 +54,7 @@
    // Old system only have this
    #include <inttypes.h>   // For uint8_t uint16_t and uint32_t
 #else
-// Broken plateforms do not respect C99 and do not provide those typedef
+// Broken platforms do not respect C99 and do not provide those typedef
 // Special case for recent Borland compiler, comes with stdint.h
 #if defined(_MSC_VER) || defined(__BORLANDC__) && (__BORLANDC__ < 0x0560)  \
                       || defined(__MINGW32__)
@@ -65,7 +65,7 @@ typedef  unsigned char       uint8_t;
 typedef  unsigned short      uint16_t;
 typedef  unsigned int        uint32_t;
 #else
-#error "Sorry your plateform is not supported"
+#error "Sorry your platform is not supported"
 #endif // defined(_MSC_VER) || defined(__BORLANDC__) && (__BORLANDC__ < 0x0560)  || defined(__MINGW32__)
 #endif // CMAKE_HAVE_INTTYPES_H
 #endif // CMAKE_HAVE_STDINT_H

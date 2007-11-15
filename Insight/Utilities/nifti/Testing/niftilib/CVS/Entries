@@ -1,3 +1,6 @@
-/CMakeLists.txt/1.4/Fri Aug  5 16:40:22 2005//THEAD
-/nifti_test.c/1.6/Wed Dec  7 15:05:50 2005//THEAD
+/CMakeLists.txt/1.7/Thu Nov 15 15:55:54 2007//TITK-3-4
+/nifti_headersize_test.c/1.2/Fri Jul 27 21:35:52 2007//TITK-3-4
+/nifti_test.c/1.7/Thu Nov 15 15:55:54 2007//TITK-3-4
+/nifti_test2.c/1.1/Sat Jun 16 08:40:12 2007//TITK-3-4
+/nifti_test_subimage.c/1.1/Wed Jul 18 15:11:33 2007//TITK-3-4
 D

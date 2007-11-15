@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPushPopTileImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/02/09 14:44:34 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -39,7 +39,7 @@ int itkPushPopTileImageFilterTest(int argc, char *argv[] )
     {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "  input1 input2 input3 input4 output" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   itk::FixedArray<unsigned int,2> layout;

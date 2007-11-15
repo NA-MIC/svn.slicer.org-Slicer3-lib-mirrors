@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshTest3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/25 17:34:16 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/09/05 18:46:45 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,6 +14,9 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#if defined(_MSC_VER)
+#pragma warning ( disable : 4786 )
+#endif
 
 #include "itkQuadEdgeMesh.h"
 #include "itkQuadEdgeMeshLineCell.h"
@@ -71,6 +74,14 @@ int itkQuadEdgeMeshTest3( int , char* [] )
   mesh->SetCell( 2, cellpointer );
 
   poly = new QEPolygonCellType( 3 );
+  // FIXME ALEX: write REAL test code here for coverage.
+  poly->GetNameOfClass( );
+  poly->GetEdgeRingEntry( )->GetRight( );
+  poly->GetEdgeRingEntry( )->GetLeft( );
+  poly->GetEdgeRingEntry( )->GetIdent( );
+  poly->GetType( );
+  poly->GetDimension( );
+  // up to here.
   cellpointer.TakeOwnership( poly );
   cellpointer->SetPointId( 0, 3 );
   cellpointer->SetPointId( 1, 2 );
@@ -108,11 +119,14 @@ int itkQuadEdgeMeshTest3( int , char* [] )
   mesh->SetCell( 8, cellpointer );
 
   edge = new LineType;
+  edge->GetNameOfClass( );
+  edge->GetType( );
+  edge->GetDimension( );
   cellpointer.TakeOwnership( edge );
   cellpointer->SetPointId( 0, 3 );
   cellpointer->SetPointId( 1, 0 );
   mesh->SetCell( 9, cellpointer );
-
+  
   std::cout << "numPoints = " << mesh->GetNumberOfPoints() << std::endl;
   std::cout << "numCells  = " << mesh->GetNumberOfCells() << std::endl;
 
@@ -169,6 +183,9 @@ int itkQuadEdgeMeshTest3( int , char* [] )
     ++cellIterator;
     }
 
+  //try to clear the populated mesh
+  mesh->Clear( );
+ 
   std::cout << "Mesh3Test passed" << std::endl;
   return EXIT_SUCCESS;
 }

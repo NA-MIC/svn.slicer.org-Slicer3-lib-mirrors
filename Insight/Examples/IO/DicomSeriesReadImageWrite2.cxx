@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: DicomSeriesReadImageWrite2.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/02/05 19:53:32 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007/06/24 12:13:45 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -49,6 +49,7 @@
 //  Software Guide : EndLatex 
 
 // Software Guide : BeginCodeSnippet
+#include "itkOrientedImage.h"
 #include "itkGDCMImageIO.h"
 #include "itkGDCMSeriesFileNames.h"
 #include "itkImageSeriesReader.h"
@@ -77,13 +78,18 @@ int main( int argc, char* argv[] )
 // particular case, the dimensionality of the image is 3, and we assume a
 // \code{signed short} pixel type that is commonly used for X-Rays CT scanners.
 // 
+// We also choose to use the \doxygen{OrientedImage} in order to make sure
+// that the image orientation information contained in the direction cosines
+// of the DICOM header are read in and passed correctly down the image processing
+// pipeline.
+//
 // Software Guide : EndLatex
 
 // Software Guide : BeginCodeSnippet
   typedef signed short    PixelType;
   const unsigned int      Dimension = 3;
 
-  typedef itk::Image< PixelType, Dimension >         ImageType;
+  typedef itk::OrientedImage< PixelType, Dimension >         ImageType;
 // Software Guide : EndCodeSnippet
 
 

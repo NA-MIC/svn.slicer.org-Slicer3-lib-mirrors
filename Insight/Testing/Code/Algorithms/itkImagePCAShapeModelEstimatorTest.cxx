@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImagePCAShapeModelEstimatorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/11/28 21:02:47 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/08/20 12:47:12 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -232,10 +232,15 @@ int itkImagePCAShapeModelEstimatorTest(int, char* [] )
   //Test for the eigen values for the test case precomputed using Matlab/Splus
   std::cout << "" << std::endl;
   if( (eigenValues[2] < 6 || eigenValues[2] > 6.1) || (eigenValues[1] >0.1) )
+    {
     std::cout<< "Test Passed" << std::endl;
-  else 
+    }
+  else
+    {
     std::cout<< "Test failed" << std::endl;
+    return EXIT_FAILURE;
+    }
 
 
-  return 0;
+  return EXIT_SUCCESS;
 }

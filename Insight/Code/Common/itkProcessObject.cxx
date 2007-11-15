@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkProcessObject.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/04 16:46:32 $
-  Version:   $Revision: 1.72 $
+  Date:      $Date: 2007/08/27 12:47:59 $
+  Version:   $Revision: 1.73 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,6 +21,7 @@
 #include "itkDataObject.h"
 #include "itkObjectFactory.h"
 #include "itkCommand.h"
+
 #include <functional>
 #include <algorithm>
 
@@ -197,7 +198,6 @@ ProcessObject
 
   this->Modified();
 }
-
 
 /**
  * Set an Input of this filter. This method 

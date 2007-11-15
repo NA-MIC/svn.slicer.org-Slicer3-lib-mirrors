@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshTraits.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/29 14:59:51 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/07/24 20:05:24 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -54,9 +54,11 @@ public:
   typedef TUsingCellsContainer    UsingCellsContainer;
 
   /** Iterator types. */
+  typedef PointIdentifier*                PointIdIterator;
+  typedef const PointIdentifier*          PointIdConstIterator;  
   typedef TQE                             QuadEdgeType;
-  typedef typename TQE::IteratorGeom      PointIdIterator;
-  typedef typename TQE::ConstIteratorGeom PointIdConstIterator;
+  typedef typename TQE::IteratorGeom      PointIdInternalIterator;
+  typedef typename TQE::ConstIteratorGeom PointIdInternalConstIterator;
 };
 
 /** \class QuadEdgeMeshTraits

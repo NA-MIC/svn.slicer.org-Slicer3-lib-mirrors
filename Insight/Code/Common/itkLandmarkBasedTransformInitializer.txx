@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLandmarkBasedTransformInitializer.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/05 17:03:11 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2007/08/23 13:27:53 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -76,8 +76,9 @@ LandmarkBasedTransformInitializer<TTransform, TFixedImage, TMovingImage >
     transformType = Rigid2Dtransfrom;
     }
 
-  
-  unsigned int numberOfLandmarks = m_FixedLandmarks.size();
+  // The returning value of size() must be casted, as it might not be the same type in
+  // 32 and 64 bits builds.
+  unsigned int numberOfLandmarks = static_cast<unsigned int>(m_FixedLandmarks.size());
   
 
   // If images come from filters, then update those filters.

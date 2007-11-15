@@ -3,8 +3,8 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmUtil.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/22 00:16:19 $
-  Version:   $Revision: 1.39 $
+  Date:      $Date: 2007/08/20 07:46:05 $
+  Version:   $Revision: 1.40 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de
   l'Image). All rights reserved. See Doc/License.txt or
@@ -841,7 +841,7 @@ int GetMacAddrSys ( unsigned char *addr )
    close(sd);
 #endif
    // Not implemented platforms (or no cable !)
-   perror("in Get MAC Adress (internal) : There was a configuration problem (or no cable !) on your plateform");
+   perror("in Get MAC Adress (internal) : There was a configuration problem (or no cable !) on your platform");
    memset(addr,0,6);
    return -1;
 #endif //__sun
@@ -942,7 +942,7 @@ std::string Util::CreateUniqueUID(const std::string &root)
    {
       gdcmErrorMacro( "Size of UID is too long." );
       // we need a hash function to truncate this number
-      // if only md5 was cross plateform
+      // if only md5 was cross platform
       // MD5(append);
    }
 

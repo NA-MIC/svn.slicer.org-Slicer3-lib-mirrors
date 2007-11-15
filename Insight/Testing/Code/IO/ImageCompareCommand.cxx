@@ -1,6 +1,20 @@
-#include "itkWin32Header.h"
-#include <iostream>
-#include <fstream>
+/*=========================================================================
+
+  Program:   Insight Segmentation & Registration Toolkit
+  Module:    $RCSfile: ImageCompareCommand.cxx,v $
+  Language:  C++
+  Date:      $Date: 2007/08/20 12:21:34 $
+  Version:   $Revision: 1.9 $
+
+  Copyright (c) Insight Software Consortium. All rights reserved.
+  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+
+     This software is distributed WITHOUT ANY WARRANTY; without even 
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     PURPOSE.  See the above copyright notices for more information.
+
+=========================================================================*/
+
 #include "itkNumericTraits.h"
 #include "itkImage.h"
 #include "itkImageFileReader.h"
@@ -11,8 +25,15 @@
 
 #include "metaCommand.h"
 
+#include <iostream>
+#include <fstream>
 
+
+#ifdef __BORLANDC__
+#define ITK_TEST_DIMENSION_MAX 5
+#else
 #define ITK_TEST_DIMENSION_MAX 6
+#endif
 
 int RegressionTestImage (const char *, const char *, int, bool,double,int,int);
 
@@ -334,8 +355,8 @@ int RegressionTestImage (const char *testImageFilename, const char *baselineImag
       std::cout << numberOfPixelsWithDifferences;
       std::cout <<  "</DartMeasurement>" << std::endl;
 
-      ::itk::OStringStream diffName;
-        diffName << testImageFilename << ".diff.png";
+      itksys_ios::ostringstream diffName;
+      diffName << testImageFilename << ".diff.png";
       try
         {
         rescale->SetInput(diff->GetOutput());
@@ -359,7 +380,7 @@ int RegressionTestImage (const char *testImageFilename, const char *baselineImag
       std::cout << diffName.str();
       std::cout << "</DartMeasurementFile>" << std::endl;
       }
-    ::itk::OStringStream baseName;
+    itksys_ios::ostringstream baseName;
     baseName << testImageFilename << ".base.png";
     try
       {
@@ -384,7 +405,7 @@ int RegressionTestImage (const char *testImageFilename, const char *baselineImag
     std::cout << baseName.str();
     std::cout << "</DartMeasurementFile>" << std::endl;
 
-    ::itk::OStringStream testName;
+    itksys_ios::ostringstream testName;
     testName << testImageFilename << ".test.png";
     try
       {

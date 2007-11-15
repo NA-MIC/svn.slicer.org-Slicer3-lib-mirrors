@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLaplacianImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:06 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/09/20 12:17:33 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -53,11 +53,30 @@ int itkLaplacianImageFilterTest(int , char * [] )
       test1.SetImageSize(sz);
       test1.SetFilter(filter.GetPointer());
       test1.Execute();
+
+      // verify the fix for Bug: 788
+      // The following code should throw an excption and not crash.
+      filter->SetInput(NULL);
+      bool exceptionSeen = false;
+      try
+        {
+        filter->Update();
+        }
+      catch(itk::ExceptionObject &err)
+        {
+        exceptionSeen = true;
+        std::cout << "Expected exception was received OK" << std::endl;
+        }
+      if( !exceptionSeen )
+        {
+        std::cerr << "Expected exception was not thrown" << std::endl;
+        return EXIT_FAILURE;
+        }
     }
   catch(itk::ExceptionObject &err)
     {
       (&err)->Print(std::cerr);
-      return 1;
+      return EXIT_FAILURE;
     } 
-  return 0;   
+  return EXIT_SUCCESS;   
 }

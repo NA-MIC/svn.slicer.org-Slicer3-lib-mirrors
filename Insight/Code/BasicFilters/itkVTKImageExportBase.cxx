@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKImageExportBase.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/02/18 22:48:38 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/09/17 15:01:09 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -134,6 +134,12 @@ int VTKImageExportBase::PipelineModifiedCallback()
 {
   DataObjectPointer input = this->GetInput(0);
   unsigned long pipelineMTime = input->GetPipelineMTime();
+
+  if( this->GetMTime() > pipelineMTime)
+    {
+    pipelineMTime = this->GetMTime();
+    }
+
   if(pipelineMTime > m_LastPipelineMTime)
     {
     m_LastPipelineMTime = pipelineMTime;

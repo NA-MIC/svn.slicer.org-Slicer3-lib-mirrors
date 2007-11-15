@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAlgorithmsPrintTest2.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/30 23:19:29 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007/08/20 12:47:11 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -127,6 +127,6 @@ int main(int , char* [])
     itk::ReinitializeLevelSetImageFilter<InputType>::New();
   std:: cout << "-------------ReinitializeLevelSetImageFilter " << ReinitializeLevelSetImageFilterObj;
 
-  return 0;
+  return EXIT_SUCCESS;
 
 }

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBatchSupervisedTrainingFunction.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/18 11:23:29 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/08/17 13:10:57 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -24,13 +24,13 @@ namespace itk
 namespace Statistics
 {
 
-template<class TSample, class TOutput, class ScalarType>
-class BatchSupervisedTrainingFunction : public TrainingFunctionBase<TSample, TOutput, ScalarType>
+template<class TSample, class TTargetVector, class ScalarType>
+class BatchSupervisedTrainingFunction : public TrainingFunctionBase<TSample, TTargetVector, ScalarType>
 {
 public:
 
   typedef BatchSupervisedTrainingFunction Self;
-  typedef TrainingFunctionBase<TSample, TOutput, ScalarType> Superclass;
+  typedef TrainingFunctionBase<TSample, TTargetVector, ScalarType> Superclass;
   typedef SmartPointer<Self> Pointer;
   typedef SmartPointer<const Self> ConstPointer;
 
@@ -46,14 +46,14 @@ public:
   /** Set the number of iterations */
   void SetNumOfIterations(long i);
 
-  void Train(NetworkType* net, TSample* samples, TOutput* targets);
+  virtual void Train(NetworkType* net, TSample* samples, TTargetVector* targets);
 
   itkSetMacro(Threshold, ScalarType);
 
 protected:
 
   BatchSupervisedTrainingFunction();
-  ~BatchSupervisedTrainingFunction(){};
+  virtual ~BatchSupervisedTrainingFunction(){};
 
   /** Method to print the object. */
   virtual void PrintSelf( std::ostream& os, Indent indent ) const;

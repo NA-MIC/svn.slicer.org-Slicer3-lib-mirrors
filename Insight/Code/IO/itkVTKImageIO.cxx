@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/17 14:21:23 $
-  Version:   $Revision: 1.41 $
+  Date:      $Date: 2007/08/27 13:46:29 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -44,7 +44,7 @@ bool VTKImageIO::OpenVTKFileForReading(std::ifstream& os,
                                        
 {
   // Make sure that we have a file to 
-  if ( filename == "" )
+  if ( *filename == 0 )
     {
     itkExceptionMacro(<<"A FileName must be specified.");
     return false;
@@ -83,7 +83,7 @@ bool VTKImageIO::OpenVTKFileForWriting(std::ofstream& os,
                                        
 {
   // Make sure that we have a file to 
-  if ( filename == "" )
+  if ( *filename == 0 )
     {
     itkExceptionMacro(<<"A FileName must be specified.");
     return false;

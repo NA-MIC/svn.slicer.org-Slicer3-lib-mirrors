@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBioCell.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:53 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007/07/15 18:24:28 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -118,7 +118,6 @@ Cell<NSpaceDimension> *
 Cell<NSpaceDimension>
 ::CreateEgg(void) 
 {
-  Superclass::Initialize();
   Cell * cell = new Cell;
   cell->m_ParentIdentifier = 0;
   cell->m_SelfIdentifier = 1;

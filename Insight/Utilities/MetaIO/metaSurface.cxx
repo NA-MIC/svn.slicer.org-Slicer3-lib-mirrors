@@ -3,8 +3,8 @@
   Program:   MetaIO
   Module:    $RCSfile: metaSurface.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/10/27 12:25:53 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2007/05/31 20:49:13 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,6 +14,11 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#ifdef _MSC_VER
+#pragma warning(disable:4702)
+#pragma warning(disable:4284)
+#endif
+
 #include "metaSurface.h"
 
 #include <stdio.h>
@@ -24,6 +29,31 @@
 namespace METAIO_NAMESPACE {
 #endif
 
+SurfacePnt::
+SurfacePnt(int dim)
+{ 
+  m_Dim = dim;
+  m_X = new float[m_Dim];
+  m_V = new float[m_Dim];
+  for(unsigned int i=0;i<m_Dim;i++)
+    {
+    m_X[i] = 0;
+    m_V[i] = 0;
+    } 
+  //Color is red by default
+  m_Color[0]=1.0;
+  m_Color[1]=0.0;
+  m_Color[2]=0.0;
+  m_Color[3]=1.0;
+}
+
+SurfacePnt::
+~SurfacePnt()
+{
+  delete []m_X;
+  delete []m_V;
+}
+  
 
 //
 // MetaSurface Constructors
@@ -402,13 +432,14 @@ M_Write(void)
   if(m_BinaryData)
   {
     PointListType::const_iterator it = m_PointList.begin();
+    PointListType::const_iterator itEnd = m_PointList.end();
     int elementSize;
     MET_SizeOfType(m_ElementType, &elementSize);
 
     char* data = new char[(m_NDims*2+4)*m_NPoints*elementSize];
     int i=0;
     int d;
-    while(it != m_PointList.end())
+    while(it != itEnd)
     {
       for(d = 0; d < m_NDims; d++)
       {
@@ -441,9 +472,10 @@ M_Write(void)
   else
   {
     PointListType::const_iterator it = m_PointList.begin();
+    PointListType::const_iterator itEnd = m_PointList.end();
   
     int d;
-    while(it != m_PointList.end())
+    while(it != itEnd)
     {
       for(d = 0; d < m_NDims; d++)
       {

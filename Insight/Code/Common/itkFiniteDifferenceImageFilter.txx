@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFiniteDifferenceImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:07 $
-  Version:   $Revision: 1.44 $
+  Date:      $Date: 2007/09/21 17:59:20 $
+  Version:   $Revision: 1.45 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,6 +30,13 @@ void
 FiniteDifferenceImageFilter<TInputImage, TOutputImage>
 ::GenerateData()
 {
+  // Test whether the output pixel type (or its components) are not of type
+  // float or double:
+  if( NumericTraits< OutputPixelValueType >::is_integer )
+    {
+    itkWarningMacro("Output pixel type MUST be float or double to prevent computational errors"); 
+    }
+
   if (this->GetState() == UNINITIALIZED)
     {
     // Set the coefficients for the deriviatives

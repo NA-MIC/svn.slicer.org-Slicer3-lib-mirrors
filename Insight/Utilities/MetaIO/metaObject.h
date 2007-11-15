@@ -3,8 +3,8 @@
   Program:   MetaIO
   Module:    $RCSfile: metaObject.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/27 22:12:43 $
-  Version:   $Revision: 1.29 $
+  Date:      $Date: 2007/05/31 13:53:13 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,6 +21,10 @@
 
 #include "metaUtils.h"
 #include "metaEvent.h"
+
+#ifdef _MSC_VER
+#pragma warning ( disable: 4251 )
+#endif
 
 
 #if (METAIO_USE_NAMESPACE)

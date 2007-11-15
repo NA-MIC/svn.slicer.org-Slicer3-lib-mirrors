@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: NNetClassifierTest3.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/04/17 19:36:47 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/08/17 13:10:57 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -99,7 +99,7 @@ NNetClassifierTest3(int argc, char* argv[])
   typedef itk::Statistics::OneHiddenLayerBackPropagationNeuralNetwork<MeasurementVectorType, TargetVectorType> OneHiddenLayerBackPropagationNeuralNetworkType;
   OneHiddenLayerBackPropagationNeuralNetworkType::Pointer net1 = OneHiddenLayerBackPropagationNeuralNetworkType::New();
   net1->SetNumOfInputNodes(num_input_nodes);
-  net1->SetNumOfHiddenNodes(num_hidden_nodes);
+  net1->SetNumOfFirstHiddenNodes(num_hidden_nodes);
   net1->SetNumOfOutputNodes(num_output_nodes);
 
   net1->Initialize();

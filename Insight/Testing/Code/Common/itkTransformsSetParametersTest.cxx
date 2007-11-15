@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransformsSetParametersTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/07/24 18:09:26 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/09/05 16:35:04 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,6 +14,9 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#if defined(_MSC_VER)
+#pragma warning ( disable : 4786 )
+#endif
 
 #include "itkAffineTransform.h"
 #include "itkCenteredAffineTransform.h"
@@ -512,7 +515,7 @@ int itkTransformsSetParametersTest( int , char *[] )
 
   std::cout << std::endl << "Done." << std::endl;
 
-  return 0;
+  return EXIT_SUCCESS;
 
 }
 

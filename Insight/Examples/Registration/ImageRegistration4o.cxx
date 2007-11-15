@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageRegistration4o.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/10/06 17:27:41 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -106,7 +106,7 @@ int main( int argc, char *argv[] )
     std::cerr << "Usage: " << argv[0];
     std::cerr << " fixedImageFile  movingImageFile ";
     std::cerr << "outputImagefile [defaultPixelValue]" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
   
   const    unsigned int    Dimension = 2;
@@ -248,7 +248,7 @@ int main( int argc, char *argv[] )
     { 
     std::cerr << "ExceptionObject caught !" << std::endl; 
     std::cerr << err << std::endl; 
-    return -1;
+    return EXIT_FAILURE;
     } 
 
   ParametersType finalParameters = registration->GetLastTransformParameters();
@@ -382,6 +382,6 @@ int main( int argc, char *argv[] )
   //
   //  Software Guide : EndLatex 
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 

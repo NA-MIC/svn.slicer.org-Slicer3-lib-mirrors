@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLightObject.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/06 22:01:56 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2007/08/22 12:56:44 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -114,7 +114,7 @@ protected:
   virtual void PrintTrailer(std::ostream& os, Indent indent) const;
   
   /** Number of uses of this object by other objects. */
-  mutable int m_ReferenceCount;
+  mutable volatile int m_ReferenceCount;
 
   /** Mutex lock to protect modification to the reference count */
   mutable SimpleFastMutexLock m_ReferenceCountLock;

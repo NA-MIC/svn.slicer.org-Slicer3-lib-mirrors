@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegularStepGradientDescentOptimizerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/11 23:06:18 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2007/09/10 16:32:01 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -235,11 +235,57 @@ int itkRegularStepGradientDescentOptimizerTest(int, char* [] )
 
   }
 
-  std::cout << "Test passed." << std::endl;
+  //
+  // Verify that the optimizer doesn't run if the 
+  // number of iterations is set to zero.
+  //
+  {
+  itkOptimizer->SetNumberOfIterations( 0 );
+  itkOptimizer->SetInitialPosition( initialPosition );
+
+  try 
+    {
+    itkOptimizer->StartOptimization();
+    }
+  catch( itk::ExceptionObject & excp )
+    {
+    std::cout << excp << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  if( itkOptimizer->GetCurrentIteration() > 0 )
+    {
+    std::cerr << "The optimizer is running iterations despite of ";
+    std::cerr << "having a maximum number of iterations set to zero" << std::endl;
+    return EXIT_FAILURE;
+    }
+  }
+
+  //
+  // Test the Exception if the GradientMagnitudeTolerance is set to a negative value
+  //
+  itkOptimizer->SetGradientMagnitudeTolerance( -1.0 );
+  bool expectedExceptionReceived = false;
+  try 
+    {
+    itkOptimizer->StartOptimization();
+    }
+  catch( itk::ExceptionObject & excp )
+    {
+    expectedExceptionReceived = true;
+    std::cout << "Expected Exception " << std::endl;
+    std::cout << excp << std::endl;
+    }
+
+  if( !expectedExceptionReceived )
+    {
+    std::cerr << "Failure to produce an exception when";
+    std::cerr << "the GradientMagnitudeTolerance is negative " << std::endl;
+    std::cerr << "TEST FAILED !" << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  std::cout << "TEST PASSED !" << std::endl;
   return EXIT_SUCCESS;
 
-
 }
-
-
-

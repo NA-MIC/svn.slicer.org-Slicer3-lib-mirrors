@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWatershedImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/11/10 19:22:13 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2007/08/20 12:47:12 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -115,13 +115,15 @@ int itkWatershedImageFilterTest(int, char* [] )
   ws_filter->GetLevel();
 
   println("Executing the filter");
-  try {
-  ws_filter->Update();
-  }
-  catch (...) {
-  std::cerr << "WatershedImageFilter exception thrown" << std::endl;
-  return 1;
-  }
+  try
+    {
+    ws_filter->Update();
+    }
+  catch (...)
+    {
+    std::cerr << "WatershedImageFilter exception thrown" << std::endl;
+    return EXIT_FAILURE;
+    }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

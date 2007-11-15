@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaImageIO.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:51 $
-  Version:   $Revision: 1.31 $
+  Date:      $Date: 2007/09/11 12:16:58 $
+  Version:   $Revision: 1.34 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -97,6 +97,34 @@ public:
     {
     m_MetaImage.SetDoublePrecision(precision);
     }
+
+  /** Method for supporting streaming.  Given a requested region, calculate what
+   * could be the region that we can read from the file. This is called the
+   * streamable region, which will be smaller than the LargestPossibleRegion and
+   * greater or equal to the RequestedRegion */
+  virtual ImageIORegion 
+  GenerateStreamableReadRegionFromRequestedRegion( const ImageIORegion & requested ) const;
+
+  /** Determine if the ImageIO can stream reading from this
+   *  file. Default is false. */
+  virtual bool CanStreamRead()
+    {
+    return true;
+    }
+
+  /** Determine if the ImageIO can stream writing to this
+      file. Default is false. */
+  virtual bool CanStreamWrite()
+    {
+    return false;
+    }
+
+  /** Determing the subsampling factor in case
+   *  we want a coarse version of the image/
+   * \Warning this is only used when streaming is on. */
+  itkSetMacro(SubSamplingFactor,unsigned int);
+  itkGetMacro(SubSamplingFactor,unsigned int);
+
 protected:
   MetaImageIO();
   ~MetaImageIO();
@@ -108,6 +136,8 @@ private:
 
   MetaImageIO(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
+
+  unsigned int m_SubSamplingFactor;
   
 };
 

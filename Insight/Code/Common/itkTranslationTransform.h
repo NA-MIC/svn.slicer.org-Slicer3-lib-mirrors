@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTranslationTransform.h,v $
   Language:  C++
-  Date:      $Date: 2006/11/03 20:09:08 $
-  Version:   $Revision: 1.34 $
+  Date:      $Date: 2007/07/15 16:38:25 $
+  Version:   $Revision: 1.36 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -152,6 +152,21 @@ public:
    *           T( a*P + b*Q ) = a * T(P) + b * T(Q)
    */
   virtual bool IsLinear() const { return true; }
+
+ /** Set the fixed parameters and update internal transformation.
+   * The Translation Transform does not require fixed parameters,
+   * therefore the implementation of this method is a null operation. */
+  virtual void SetFixedParameters( const ParametersType & ) 
+    { /* purposely blank */ };
+
+  /** Get the Fixed Parameters. The TranslationTransform does not
+    * require Fixed parameters, therefore this method returns an
+    * parameters array of size zero. */
+  virtual const ParametersType& GetFixedParameters(void) const
+    {
+    this->m_FixedParameters.SetSize(0); 
+    return this->m_FixedParameters; 
+    };
 
 protected:
   TranslationTransform();

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdge.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/25 17:37:40 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2007/06/27 19:06:04 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -24,7 +24,7 @@ namespace itk
 QuadEdge
 ::QuadEdge()
 {
-  this->m_Onext = NULL;
+  this->m_Onext = this;
   this->m_Rot   = NULL;
 }
 
@@ -625,7 +625,7 @@ bool
 QuadEdge
 ::IsHalfEdge() const
 {
-  const bool isHalfEdge = ( m_Onext == NULL ) || ( m_Rot == NULL );
+  const bool isHalfEdge = ( m_Onext == this ) || ( m_Rot == NULL );
   return isHalfEdge; 
 }
 
@@ -693,6 +693,10 @@ QuadEdge
   while( it && it != this )
     {
     order++;
+    if (it == it->GetOnext() )
+      {
+      // throw exception to avoid infinite loop
+      }
     it = it->GetOnext();
     }
   return order;

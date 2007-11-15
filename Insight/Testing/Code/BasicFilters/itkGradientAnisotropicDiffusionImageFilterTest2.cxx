@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientAnisotropicDiffusionImageFilterTest2.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/02/20 22:52:17 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007/08/10 14:34:01 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -73,5 +73,5 @@ int itkGradientAnisotropicDiffusionImageFilterTest2(int ac, char* av[] )
     writer->SetFileName( av[2] );
     writer->Update();
 
-  return 0;
+  return EXIT_SUCCESS;
 }

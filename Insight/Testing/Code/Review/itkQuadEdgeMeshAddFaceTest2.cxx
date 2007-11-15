@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshAddFaceTest2.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/27 14:13:25 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/09/05 18:46:45 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,6 +14,9 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#if defined(_MSC_VER)
+#pragma warning ( disable : 4786 )
+#endif
 
 #include "itkQuadEdgeMesh.h"
 #include "itkQuadEdgeMeshTopologyChecker.h"
@@ -101,7 +104,11 @@ int itkQuadEdgeMeshAddFaceTest2(int , char *[])
   checker->SetExpectedNumberOfFaces( 3 );
   checker->SetExpectedNumberOfBoundaries( 3 );
   checker->SetExpectedGenus( 0 ); // FIXME find the correct genus value
-  
+  checker->GetNameOfClass( );
+  std::cout << "Testing PrintSelf: " << std::endl;
+  std::cout << checker << std::endl;
+  std::cout << "[SUCESS]" << std::endl;
+ 
   if( checker->ValidateEulerCharacteristic() )
     {
     std::cout << "Passed" << std::endl;

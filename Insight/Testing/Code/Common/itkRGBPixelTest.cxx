@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRGBPixelTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/05/06 18:53:40 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -38,7 +38,7 @@ int itkRGBPixelTest(int, char* [] )
   if (sizeof(pixel) != 3 * sizeof(itk::RGBPixel<float>::ComponentType))
     {
     std::cerr << "ERROR: sizeof(pixel) == " << sizeof(pixel) << " but is shopuld be " << 3 * sizeof(itk::RGBPixel<float>::ComponentType) << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
   std::cout << "pixel.GetNumberOfComponents = " << pixel.GetNumberOfComponents() << std::endl;
   std::cout << "pixel.GetScalarValue() = " << pixel.GetScalarValue() << std::endl;

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDataObject.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/04/06 12:50:58 $
-  Version:   $Revision: 1.55 $
+  Date:      $Date: 2007/09/04 22:25:47 $
+  Version:   $Revision: 1.57 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.

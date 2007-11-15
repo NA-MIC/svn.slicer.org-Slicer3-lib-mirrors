@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRandomImageSource.txx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:55 $
-  Version:   $Revision: 1.52 $
+  Date:      $Date: 2007/08/24 12:45:32 $
+  Version:   $Revision: 1.53 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -24,7 +24,6 @@
 #include "itkImageRegionIterator.h"
 #include "itkObjectFactory.h"
 #include "itkProgressReporter.h"
-#include "vnl/vnl_sample.h"
 
  
 namespace itk

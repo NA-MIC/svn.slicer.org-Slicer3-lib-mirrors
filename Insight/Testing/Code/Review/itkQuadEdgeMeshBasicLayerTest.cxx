@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshBasicLayerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/27 14:13:25 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/09/05 18:46:45 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,6 +14,9 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#if defined(_MSC_VER)
+#pragma warning ( disable : 4786 )
+#endif
 
 // Program test for the basic QE layer.
 #include <iostream>

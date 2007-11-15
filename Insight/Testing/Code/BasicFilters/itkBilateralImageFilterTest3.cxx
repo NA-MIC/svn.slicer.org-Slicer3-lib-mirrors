@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBilateralImageFilterTest3.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:05 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007/08/10 14:34:01 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -86,5 +86,5 @@ int itkBilateralImageFilterTest3(int ac, char* av[] )
     writer->SetFileName( av[2] );
     writer->Update();
 
-  return 0;
+  return EXIT_SUCCESS;
 }

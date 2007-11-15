@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkNiftiImageIOTest.cxx,v $
 Language:  C++
-Date:      $Date: 2006/08/24 16:33:06 $
-Version:   $Revision: 1.3 $
+Date:      $Date: 2007/09/22 22:19:25 $
+Version:   $Revision: 1.12 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -19,6 +19,8 @@ PURPOSE.  See the above copyright notices for more information.
 #endif
 
 #include <fstream>
+#include <complex>
+#include <string.h>
 #include "itkImageFileReader.h"
 #include "itkImage.h"
 
@@ -26,24 +28,25 @@ PURPOSE.  See the above copyright notices for more information.
 #include "itkImageRegionIterator.h"
 #include <iostream>
 #include <fstream>
+#include <stdio.h>
 
 #include "itkImageFileWriter.h"
 #include "itkImageIOFactory.h"
 #include "itkNiftiImageIOFactory.h"
 #include "itkNiftiImageIO.h"
-#include <stdio.h>
 #include "itkMetaDataObject.h"
 #include "itkIOCommon.h"
+#include "itkSpatialOrientationAdapter.h"
 
-#if defined(_WIN32) && (defined(_MSC_VER) || defined(__BORLANDC__))
-#include <stdlib.h>
-#define _unlink unlink
-#else
-#include <unistd.h>
-#endif
+#include "itkAffineTransform.h"
+#include "itkVector.h"
+#include <vnl/vnl_math.h>
+
+#include <nifti1_io.h>
+
 static inline int Remove(const char *fname)
 {
-  return unlink(fname);
+  return itksys::SystemTools::RemoveFile(fname);
 }
 
 const unsigned char RPI=16;        /*Bit pattern 0 0 0  10000*/
@@ -457,43 +460,42 @@ int itkNiftiImageIOTest2(int ac, char* av[])
 #include <vnl/vnl_random.h>
 
 
-/** Test writing and reading a Vector Image
- */
-int itkNiftiImageIOTest3(int ac, char* av[])
+
+
+template <class ScalarType, unsigned VecLength, unsigned Dimension>
+int
+TestVectorImage()
 {
-  //
-  // first argument is passing in the writable directory to do all testing
-  if(ac > 1) 
-    {
-    char *testdir = *++av;
-    --ac;
-    itksys::SystemTools::ChangeDirectory(testdir);
-    }
-  else
-    {
-    return EXIT_FAILURE;
-    }
-  typedef float FieldValueType;
+  const int dimsize = 2;
   /** Deformation field pixel type. */
-  typedef itk::Vector<FieldValueType,3> FieldPixelType;
+  typedef typename itk::Vector<ScalarType,VecLength> FieldPixelType;
 
   /** Deformation field type. */
-  typedef itk::Image<FieldPixelType,3> VectorImageType;
+  typedef typename itk::Image<FieldPixelType,Dimension> VectorImageType;
+
   /** file reader type */
-  typedef itk::ImageFileReader< VectorImageType >  FieldReaderType;
+  typedef typename itk::ImageFileReader< VectorImageType >  FieldReaderType;
+
   /** file writer type */
-  typedef itk::ImageFileWriter< VectorImageType >  FieldWriterType;
+  typedef typename itk::ImageFileWriter< VectorImageType >  FieldWriterType;
 
   //
   // swizzle up a random vector image.
-  VectorImageType::Pointer vi = VectorImageType::New();
-  VectorImageType::RegionType imageRegion;
-  VectorImageType::SizeType size = {{2,2,2}};
-  VectorImageType::IndexType index = {{0,0,0}};
-  double _spacing[] = { 1.0, 1.0, 1.0 };
-  VectorImageType::SpacingType spacing(_spacing);
-  double _origin[] = { 0, 0, 0 };
-  VectorImageType::PointType origin(_origin);
+  typename VectorImageType::Pointer vi = VectorImageType::New();
+  typename VectorImageType::RegionType imageRegion;
+  typename VectorImageType::SizeType size;
+  typename VectorImageType::IndexType index;
+  typename VectorImageType::SpacingType spacing;
+  typename VectorImageType::PointType origin;
+
+  for(unsigned i = 0; i < Dimension; i++)
+    {
+    size[i] = dimsize;
+    index[i] = 0;
+    spacing[i] = 1.0;
+    origin[i] = 0;
+    }
+
   imageRegion.SetSize(size); 
   imageRegion.SetIndex(index);
   vi->SetRegions(imageRegion);
@@ -501,27 +503,67 @@ int itkNiftiImageIOTest3(int ac, char* av[])
   vi->SetOrigin(origin);
   vi->Allocate();
 
-  typedef itk::ImageRegionIterator<VectorImageType> IteratorType;
-  typedef itk::ImageRegionConstIterator<VectorImageType> ConstIteratorType;
   vnl_random randgen;
 
-  //  for(fillIt.GoToBegin(); !fillIt.IsAtEnd(); ++fillIt)
-  for(unsigned i = 0; i < 2; i++)
+  typedef itk::ImageRegionIterator<VectorImageType> IteratorType;
+  typedef itk::ImageRegionConstIterator<VectorImageType> ConstIteratorType;
+  std::cout << "Original vector Image" << std::endl;
+
+  int dims[7];
+  int _index[7];
+  for(unsigned i = 0; i < Dimension; i++)
     {
-    for(unsigned j = 0; j < 2; j++)
+    dims[i] = size[i];
+    }
+  for(unsigned i = Dimension; i < 7; i++)
+    {
+    dims[i] = 1;
+    }
+
+  //  for(fillIt.GoToBegin(); !fillIt.IsAtEnd(); ++fillIt)
+  for(int l = 0; l < dims[6]; l++)
+    {
+    _index[6] = l;
+    for(int m = 0; m < dims[5]; m++)
       {
-      for(unsigned k = 0; k < 2; k++)
+      _index[5] = m;
+      for(int n = 0; n < dims[4]; n++)
         {
-        FieldPixelType p(3);
-        p[0] = randgen.drand32(100.0,200.0);
-        p[1] = randgen.drand32(300.0,500.0);
-        p[2] = randgen.drand32(600.0,800.0);
-        index[0] = i; index[1] = j; index[2] = k;
-        vi->SetPixel(index,p);
+        _index[4] = n;
+        for(int p = 0; p < dims[3]; p++)
+          { 
+          _index[3] = p;
+          for(int i = 0; i < dims[2]; i++)
+            {
+            _index[2] = i;
+            for(int j = 0; j < dims[1]; j++)
+              {
+              _index[1] = j;
+              for(int k = 0; k < dims[0]; k++)
+                {
+                _index[0] = k;
+                FieldPixelType p;
+                float lowrange(100.00),highrange(200.00);
+                for(unsigned int q = 0; q < VecLength; q++)
+                  {
+                  p[q] = randgen.drand32(lowrange,highrange);
+                  lowrange += 100.0;
+                  highrange += 100.0;
+                  }
+                for(unsigned int q = 0; q < Dimension; q++)
+                  {
+                  index[q] = _index[q];
+                  }
+                vi->SetPixel(index,p);
+                std::cout << p << std::endl;
+                }
+              }
+            }
+          }
         }
       }
     }
-  FieldWriterType::Pointer writer = FieldWriterType::New();
+  typename FieldWriterType::Pointer writer = FieldWriterType::New();
   writer->SetInput(vi);
   std::string fname("vectorImageTest.nii.gz");
   writer->SetFileName(fname.c_str());
@@ -535,14 +577,14 @@ int itkNiftiImageIOTest3(int ac, char* av[])
     message = "Problem found while writing image ";
     message += fname; message += "\n";
     message += ex.GetLocation(); message += "\n";
-    message += ex.GetDescription(); std::cerr << message << std::endl;
+    message += ex.GetDescription(); std::cout << message << std::endl;
     Remove(fname.c_str());
     return EXIT_FAILURE;
     }
   //
   // read it back in.
-  VectorImageType::Pointer readback;
-  FieldReaderType::Pointer reader = FieldReaderType::New();
+  typename VectorImageType::Pointer readback;
+  typename FieldReaderType::Pointer reader = FieldReaderType::New();
   try
     {
     reader->SetFileName(fname.c_str());
@@ -555,27 +597,413 @@ int itkNiftiImageIOTest3(int ac, char* av[])
     message = "Problem found while reading image ";
     message += fname; message += "\n";
     message += ex.GetLocation(); message += "\n";
-    message += ex.GetDescription(); std::cerr << message << std::endl;
+    message += ex.GetDescription(); std::cout << message << std::endl;
     Remove(fname.c_str());
     return EXIT_FAILURE;
     }
   bool same = true;
-  for(unsigned i = 0; i < 2; i++)
+  std::cout << "vector Image read from disk" << std::endl;
+  for(int l = 0; l < dims[6]; l++)
     {
-    for(unsigned j = 0; j < 2; j++)
+    _index[6] = l;
+    for(int m = 0; m < dims[5]; m++)
       {
-      for(unsigned k = 0; k < 2; k++)
+      _index[5] = m;
+      for(int n = 0; n < dims[4]; n++)
         {
-        index[0] = i; index[1] = j; index[2] = k;
-        FieldPixelType p1 = vi->GetPixel(index);
-        FieldPixelType p2 = readback->GetPixel(index);
-        if(p1 != p2)
-          {
-          same = false;
+        _index[4] = n;
+        for(int p = 0; p < dims[3]; p++)
+          { 
+          _index[3] = p;
+          for(int i = 0; i < dims[2]; i++)
+            {
+            _index[2] = i;
+            for(int j = 0; j < dims[1]; j++)
+              {
+              _index[1] = j;
+              for(int k = 0; k < dims[0]; k++)
+                {
+                _index[0] = k;
+                FieldPixelType p;
+                for(unsigned int q = 0; q < Dimension; q++)
+                  {
+                  index[q] = _index[q];
+                  }
+                p = readback->GetPixel(index);
+                std::cout << p << std::endl;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  for(int l = 0; l < dims[6]; l++)
+    {
+    _index[6] = l;
+    for(int m = 0; m < dims[5]; m++)
+      {
+      _index[5] = m;
+      for(int n = 0; n < dims[4]; n++)
+        {
+        _index[4] = n;
+        for(int p = 0; p < dims[3]; p++)
+          { 
+          _index[3] = p;
+          for(int i = 0; i < dims[2]; i++)
+            {
+            _index[2] = i;
+            for(int j = 0; j < dims[1]; j++)
+              {
+              _index[1] = j;
+              for(int k = 0; k < dims[0]; k++)
+                {
+                _index[0] = k;
+                FieldPixelType p1,p2;
+                for(unsigned int q = 0; q < Dimension; q++)
+                  {
+                  index[q] = _index[q];
+                  }
+                p1 = vi->GetPixel(index);
+                p2 = readback->GetPixel(index);
+                if(p1 != p2)
+                  {
+                  same = false;
+                  }
+                }
+              }
+            }
           }
         }
       }
     }
   Remove(fname.c_str());
   return same ? 0 : EXIT_FAILURE;
+}
+/** Test writing and reading a Vector Image
+ */
+int itkNiftiImageIOTest3(int ac, char* av[])
+{
+  //
+  // first argument is passing in the writable directory to do all testing
+  if(ac > 1) 
+    {
+    char *testdir = *++av;
+    itksys::SystemTools::ChangeDirectory(testdir);
+    }
+  else
+    {
+    return EXIT_FAILURE;
+    }
+  int success(0);
+  success |= TestVectorImage<float,3,1>();
+  success |= TestVectorImage<float,3,2>();
+  success |= TestVectorImage<float,3,3>();
+  success |= TestVectorImage<double,3,3>();
+  success |= TestVectorImage<float,4,3>();
+  success |= TestVectorImage<double,4,3>();
+  success |= TestVectorImage<float,4,4>();
+  success |= TestVectorImage<float,4,5>();
+  return success;
+}
+
+typedef itk::Image<unsigned char,3> Test4ImageType;
+
+void
+PrintDir(Test4ImageType::DirectionType &dir)
+{
+  for(unsigned i = 0; i < 3; i++)
+    {
+    for(unsigned j = 0; j < 3; j++)
+      {
+      std::cerr << dir[i][j] << " ";
+      }
+    std::cerr << std::endl;
+    }
+}
+
+namespace
+{
+bool Equal(double a, double b)
+{
+  // actual equality
+  double diff = a - b;
+  if(diff == 0.0)
+    {
+    return true;
+    }
+  // signs match?
+  if((a < 0.00 && b >= 0.0) ||
+     (b < 0.0 && a >= 0.0))
+    {
+    return false;
+    }
+  if(diff < 0.0)
+    {
+    diff = -diff;
+    }
+  double avg = (a+b)/2.0;
+  if(avg < 0.0)
+    {
+    avg = - avg;
+    }
+  if(diff > avg/10000.0)
+    {
+    return false;
+    }
+  return true;
+}
+
+}
+int itkNiftiImageIOTest4(int ac, char* av[])
+{
+  //
+  // first argument is passing in the writable directory to do all testing
+  if(ac > 1) 
+    {
+    char *testdir = *++av;
+    itksys::SystemTools::ChangeDirectory(testdir);
+    }
+  else
+    {
+    return EXIT_FAILURE;
+    }
+  
+  typedef itk::ImageFileWriter<Test4ImageType> Test4Writer;
+  typedef itk::ImageFileReader<Test4ImageType> Test4Reader;
+  //
+  Test4ImageType::Pointer test4Image = Test4ImageType::New();
+  Test4ImageType::RegionType imageRegion;
+  Test4ImageType::SizeType size;
+  Test4ImageType::IndexType index;
+  Test4ImageType::SpacingType spacing;
+  Test4ImageType::PointType origin;
+  const unsigned dimsize = 2;
+
+  for(unsigned i = 0; i < 3; i++)
+    {
+    size[i] = dimsize;
+    index[i] = 0;
+    spacing[i] = 1.0;
+    origin[i] = 0;
+    }
+
+  imageRegion.SetSize(size); 
+  imageRegion.SetIndex(index);
+  test4Image->SetRegions(imageRegion);
+  test4Image->SetSpacing(spacing);
+  test4Image->SetOrigin(origin);
+  test4Image->Allocate();
+  Test4ImageType::DirectionType dir;
+  dir.SetIdentity();
+#if 1
+  // arbitrarily rotate the unit vectors to pick random direction
+  // cosines;
+  vnl_random randgen;
+  typedef itk::AffineTransform<double,3>  TransformType;
+  typedef itk::Vector<double,3> AxisType;
+  TransformType::Pointer transform = TransformType::New();
+  AxisType axis;
+  axis[0] = 1.0; axis[1] = 0.0; axis[2] = 0.0;
+  transform->Rotate3D(axis,randgen.drand32(0,3.1415926*2.0));
+  axis[0] = 0.0; axis[1] = 1.0; axis[2] = 0.0;
+  transform->Rotate3D(axis,randgen.drand32(0,3.1415926*2.0));
+  axis[0] = 0.0; axis[1] = 0.0; axis[2] = 1.0;
+  transform->Rotate3D(axis,randgen.drand32(0,3.1415926*2.0));
+  TransformType::MatrixType mat = transform->GetMatrix();
+  for(unsigned i = 0; i < 3; i++)
+    {
+    for(unsigned j = 0; j < 3; j++)
+      {
+      dir[i][j] = mat[i][j];
+      }
+    }
+  
+#else
+  dir = 
+    itk::SpatialOrientationAdapter().ToDirectionCosines(itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_PLI);
+#endif
+  test4Image->SetDirection(dir);
+  Test4Writer::Pointer writer = Test4Writer::New();
+  writer->SetInput(test4Image);
+  std::string fname("directionsTest.nii.gz");
+  writer->SetFileName(fname.c_str());
+  try
+    {
+    writer->Write();
+    }
+  catch(itk::ExceptionObject &ex)
+    {
+    std::string message;
+    message = "Problem found while writing image ";
+    message += fname; message += "\n";
+    message += ex.GetLocation(); message += "\n";
+    message += ex.GetDescription(); std::cout << message << std::endl;
+    Remove(fname.c_str());
+    return EXIT_FAILURE;
+    }
+  //
+  // read it back in.
+  Test4ImageType::Pointer readback;
+  Test4Reader::Pointer reader = Test4Reader::New();
+  reader->SetFileName(fname.c_str());
+  try
+    {
+    reader->Update();
+    readback = reader->GetOutput();
+    }
+  catch(itk::ExceptionObject &ex)
+    {
+    std::string message;
+    message = "Problem found while reading image ";
+    message += fname; message += "\n";
+    message += ex.GetLocation(); message += "\n";
+    message += ex.GetDescription(); std::cout << message << std::endl;
+    Remove(fname.c_str());
+    return EXIT_FAILURE;
+    }
+  Remove(fname.c_str());
+  Test4ImageType::DirectionType dir2 = readback->GetDirection();
+
+  std::cerr << "Original direction" << std::endl;
+  PrintDir(dir);
+  std::cerr << "Retrieved direction" << std::endl;
+  PrintDir(dir2);
+
+  for(unsigned int i = 0; i < 3; i++)
+    {
+    for(unsigned int j = 0; j < 3; j++)
+      {
+      if(!Equal(dir[i][j],dir2[i][j]))
+        {
+        std::cerr << "difference = " << dir[i][j] - dir2[i][j] << std::endl;
+        return EXIT_FAILURE;
+        }
+      }
+    }
+  return EXIT_SUCCESS;
+}
+
+template <typename PixelType,unsigned typeIndex>
+int
+SlopeInterceptTest()
+{
+  //
+  // fill out a nifti image and write it.
+  const char *filename = "SlopeIntercept.nii";
+  nifti_image * niftiImage = nifti_simple_init_nim();
+  niftiImage->fname = (char *)malloc(strlen(filename)+1);
+  strcpy(niftiImage->fname,filename);
+  niftiImage->nifti_type = 1;
+  niftiImage->iname = (char *)malloc(strlen(filename)+1);
+  strcpy(niftiImage->iname,filename);
+  niftiImage->dim[0] =
+  niftiImage->ndim = 3;
+  niftiImage->nx = niftiImage->dim[1] = 8;
+  niftiImage->ny = niftiImage->dim[2] = 8;
+  niftiImage->nz = niftiImage->dim[3] = 4;
+  niftiImage->nvox = 256;
+  niftiImage->dx = niftiImage->pixdim[1] = 
+  niftiImage->dy = niftiImage->pixdim[2] = 
+  niftiImage->dz = niftiImage->pixdim[3] = 1.0;
+  niftiImage->nu = 1;
+  niftiImage->datatype = typeIndex;
+  niftiImage->nbyper = sizeof(PixelType);
+  niftiImage->scl_slope = 1.0/256.0;
+  niftiImage->scl_inter = 0.0;
+  niftiImage->sform_code = NIFTI_XFORM_SCANNER_ANAT;
+  niftiImage->qform_code = NIFTI_XFORM_ALIGNED_ANAT;
+  niftiImage->qfac = 1;
+  mat44 matrix;
+  for(unsigned i = 0; i < 4; i++)
+    {
+    for(unsigned j = 0; j < 4; j++)
+      {
+      matrix.m[i][j] = (i == j) ? 1.0 : 0.0;
+      }
+    }
+  niftiImage->qto_xyz = matrix;
+  niftiImage->sto_xyz = matrix;
+  niftiImage->sto_ijk = matrix;
+  niftiImage->qto_ijk = matrix;
+  nifti_mat44_to_quatern(matrix,
+                         &(niftiImage->quatern_b),
+                         &(niftiImage->quatern_c),
+                         &(niftiImage->quatern_d),
+                         &(niftiImage->qoffset_x),
+                         &(niftiImage->qoffset_y),
+                         &(niftiImage->qoffset_z),
+                         0,
+                         0,
+                         0,
+                         &(niftiImage->qfac));
+  niftiImage->data = malloc(sizeof(PixelType) * 256);
+  for(unsigned i = 0; i < 256; i++)
+    {
+    static_cast<PixelType *>(niftiImage->data)[i] = i;
+    }
+  nifti_image_write(niftiImage);
+  nifti_image_free(niftiImage);
+  //
+  // read the image back in
+  typedef typename itk::Image<float,3> ImageType;
+  typedef typename itk::ImageFileReader<ImageType> ReaderType;
+  typename ReaderType::Pointer reader = ReaderType::New();
+  reader->SetFileName(filename);
+  try
+    {
+    reader->Update();
+    }
+  catch(...)
+    {
+    Remove(filename);
+    return EXIT_FAILURE;
+    }
+  typename ImageType::Pointer image = reader->GetOutput();
+  typedef typename itk::ImageRegionIterator<ImageType> IteratorType;
+  IteratorType it(image,image->GetLargestPossibleRegion());
+  it.GoToBegin();
+  double maxerror = 0.0;
+  for(unsigned i = 0; i < 256; i++,++it)
+    {
+    if(it.IsAtEnd())
+      {
+      return EXIT_FAILURE;
+      }
+    if(!Equal(it.Value(),static_cast<float>(i)/256.0))
+      {
+      //      return EXIT_FAILURE;
+      double error = vcl_abs(it.Value() -
+                             (static_cast<double>(i)/256.0));
+      if(error > maxerror)
+        {
+        maxerror = error;
+        }
+      }
+    }
+  std::cerr << "Max error " << maxerror << std::endl;
+  Remove(filename);
+  return maxerror > 0.00001 ? EXIT_FAILURE : EXIT_SUCCESS;
+}
+
+int itkNiftiImageIOTest5(int ac, char* av[])
+{
+  //
+  // first argument is passing in the writable directory to do all testing
+  if(ac > 1) 
+    {
+    char *testdir = *++av;
+    itksys::SystemTools::ChangeDirectory(testdir);
+    }
+  else
+    {
+    return EXIT_FAILURE;
+    }
+  int success(0);
+  success |= SlopeInterceptTest<unsigned char,NIFTI_TYPE_UINT8>();
+  success |= SlopeInterceptTest<short,NIFTI_TYPE_INT16>();
+  success |= SlopeInterceptTest<unsigned short,NIFTI_TYPE_UINT16>();
+  success |= SlopeInterceptTest<int,NIFTI_TYPE_INT32>();
+  success |= SlopeInterceptTest<unsigned int,NIFTI_TYPE_UINT32>();
+  return success;
 }

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTernaryFunctorImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/31 17:11:39 $
-  Version:   $Revision: 1.38 $
+  Date:      $Date: 2007/09/03 13:45:32 $
+  Version:   $Revision: 1.39 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,7 +30,9 @@ namespace itk
  * and the type of the output image.  It is also parameterized by the
  * operation to be applied, using a Functor style.
  * 
- * \ingroup IntensityImageFilters
+ * \sa BinaryFunctorImageFilter UnaryFunctorImageFilter
+ *
+ * \ingroup IntensityImageFilters Multithreaded
  */
 template <class TInputImage1, class TInputImage2, 
           class TInputImage3, class TOutputImage, class TFunction    >

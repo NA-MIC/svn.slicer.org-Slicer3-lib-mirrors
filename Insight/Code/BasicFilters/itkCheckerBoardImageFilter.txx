@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCheckerBoardImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/05/04 12:33:58 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/08/24 12:45:32 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,8 +14,6 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-
-
 #ifndef _itkCheckerBoardImageFilter_txx
 #define _itkCheckerBoardImageFilter_txx
 
@@ -50,7 +48,6 @@ CheckerBoardImageFilter<TImage>
 {
   Superclass::PrintSelf(os,indent);
   os << indent << "Checker pattern: " << m_CheckerPattern << std::endl;
-  return;
 }
 
 

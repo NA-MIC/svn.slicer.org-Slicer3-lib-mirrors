@@ -60,12 +60,14 @@ itkImageSeriesWriterTest.cxx
 itkJPEGImageIOTest.cxx
 itkMeshSpatialObjectIOTest.cxx
 itkMetaImageIOTest.cxx
+itkMetaImageStreamingIOTest.cxx
 itkNrrdImageIOTest.cxx
 itkNrrdImageReadWriteTest.cxx
 itkNrrdRGBImageReadWriteTest.cxx
 itkNrrdRGBAImageReadWriteTest.cxx
 itkNrrdDiffusionTensor3DImageReadTest.cxx
 itkNrrdDiffusionTensor3DImageReadWriteTest.cxx
+itkNrrdDiffusionTensor3DImageReadTensorDoubleWriteTensorDoubleTest.cxx
 itkNrrdComplexImageReadTest.cxx
 itkNrrdComplexImageReadWriteTest.cxx
 itkNrrdVectorImageReadTest.cxx
@@ -181,25 +183,42 @@ ADD_EXECUTABLE(itkIOHeaderTest itkIOHeaderTest.cxx)
 ADD_EXECUTABLE(itkIOTests itkIOTests.cxx ${IOTest_SRCS})
 TARGET_LINK_LIBRARIES(itkIOHeaderTest ITKIO)
 TARGET_LINK_LIBRARIES(itkIOTests ITKIO ITKEXPAT ITKSpatialObject ITKAlgorithms)
-ADD_EXECUTABLE(itkIOHeaderTest itkIOHeaderTest.cxx)
 
-##Add tests that depend on finding data
-FIND_PATH(VW_RAW_DATA_PATH avfCROP.1023c.raw 
-          ${ITKTesting_SOURCE_DIR}/../../InsightData/VisibleWomanHead/CROPraw)
-MARK_AS_ADVANCED(VW_RAW_DATA_PATH)
+IF(ITK_OBJCXX_COMPILER_WORKS)
+  SET(IO_OBJCXX_TEST ${CXX_TEST_PATH}/itkIOHeaderObjCxxTest)
+  ADD_TEST(itkIOHeaderObjCxxTest ${IO_OBJCXX_TEST})
+  ADD_EXECUTABLE(itkIOHeaderObjCxxTest itkIOHeaderObjCxxTest.mm)
+  TARGET_LINK_LIBRARIES(itkIOHeaderObjCxxTest ITKIO ITKEXPAT ITKSpatialObject ITKAlgorithms)
+ENDIF(ITK_OBJCXX_COMPILER_WORKS)
 
-IF(VW_RAW_DATA_PATH)
-  ADD_TEST(itkRawImageIOTest2 ${IO_TESTS} itkRawImageIOTest2
-           ${VW_RAW_DATA_PATH}/avfCROP.1023c.raw)
-ENDIF(VW_RAW_DATA_PATH)
 
 IF(ITK_DATA_ROOT)
+
+ADD_TEST(itkRawImageIOTest2 ${IO_TESTS} itkRawImageIOTest2
+         ${ITK_DATA_ROOT}/Input/VHFColor.raw)
+
 ADD_TEST(itkMetaImageIOTest ${IO_TESTS} 
   --compare ${ITK_DATA_ROOT}/Baseline/IO/HeadMRVolume.mhd
             ${ITK_TEST_OUTPUT_DIR}/HeadMRVolume.mhd
   itkMetaImageIOTest
             ${ITK_DATA_ROOT}/Input/HeadMRVolume.mhd
             ${ITK_TEST_OUTPUT_DIR}/HeadMRVolume.mhd)
+ADD_TEST(itkMetaImageIOShouldFailTest ${IO_TESTS} 
+         itkMetaImageIOTest
+         ${ITK_DATA_ROOT}/Input/MetaImageError.mhd
+         1)
+ADD_TEST(itkMetaImageStreamingIOTest ${IO_TESTS} 
+  --compare ${ITK_DATA_ROOT}/Baseline/IO/HeadMRVolume.mhd
+            ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeStreamed.mhd
+  itkMetaImageIOTest
+            ${ITK_DATA_ROOT}/Input/HeadMRVolume.mhd
+            ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeStreamed.mhd)
+ADD_TEST(itkMetaImageCompressedStreamingIOTest ${IO_TESTS} 
+  --compare ${ITK_DATA_ROOT}/Baseline/IO/HeadMRVolume.mhd
+            ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeCompressedStreamed.mha
+  itkMetaImageIOTest
+            ${ITK_DATA_ROOT}/Input/HeadMRVolumeCompressed.mha
+            ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeCompressedStreamed.mha)
 ADD_TEST(itkGiplImageIOTest ${IO_TESTS} 
   --compare ${ITK_DATA_ROOT}/Baseline/IO/ramp.mhd
             ${ITK_TEST_OUTPUT_DIR}/ramp.mhd
@@ -423,6 +442,10 @@ ADD_TEST(itkNumericSeriesFileNamesTest ${IO_TESTS}
  ADD_TEST(itkNiftiIOShouldSucceed ${IO_TESTS} itkNiftiImageIOTest2 ${ITK_TEST_OUTPUT_DIR}
                                  true ${ITK_TEST_OUTPUT_DIR}/NiftiLittleEndian.hdr)
 
+ADD_TEST(itkNiftiVectorImageTest ${IO_TESTS} itkNiftiImageIOTest3 ${ITK_TEST_OUTPUT_DIR} )
+ADD_TEST(itkDirCosinesTest ${IO_TESTS} itkNiftiImageIOTest4 ${ITK_TEST_OUTPUT_DIR} )
+ADD_TEST(itkNiftiSlopeInterceptTest ${IO_TESTS} itkNiftiImageIOTest5 ${ITK_TEST_OUTPUT_DIR} )
+
 ADD_TEST(itkGE4 ${IO_TESTS}
   --compare ${ITK_DATA_ROOT}/Baseline/IO/19771.002.001.mha
             ${ITK_TEST_OUTPUT_DIR}/19771.002.001.mha
@@ -499,10 +522,8 @@ ADD_TEST(itkGiplImageIOTest2 ${IO_TESTS} itkGiplImageIOTest
     ${ITK_DATA_ROOT}/Input/Archetype/image.001
     ${ITK_DATA_ROOT}/Input/Archetype/image.010)
 
-
-
 ADD_EXECUTABLE(itkGDCMImageIOTest itkGDCMImageIOTest.cxx)
-TARGET_LINK_LIBRARIES(itkGDCMImageIOTest ITKIO ITKCommon)
+TARGET_LINK_LIBRARIES(itkGDCMImageIOTest ITKIO)
 ADD_TEST(itkGDCMImageIOTest1 ${CXX_TEST_PATH}/itkGDCMImageIOTest
         ${ITK_DATA_ROOT}/Input/dicom-sc_cs-1.dcm
         ${ITK_TEST_OUTPUT_DIR}/itkGDCMImageIOTest.dcm
@@ -524,12 +545,12 @@ ADD_TEST(itkGDCMImageIOTest4 ${CXX_TEST_PATH}/itkGDCMImageIOTest
         ${ITK_TEST_OUTPUT_DIR}/itkGDCMImageIOTest4.png
         ${ITK_TEST_OUTPUT_DIR}/itkGDCMRescaleImageIOTest4.dcm)
 ADD_EXECUTABLE(itkGDCMImageIOTest2 itkGDCMImageIOTest2.cxx)
-TARGET_LINK_LIBRARIES(itkGDCMImageIOTest2 ITKIO ITKCommon)
+TARGET_LINK_LIBRARIES(itkGDCMImageIOTest2 ITKIO)
 ADD_TEST(itkGDCMImageIOTest5 ${CXX_TEST_PATH}/itkGDCMImageIOTest2
         ${ITK_DATA_ROOT}/Input/HeadMRVolume.mhd
         ${ITK_TEST_OUTPUT_DIR}/itkGDCMImageIOTest5)
 ADD_EXECUTABLE(itkGDCMSeriesReadImageWrite itkGDCMSeriesReadImageWrite.cxx)
-TARGET_LINK_LIBRARIES(itkGDCMSeriesReadImageWrite ITKIO ITKCommon)
+TARGET_LINK_LIBRARIES(itkGDCMSeriesReadImageWrite ITKIO)
 ADD_TEST(itkGDCMSeriesReadImageWrite ${CXX_TEST_PATH}/itkGDCMSeriesReadImageWrite
         ${ITK_DATA_ROOT}/Input/DicomSeries
         ${ITK_TEST_OUTPUT_DIR}/itkGDCMSeriesReadImageWrite.vtk
@@ -644,6 +665,18 @@ ADD_TEST(itkNrrdDiffusionTensor3DImageReadWriteTest ${IO_TESTS}
   itkNrrdDiffusionTensor3DImageReadWriteTest
             ${ITK_DATA_ROOT}/Input/mini-ten-nomask-fast.nrrd
             ${ITK_TEST_OUTPUT_DIR}/mini-ten.nrrd)
+ADD_TEST(itkNrrdDiffusionTensor3DImageReadWriteTest4 ${IO_TESTS}
+  --compare ${ITK_DATA_ROOT}/Baseline/IO/small-tensors.nhdr
+            ${ITK_TEST_OUTPUT_DIR}/small-tensors.nhdr
+  itkNrrdDiffusionTensor3DImageReadWriteTest
+            ${ITK_DATA_ROOT}/Input/small-tensors.nhdr
+            ${ITK_TEST_OUTPUT_DIR}/small-tensors.nhdr)
+ADD_TEST(itkNrrdDiffusionTensor3DImageReadTensorDoubleWriteTensorDouble ${IO_TESTS} 
+  --compare ${ITK_DATA_ROOT}/Baseline/IO/small-tensors-double.nrrd
+            ${ITK_TEST_OUTPUT_DIR}/small-tensors-double.nrrd
+  itkNrrdDiffusionTensor3DImageReadTensorDoubleWriteTensorDoubleTest
+            ${ITK_DATA_ROOT}/Input/small-tensors.nhdr
+            ${ITK_TEST_OUTPUT_DIR}/small-tensors-double.nrrd)
 # Complex values
 ADD_TEST(itkNrrdComplexImageReadTest ${IO_TESTS}
          itkNrrdComplexImageReadTest

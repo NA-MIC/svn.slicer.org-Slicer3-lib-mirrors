@@ -1,14 +1,14 @@
-/BinaryDilateImageFilter.java/1.1/Wed Sep  6 20:58:41 2006//THEAD
-/BinaryErodeImageFilter.java/1.1/Wed Sep  6 20:58:41 2006//THEAD
-/BinaryThresholdImageFilter.java/1.1/Wed Sep  6 20:58:41 2006//THEAD
-/CMakeLists.txt/1.6/Sat Jan 13 21:07:35 2007//THEAD
-/CastImageFilter.java/1.1/Wed Sep  6 20:58:41 2006//THEAD
-/CurvatureAnisotropicDiffusionImageFilter.java/1.1/Wed Sep  6 20:58:41 2006//THEAD
-/CurvatureFlowImageFilter.java/1.1/Wed Sep  6 20:58:41 2006//THEAD
-/GradientAnisotropicDiffusionImageFilter.java/1.1/Wed Sep  6 20:58:41 2006//THEAD
-/MeanImageFilter.java/1.1/Wed Sep  6 20:58:41 2006//THEAD
-/MedianImageFilter.java/1.1/Wed Sep  6 20:58:41 2006//THEAD
-/SigmoidImageFilter.java/1.1/Wed Sep  6 20:58:41 2006//THEAD
-/ThresholdImageFilter.java/1.1/Wed Sep  6 20:58:41 2006//THEAD
-/simplePipeline.java.in/1.1/Wed Sep  6 20:58:41 2006//THEAD
 D/notYetUsable////
+/BinaryDilateImageFilter.java/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4
+/BinaryErodeImageFilter.java/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4
+/BinaryThresholdImageFilter.java/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4
+/CMakeLists.txt/1.6/Thu Nov 15 15:23:03 2007//TITK-3-4
+/CastImageFilter.java/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4
+/CurvatureAnisotropicDiffusionImageFilter.java/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4
+/CurvatureFlowImageFilter.java/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4
+/GradientAnisotropicDiffusionImageFilter.java/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4
+/MeanImageFilter.java/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4
+/MedianImageFilter.java/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4
+/SigmoidImageFilter.java/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4
+/ThresholdImageFilter.java/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4
+/simplePipeline.java.in/1.1/Thu Nov 15 15:23:03 2007//TITK-3-4

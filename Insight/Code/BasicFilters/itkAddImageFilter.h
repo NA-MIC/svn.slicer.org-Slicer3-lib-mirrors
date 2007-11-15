@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAddImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/24 16:03:15 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/08/30 15:01:08 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -54,7 +54,7 @@ namespace itk
  */
 namespace Functor {  
   
-template< class TInput1, class TInput2, class TOutput >
+template< class TInput1, class TInput2=TInput1, class TOutput=TInput1>
 class Add2
 {
 public:
@@ -77,7 +77,7 @@ public:
 }; 
 
 }
-template <class TInputImage1, class TInputImage2, class TOutputImage>
+template <class TInputImage1, class TInputImage2=TInputImage1, class TOutputImage=TInputImage1>
 class ITK_EXPORT AddImageFilter :
     public
 BinaryFunctorImageFilter<TInputImage1,TInputImage2,TOutputImage, 

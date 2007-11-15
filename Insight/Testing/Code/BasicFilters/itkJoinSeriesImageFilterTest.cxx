@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkJoinSeriesImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/06/06 20:51:29 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -40,7 +40,7 @@ int itkJoinSeriesImageFilterPrintTest(int, char* [])
     itk::JoinSeriesImageFilter<InputType,OutputType>::New();
   std::cout << "-------------JoinSeriesImageFilter" << JoinSeriesImageFilterObj;
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSquaredDifferenceErrorFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/04/17 19:34:45 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/08/17 13:10:57 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -26,24 +26,24 @@ namespace Statistics
 {
 
 /** Constructor */
-template<class TVector, class ScalarType>
-SquaredDifferenceErrorFunction<TVector,ScalarType>
+template<class TMeasurementVector, class ScalarType>
+SquaredDifferenceErrorFunction<TMeasurementVector,ScalarType>
 ::SquaredDifferenceErrorFunction()
 {
 }
 
 /** Destructor */
-template<class TVector, class ScalarType>
-SquaredDifferenceErrorFunction <TVector,ScalarType>
+template<class TMeasurementVector, class ScalarType>
+SquaredDifferenceErrorFunction <TMeasurementVector,ScalarType>
 ::~SquaredDifferenceErrorFunction()
 {
 }
 
 /** Evaluate */
-template<class TVector, class ScalarType>
+template<class TMeasurementVector, class ScalarType>
 ScalarType
-SquaredDifferenceErrorFunction <TVector,ScalarType>
-::Evaluate(const TVector& errors)  const
+SquaredDifferenceErrorFunction <TMeasurementVector,ScalarType>
+::Evaluate(const TMeasurementVector& errors)  const
 {
   vnl_vector <ScalarType> temp;
   temp.set_size(errors.Size());
@@ -56,13 +56,13 @@ SquaredDifferenceErrorFunction <TVector,ScalarType>
 }
 
 /** Evaluate derivatives */
-template<class TVector, class ScalarType>
-typename SquaredDifferenceErrorFunction <TVector,ScalarType>
+template<class TMeasurementVector, class ScalarType>
+typename SquaredDifferenceErrorFunction <TMeasurementVector,ScalarType>
 ::InternalVectorType
-SquaredDifferenceErrorFunction <TVector,ScalarType>
-::EvaluateDerivative(const TVector& errors)  const
+SquaredDifferenceErrorFunction <TMeasurementVector,ScalarType>
+::EvaluateDerivative(const TMeasurementVector& errors)  const
 {
-  //TVector diff;
+  //TMeasurementVector diff;
   InternalVectorType diff;
   diff.SetSize(errors.Size());
   for(unsigned int i=0; i<errors.Size(); i++)
@@ -80,9 +80,9 @@ SquaredDifferenceErrorFunction <TVector,ScalarType>
 }
 
 /** Print the object */
-template<class TVector, class ScalarType>
+template<class TMeasurementVector, class ScalarType>
 void  
-SquaredDifferenceErrorFunction <TVector,ScalarType>
+SquaredDifferenceErrorFunction <TMeasurementVector,ScalarType>
 ::PrintSelf( std::ostream& os, Indent indent ) const 
 { 
   os << indent << "SquaredDifferenceErrorFunction(" << this << ")" << std::endl; 

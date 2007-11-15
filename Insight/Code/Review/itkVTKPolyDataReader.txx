@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKPolyDataReader.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/18 11:55:06 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007/07/30 17:16:12 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -131,10 +131,10 @@ VTKPolyDataReader<TOutputMesh>
   // Read the number of polygons
   //
 
-  int numberOfPolygons = -1;
-  int numberOfIndices = -1;
+  CellIdentifier numberOfPolygons = 0;
+  CellIdentifier numberOfIndices = 0;
 
-  if( sscanf( polygonLine.c_str(), "%d %d", &numberOfPolygons,
+  if( sscanf( polygonLine.c_str(), "%ld %ld", &numberOfPolygons,
         &numberOfIndices ) != 2 )
     {
     itkExceptionMacro("ERROR: Failed to read numberOfPolygons from subline2"
@@ -164,10 +164,10 @@ VTKPolyDataReader<TOutputMesh>
   // Load the polygons into the itk::Mesh
   //
 
-  unsigned long numberOfCellPoints;
-  unsigned long ids[3];
+  PointIdentifier numberOfCellPoints;
+  long ids[3];
 
-  for(long i=0; i<numberOfPolygons; i++)
+  for(CellIdentifier i=0; i<numberOfPolygons; i++)
     {
     if( inputFile.eof() )
       {
@@ -218,7 +218,10 @@ VTKPolyDataReader<TOutputMesh>
 
     CellAutoPointer cell;
     TriangleCellType * triangleCell = new TriangleCellType;
-    triangleCell->SetPointIds( (unsigned long*)ids );
+    for( PointIdentifier k = 0; k < numberOfCellPoints; k++ )
+      {
+      triangleCell->SetPointId( k, ids[k] );
+      }
 
     cell.TakeOwnership( triangleCell );
     outputMesh->SetCell( i, cell );

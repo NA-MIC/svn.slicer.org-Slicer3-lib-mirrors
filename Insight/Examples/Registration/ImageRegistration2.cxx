@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageRegistration2.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/20 13:27:53 $
-  Version:   $Revision: 1.43 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.44 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -139,7 +139,7 @@ int main( int argc, char *argv[] )
     std::cerr << " fixedImageFile  movingImageFile ";
     std::cerr << "outputImagefile ";
     std::cerr << "[checkerBoardBefore] [checkerBoardAfter]" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
   
   // Software Guide : BeginLatex
@@ -445,7 +445,7 @@ int main( int argc, char *argv[] )
     { 
     std::cout << "ExceptionObject caught !" << std::endl; 
     std::cout << err << std::endl; 
-    return -1;
+    return EXIT_FAILURE;
     } 
 
   ParametersType finalParameters = registration->GetLastTransformParameters();
@@ -690,6 +690,6 @@ int main( int argc, char *argv[] )
   //
   //  Software Guide : EndLatex 
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 

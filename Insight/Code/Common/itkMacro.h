@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMacro.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/23 20:01:24 $
-  Version:   $Revision: 1.73 $
+  Date:      $Date: 2007/08/27 17:49:34 $
+  Version:   $Revision: 1.75 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -282,12 +282,12 @@ namespace itk
 
 /** Get character string.  Creates member Get"name"() 
  * (e.g., SetFilename(char *)). The macro assumes that
- * the class member (name) is declared a type std::string. */
+ * the class member (name) is declared as a type std::string. */
 #define itkGetStringMacro(name) \
   virtual const char* Get##name () const \
   { \
     return this->m_##name.c_str(); \
-  } 
+  }
 
 /** Set built-in type where value is constrained between min/max limits.
  * Create member Set"name"() (e.q., SetRadius()). #defines are 
@@ -503,12 +503,12 @@ extern ITKCommon_EXPORT void OutputWindowDisplayDebugText(const char*);
 #define itkWarningMacro(x)
 #else
 #define itkWarningMacro(x) \
-{ if (itk::Object::GetGlobalWarningDisplay()) \
+{ if (::itk::Object::GetGlobalWarningDisplay()) \
     { ::itk::OStringStream itkmsg; \
       itkmsg << "WARNING: In " __FILE__ ", line " << __LINE__ << "\n" \
              << this->GetNameOfClass() << " (" << this << "): " x  \
              << "\n\n"; \
-      itk::OutputWindowDisplayWarningText(itkmsg.str().c_str());} \
+      ::itk::OutputWindowDisplayWarningText(itkmsg.str().c_str());} \
 }
 #endif
 
@@ -608,7 +608,7 @@ private:
     { ::itk::OStringStream itkmsg; \
       itkmsg << "WARNING: In " __FILE__ ", line " << __LINE__ << "\n" \
              x << "\n\n"; \
-      itk::OutputWindowDisplayGenericOutputText(itkmsg.str().c_str());} \
+      ::itk::OutputWindowDisplayGenericOutputText(itkmsg.str().c_str());} \
 }
 #endif
 

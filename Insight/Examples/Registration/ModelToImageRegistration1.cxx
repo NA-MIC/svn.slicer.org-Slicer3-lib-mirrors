@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ModelToImageRegistration1.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/06/26 13:08:32 $
-  Version:   $Revision: 1.40 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.41 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -938,5 +938,5 @@ int main( int argc, char *argv[] )
   //
   //  Software Guide : EndLatex 
 
-  return 0;
+  return EXIT_SUCCESS;
 }

@@ -3,8 +3,8 @@
   Program:   MetaIO
   Module:    $RCSfile: metaScene.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/10/27 12:25:53 $
-  Version:   $Revision: 1.34 $
+  Date:      $Date: 2007/08/08 18:56:52 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,7 @@
 =========================================================================*/
 #if defined(_MSC_VER)
 #pragma warning ( disable : 4786 )
+#pragma warning ( disable : 4702 )
 #endif
 
 #include <stdio.h>
@@ -148,9 +149,14 @@ Read(const char *_headerName)
  
   M_PrepareNewReadStream();
   
-  m_ReadStream->open(m_FileName, METAIO_STREAM::ios::binary | METAIO_STREAM::ios::in);
+#ifdef __sgi
+  m_ReadStream->open(m_FileName, METAIO_STREAM::ios::in);
+#else
+  m_ReadStream->open(m_FileName, METAIO_STREAM::ios::binary 
+                                 | METAIO_STREAM::ios::in);
+#endif
   
-  if(!m_ReadStream->is_open())
+  if(!m_ReadStream->rdbuf()->is_open())
   {
     METAIO_STREAM::cout << "MetaScene: Read: Cannot open file" << METAIO_STREAM::endl;
     return false;
@@ -176,7 +182,11 @@ Read(const char *_headerName)
   /** Objects should be added here */
   for(i=0;i<m_NObjects;i++)
   {
-    if(META_DEBUG) METAIO_STREAM::cout << MET_ReadType(*m_ReadStream) << METAIO_STREAM::endl;
+    if(META_DEBUG) 
+      {
+      METAIO_STREAM::cout << MET_ReadType(*m_ReadStream).c_str() 
+                          << METAIO_STREAM::endl;
+      }
 
     if(m_Event)
       {
@@ -212,128 +222,128 @@ Read(const char *_headerName)
       }
 
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Transform",9))
-    {
+      {
       MetaTransform* transform = new MetaTransform();
       transform->SetEvent(m_Event);
       transform->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(transform);
-    }
+      }
 
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"TubeGraph",9))
-    {
+      {
       MetaTubeGraph* tubeGraph = new MetaTubeGraph();
       tubeGraph->SetEvent(m_Event);
       tubeGraph->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(tubeGraph);
-    }
+      }
 
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Ellipse",7) ||
             ((MET_ReadType(*m_ReadStream).size()==0) && !strcmp(suf, "elp")))
-    {
+      {
       MetaEllipse* ellipse = new MetaEllipse();
       ellipse->SetEvent(m_Event);
       ellipse->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(ellipse);
-    }
+      }
 
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Contour",7) ||
             ((MET_ReadType(*m_ReadStream).size()==0) && !strcmp(suf, "ctr")))
-    {
+      {
       MetaContour* contour = new MetaContour();
       contour->SetEvent(m_Event);
       contour->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(contour);
-    }
+      }
 
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Arrow",5))
-    {
+      {
       MetaArrow* arrow = new MetaArrow();
       arrow->SetEvent(m_Event);
       arrow->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(arrow);
-    }
+      }
 
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Gaussian",8) ||
             ((MET_ReadType(*m_ReadStream).size()==0) && !strcmp(suf, "gau")))
-    {
+      {
       MetaGaussian* gaussian = new MetaGaussian();
       gaussian->SetEvent(m_Event);
       gaussian->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(gaussian);
-    }
+      }
     
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Image",5) ||
             ((MET_ReadType(*m_ReadStream).size()==0) && 
              (!strcmp(suf, "mhd") || !strcmp(suf, "mha"))))
-    {
+      {
       MetaImage* image = new MetaImage();
       image->SetEvent(m_Event);
       image->ReadStream(m_NDims,m_ReadStream);
       image->ElementByteOrderFix();
       m_ObjectList.push_back(image);
-    }
+      }
     
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Blob",4) ||
             ((MET_ReadType(*m_ReadStream).size()==0) && !strcmp(suf, "blb")))
-    {
+      {
       MetaBlob* blob = new MetaBlob();
       blob->SetEvent(m_Event);
       blob->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(blob);
-    }
+      }
       
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Landmark",8) ||
             ((MET_ReadType(*m_ReadStream).size()==0) && !strcmp(suf, "ldm")))
-    {
+      {
       MetaLandmark* landmark = new MetaLandmark();
       landmark->SetEvent(m_Event);
       landmark->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(landmark);
-    }
+      }
       
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Surface",5) ||
             ((MET_ReadType(*m_ReadStream).size()==0) && !strcmp(suf, "suf")))
-    {
+      {
       MetaSurface* surface = new MetaSurface();
       surface->SetEvent(m_Event);
       surface->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(surface);
-    }
+      }
      
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Line",5) ||
             ((MET_ReadType(*m_ReadStream).size()==0) && !strcmp(suf, "lin")))
-    {
+      {
       MetaLine* line = new MetaLine();
       line->SetEvent(m_Event);
       line->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(line);
-    }
+      }
 
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Group",5) ||
             ((MET_ReadType(*m_ReadStream).size()==0) && !strcmp(suf, "grp")))
-    {
+      {
       MetaGroup* group = new MetaGroup();      
       group->SetEvent(m_Event);
       group->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(group);
-    }
+      }
 
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"AffineTransform",15) ||
             ((MET_ReadType(*m_ReadStream).size()==0) && !strcmp(suf, "trn")))
-    {
+      {
       MetaGroup* group = new MetaGroup();
       group->SetEvent(m_Event);
       group->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(group);
-    }
+      }
     else if(!strncmp(MET_ReadType(*m_ReadStream).c_str(),"Mesh",4) ||
             ((MET_ReadType(*m_ReadStream).size()==0) && !strcmp(suf, "msh")))
-    {
+      {
       MetaMesh* mesh = new MetaMesh();
       mesh->SetEvent(m_Event);
       mesh->ReadStream(m_NDims,m_ReadStream);
       m_ObjectList.push_back(mesh);
-    }
+      }
   }
 
   if(m_Event)
@@ -356,9 +366,9 @@ Write(const char *_headName)
   if(META_DEBUG) METAIO_STREAM::cout << "MetaScene: Write" << METAIO_STREAM::endl;
 
   if(_headName != NULL)
-  {
+    {
     FileName(_headName);
-  }
+    }
 
   // Set the number of objects based on the net list
   //ObjectListType::const_iterator itNet = m_ObjectList.begin();
@@ -367,22 +377,27 @@ Write(const char *_headName)
   M_SetupWriteFields();
 
   if(!m_WriteStream)
-  { 
+    { 
     m_WriteStream = new METAIO_STREAM::ofstream;
-  }
+    }
 
 #ifdef __sgi
   // Create the file. This is required on some older sgi's
-  METAIO_STREAM::ofstream tFile(m_FileName,METAIO_STREAM::ios::out);
+    {
+  METAIO_STREAM::ofstream tFile(m_FileName, METAIO_STREAM::ios::out);
   tFile.close();                    
+    }
+  m_WriteStream->open(m_FileName, METAIO_STREAM::ios::out);
+#else
+  m_WriteStream->open(m_FileName, METAIO_STREAM::ios::binary 
+                                  | METAIO_STREAM::ios::out);
 #endif
 
-  m_WriteStream->open(m_FileName, METAIO_STREAM::ios::binary | METAIO_STREAM::ios::out);
-  if(!m_WriteStream->is_open())
+  if(!m_WriteStream->rdbuf()->is_open())
     {
-    return false;
     delete m_WriteStream;
     m_WriteStream = 0;
+    return false;
     }
 
   M_Write();
@@ -394,11 +409,11 @@ Write(const char *_headName)
   /** Then we write all the objects in the scene */
   ObjectListType::iterator it = m_ObjectList.begin();
   while(it != m_ObjectList.end())
-  {
+    {
     (*it)->BinaryData(this->BinaryData());
     (*it)->Append(_headName);
     it++;
-  }
+    }
 
   return true;
 }
@@ -412,11 +427,11 @@ Clear(void)
   // Delete the list of pointers to objects in the scene.
   ObjectListType::iterator it = m_ObjectList.begin();
   while(it != m_ObjectList.end())
-  {
+    {
     MetaObject* object = *it;
     it++;
     delete object;
-  }
+    }
 
   m_ObjectList.clear();
 
@@ -502,9 +517,9 @@ M_Read(void)
 
   mF = MET_GetFieldRecord("NObjects", &m_Fields);
   if(mF->defined)
-  {
+    {
     m_NObjects= (int)mF->value[0];
-  }
+    }
 
   return true;
 }
@@ -513,10 +528,10 @@ bool MetaScene::
 M_Write(void)
 {
   if(!MetaObject::M_Write())
-  {
+    {
     METAIO_STREAM::cout << "MetaScene: M_Write: Error parsing file" << METAIO_STREAM::endl;
     return false;
-  }
+    }
 
   return true;
 }

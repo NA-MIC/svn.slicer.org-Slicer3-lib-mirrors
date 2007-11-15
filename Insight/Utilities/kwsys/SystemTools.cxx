@@ -65,6 +65,17 @@
 # include <windows.h>
 #endif
 
+// getpwnam doesn't exist on Windows and Cray Xt3/Catamount
+// same for TIOCGWINSZ
+#if defined(_WIN32) || defined (__LIBCATAMOUNT__)
+# undef HAVE_GETPWNAM
+# undef HAVE_TTY_INFO
+#else
+# define HAVE_GETPWNAM 1
+# define HAVE_TTY_INFO 1
+#endif
+
+
 // This is a hack to prevent warnings about these functions being
 // declared but not referenced.
 #if defined(__sgi) && !defined(__GNUC__)
@@ -153,6 +164,11 @@ inline const char* Getcwd(char* buf, unsigned int len)
     {
     fprintf(stderr, "No current working directory.\n");
     abort();
+    }
+  // make sure the drive letter is capital
+  if(strlen(buf) > 1 && buf[1] == ':')
+    {
+    buf[0] = toupper(buf[0]);
     }
   return ret;
 }
@@ -1339,8 +1355,7 @@ void SystemTools::ConvertToUnixSlashes(kwsys_stl::string& path)
       }
 
     // Also, reuse the loop to check for slash followed by another slash
-    if ( !hasDoubleSlash && *pos1 &&
-      *pos1 == '/' && *(pos1+1) == '/' )
+    if (*pos1 == '/' && *(pos1+1) == '/' && !hasDoubleSlash)
       {
 #ifdef _WIN32
       // However, on windows if the first characters are both slashes,
@@ -1376,7 +1391,7 @@ void SystemTools::ConvertToUnixSlashes(kwsys_stl::string& path)
         path.replace(0,1,homeEnv);
         }
       }
-#if !defined(_WIN32)
+#ifdef HAVE_GETPWNAM
     else if(pathCString[0] == '~')
       {
       kwsys_stl::string::size_type idx = path.find_first_of("/\0");
@@ -2875,6 +2890,11 @@ kwsys_stl::string SystemTools::GetActualCaseForPath(const char* p)
     {
     return p;
     }
+  // make sure drive letter is always upper case
+  if(longPath.size() > 1 && longPath[1] == ':')
+    {
+    longPath[0] = toupper(longPath[0]);
+    }
   return longPath;
 #endif  
 }
@@ -2914,7 +2934,7 @@ void SystemTools::SplitPath(const char* p,
     components.push_back(root);
     c += 2;
     }
-#if !defined(_WIN32)
+#ifdef HAVE_GETPWNAM
   else if(c[0] == '~')
     {
     int numChars = 1;
@@ -3647,7 +3667,7 @@ bool SystemTools::GetLineFromStream(kwsys_ios::istream& is,
 int SystemTools::GetTerminalWidth()
 {
   int width = -1;
-#ifndef _WIN32
+#ifdef HAVE_TTY_INFO
   struct winsize ws;
   char *columns; /* Unix98 environment variable */
   if(ioctl(1, TIOCGWINSZ, &ws) != -1 && ws.ws_col>0 && ws.ws_row>0)

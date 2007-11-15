@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshToQuadEdgeMeshFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 15:46:56 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/07/24 20:05:24 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -22,7 +22,7 @@
 
 namespace itk
 {
-/** \class MeshCopy
+/** \class QuadEdgeMeshToQuadEdgeMeshFilter
  *  \brief Duplicates the content of a Mesh.
  *
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
@@ -32,12 +32,12 @@ namespace itk
  *
  */
 template< typename TInputMesh, typename TOutputMesh >
-class MeshCopy
+class QuadEdgeMeshToQuadEdgeMeshFilter
   : public MeshToMeshFilter< TInputMesh, TOutputMesh >
 {
 public:
   /** Basic types. */
-  typedef MeshCopy                                    Self;
+  typedef QuadEdgeMeshToQuadEdgeMeshFilter                                    Self;
   typedef MeshToMeshFilter< TInputMesh, TOutputMesh > Superclass;
   typedef SmartPointer< Self >                        Pointer;
   typedef SmartPointer< const Self >                  ConstPointer;
@@ -60,6 +60,9 @@ public:
   typedef typename InputMeshType::EdgeCellType    InputEdgeCellType;
   typedef typename InputMeshType::PolygonCellType InputPolygonCellType;
   typedef typename InputMeshType::PointIdList     InputPointIdList;
+  typedef typename InputMeshType::CellTraits      InputCellTraits;
+  typedef typename InputCellTraits::PointIdInternalIterator
+                                                  InputPointsIdInternalIterator;
 
   typedef typename InputQEPrimal::IteratorGeom    InputQEIterator;
 
@@ -78,23 +81,23 @@ public:
 
 public:
   itkNewMacro( Self );
-  itkTypeMacro( MeshCopy, MeshToMeshFilter );
+  itkTypeMacro( QuadEdgeMeshToQuadEdgeMeshFilter, MeshToMeshFilter );
 
 protected:
-  MeshCopy( );
-  virtual ~MeshCopy( ) { }
+  QuadEdgeMeshToQuadEdgeMeshFilter( );
+  virtual ~QuadEdgeMeshToQuadEdgeMeshFilter( ) { }
 
   virtual void GenerateData( );
 
 private:
-  MeshCopy( const Self& ); // Not impl.
+  QuadEdgeMeshToQuadEdgeMeshFilter( const Self& ); // Not impl.
   void operator=( const Self& );  // Not impl.
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkQEMeshCopy.txx"
+#include "itkQuadEdgeMeshToQuadEdgeMeshFilter.txx"
 #endif
 
 #endif

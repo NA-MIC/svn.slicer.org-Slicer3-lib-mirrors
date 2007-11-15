@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSpatialObjectTreeContainer.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:57 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007/07/16 23:15:51 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,9 +17,9 @@
 #ifndef __itkSpatialObjectTreeContainer_h
 #define __itkSpatialObjectTreeContainer_h
 
-#include <itkTreeContainer.h>
-#include <itkSpatialObject.h>
-#include <itkSpatialObjectTreeNode.h>
+#include "itkTreeContainer.h"
+#include "itkSpatialObject.h"
+#include "itkSpatialObjectTreeNode.h"
 
 namespace itk
 {

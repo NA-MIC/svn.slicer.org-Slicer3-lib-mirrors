@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKPolyDataReader.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/22 19:07:09 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/07/26 06:30:29 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -57,9 +57,12 @@ public:
   /** Some convenient typedefs. */
   typedef typename OutputMeshType::Pointer     OutputMeshPointer;
   typedef typename OutputMeshType::CellTraits  CellTraits;
-
+  typedef typename CellTraits::CellIdentifier  CellIdentifier;
+  typedef typename CellTraits::PointIdentifier PointIdentifier;
+  typedef typename CellTraits::PointIdIterator PointIdIterator;
   typedef typename OutputMeshType::PointsContainerPointer
     PointsContainerPointer;
+  
   typedef typename OutputMeshType::PointsContainer
     PointsContainer;
 

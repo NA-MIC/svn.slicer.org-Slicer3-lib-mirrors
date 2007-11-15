@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLaplacianRecursiveGaussianImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/29 14:42:11 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007/08/10 14:34:02 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -111,7 +111,7 @@ int itkLaplacianRecursiveGaussianImageFilterTest(int argc, char* argv[])
     return -1;
     } 
 
-  return 0;
+  return EXIT_SUCCESS;
 
 
 

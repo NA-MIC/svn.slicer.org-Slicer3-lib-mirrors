@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshFrontIterator.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 15:46:55 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/06/27 19:06:04 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -82,6 +82,13 @@ namespace itk
  * \class QuadEdgeMeshFrontBaseIterator
  *
  * \brief Front iterator on Mesh class
+ *
+ * Like topological and geometrical operators, it iterates on edges.
+ * Unlike them, this iterator is not local, nor cyclic. Starting from a
+ * given seed, it will create a front that propagates on the surface.
+ * Depending on the weight associated wich each edge, and on the type of the
+ * seed (primal or dual) it can be used for frint propagation algorithm,
+ * distance tree computation or other Djikstra like algorithms.
  */
 template< typename TMesh, typename TQE >
 class QuadEdgeMeshFrontBaseIterator

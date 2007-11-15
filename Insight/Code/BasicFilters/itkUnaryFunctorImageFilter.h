@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkUnaryFunctorImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/01/15 04:28:36 $
-  Version:   $Revision: 1.23 $
+  Date:      $Date: 2007/09/03 13:45:32 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -35,6 +35,8 @@ namespace itk
  * UnaryFunctorImageFilter (like the CastImageFilter) can be used
  * to promote a 2D image to a 3D image, etc.
  * 
+ * \sa BinaryFunctorImageFilter TernaryFunctorImageFilter
+ *
  * \ingroup   IntensityImageFilters     Multithreaded
  */
 template <class TInputImage, class TOutputImage, class TFunction >

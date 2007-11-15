@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEuclideanDistancePointMetric.txx,v $
   Language:  C++
-  Date:      $Date: 2006/10/16 00:35:25 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/08/17 18:02:38 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -82,7 +82,7 @@ EuclideanDistancePointMetric<TFixedPointSet,TMovingPointSet,TDistanceMap>
 
   this->SetTransformParameters( parameters );
 
-  unsigned int id = 0;
+  unsigned int identifier = 0;
   while( pointItr != pointEnd )
     {
     typename Superclass::InputPointType  inputPoint;
@@ -135,10 +135,10 @@ EuclideanDistancePointMetric<TFixedPointSet,TMovingPointSet,TDistanceMap>
         }
       }
 
-    measure.put(id,minimumDistance);
+    measure.put(identifier,minimumDistance);
 
     ++pointItr;
-    id++;
+    identifier++;
     }
 
   return measure;

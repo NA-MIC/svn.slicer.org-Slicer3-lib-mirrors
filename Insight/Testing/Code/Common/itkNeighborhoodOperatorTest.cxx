@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNeighborhoodOperatorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/06/15 13:02:21 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -193,5 +193,5 @@ int itkNeighborhoodOperatorTest(int, char* [] )
     }
   std::cout << "]" << std::endl << std::endl;
   
-  return 0;
+  return EXIT_SUCCESS;
 }

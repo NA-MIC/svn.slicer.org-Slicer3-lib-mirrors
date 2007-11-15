@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkZeroCrossingBasedEdgeDetectionImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/04 13:13:52 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007/06/29 00:10:17 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -123,7 +123,12 @@ public:
     m_Variance.Fill(v);
   }
   
-  /** Set the MaximumError parameter needed by the embedded gaussian filter */
+  /** Set the MaximumError parameter needed by the embedded gaussian filter
+ * This value is used to set the desired maximum error of the gaussian
+ * approximation.  Maximum error is the difference between the area under the
+ * discrete Gaussian curve and the area under the continuous Gaussian.  Maximum
+ * error affects the Gaussian operator size. The value must be between 0.0 and
+ * 1.0. */
   void SetMaximumError(const typename ArrayType::ValueType v)
   {
     m_MaximumError.Fill(v);
@@ -139,6 +144,8 @@ public:
     (Concept::SameType<InputImagePixelType, OutputImagePixelType>));
   itkConceptMacro(OutputOStreamWritableCheck,
     (Concept::OStreamWritable<OutputImagePixelType>));
+  itkConceptMacro(PixelTypeIsFloatingPointCheck,
+    (Concept::IsFloatingPoint<InputImagePixelType>));
   /** End concept checking */
 #endif
 

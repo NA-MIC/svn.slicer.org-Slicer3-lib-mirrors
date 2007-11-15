@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ThinPlateSplineWarp.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/31 14:14:16 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -52,7 +52,7 @@ int main( int argc, char * argv[] )
     std::cerr << " landmarksFile inputImage ";
     std::cerr << "DeformedImage " << std::endl;
     std::cerr << "deformationField" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
 
   const     unsigned int   ImageDimension = 3;

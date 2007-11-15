@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryFunctorImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/31 17:11:38 $
-  Version:   $Revision: 1.34 $
+  Date:      $Date: 2007/09/03 13:45:32 $
+  Version:   $Revision: 1.36 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,6 +30,8 @@ namespace itk
  * and the type of the output image.  It is also parameterized by the
  * operation to be applied.  A Functor style is used.
  * 
+ * \sa UnaryFunctorImageFilter TernaryFunctorImageFilter
+ *
  * \ingroup IntensityImageFilters   Multithreaded
  */
 template <class TInputImage1, class TInputImage2, 
@@ -75,7 +77,7 @@ public:
    * (Functors do not have to derive from itk::LightObject, so they do
    * not necessarily have a reference count. So we cannot return a
    * SmartPointer.) */
-  FunctorType& GetFunctor() { return m_Functor; };
+  FunctorType& GetFunctor() { return m_Functor; }
 
   /** Get the functor object.  The functor is returned by reference.
    * (Functors do not have to derive from itk::LightObject, so they do
@@ -84,7 +86,7 @@ public:
   const FunctorType& GetFunctor() const
     {
     return m_Functor;
-    };
+    }
 
   /** Set the functor object.  This replaces the current Functor with a
    * copy of the specified Functor. This allows the user to specify a
@@ -122,7 +124,7 @@ public:
 
 protected:
   BinaryFunctorImageFilter();
-  virtual ~BinaryFunctorImageFilter() {};
+  virtual ~BinaryFunctorImageFilter() {}
 
   /** BinaryFunctorImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData() routine

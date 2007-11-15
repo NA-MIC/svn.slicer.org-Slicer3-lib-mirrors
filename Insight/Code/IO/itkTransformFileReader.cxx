@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransformFileReader.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 18:39:28 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2007/08/09 15:15:39 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -150,13 +150,11 @@ void TransformFileReader
       TransformType* ptr = dynamic_cast<TransformBase*> ( i.GetPointer() );
       if ( ptr == NULL )
         {
-        // itkExceptionMacro ( "Failed to create instance of" << Value );
         OStringStream msg;
         msg << "Could not create an instance of " << Value << std::endl
             << "The usual cause of this error is not registering the "
             << "transform with TransformFactory" << std::endl;
         msg << "Currently registered Transforms: " << std::endl;
-        itkExceptionMacro ( << msg.str() );
         std::list<std::string> names = TransformFactoryBase::GetFactory()->GetClassOverrideWithNames();
         std::list<std::string>::iterator it;
         for ( it = names.begin(); it != names.end(); it++ )

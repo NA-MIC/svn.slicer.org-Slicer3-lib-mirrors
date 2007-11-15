@@ -3,14 +3,14 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkErrorBackPropagationLearningFunctionBase.txx,v $
   Language:  C++
-  Date:      $Date: 2005/08/02 19:17:37 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/09/03 21:17:59 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -25,26 +25,27 @@ namespace itk
 namespace Statistics
 {
 
-template<class LayerType, class TOutput>
+template<class LayerType, class TTargetVector>
 void
-ErrorBackPropagationLearningFunctionBase<LayerType,TOutput>
-::Learn(LayerType* layer,ValueType lr)
+ErrorBackPropagationLearningFunctionBase<LayerType,TTargetVector>
+::Learn( LayerInterfaceType * layer, ValueType lr )
 {
   int num_nodes = layer->GetNumberOfNodes();
 
-  typename LayerType::WeightSetType::Pointer outputweightset;
-  typename LayerType::WeightSetType::Pointer inputweightset;
+  typename LayerInterfaceType::WeightSetType::Pointer outputweightset;
+  typename LayerInterfaceType::WeightSetType::Pointer inputweightset;
+
   outputweightset = layer->GetOutputWeightSet();
   inputweightset = layer->GetInputWeightSet();
 
-  typename LayerType::ValuePointer currentdeltavalues = inputweightset->GetTotalDeltaValues();
-  
+  typename LayerInterfaceType::ValuePointer currentdeltavalues = inputweightset->GetTotalDeltaValues();
+
   vnl_matrix<ValueType> DW_temp(currentdeltavalues,inputweightset->GetNumberOfOutputNodes(),
                                            inputweightset->GetNumberOfInputNodes());
-  
+
   DW_temp*=lr;
   inputweightset->SetDWValues(DW_temp.data_block());
-  typename LayerType::ValuePointer DBValues = inputweightset->GetDeltaBValues();
+  typename LayerType::LayerInterfaceType::ValuePointer DBValues = inputweightset->GetDeltaBValues();
   vnl_vector<ValueType> DB;
   DB.set_size(inputweightset->GetNumberOfOutputNodes());
   DB.fill(0);
@@ -54,22 +55,22 @@ ErrorBackPropagationLearningFunctionBase<LayerType,TOutput>
 }
 
 /** */
-template<class LayerType, class TOutput>
+template<class LayerType, class TTargetVector>
 void
-ErrorBackPropagationLearningFunctionBase<LayerType,TOutput>
-::Learn(LayerType* layer, TOutput errors, ValueType lr)
+ErrorBackPropagationLearningFunctionBase<LayerType,TTargetVector>
+::Learn( LayerInterfaceType * layer, TTargetVector errors, ValueType lr)
 {
 }
 
 /** Print the object */
-template<class LayerType, class TOutput>
-void  
-ErrorBackPropagationLearningFunctionBase<LayerType,TOutput>
-::PrintSelf( std::ostream& os, Indent indent ) const 
-{ 
-  os << indent << "ErrorBackPropagationLearningFunctionBase(" << this << ")" << std::endl; 
-  Superclass::PrintSelf( os, indent ); 
-} 
+template<class LayerType, class TTargetVector>
+void
+ErrorBackPropagationLearningFunctionBase<LayerType,TTargetVector>
+::PrintSelf( std::ostream& os, Indent indent ) const
+{
+  os << indent << "ErrorBackPropagationLearningFunctionBase(" << this << ")" << std::endl;
+  Superclass::PrintSelf( os, indent );
+}
 
 } // end namespace Statistics
 } // end namespace itk

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMemoryLeakTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:09 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007/08/20 13:03:23 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.

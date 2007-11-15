@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegionGrow2DTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/06/07 02:58:00 $
-  Version:   $Revision: 1.38 $
+  Date:      $Date: 2007/06/02 18:18:29 $
+  Version:   $Revision: 1.39 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -41,7 +41,9 @@ static unsigned int test_RegionGrowKLMExceptionHandling();
 static unsigned int test_regiongrowKLM1D();
 static unsigned int test_regiongrowKLM2D();
 static unsigned int test_regiongrowKLM3D();
+#ifndef _GLIBCXX_DEBUG
 static unsigned int test_regiongrowKLM4D();
+#endif
 
 //
 // This tests KLM region growing segmentation
@@ -68,9 +70,10 @@ int itkRegionGrow2DTest(int, char* [] )
   if ( pass == EXIT_FAILURE ) return pass;
 
   // Test the KLM algorithm applied to 4D data
+#ifndef _GLIBCXX_DEBUG
   pass = test_regiongrowKLM4D();
   if ( pass == EXIT_FAILURE ) return pass;
-
+#endif
   return EXIT_SUCCESS;
 }
 
@@ -1745,6 +1748,7 @@ unsigned int test_regiongrowKLM3D()
 } // End test_regiongrow3D()
 
 
+#ifndef _GLIBCXX_DEBUG
 unsigned int test_regiongrowKLM4D()
 {
   itk::OutputWindow::SetInstance(itk::TextOutput::New().GetPointer());
@@ -2137,5 +2141,6 @@ unsigned int test_regiongrowKLM4D()
   return EXIT_SUCCESS;
 
 }
+#endif
 
 #undef LOCAL_TEST_EXCEPTION_MACRO

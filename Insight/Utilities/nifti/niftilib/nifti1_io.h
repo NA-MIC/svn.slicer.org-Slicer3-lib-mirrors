@@ -226,6 +226,9 @@ void         nifti_image_free    ( nifti_image *nim ) ;
 int          nifti_read_collapsed_image( nifti_image * nim, const int dims [8],
                                          void ** data );
 
+int nifti_read_subregion_image( nifti_image * nim, int *start_index, int *region_size,
+                                void ** data );
+
 void         nifti_image_write   ( nifti_image * nim ) ;
 void         nifti_image_write_bricks(nifti_image * nim, 
                                       const nifti_brick_list * NBL);
@@ -316,13 +319,17 @@ char * nifti_makebasename(const char* fname);
 
 /* other routines */
 struct nifti_1_header   nifti_convert_nim2nhdr(const nifti_image* nim);
+nifti_1_header * nifti_make_new_header(const int arg_dims[], int arg_dtype);
 nifti_1_header * nifti_read_header(const char *hname, int *swapped, int check);
 nifti_image    * nifti_copy_nim_info(const nifti_image * src);
+nifti_image    * nifti_make_new_nim(const int dims[], int datatype,
+                                                      int data_fill);
 nifti_image    * nifti_simple_init_nim(void);
 nifti_image    * nifti_convert_nhdr2nim(struct nifti_1_header nhdr,
                                         const char * fname);
 
 int    nifti_hdr_looks_good        (const nifti_1_header * hdr);
+int    nifti_is_valid_datatype     (int dtype);
 int    nifti_is_valid_ecode        (int ecode);
 int    nifti_nim_is_valid          (nifti_image * nim, int complain);
 int    nifti_nim_has_valid_dims    (nifti_image * nim, int complain);

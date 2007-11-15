@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorInterpolateImageFunctionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:10 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007/08/20 13:00:21 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -316,12 +316,16 @@ int itkVectorInterpolateImageFunctionTest(int, char* [] )
 
 
   /* Return results of test */
-  if (flag != 0) {
-      std::cout << "*** Some test failed" << std::endl;
-      return flag; }
-  else {
-      std::cout << "All tests successfully passed" << std::endl;
-      return 0; }
+  if (flag != 0) 
+    {
+    std::cout << "*** Some test failed" << std::endl;
+    return flag; 
+    }
+  else 
+    {
+    std::cout << "All tests successfully passed" << std::endl;
+    }
 
+  return EXIT_SUCCESS; 
 }
 

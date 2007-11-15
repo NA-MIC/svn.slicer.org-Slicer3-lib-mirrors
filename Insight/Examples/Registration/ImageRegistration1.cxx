@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageRegistration1.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/20 13:27:53 $
-  Version:   $Revision: 1.51 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.52 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -117,7 +117,7 @@ int main( int argc, char *argv[] )
     std::cerr << " fixedImageFile  movingImageFile ";
     std::cerr << "outputImagefile [differenceImageAfter]";
     std::cerr << "[differenceImageBefore]" << std::endl;
-    return 1;
+    return EXIT_FAILURE;
     }
   
 
@@ -406,7 +406,7 @@ int main( int argc, char *argv[] )
     { 
     std::cerr << "ExceptionObject caught !" << std::endl; 
     std::cerr << err << std::endl; 
-    return -1;
+    return EXIT_FAILURE;
     } 
   // Software Guide : EndCodeSnippet
 
@@ -836,6 +836,6 @@ int main( int argc, char *argv[] )
   //  Software Guide : EndLatex 
 
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 

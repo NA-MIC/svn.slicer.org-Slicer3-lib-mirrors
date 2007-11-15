@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLandmarkSpatialObject.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:38 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2007/07/16 23:15:51 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -22,7 +22,7 @@
 #endif
 
 #include "itkLandmarkSpatialObject.h"
-#include <itkNumericTraits.h>
+#include "itkNumericTraits.h"
 
 namespace itk  
 {

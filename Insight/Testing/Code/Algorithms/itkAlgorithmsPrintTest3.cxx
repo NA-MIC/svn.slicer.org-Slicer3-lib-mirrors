@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAlgorithmsPrintTest3.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/01/19 01:57:12 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007/08/20 12:47:11 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -170,6 +170,6 @@ int main(int , char* [])
   itk::MRASlabIdentifier<InputType>::Pointer MRASlabIdentifierObj =
     itk::MRASlabIdentifier<InputType>::New();
   std:: cout << "-------------MRASlabIdentifier " << MRASlabIdentifierObj;
-  return 0;
+  return EXIT_SUCCESS;
 
 }

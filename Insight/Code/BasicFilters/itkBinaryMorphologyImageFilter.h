@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryMorphologyImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/25 16:09:29 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/09/12 09:20:29 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -97,12 +97,9 @@ namespace itk
  * Lehmann from INRA de Jouy-en-Josas then provided a fast erosion
  * implementaton based on Jerome's implementation.  The common
  * portions of these two implementations were then placed in this
- * superclass. 
+ * superclass.
  *
- * \todo Implement a threaded version ?
- *
- * \sa ImageToImageFilter
- * \sa BinaryErodeImageFilter
+ * \sa ImageToImageFilter BinaryErodeImageFilter BinaryDilateImageFilter
  */
 template <class TInputImage, class TOutputImage, class TKernel>
 class ITK_EXPORT BinaryMorphologyImageFilter :

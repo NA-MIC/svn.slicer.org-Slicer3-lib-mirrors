@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFiniteDifferenceImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:07 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2007/09/20 22:45:41 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -141,7 +141,13 @@ public:
                       OutputImageType::ImageDimension);
 
   /** The pixel type of the output image will be used in computations. */
-  typedef typename TOutputImage::PixelType PixelType;
+  typedef typename TOutputImage::PixelType    OutputPixelType;
+  typedef typename TInputImage::PixelType     InputPixelType;
+  typedef OutputPixelType                     PixelType;
+
+  /** Extract value type in case the pixel is of vector type */
+  typedef typename NumericTraits< OutputPixelType >::ValueType OutputPixelValueType;
+  typedef typename NumericTraits< InputPixelType >::ValueType  InputPixelValueType;
 
   /** The value type of the time step.  This is distinct from PixelType
    * because PixelType may often be a vector value, while the TimeStep is
@@ -207,7 +213,14 @@ public:
   itkSetMacro(ManualReinitialization, bool);
   itkGetConstReferenceMacro(ManualReinitialization, bool);
   itkBooleanMacro(ManualReinitialization);
-  
+
+#ifdef ITK_USE_STRICT_CONCEPT_CHECKING
+  /** Begin concept checking */
+  itkConceptMacro(OutputPixelIsFloatingPointCheck,
+    (Concept::IsFloatingPoint<OutputPixelValueType>));
+  /** End concept checking */
+#endif
+
 protected:
   FiniteDifferenceImageFilter()
   {

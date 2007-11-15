@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/20 18:01:22 $
-  Version:   $Revision: 1.54 $
+  Date:      $Date: 2007/08/22 12:57:40 $
+  Version:   $Revision: 1.55 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -151,8 +151,8 @@ public:
   virtual void GraftOutput(DataObject *output);
 
   /** Graft the specified data object onto this ProcessObject's idx'th
-   * output. This is the similar to GraftOutput method except is
-   * allows you specify which output is affected. The specified index
+   * output. This is similar to the GraftOutput method except it
+   * allows you to specify which output is affected. The specified index
    * must be a valid output number (less than
    * ProcessObject::GetNumberOfOutputs()). See the GraftOutput for
    * general usage information. */

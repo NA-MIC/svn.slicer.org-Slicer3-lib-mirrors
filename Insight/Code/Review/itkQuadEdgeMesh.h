@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMesh.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 15:46:54 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007/09/01 18:33:08 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -135,6 +135,9 @@ public:
   typedef typename Superclass::PointType        PointType;
   typedef typename Superclass::CellTraits       CellTraits;
 
+  typedef typename CellTraits::PointIdInternalIterator PointIdInternalIterator;
+  typedef typename CellTraits::PointIdIterator         PointIdIterator;
+
   // Point section:
   typedef typename Superclass::PointsContainer        PointsContainer;
   typedef typename Superclass::PointsContainerPointer PointsContainerPointer;
@@ -246,12 +249,15 @@ public:
 
 public:
 
+  // Multithreading framework: not tested yet.
   virtual bool RequestedRegionIsOutsideOfTheBufferedRegion()
     {
-    return false;
+    return( false );
     }
 
+  /** another way of deleting all the cells */
   virtual void Clear();
+
   /** Overloaded to avoid a bug in itk::Mesh that prevents proper inheritance
    * Refer to
    * http://public.kitware.com/pipermail/insight-users/2005-March/012459.html
@@ -260,26 +266,128 @@ public:
    */
   virtual void CopyInformation( const DataObject* data ) { (void)data; }
 
-  /// One of the reasons of itkQE is precisely to avoid updating connexions.
+  /** overloaded method for backward compatibility */
   void BuildCellLinks() { }
 
-  virtual bool FindClosestPoint( const CoordRepArrayType coords,
-                                 PointIdentifier & pointId ) const;
+  /** overloaded method for backward compatibility */
+  void SetBoundaryAssignments(int dimension,
+                              BoundaryAssignmentsContainer* container)
+    {
+    (void)dimension;
+    (void)container;
+    }
+  
+  /** overloaded method for backward compatibility */
+  BoundaryAssignmentsContainerPointer GetBoundaryAssignments(int dimension)
+    {
+    (void)dimension;
+    return( (BoundaryAssignmentsContainerPointer)0 );
+    }
 
-  /** Overloaded methods for itk-syntax compatilibity. */
+  /** overloaded method for backward compatibility */
+  const BoundaryAssignmentsContainerPointer GetBoundaryAssignments(
+    int dimension) const
+    {
+    (void)dimension;
+    return( (const BoundaryAssignmentsContainerPointer)0 );
+    }
+
+  /** overloaded method for backward compatibility */
+  void SetBoundaryAssignment(int dimension, CellIdentifier cellId,
+                             CellFeatureIdentifier featureId,
+                             CellIdentifier boundaryId)
+    {
+    (void)dimension;
+    (void)cellId;
+    (void)featureId;
+    (void)boundaryId;
+    }
+
+  /** overloaded method for backward compatibility */
+  bool GetBoundaryAssignment(int dimension, CellIdentifier cellId,
+                             CellFeatureIdentifier featureId,
+                             CellIdentifier* boundaryId) const
+    {
+    (void)dimension;
+    (void)cellId;
+    (void)featureId;
+    (void)boundaryId;
+    return( false ); // ALEX: is it the good way?
+    }
+
+  /** overloaded method for backward compatibility */
+  bool RemoveBoundaryAssignment(int dimension, CellIdentifier cellId,
+                                CellFeatureIdentifier featureId)
+    {
+    (void)dimension;
+    (void)cellId;
+    (void)featureId;
+    return( false ); // ALEX: is it the good way?
+    }
+
+  /** overloaded method for backward compatibility */
+  bool GetCellBoundaryFeature(int dimension, CellIdentifier cellId,
+                              CellFeatureIdentifier featureId,
+                              CellAutoPointer& cellAP) const
+    { 
+    (void)dimension;
+    (void)cellId;
+    (void)featureId;
+    (void)cellAP;
+    return( false );
+    }
+
+  /** overloaded method for backward compatibility */
+  unsigned long GetCellBoundaryFeatureNeighbors(int dimension,
+                                             CellIdentifier cellId,
+                                             CellFeatureIdentifier featureId,
+                                             std::set<CellIdentifier>* cellSet)
+    {
+    (void)dimension;
+    (void)cellId;
+    (void)featureId;
+    cellSet = (std::set<CellIdentifier>*)0;
+    return( (unsigned long)0 );
+    }
+  
+  /** NOTE ALEX: this method do not use CellFeature and thus could be recoded */
+  unsigned long GetCellNeighbors( CellIdentifier cellId,
+                                  std::set<CellIdentifier>* cellSet )
+    {
+    (void)cellId;
+    cellSet = (std::set<CellIdentifier>*)0;
+    return( (unsigned long)0 );
+    }
+
+  /** overloaded method for backward compatibility */
+  bool GetAssignedCellBoundaryIfOneExists(int dimension,
+                                          CellIdentifier cellId,
+                                          CellFeatureIdentifier featureId,
+                                          CellAutoPointer& cellAP) const
+    {
+    (void)dimension;
+    (void)featureId;
+    (void)cellAP;
+    return( false ); // ALEX: is it the good way?
+    }
+
+  /** overloaded method for backward compatibility */
   void SetCell( CellIdentifier cId, CellAutoPointer& cell );
 
   /** Methods to simplify point/edge insertion/search. */
   virtual PointIdentifier FindFirstUnusedPointIndex();
   virtual CellIdentifier  FindFirstUnusedCellIndex();
+
   virtual void PushOnContainer( EdgeCellType* newEdge );
 
-  // ////////////////// Adding Point/Edge/Face methods
+  // Adding Point/Edge/Face methods
   virtual PointIdentifier AddPoint( const PointType& p );
+  
+  /** */
   virtual QEPrimal* AddEdge( const PointIdentifier& orgPid,
                              const PointIdentifier& destPid );
 
-  /** Add a polygonal face to the Mesh */
+  /** Add a polygonal face to the Mesh, suppose QE layer ready */
   virtual void      AddFace( QEPrimal* e );
 
   /** Add a polygonal face to the Mesh. The list of points 
@@ -298,10 +406,15 @@ public:
   virtual void DeleteEdge( const PointIdentifier& orgPid,
                            const PointIdentifier& destPid );
   virtual void DeleteEdge( QEPrimal* e );
+  virtual void LightWeightDeleteEdge( EdgeCellType* e );
   virtual void LightWeightDeleteEdge( QEPrimal* e );
   virtual void DeleteFace( FaceRefType faceToDelete );
 
-  // //////////////////
+  // 
+  bool GetPoint( PointIdentifier pid, PointType * pt) const
+    {
+    return( Superclass::GetPoint( pid, pt ) );
+    }
   virtual PointType  GetPoint ( const PointIdentifier& pid ) const;
   virtual VectorType GetVector( const PointIdentifier& pid ) const;
   virtual QEPrimal*  GetEdge() const;
@@ -309,6 +422,9 @@ public:
   virtual QEPrimal*  FindEdge( const PointIdentifier& pid0 ) const;
   virtual QEPrimal*  FindEdge( const PointIdentifier& pid0,
                                const PointIdentifier& pid1 ) const;
+
+  virtual EdgeCellType*  FindEdgeCell( const PointIdentifier& pid0,
+                                 const PointIdentifier& pid1 ) const;
 
   ///  Compute the euclidian length of argument edge
   CoordRepType ComputeEdgeLength( QEPrimal* e );
@@ -325,6 +441,19 @@ public:
     (Concept::SameDimension<itkGetStaticConstMacro(PointDimension),3>));
   /** End concept checking */
 #endif
+
+  // for reusability of a mesh in the MeshToMesh filter
+  void ClearFreePointAndCellIndexesLists( )
+    {
+    while( !this->m_FreePointIndexes.empty( ) )
+      {
+      this->m_FreePointIndexes.pop( );
+      }
+    while( !this->m_FreeCellIndexes.empty( ) )
+      {
+      this->m_FreeCellIndexes.pop( );
+      }
+    }
 
 protected:
   /** Constructor and Destructor. */
@@ -345,7 +474,6 @@ protected:
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkQuadEdgeMeshMacro.h"
 #include "itkQuadEdgeMesh.txx"
 #endif
 

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMultiThreader.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/09/28 13:57:25 $
-  Version:   $Revision: 1.38 $
+  Date:      $Date: 2007/09/16 15:24:14 $
+  Version:   $Revision: 1.40 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -39,9 +39,10 @@
 #endif
 
 #ifdef __APPLE__
-#include <Carbon/Carbon.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
 #endif
-    
+
 namespace itk {
 extern "C"
 {
@@ -120,9 +121,16 @@ int MultiThreader::GetGlobalDefaultNumberOfThreads()
 #endif
 
 #ifdef __APPLE__
-    // MPProcessors returns the physical number of processors present
-    // MPProcessorsScheduled returns number of active processors
-    num = MPProcessors();
+    // Use sysctl() to determine the number of CPUs.  This is prefered
+    // over MPProcessors() because it doesn't require CoreServices
+    // (which is only available in 32bit on Mac OS X 10.4)
+    int mib[2] = {CTL_HW, HW_NCPU};
+    size_t dataLen = sizeof(int); // 'num' is an 'int'
+    int result = sysctl(mib, 2, &num, &dataLen, NULL, 0);
+    if (result == -1)
+      {
+      num = 1;
+      }
 #endif
 
     // Limit the number of threads
@@ -277,6 +285,7 @@ void MultiThreader::SingleMethodExecute()
   // Thanks to Hannu Helminen for suggestions on how to catch
   // exceptions thrown by threads.
   bool exceptionOccurred = false;
+  std::string exceptionDetails;
   try
     {
     for (thread_loop = 1; thread_loop < m_NumberOfThreads; thread_loop++ )
@@ -288,6 +297,14 @@ void MultiThreader::SingleMethodExecute()
       process_id[thread_loop]
         = this->DispatchSingleMethodThread(&m_ThreadInfoArray[thread_loop]);
       }
+    }
+  catch( std::exception & e )
+    {
+    // get the details of the exception to rethrow them
+    exceptionDetails = e.what();
+    // If creation of any thread failed, we must make sure that all
+    // threads are correctly cleaned
+    exceptionOccurred = true;
     }
   catch (...)
     {
@@ -328,6 +345,14 @@ void MultiThreader::SingleMethodExecute()
     // rethrow
     throw excp;
     }
+  catch( std::exception & e )
+    {
+    // get the details of the exception to rethrow them
+    exceptionDetails = e.what();
+    // if this method fails, we must make sure all threads are
+    // correctly cleaned
+    exceptionOccurred = true;
+    }
   catch (...)
     {
     // if this method fails, we must make sure all threads are
@@ -348,6 +373,12 @@ void MultiThreader::SingleMethodExecute()
         exceptionOccurred = true;
         }
       }
+    catch( std::exception & e )
+      {
+      // get the details of the exception to rethrow them
+      exceptionDetails = e.what();
+      exceptionOccurred = true;
+      }
     catch (...)
       {
       exceptionOccurred = true; 
@@ -365,7 +396,14 @@ void MultiThreader::SingleMethodExecute()
   
   if (exceptionOccurred)
     {
-    itkExceptionMacro("Exception occurred during SingleMethodExecute");
+    if( exceptionDetails.empty() )
+      {
+      itkExceptionMacro("Exception occurred during SingleMethodExecute");
+      }
+    else
+      {
+      itkExceptionMacro( << "Exception occurred during SingleMethodExecute" << std::endl << exceptionDetails );
+      }
     }
 }
 

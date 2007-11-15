@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSupervisedImageClassifierTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/25 23:13:14 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/08/20 12:47:12 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -370,37 +370,37 @@ int itkSupervisedImageClassifierTest(int, char* [] )
     {
     int classIndex = (int) labeloutIt.Get();
     if (classIndex != 2)
-    {
+      {
       passTest = false;
       break;
-    }
+      }
     ++labeloutIt;
 
     classIndex = (int) labeloutIt.Get();
     if (classIndex != 2)
-    {
+      {
       passTest = false;
       break;
-    }
+      }
     ++labeloutIt;
 
     classIndex = (int) labeloutIt.Get();
     if (classIndex != 1)
-    {
+      {
       passTest = false;
       break;
-    }
+      }
     ++labeloutIt;
 
     classIndex = (int) labeloutIt.Get();
     if (classIndex != 1)
-    {
+      {
       passTest = false;
       break;
-    }
+      }
     ++labeloutIt;
 
-  }//end while
+    }//end while
 
   if( passTest == true )
     {
@@ -409,7 +409,8 @@ int itkSupervisedImageClassifierTest(int, char* [] )
   else
     {
     std::cout<< "Supervised Classifier Test failed" << std::endl;
+    return EXIT_FAILURE;
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

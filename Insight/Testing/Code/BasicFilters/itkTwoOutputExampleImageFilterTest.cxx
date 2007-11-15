@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTwoOutputExampleImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:08 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007/08/20 07:50:39 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -157,6 +157,7 @@ int itkTwoOutputExampleImageFilterTest(int, char* [] )
   threshold->SetOutsideValue(outsideValue);
   float outsideValue2 = threshold->GetOutsideValue();
   std::cout << "threshold->GetOutsideValue(): " << outsideValue2 << std::endl;
+  threshold->GetInverseOutput();
 
   return EXIT_SUCCESS;
 }

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSize.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/13 17:57:26 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2007/08/27 12:47:59 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -34,7 +34,7 @@ namespace itk
  * efficient bitwise copies.
  *
  * Size is an "aggregate" class.  Its data is public (m_Size)
- * allowing for fast and convienent instantiations/assignments.
+ * allowing for fast and convenient instantiations/assignments.
  *
  * The following syntax for assigning a size is allowed/suggested:
  *    Size<3> size = {256, 256, 20};

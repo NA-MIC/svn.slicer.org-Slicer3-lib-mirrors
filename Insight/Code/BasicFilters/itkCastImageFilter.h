@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCastImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/13 15:54:34 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007/08/20 17:57:01 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -48,7 +48,7 @@ class Cast
 {
 public:
   Cast() {};
-  ~Cast() {};
+  virtual ~Cast() {};
   bool operator!=( const Cast & ) const
   {
     return false;

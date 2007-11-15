@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBloxBoundaryPointImageToBloxBoundaryProfileImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:56 $
-  Version:   $Revision: 1.40 $
+  Date:      $Date: 2007/08/27 14:12:43 $
+  Version:   $Revision: 1.41 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -388,7 +388,9 @@ BloxBoundaryPointImageToBloxBoundaryProfileImageFilter< TSourceImage >
           this->AddSplatToAccumulatorAndNormalizer(binNumber+2,   binJitter, sourcePixelValue);
           }
         else
+          {
           itkDebugMacro(<< "BloxBoundaryProfileImage::FindBoundaryProfilesAtBoundaryPoint - Inappropriate splat method");
+          }
         }
 
         // Normalize the splat accumulator with the normalizer

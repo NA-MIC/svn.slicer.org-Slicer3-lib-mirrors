@@ -26,19 +26,22 @@ itkVectorFuzzyConnectednessImageFilterTest.cxx
 )
 
 ADD_EXECUTABLE(itkPatentedPrintTest itkPatentedPrintTest.cxx)
-TARGET_LINK_LIBRARIES(itkPatentedPrintTest ITKAlgorithms ITKIO 
-                                              ITKBasicFilters ITKFEM)
+TARGET_LINK_LIBRARIES(itkPatentedPrintTest ITKAlgorithms ITKFEM)
 ADD_EXECUTABLE(itkPatentedHeaderTest itkPatentedHeaderTest.cxx)
-TARGET_LINK_LIBRARIES(itkPatentedHeaderTest ITKAlgorithms ITKIO 
-                                              ITKBasicFilters ITKFEM)
+TARGET_LINK_LIBRARIES(itkPatentedHeaderTest ITKAlgorithms ITKFEM)
 
 ADD_TEST(itkPatentedHeaderTest ${PATENTED_HEADER_TESTS})
 
+IF(ITK_OBJCXX_COMPILER_WORKS)
+  SET(PATENTED_OBJCXX_TEST ${CXX_TEST_PATH}/itkPatentedHeaderObjCxxTest)
+  ADD_TEST(itkPatentedHeaderObjCxxTest ${PATENTED_OBJCXX_TEST})
+  ADD_EXECUTABLE(itkPatentedHeaderObjCxxTest itkPatentedHeaderObjCxxTest.mm)
+  TARGET_LINK_LIBRARIES(itkPatentedHeaderObjCxxTest ITKAlgorithms ITKFEM)
+ENDIF(ITK_OBJCXX_COMPILER_WORKS)
+
 ADD_EXECUTABLE(itkPatentedTests itkPatentedTests.cxx 
                                   ${PatentedTest_SRCS})
-TARGET_LINK_LIBRARIES(itkPatentedTests 
-                      ITKAlgorithms ITKIO 
-                      ITKBasicFilters ITKFEM ITKStatistics)
+TARGET_LINK_LIBRARIES(itkPatentedTests ITKAlgorithms ITKFEM ITKStatistics)
 
 IF(ITK_DATA_ROOT)
 ADD_TEST(itkActiveShapeModelCalculatorTest ${PATENTED_TESTS}

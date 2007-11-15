@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkXMLFilterWatcher.h,v $
   Language:  C++
-  Date:      $Date: 2006/11/07 11:56:40 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007/08/22 15:52:31 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,7 +30,7 @@ namespace itk
 class XMLFilterWatcher: public SimpleFilterWatcher
 {
 public:
-  XMLFilterWatcher(itk::ProcessObject* o, const char *comment="")
+  XMLFilterWatcher(ProcessObject* o, const char *comment="")
     : SimpleFilterWatcher(o, comment) {};
 
 protected:

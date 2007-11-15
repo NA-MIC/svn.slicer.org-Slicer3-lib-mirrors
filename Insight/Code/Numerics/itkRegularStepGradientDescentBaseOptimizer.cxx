@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegularStepGradientDescentBaseOptimizer.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 19:37:01 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2007/09/10 16:22:23 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -43,7 +43,7 @@ RegularStepGradientDescentBaseOptimizer
   m_Maximize = false;
   m_CostFunction = 0;
   m_CurrentStepLength   =   0;
-  m_StopCondition = MaximumNumberOfIterations;
+  m_StopCondition = Unknown;
   m_Gradient.Fill( 0.0f );
   m_PreviousGradient.Fill( 0.0f );
   m_RelaxationFactor = 0.5;
@@ -62,6 +62,15 @@ RegularStepGradientDescentBaseOptimizer
 
   m_CurrentStepLength         = m_MaximumStepLength;
   m_CurrentIteration          = 0;
+
+  m_StopCondition = Unknown;
+
+  // validity check for the value of GradientMagnitudeTolerance
+  if( m_GradientMagnitudeTolerance < 0.0 )
+      {
+      itkExceptionMacro(<< "Gradient magnitude tolerance must be"
+      "greater or equal 0.0. Current value is " << m_GradientMagnitudeTolerance );
+      }
 
   const unsigned int spaceDimension = m_CostFunction->GetNumberOfParameters();
 
@@ -92,12 +101,14 @@ RegularStepGradientDescentBaseOptimizer
   while( !m_Stop ) 
     {
 
-    m_PreviousGradient = m_Gradient;
-
-    if( m_Stop )
+    if( m_CurrentIteration >= m_NumberOfIterations )
       {
+      m_StopCondition = MaximumNumberOfIterations;
+      this->StopOptimization();
       break;
       }
+
+    m_PreviousGradient = m_Gradient;
 
     try
       {
@@ -120,15 +131,7 @@ RegularStepGradientDescentBaseOptimizer
 
     m_CurrentIteration++;
 
-    if( m_CurrentIteration == m_NumberOfIterations )
-      {
-      m_StopCondition = MaximumNumberOfIterations;
-      this->StopOptimization();
-      break;
-      }
-    
     }
-    
 
 }
 

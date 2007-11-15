@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHistogramMatchingImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/23 15:26:09 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007/07/31 23:09:16 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -56,7 +56,8 @@ namespace itk
  * \ingroup IntensityImageFilters Multithreaded
  *
  */
-template <class TInputImage, class TOutputImage>
+  /* THistogramMeasurement -- The precision level for which to do HistogramMeasurmenets */
+template <class TInputImage, class TOutputImage, class THistogramMeasurement=ITK_TYPENAME TInputImage::PixelType>
 class ITK_EXPORT HistogramMatchingImageFilter:
     public ImageToImageFilter<TInputImage,TOutputImage>
 {
@@ -94,7 +95,7 @@ public:
   typedef typename OutputImageType::PixelType OutputPixelType;
 
   /** Histogram related typedefs. */
-  typedef Statistics::Histogram<InputPixelType, 1> HistogramType;
+  typedef Statistics::Histogram<THistogramMeasurement, 1> HistogramType;
   typedef typename HistogramType::Pointer HistogramPointer;
 
   /** Set/Get the source image. */
@@ -165,12 +166,12 @@ protected:
 
   /** Compute min, max and mean of an image. */
   void ComputeMinMaxMean( const InputImageType * image,
-                          double& minValue, double& maxValue, double& meanValue ); 
+                          THistogramMeasurement& minValue, THistogramMeasurement& maxValue, THistogramMeasurement& meanValue );
 
   /** Construct a histogram from an image. */
   void ConstructHistogram( const InputImageType * image,
-                           HistogramType * histogram, double minValue,
-                           double maxValue );
+                           HistogramType * histogram, const THistogramMeasurement minValue,
+                           const THistogramMeasurement maxValue );
 
 private:
   HistogramMatchingImageFilter(const Self&); //purposely not implemented
@@ -184,23 +185,23 @@ private:
   InputPixelType        m_ReferenceIntensityThreshold;
   OutputPixelType       m_OutputIntensityThreshold;
 
-  double                m_SourceMinValue;
-  double                m_SourceMaxValue;
-  double                m_SourceMeanValue;
-  double                m_ReferenceMinValue;
-  double                m_ReferenceMaxValue;
-  double                m_ReferenceMeanValue;
-  double                m_OutputMinValue;
-  double                m_OutputMaxValue;
-  double                m_OutputMeanValue;
+  THistogramMeasurement m_SourceMinValue;
+  THistogramMeasurement m_SourceMaxValue;
+  THistogramMeasurement m_SourceMeanValue;
+  THistogramMeasurement m_ReferenceMinValue;
+  THistogramMeasurement m_ReferenceMaxValue;
+  THistogramMeasurement m_ReferenceMeanValue;
+  THistogramMeasurement m_OutputMinValue;
+  THistogramMeasurement m_OutputMaxValue;
+  THistogramMeasurement m_OutputMeanValue;
 
   HistogramPointer      m_SourceHistogram;
   HistogramPointer      m_ReferenceHistogram;
   HistogramPointer      m_OutputHistogram;
-  
+
   typedef vnl_matrix<double>  TableType;
   TableType             m_QuantileTable;
-  
+
   typedef vnl_vector<double>  GradientArrayType;
   GradientArrayType     m_Gradients;
   double                m_LowerGradient;

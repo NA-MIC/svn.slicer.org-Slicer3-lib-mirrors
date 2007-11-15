@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: DeformableRegistration11.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/09/18 00:31:08 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/09/07 14:17:42 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     {
     std::cout << "Parameter file name missing" << std::endl;
     std::cout << "Usage: " << argv[0] << " param.file" << std::endl;
-    return -1;
+    return EXIT_FAILURE;
     } 
   else 
     { 
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
   if ( !registrationFilter->ReadConfigFile( 
            (registrationFilter->GetConfigFileName()).c_str() ) ) 
     { 
-    return -1; 
+    return EXIT_FAILURE; 
     }
  
   // Read the image files
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     {
     std::cerr << "Exception caught during reference file reading ";
     std::cerr << std::endl << e << std::endl;
-    return -1;
+    return EXIT_FAILURE;
     }
   try
     {
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
     {
     std::cerr << "Exception caught during target file reading ";
     std::cerr << std::endl << e << std::endl;
-    return -1;
+    return EXIT_FAILURE;
     }
   
 
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
   //  ../Data/FiniteElementRegistrationParameters3.txt
   //
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 

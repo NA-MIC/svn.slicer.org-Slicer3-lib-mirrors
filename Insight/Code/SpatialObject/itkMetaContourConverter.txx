@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaContourConverter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:38 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007/08/17 18:07:16 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -65,7 +65,7 @@ MetaContourConverter<NDimensions>
   typedef MetaContour::ControlPointListType ControlListType;
   ControlListType::iterator itCP = Contour->GetControlPoints().begin();
       
-  for(unsigned int id=0;id< Contour->GetControlPoints().size();id++)
+  for(unsigned int identifier=0;identifier< Contour->GetControlPoints().size();identifier++)
     {
     ControlPointType pnt;
     
@@ -112,7 +112,7 @@ MetaContourConverter<NDimensions>
 
   InterpolatedListType::iterator itI = Contour->GetInterpolatedPoints().begin();
       
-  for(unsigned int id=0;id< Contour->GetInterpolatedPoints().size();id++)
+  for(unsigned int identifier=0;identifier< Contour->GetInterpolatedPoints().size();identifier++)
     {
     InterpolatedPointType pnt;
     

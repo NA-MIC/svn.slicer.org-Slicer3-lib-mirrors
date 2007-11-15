@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOffset.h,v $
   Language:  C++
-  Date:      $Date: 2004/06/20 12:34:13 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007/08/27 12:47:59 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -176,7 +176,7 @@ public:
     { for(unsigned int i=0;i < VOffsetDimension; ++i) m_Offset[i] = value; }
   
   /** Offset is an "aggregate" class.  Its data is public (m_Offset)
-   * allowing for fast and convienent instantiations/assignments.
+   * allowing for fast and convenient instantiations/assignments.
    *
    * The following syntax for assigning an index is allowed/suggested:
    *    Offset<3> index = {5, 2, 7}; */

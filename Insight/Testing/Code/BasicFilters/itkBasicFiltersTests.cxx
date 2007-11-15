@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBasicFiltersTests.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/25 16:09:20 $
-  Version:   $Revision: 1.120 $
+  Date:      $Date: 2007/09/16 15:49:14 $
+  Version:   $Revision: 1.121 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -102,6 +102,7 @@ void RegisterTests()
   REGISTER_TEST(itkGradientMagnitudeRecursiveGaussianFilterTest );
   REGISTER_TEST(itkGradientMagnitudeRecursiveGaussianFilterTest );
   REGISTER_TEST(itkGradientRecursiveGaussianFilterTest );
+  REGISTER_TEST(itkGradientRecursiveGaussianFilterTest2 );
   REGISTER_TEST(itkGradientToMagnitudeImageFilterTest );
   REGISTER_TEST(itkGradientToMagnitudeImageFilterTest );
   REGISTER_TEST(itkGrayscaleConnectedClosingImageFilterTest );

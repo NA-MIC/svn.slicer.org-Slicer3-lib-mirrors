@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageSeriesReader.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:51 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2007/08/24 13:35:59 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -37,7 +37,7 @@ namespace itk
  * the files, but the image data must have the same Size for all
  * dimensions. 
  *
- * \sa DICOMSeriesFileNames
+ * \sa GDCMSeriesFileNames
  * \sa NumericSeriesFileNames
  * \ingroup IOFilters
  *

@@ -1,21 +1,80 @@
+IF(ITK_USE_TRANSFORM_IO_FACTORIES)
 # Sources of non-templated classes.
 SET(ITKReview_SRCS
-)
+  itkTransformFileReaderWithFactory.cxx
+  itkTransformFileWriterWithFactory.cxx
+  itkMatlabTransformIO.cxx
+  itkMatlabTransformIOFactory.cxx
+  itkTransformIOBase.cxx
+  itkTransformIOFactory.cxx
+  itkTxtTransformIO.cxx
+  itkTxtTransformIOFactory.cxx
+  )
 
-
+#
+#   Begin of optional ITKReview library setup
 #
 # So far we do not have non-templated classes in this directory.
 # Whenever we add non-templated classes, then the following lines
 # should be moved out of the comments.
 #
-# ADD_LIBRARY(ITKReview ${ITK_REVIEW_BUILD_TYPE} ${ITKReview_SRCS})
-# TARGET_LINK_LIBRARIES (ITKReview ITKCommon)
+# and ... when the non-templated classes are moved out of this
+# directory, these lines must be commented out again if the library
+# becomes empty.
+#
+ADD_LIBRARY(ITKReview ${ITK_REVIEW_BUILD_TYPE} ${ITKReview_SRCS})
+TARGET_LINK_LIBRARIES (ITKReview ITKCommon itkvnl)
+IF(ITK_LIBRARY_PROPERTIES)
+  SET_TARGET_PROPERTIES(ITKReview PROPERTIES ${ITK_LIBRARY_PROPERTIES})
+ENDIF(ITK_LIBRARY_PROPERTIES)
+IF(NOT ITK_INSTALL_NO_LIBRARIES)
+  INSTALL(TARGETS ITKReview
+    RUNTIME DESTINATION ${ITK_INSTALL_BIN_DIR_CM24} COMPONENT RuntimeLibraries
+    LIBRARY DESTINATION ${ITK_INSTALL_LIB_DIR_CM24} COMPONENT RuntimeLibraries
+    ARCHIVE DESTINATION ${ITK_INSTALL_LIB_DIR_CM24} COMPONENT Development)
+ENDIF(NOT ITK_INSTALL_NO_LIBRARIES)
+
+#
+#   End of optional ITKReview library setup
+#
+ENDIF(ITK_USE_TRANSFORM_IO_FACTORIES)
+
+
+IF(ITK_USE_MINC2 AND MINC2_FOUND)
+SET(ITKMINC2_SRCS
+  itkMINC2ImageIO.cxx
+  itkMINC2ImageIOFactory.cxx
+  )
+
+ADD_LIBRARY(ITKIOMINC2 ${ITK_REVIEW_BUILD_TYPE} ${ITKMINC2_SRCS})
+TARGET_LINK_LIBRARIES (ITKIOMINC2 ITKIO ${MINC2_LIB} ${HDF5_LIB} ${NETCDF_LIB})
+IF(ITK_LIBRARY_PROPERTIES)
+  SET_TARGET_PROPERTIES(ITKIOMINC2 PROPERTIES ${ITK_LIBRARY_PROPERTIES})
+ENDIF(ITK_LIBRARY_PROPERTIES)
+IF(NOT ITK_INSTALL_NO_LIBRARIES)
+  INSTALL(TARGETS ITKIOMINC2
+    RUNTIME DESTINATION ${ITK_INSTALL_BIN_DIR_CM24} COMPONENT RuntimeLibraries
+    LIBRARY DESTINATION ${ITK_INSTALL_LIB_DIR_CM24} COMPONENT RuntimeLibraries
+    ARCHIVE DESTINATION ${ITK_INSTALL_LIB_DIR_CM24} COMPONENT Development)
+ENDIF(NOT ITK_INSTALL_NO_LIBRARIES)
+
+
+
+ENDIF(ITK_USE_MINC2 AND MINC2_FOUND)
+
 
 # Build ITKQuadEdgeMesh library
 
 ADD_LIBRARY(ITKQuadEdgeMesh ${ITK_REVIEW_BUILD_TYPE}
   itkQuadEdge.cxx
   )
+IF(NOT ITK_INSTALL_NO_LIBRARIES)
+  INSTALL(TARGETS ITKQuadEdgeMesh
+    RUNTIME DESTINATION ${ITK_INSTALL_BIN_DIR_CM24} COMPONENT RuntimeLibraries
+    LIBRARY DESTINATION ${ITK_INSTALL_LIB_DIR_CM24} COMPONENT RuntimeLibraries
+    ARCHIVE DESTINATION ${ITK_INSTALL_LIB_DIR_CM24} COMPONENT Development)
+ENDIF(NOT ITK_INSTALL_NO_LIBRARIES)
+
 
 TARGET_LINK_LIBRARIES(ITKQuadEdgeMesh ITKCommon)
 
@@ -34,7 +93,6 @@ IF(NOT ITK_INSTALL_NO_DEVELOPMENT)
     DESTINATION ${ITK_INSTALL_INCLUDE_DIR_CM24}/Review
     COMPONENT Development)
 ENDIF(NOT ITK_INSTALL_NO_DEVELOPMENT)
-
 # Warn the user about the license issues and lack of stability of the API
 # of the code in this directory
 SET(msg "Warning: You have chosen to use the files in the Review directory.")

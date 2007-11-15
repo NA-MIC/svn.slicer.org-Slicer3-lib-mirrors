@@ -160,6 +160,7 @@ ADD_TEST(itkGradientImageFilterTest ${BASIC_FILTERS_TESTS} itkGradientImageFilte
 ADD_TEST(itkGradientMagnitudeImageFilterTest ${BASIC_FILTERS_TESTS} itkGradientMagnitudeImageFilterTest)
 ADD_TEST(itkGradientMagnitudeRecursiveGaussianFilterTest ${BASIC_FILTERS_TESTS} itkGradientMagnitudeRecursiveGaussianFilterTest)
 ADD_TEST(itkGradientRecursiveGaussianFilterTest ${BASIC_FILTERS_TESTS} itkGradientRecursiveGaussianFilterTest)
+ADD_TEST(itkGradientRecursiveGaussianFilterTest2 ${BASIC_FILTERS_TESTS} itkGradientRecursiveGaussianFilterTest2)
 ADD_TEST(itkGrayscaleFunctionDilateImageFilterTest ${BASIC_FILTERS_TESTS}
   --compare ${BASELINE}/itkGrayscaleFunctionDilateImageFilterTest.mha
             ${TEMP}/itkGrayscaleFunctionDilateImageFilterTest.mha
@@ -887,6 +888,7 @@ itkGradientImageFilterTest.cxx
 itkGradientMagnitudeImageFilterTest.cxx
 itkGradientMagnitudeRecursiveGaussianFilterTest.cxx
 itkGradientRecursiveGaussianFilterTest.cxx
+itkGradientRecursiveGaussianFilterTest2.cxx
 itkGradientToMagnitudeImageFilterTest.cxx
 itkGrayscaleConnectedOpeningImageFilterTest.cxx
 itkGrayscaleConnectedClosingImageFilterTest.cxx
@@ -1075,6 +1077,13 @@ itkSignedMaurerDistanceMapImageFilterTest
 itkVectorIndexSelectionCastImageFilterTest
 itkVectorConnectedComponentImageFilterTest
 )
+
+IF(ITK_OBJCXX_COMPILER_WORKS)
+  SET(BASICFILTERS_OBJCXX_TEST ${CXX_TEST_PATH}/itkBasicFiltersHeaderObjCxxTest)
+  ADD_TEST(itkBasicFiltersHeaderObjCxxTest ${BASICFILTERS_OBJCXX_TEST})
+  ADD_EXECUTABLE(itkBasicFiltersHeaderObjCxxTest itkBasicFiltersHeaderObjCxxTest.mm)
+  TARGET_LINK_LIBRARIES(itkBasicFiltersHeaderObjCxxTest ITKIO ITKNumerics ITKBasicFilters)
+ENDIF(ITK_OBJCXX_COMPILER_WORKS)
 
 ADD_TEST(itkBasicFiltersHeaderTest ${BASIC_FILTERS_HEADER_TEST})
 ADD_EXECUTABLE(itkBasicFiltersHeaderTest itkBasicFiltersHeaderTest.cxx)

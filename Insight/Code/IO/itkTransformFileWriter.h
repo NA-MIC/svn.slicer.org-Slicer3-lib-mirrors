@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransformFileWriter.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:53 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/08/10 15:43:28 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,16 @@
 =========================================================================*/
 #ifndef __itkTransformFileWriter_h
 #define __itkTransformFileWriter_h
+
+// First make sure that the configuration is available.
+// This line can be removed once the factory based version
+// gets integrated into the main directories.
+#include "itkConfigure.h"
+
+#ifdef ITK_USE_TRANSFORM_IO_FACTORIES
+#include "itkTransformFileWriterWithFactory.h"
+#else
+
 
 #include "itkLightProcessObject.h"
 #include "metaTransform.h"
@@ -85,5 +95,6 @@ private:
 
 } // namespace itk
 
+#endif
 
 #endif // __itkTransformFileWriter_h

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSignedMaurerDistanceMapImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/05 08:41:17 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007/08/20 07:46:05 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -243,7 +243,7 @@ SignedMaurerDistanceMapImageFilter<TInputImage, TOutputImage>
     while( !Ot.IsAtEnd() )
       {
       
-      // cast to a real type is required on some plateforms 
+      // cast to a real type is required on some platforms 
       // TODO: use "typename NumericTraits<OutputPixelType>::RealType" instead
       // double. cableswig currently fail to build it with msvc 7.1
       const OutputPixelType outputValue =

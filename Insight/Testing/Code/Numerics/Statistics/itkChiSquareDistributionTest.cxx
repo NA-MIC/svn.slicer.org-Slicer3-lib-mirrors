@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkChiSquareDistributionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/24 17:53:01 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/05/23 12:37:58 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -93,7 +93,7 @@ int itkChiSquareDistributionTest(int, char* [] )
   std::cout << std::endl;
   
   std::cout << "Inverse Chi-Square CDF" << std::endl;
-  tol = 1e-13;   
+  tol = 1e-12;
   std::cout << "Tolerance used for test: ";
   std::cout.width(20);
   std::cout.precision(15);
@@ -192,7 +192,7 @@ int itkChiSquareDistributionTest(int, char* [] )
   std::cout << std::endl;
   
   std::cout << "Inverse Chi-Square CDF" << std::endl;
-  tol = 1e-13;
+  tol = 1e-12;
   std::cout << "Tolerance used for test: ";
   std::cout.width(20);
   std::cout.precision(15);

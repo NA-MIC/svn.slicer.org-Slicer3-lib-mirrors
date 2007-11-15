@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkOrientImageFilter.h,v $
 Language:  C++
-Date:      $Date: 2006/11/02 23:30:36 $
-Version:   $Revision: 1.9 $
+Date:      $Date: 2007/08/20 18:06:22 $
+Version:   $Revision: 1.10 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -187,14 +187,14 @@ public:
   itkTypeMacro(OrientImageFilter, ImageToImageFilter);
 
   /** Set/Get the orientation codes to define the coordinate transform. */
-  itkGetMacro(GivenCoordinateOrientation, CoordinateOrientationCode);
+  itkGetEnumMacro(GivenCoordinateOrientation, CoordinateOrientationCode);
   void SetGivenCoordinateOrientation(CoordinateOrientationCode newCode);
   inline void SetGivenCoordinateDirection(const typename TInputImage::DirectionType &GivenDirection)
     {
     SetGivenCoordinateOrientation(
     itk::SpatialOrientationAdapter().FromDirectionCosines(GivenDirection));
     }
-  itkGetMacro(DesiredCoordinateOrientation, CoordinateOrientationCode);
+  itkGetEnumMacro(DesiredCoordinateOrientation, CoordinateOrientationCode);
   void SetDesiredCoordinateOrientation(CoordinateOrientationCode newCode);
   inline void SetDesiredCoordinateDirection(const typename TOutputImage::DirectionType &DesiredDirection)
     {

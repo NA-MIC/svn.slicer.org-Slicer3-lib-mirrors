@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkReviewTests.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/24 17:53:01 $
-  Version:   $Revision: 1.37 $
+  Date:      $Date: 2007/08/31 10:43:20 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -19,6 +19,7 @@
 
 #include "vnl/vnl_sample.h"
 #include "itkTestMain.h"
+#include "itkConfigure.h"
 
 void RegisterTests()
 {
@@ -33,10 +34,18 @@ void RegisterTests()
   REGISTER_TEST(itkQuadEdgeMeshBasicLayerTest);
   REGISTER_TEST(itkQuadEdgeMeshDeleteEdgeTest);
   REGISTER_TEST(itkQuadEdgeMeshFrontIteratorTest);
+  REGISTER_TEST(itkQuadEdgeMeshIteratorTest);
   REGISTER_TEST(itkQuadEdgeMeshPointTest1);
   REGISTER_TEST(itkQuadEdgeMeshTest1);
   REGISTER_TEST(itkQuadEdgeMeshTest2);
   REGISTER_TEST(itkQuadEdgeMeshTest3);
+  REGISTER_TEST(itkQuadEdgeMeshIteratorTest);
+  REGISTER_TEST(itkDynamicQuadEdgeMeshTest);
+  REGISTER_TEST(itkQuadEdgeMeshPolygonCellTest);
+  REGISTER_TEST(itkQuadEdgeMeshCellInterfaceTest);
+  REGISTER_TEST(itkQuadEdgeMeshEulerOperatorsTest);
+  REGISTER_TEST(itkAutomaticTopologyQuadEdgeMeshSourceTest);
+  REGISTER_TEST(itkRegularSphereQuadEdgeMeshSourceTest);
 
   REGISTER_TEST(itkContourExtractor2DImageFilterTest);
  
@@ -63,10 +72,17 @@ void RegisterTests()
  
   REGISTER_TEST(itkConformalFlatteningMeshFilterTest);
 
+  REGISTER_TEST(itkVTKPolyDataReaderQuadEdgeMeshTest);
   REGISTER_TEST(itkVTKPolyDataReaderTest);
   REGISTER_TEST(itkVTKPolyDataWriterTest);
 
   REGISTER_TEST(itkMorphologicalWatershedImageFilterTest);
   REGISTER_TEST(itkMorphologicalWatershedFromMarkersImageFilterTest);
 
+  REGISTER_TEST(itkBinaryMorphologicalClosingImageFilterTest);
+  REGISTER_TEST(itkBinaryMorphologicalOpeningImageFilterTest);
+
+#ifdef ITK_USE_MINC2
+  REGISTER_TEST(itkMINC2ImageIOTest);
+#endif 
 }

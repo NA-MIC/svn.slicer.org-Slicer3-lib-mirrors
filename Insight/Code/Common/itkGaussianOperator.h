@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianOperator.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/01 14:39:33 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2007/06/28 23:30:49 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -95,12 +95,12 @@ public:
   /** Sets the desired maximum error of the gaussian approximation.  Maximum
    * error is the difference between the area under the discrete Gaussian curve
    * and the area under the continuous Gaussian. Maximum error affects the
-   * Gaussian operator size. */
+   * Gaussian operator size. The value must be between 0.0 and 1.0. */
   void SetMaximumError(const double &max_error)
   {
     if (max_error >= 1 || max_error <= 0)
       {
-        throw ExceptionObject(__FILE__, __LINE__);
+      itkExceptionMacro("Maximum Error Must be in the range [ 0.0 , 1.0 ]");
       }
     
     m_MaximumError = max_error;

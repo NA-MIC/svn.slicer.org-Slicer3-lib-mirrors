@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 18:39:28 $
-  Version:   $Revision: 1.69 $
+  Date:      $Date: 2007/09/11 13:22:41 $
+  Version:   $Revision: 1.79 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -32,6 +32,7 @@ namespace itk
 MetaImageIO::MetaImageIO()
 {
   m_FileType = Binary;
+  m_SubSamplingFactor = 1;
   if(MET_SystemByteOrderMSB())
     {
     m_ByteOrder = BigEndian;
@@ -50,6 +51,7 @@ void MetaImageIO::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
   m_MetaImage.PrintInfo();
+  os << indent << "SubSamplingFactor: " << m_SubSamplingFactor << "\n";
 }
 
 
@@ -58,13 +60,11 @@ void MetaImageIO::SetDataFileName( const char* filename )
   m_MetaImage.ElementDataFileName( filename );
 }
 
- 
 // This method will only test if the header looks like a
 // MetaImage.  Some code is redundant with ReadImageInformation
 // a StateMachine could provide a better implementation
 bool MetaImageIO::CanReadFile( const char* filename ) 
 { 
-
   // First check the extension
   std::string fname = filename;
   if(  fname == "" )
@@ -73,7 +73,9 @@ bool MetaImageIO::CanReadFile( const char* filename )
     return false;
     }
 
-  bool extensionFound = false;
+  return m_MetaImage.CanRead(filename);
+
+  /*bool extensionFound = false;
   std::string::size_type mhaPos = fname.rfind(".mha");
   if ((mhaPos != std::string::npos)
       && (mhaPos == fname.length() - 4))
@@ -161,7 +163,7 @@ bool MetaImageIO::CanReadFile( const char* filename )
     }
 
   inputStream.close();
-  return false;
+  return false;*/
 
 }
   
@@ -440,8 +442,8 @@ void MetaImageIO::ReadImageInformation()
   int i;
   for(i=0; i<(int)m_NumberOfDimensions; i++)
     {
-    this->SetDimensions(i, m_MetaImage.DimSize(i));
-    this->SetSpacing(i, m_MetaImage.ElementSpacing(i));
+    this->SetDimensions(i,m_MetaImage.DimSize(i)/m_SubSamplingFactor);
+    this->SetSpacing(i, m_MetaImage.ElementSpacing(i)*m_SubSamplingFactor);
     this->SetOrigin(i, m_MetaImage.Position(i));
     } 
 
@@ -908,7 +910,27 @@ void MetaImageIO::ReadImageInformation()
 
 void MetaImageIO::Read(void* buffer)
 { 
-  if(!m_MetaImage.Read(m_FileName.c_str(), true, buffer))
+  // Pass the IO region to the MetaImage library
+  int nDims = this->GetNumberOfDimensions();
+
+  if(m_UseStreamedReading)
+    {
+    int* indexMin = new int[nDims];
+    int* indexMax = new int[nDims];
+    for(int i=0;i<nDims;i++)
+      {
+      indexMin[i] = m_IORegion.GetIndex()[i];
+      indexMax[i] = indexMin[i] + m_IORegion.GetSize()[i] -1;
+      }
+
+    m_MetaImage.ReadROI(indexMin, indexMax, 
+                        m_FileName.c_str(), true, buffer,
+                        m_SubSamplingFactor);
+ 
+    delete [] indexMin;
+    delete [] indexMax;
+    }
+  else if(!m_MetaImage.Read(m_FileName.c_str(), true, buffer))
     {
     ExceptionObject exception(__FILE__, __LINE__);
     exception.SetDescription("File cannot be read");
@@ -1109,9 +1131,9 @@ MetaImageIO
       dirz = this->GetDirection(2);
       for(unsigned i = 0; i < 3; i++)
         {
-        dir[i][0] = dirx[0];
-        dir[i][1] = diry[0];
-        dir[i][2] = dirz[0];
+        dir[i][0] = dirx[i];
+        dir[i][1] = diry[i];
+        dir[i][2] = dirz[i];
         }
       coordOrient = itk::SpatialOrientationAdapter().FromDirectionCosines(dir);
 #if defined(ITKIO_DEPRECATED_METADATA_ORIENTATION)
@@ -1371,5 +1393,36 @@ MetaImageIO
   delete []eSpacing;
   delete []eOrigin;
 }
+
+/** Given a requested region, determine what could be the region that we can
+ * read from the file. This is called the streamable region, which will be
+ * smaller than the LargestPossibleRegion and greater or equal to the 
+ * RequestedRegion */
+ImageIORegion 
+MetaImageIO
+::GenerateStreamableReadRegionFromRequestedRegion( const ImageIORegion & requestedRegion  ) const
+{
+  //
+  // The default implementations determines that the streamable region is
+  // equal to the largest possible region of the image.
+  //
+  ImageIORegion streamableRegion(this->m_NumberOfDimensions);
+  if(!m_UseStreamedReading)
+    { 
+    for( unsigned int i=0; i < this->m_NumberOfDimensions; i++ )
+      {
+      streamableRegion.SetSize( i, this->m_Dimensions[i] );
+      streamableRegion.SetIndex( i, 0 );
+      }
+    }
+  else
+    {
+    streamableRegion = requestedRegion;
+    }
+
+  return streamableRegion;
+}
+ 
+
 
 } // end namespace itk
