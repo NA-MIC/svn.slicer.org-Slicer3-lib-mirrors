@@ -1,14 +1,14 @@
-/CMakeLists.txt/1.8/Thu Aug  4 21:12:20 2005//TVTK-5-0
-/Copyright.txt/1.2/Wed Oct 22 14:30:34 2003//TVTK-5-0
-/DICOMAppHelper.cxx/1.21.20.3/Thu May  3 17:12:13 2007//TVTK-5-0
-/DICOMAppHelper.h/1.12.20.1/Thu Aug 31 17:30:29 2006//TVTK-5-0
-/DICOMCMakeConfig.h.in/1.2/Thu Aug 28 16:36:09 2003//TVTK-5-0
-/DICOMCallback.h/1.6/Fri Apr 15 22:55:39 2005//TVTK-5-0
-/DICOMConfig.h/1.6/Mon Sep 15 22:25:50 2003//TVTK-5-0
-/DICOMFile.cxx/1.11/Tue Jul 26 20:02:22 2005//TVTK-5-0
-/DICOMFile.h/1.14/Wed Jul 27 21:01:09 2005//TVTK-5-0
-/DICOMParser.cxx/1.14.4.1/Fri Mar 24 15:59:50 2006//TVTK-5-0
-/DICOMParser.h/1.8/Wed Aug 27 18:49:00 2003//TVTK-5-0
-/DICOMParserMap.h/1.5/Wed Aug 27 18:49:00 2003//TVTK-5-0
-/DICOMTypes.h/1.5/Tue Jul 26 20:02:22 2005//TVTK-5-0
+/CMakeLists.txt/1.8/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/Copyright.txt/1.2/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/DICOMAppHelper.cxx/1.21.20.3/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/DICOMAppHelper.h/1.12.20.1/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/DICOMCMakeConfig.h.in/1.2/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/DICOMCallback.h/1.6/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/DICOMConfig.h/1.6/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/DICOMFile.cxx/1.11/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/DICOMFile.h/1.14/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/DICOMParser.cxx/1.14.4.1/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/DICOMParser.h/1.8/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/DICOMParserMap.h/1.5/Thu Nov 15 15:19:49 2007//TVTK-5-0
+/DICOMTypes.h/1.5/Thu Nov 15 15:19:49 2007//TVTK-5-0
 D
