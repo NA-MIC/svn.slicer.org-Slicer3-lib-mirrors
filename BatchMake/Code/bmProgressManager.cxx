@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmProgressManager.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 18:30:48 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/11/22 16:27:43 $
+  Version:   $Revision: 1.3 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -34,9 +34,8 @@ void ProgressManager::SetStatus(MString status)
 
 
 void ProgressManager::IsRunning()
-  {
-  //std::cout << ".";
-  }
+{
+}
 
 void ProgressManager::AddAction(MString name)
 {

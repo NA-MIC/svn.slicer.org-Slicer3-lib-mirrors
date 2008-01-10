@@ -1,0 +1,15 @@
+setApp(imageMath @ImageMath)
+
+set(noiseRange ${j})
+GetFilename(x ${inputImageName} NAME_WITHOUT_EXTENSION)
+set(noiseImageName '${x}_Noise_${j}.mha')
+set(noiseImage ${NoiseImagesDir}'/'${noiseImageName})
+
+SetAppOption(imageMath.infile ${inputImage})
+SetAppOption(imageMath.UniformNoise.inValMin ${inValMin})
+SetAppOption(imageMath.UniformNoise.inValMax ${inValMax})
+SetAppOption(imageMath.UniformNoise.noiseMean ${noiseMean})
+SetAppOption(imageMath.UniformNoise.noiseRange ${noiseRange})
+SetAppOption(imageMath.Write.filename ${noiseImage})
+
+Run(output ${imageMath})

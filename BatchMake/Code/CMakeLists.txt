@@ -51,6 +51,7 @@ SET(BatchMakeLib_HDRS
   bmScriptGetFilenameAction.h
   bmScriptConvertImageAction.h
   bmScriptFileExistsAction.h
+  bmScriptGetListSizeAction.h
   )
 
 #Add Commands
@@ -88,6 +89,7 @@ SET(BatchMakeLib_SRCS
   bmScriptGetFilenameAction.cxx
   bmScriptConvertImageAction.cxx
   bmScriptFileExistsAction.cxx
+  bmScriptGetListSizeAction.cxx
   )
 
 #
@@ -173,7 +175,6 @@ IF(USE_FLTK)
     bmSplashScreenControls.h
     bmScriptErrorGUI.h
     bmProgressManagerGUI.h
-    bmProgressGUIControls.h
     bmApplicationListGUIBase.h
     bmApplicationListGUIControls.h
     bmApplicationWrapperGUIBase.h

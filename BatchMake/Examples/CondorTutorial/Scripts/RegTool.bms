@@ -1,0 +1,19 @@
+setApp(RegTool @ImageRegTool)
+SetAppOption(RegTool.GenerateXMLMetaOutput 1)
+
+set(fixedImage ${noiseImage})
+set(movingImage ${transImage})
+
+GetFilename(x ${transImage} NAME_WITHOUT_EXTENSION)
+set(newImage '${x}_Reg${noiseImageName}')
+set(saveImage ${OutputDir}'/'${newImage})
+
+SetAppOption(RegTool.TfmRigid 1)
+SetAppOption(RegTool.FixedImage ${fixedImage})
+SetAppOption(RegTool.MovingImage ${movingImage})
+
+SetAppOption(RegTool.SaveMovingImage.Filename ${saveImage})
+SetAppOption(RegTool.OptIterations.Number ${numberIterations})
+
+Run(output ${RegTool})
+set(finalMetricValue RegTool.finalMetricValue)

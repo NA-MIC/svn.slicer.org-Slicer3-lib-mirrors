@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmScriptEditorGUIControls.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/18 19:52:06 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007/12/15 17:40:19 $
+  Version:   $Revision: 1.13 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -106,8 +106,8 @@ void ScriptEditorGUIControls::Show()
     int y = g_Scripteditorgui->y() + (g_Scripteditorgui->w() - ui->g_Splashscreen->w())/2;
     ui->g_Splashscreen->position(x,y);
 
-    m_SplashBuffer = "BatchMake 1.0\n";
-    m_SplashBuffer += "Copyright (c) 2006 Kitware Inc.\n\n";
+    m_SplashBuffer = "BatchMake 1.0.4\n";
+    m_SplashBuffer += "Copyright (c) 2007 Kitware Inc.\n\n";
 #ifdef BM_DASHBOARD     
     m_SplashBuffer += "Dashboard Module: [enabled]\n";
 #else
@@ -120,7 +120,7 @@ void ScriptEditorGUIControls::Show()
     m_SplashBuffer += "Grid Module: [disabled]\n";
 #endif
      
-    m_SplashBuffer += "\nWebsite: http://public.kitware.com/BatchMake\n";
+    m_SplashBuffer += "\nWebsite: http://www.batchmake.org\n";
     ui->copyright->label(m_SplashBuffer.c_str());
     g_Scripteditorgui->show();
     ui->Show();
@@ -380,6 +380,8 @@ void ScriptEditorGUIControls::OnGenerateCondor()
   m_Errorbuffer->text("");
   m_Errorgui->SetTextDisplay(g_output);
   m_Parser->SetError(m_Errorgui);
+  m_Parser->SetCurrentFilename(m_Filename.toChar());
+
   int m_Offset = 0;
   for (int i=0;i<g_editor->buffer()->count_lines(0,g_editor->buffer()->length())+1;i++)
     {

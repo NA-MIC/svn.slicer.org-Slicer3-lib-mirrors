@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmScriptActionManager.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/28 14:15:01 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2007/11/22 15:06:28 $
+  Version:   $Revision: 1.18 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -44,6 +44,7 @@
 #include "bmScriptGetFilenameAction.h"
 #include "bmScriptConvertImageAction.h"
 #include "bmScriptFileExistsAction.h"
+#include "bmScriptGetListSizeAction.h"
 
 #ifdef BM_GRID
   #include "bmScriptGridSingleNodeAction.h"
@@ -239,6 +240,7 @@ std::vector<MString> ScriptActionManager::GetKeywordList()
   BM_NEWKEYWORD(_list, MakeDirectory);
   BM_NEWKEYWORD(_list, GetTime);
   BM_NEWKEYWORD(_list, GetCurrentDateTime);
+  BM_NEWKEYWORD(_list, GetListSize);
   BM_NEWKEYWORD(_list, GridSetGrouping);
   BM_NEWKEYWORD(_list, GridMaxNodes);
   BM_NEWKEYWORD(_list, GridTempDirectory);
@@ -247,6 +249,7 @@ std::vector<MString> ScriptActionManager::GetKeywordList()
   BM_NEWKEYWORD(_list, GetFilename);
   BM_NEWKEYWORD(_list, ConvertImage);
   BM_NEWKEYWORD(_list, FileExists);
+
   return _list;
 }
 
@@ -280,6 +283,7 @@ ScriptAction* ScriptActionManager::CreateAction(MString option)
   BM_NEWACTION(option, GetTime);
   BM_NEWACTION(option, GetCurrentDateTime);
   BM_NEWACTION(option, Glob);
+  BM_NEWACTION(option, GetListSize);
   BM_NEWACTION(option, GetFilename);
   BM_NEWACTION(option, ConvertImage);
   BM_NEWACTION(option, FileExists);

@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmSliceExtractor.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/03 22:03:27 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/12/18 19:30:02 $
+  Version:   $Revision: 1.3 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -26,10 +26,11 @@ int main(int argc, char* argv[])
   command.SetDescription("Extract a slice from a volume");
 
   // Required field
-  command.AddField("volume","3D Image Filename",MetaCommand::STRING);
+  command.AddField("volume","3D Image Filename",MetaCommand::STRING,MetaCommand::DATA_IN);
   command.AddField("slice","2D Image Filename",MetaCommand::STRING,MetaCommand::DATA_OUT);
   command.AddField("orientation","Orientation to extract",MetaCommand::INT);
   command.AddField("sliceNumber","Slice number",MetaCommand::INT);
+  command.SetOption("middle","middle",false,"Extract from middle");
 
   // Parsing
   if(!command.Parse(argc,argv))
@@ -45,6 +46,13 @@ int main(int argc, char* argv[])
   SliceExtractor sliceExtractor;
   sliceExtractor.SetOrientation(orientation);
   sliceExtractor.SetSlice(sliceNumber);
+
+  if(command.GetOptionWasSet("middle"))
+    {
+    sliceExtractor.SetFromMiddleSlice(true);
+    }
+
+
   sliceExtractor.Extract(volume.c_str(),slice.c_str());
 
   return 0;

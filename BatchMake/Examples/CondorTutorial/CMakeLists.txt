@@ -1,0 +1,29 @@
+PROJECT(BatchmakeCondorTutorial)
+
+
+FIND_PACKAGE(ITK)
+IF(ITK_FOUND)
+  INCLUDE(${ITK_USE_FILE})
+ELSE(ITK_FOUND)
+  MESSAGE(FATAL_ERROR "Please set ITK_DIR.")
+ENDIF(ITK_FOUND)
+
+
+FIND_PACKAGE(FLTK)
+IF(FLTK_FOUND)
+  INCLUDE_DIRECTORIES(${FLTK_INCLUDE_DIR})
+ENDIF(FLTK_FOUND)
+
+# The fluid-generated fltk sources have many warnings.  This macro
+# will disable warnings for the generated files on some compilers.
+MACRO(ITK_DISABLE_FLTK_GENERATED_WARNINGS files)
+  IF(CMAKE_COMPILER_IS_GNUCXX)
+    FOREACH(f ${files})
+      STRING(REGEX REPLACE "\\.fl$" ".cxx" SRC "${f}")
+      STRING(REGEX REPLACE ".*/([^/]*)$" "\\1" SRC "${SRC}")
+      SET_SOURCE_FILES_PROPERTIES(${SRC} PROPERTIES COMPILE_FLAGS -w)
+    ENDFOREACH(f)
+  ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+ENDMACRO(ITK_DISABLE_FLTK_GENERATED_WARNINGS)
+
+SUBDIRS(Applications)

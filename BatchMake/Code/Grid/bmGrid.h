@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmGrid.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/06 14:09:48 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/12/15 20:45:47 $
+  Version:   $Revision: 1.4 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -46,6 +46,7 @@ public:
   void WriteCondor();
   void WriteGAD();
   void WriteShell();
+  bool HasCurrentScopeFile();
   const char* GetCurrentScopeFile();
 
   void SetDataHost(const char* hostname) {m_DataHost = hostname;}
@@ -85,6 +86,7 @@ public:
 
 protected:
 
+  std::string Strip(std::string value);
   std::string AddQuotes(std::string value);
 
   /** Return a filename for a full path */

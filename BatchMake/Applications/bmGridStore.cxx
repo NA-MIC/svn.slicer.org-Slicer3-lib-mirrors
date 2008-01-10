@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmGridStore.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/03 22:03:27 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007/12/15 19:55:02 $
+  Version:   $Revision: 1.3 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -130,7 +130,8 @@ void ParseXMLOutput(const char* filename,
 int main(int argc, char* argv[])
 {
   MetaCommand command;
-  
+  command.DisableDeprecatedWarnings();
+
   command.SetName("bmGridStore");
   command.SetVersion("1.0");
   command.SetAuthor("Kitware Inc");
@@ -140,6 +141,13 @@ int main(int argc, char* argv[])
   command.AddField("filename","Name of the file to store the variables",MetaCommand::STRING,MetaCommand::DATA_OUT);
   command.AddField("name","Name of the variable",MetaCommand::STRING);
   command.AddField("value","Value to store",MetaCommand::STRING);
+ 
+  // Add the input file option
+  // This is necessary for Condor to send the file to the input node
+  // The inputfilename variable is actually never used
+  command.SetOption("inputfilename","i",false,
+                    "Input Filename",
+                    MetaCommand::STRING,"",MetaCommand::DATA_IN);
 
   // Add option to parse the output of an executable
   command.SetOption("parse","p",false,
@@ -158,6 +166,7 @@ int main(int argc, char* argv[])
     }
 
   std::string filename = command.GetValueAsString("filename");
+
   std::string name = command.GetValueAsString("name");
   std::string value = command.GetValueAsString("value");
 

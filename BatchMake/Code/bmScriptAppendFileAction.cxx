@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmScriptAppendFileAction.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 18:30:48 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007/10/08 02:25:01 $
+  Version:   $Revision: 1.3 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -66,7 +66,14 @@ void ScriptAppendFileAction::Execute()
            m_file << std::endl;
            l++;
            m_insert = false;
-        }        
+        }
+        else if(m_text[l+1] == 't')
+        {
+           m_file << '\t';
+           l++;
+           m_insert = false;
+        }    
+             
      
        if (m_insert)
          m_file << m_text[l];

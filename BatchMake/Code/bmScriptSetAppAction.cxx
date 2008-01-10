@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmScriptSetAppAction.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/21 23:39:13 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/12/14 17:08:49 $
+  Version:   $Revision: 1.6 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -84,7 +84,9 @@ bool ScriptSetAppAction::TestParam(ScriptError* error,int linenumber)
 
   if(!appFound)
     {
-    error->SetError(MString("SetApp() cannot find the corresponding application"),linenumber);
+    std::string errorstr = "SetApp() cannot find the application: ";
+    errorstr += appName.toChar();
+    error->SetError(MString(errorstr.c_str()),linenumber);
     }
 
   return true;

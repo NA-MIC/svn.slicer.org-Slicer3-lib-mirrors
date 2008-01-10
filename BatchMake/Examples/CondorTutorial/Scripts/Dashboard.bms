@@ -1,0 +1,22 @@
+# Send all the information to the DashBoard
+AddMethodInput(noiseImageName Meth 'Fixed Image')
+AddMethodInput(transImageName Meth 'Moving Image')
+AddMethodInput(noiseRange Meth 'Range of the uniform noise')
+
+ExtractSlice('${fixedImage}' '${fixedImage}Slice.png' 2 1 FROM_MIDDLE)
+Set(fixedSlice '${fixedImage}Slice.png')
+AddMethodInput(fixedSlice Meth 'Fixed Slice with noise' png)
+
+ExtractSlice('${movingImage}' '${movingImage}Slice.png' 2 1 FROM_MIDDLE)
+Set(movingSlice '${movingImage}Slice.png')
+AddMethodInput(movingSlice Meth 'Moving Slice' png)
+
+ExtractSlice('${saveImage}' '${saveImage}Slice.png' 2 1 FROM_MIDDLE)
+Set(savingSlice '${saveImage}Slice.png')
+AddMethodOutput(savingSlice Meth 'Registered Slice' png)
+
+AddMethodOutput(finalMetricValue Meth 'Metric Value after registration')
+AddMethodOutput(numberIterations Meth 'Number of iteration for the registration')
+
+DashboardSend(Meth)
+

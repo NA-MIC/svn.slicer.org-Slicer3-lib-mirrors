@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmProgressManagerGUI.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/30 21:03:36 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007/11/22 16:27:43 $
+  Version:   $Revision: 1.6 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -49,15 +49,18 @@ void ProgressManagerGUI::SetStatus(MString status)
 void ProgressManagerGUI::IsRunning()
 {
   if (m_Progress)
-  {
+    {
     m_Progress->value(m_Progress->value()+1);
     if (m_Progress->value() == m_Progress->maximum()+1)
-     m_Progress->value(0);
-  }
+      { 
+      m_Progress->value(0);
+      }
+    }
 
   if (m_CurrentNode)
+    {
     m_CurrentNode->branch_icon( &image_running );
-
+    }
   m_ProgressGUI->g_Progressgui->redraw();
   Fl::check();
 }

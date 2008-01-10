@@ -3,8 +3,8 @@
   Program:   BatchMake
   Module:    $RCSfile: bmScriptRunAction.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/21 23:39:13 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007/11/13 20:17:16 $
+  Version:   $Revision: 1.11 $
   Copyright (c) 2005 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
@@ -81,7 +81,7 @@ void ScriptRunAction::ParseXMLOutput(const char* output)
     }
   catch(...)
     {
-    //std::cout << "Cannot parse output" << std::endl;
+    std::cout << "Cannot parse output" << std::endl;
     return;
     }
   XMLParserType::TagVectorType tags = xmlReader->GetTags();
@@ -101,9 +101,13 @@ void ScriptRunAction::ParseXMLOutput(const char* output)
           {
           name = (*itValues).second;
           }
-        else if((*itValues).first == "value")
+        else if(!strncmp((*itValues).first.c_str(),"value",5))
           {
-          value = "'"+(*itValues).second+"'";
+          if(value.size()>0)
+            {
+            value += " ";
+            }
+          value += "'"+(*itValues).second+"'";
           }
         itValues++;
         }

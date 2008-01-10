@@ -1,0 +1,13 @@
+setApp(ImageResample @ImageResample)
+
+GetFilename(x ${inputImageName} NAME_WITHOUT_EXTENSION)
+set(transImageName '${x}_Trans.mha')
+set(transImage '${ImagesResampleDir}/${transImageName}')
+
+SetAppOption(ImageResample.InputImage ${inputImage})
+SetAppOption(ImageResample.OutputImage ${transImage})
+SetAppOption(ImageResample.coordinate.x ${trans_x})
+SetAppOption(ImageResample.coordinate.y ${trans_y})
+SetAppOption(ImageResample.coordinate.z ${trans_z})
+
+Run(output ${ImageResample})

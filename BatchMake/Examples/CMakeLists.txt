@@ -6,6 +6,7 @@ IF(GRID_SUPPORT)
   SUBDIRS(
     CondorTest
     Calculator
+    CondorTutorial
     )
 ENDIF(GRID_SUPPORT)
 

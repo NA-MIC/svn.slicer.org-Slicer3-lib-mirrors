@@ -1,0 +1,54 @@
+#*****************************************************************
+# Moodify this part of the code with your directories and settings
+#*****************************************************************
+# Set your directory where you images are
+set(ImagesDir 'C:/Matthieu/BatchmakeCondorTutorial/InputData')
+# Set your directory where you output images will be
+set(OutputDir 'C:/Matthieu/BatchmakeCondorTutorial/OutputData')
+
+# ImageMath settings
+set(NoiseImagesDir ${OutputDir})
+set(inValMin 0)
+set(inValMax 10000)
+set(noiseMean 1000)
+set(noiseRange 200)
+
+# ImageResample settings
+set(ImagesResampleDir ${OutputDir})
+set(trans_x 0)
+set(trans_y 20)
+set(trans_z 0)
+
+# RegTool settings
+set(numberIterations 70)
+
+# Sequence settings (rangeNoise setings)
+sequence(seq 100 1000 100) # rangeNoise between 100 et 1000; step=100
+
+# Dashboard Settings
+# Describe the current experiment
+DashboardHost(http://www.insight-journal.org/batchmake)
+DashboardUser('Matthieu Philippe')
+DashboardKey('FKH3BPM1y11VXsMf')
+CreateExperiment(exp 'Livers, tumors, and segmentations' 'My Experiment' '')
+CreateMethod(Meth exp 'Registration' 'Register a T1 with noise, with a T1 with a translation')
+
+
+
+#************************************
+# Dot not modify the rest of the code
+#************************************
+ListFileInDir(image ${ImagesDir})
+ForEach(i ${image})
+  set(inputImageName ${i})
+  set(inputImage ${ImagesDir}'/'$inputImageName})
+
+  include('ImageResample.bms')
+
+  ForEach(j ${seq}) 
+    include('ImageMath.bms')
+    include('RegTool.bms')
+    include('Dashboard.bms')
+  EndForEach(${j})
+
+EndForEach(${i})
