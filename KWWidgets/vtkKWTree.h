@@ -490,6 +490,11 @@ public:
   virtual void KeyNavigationCallback(const char* key);
   virtual void DropOverNodeCallback(const char*, const char*, const char*, const char*, const char*, const char*);
 
+  // Description:
+  // Automatically scroll the window to show most, if not all, 
+  // sub-directories of the given node
+  virtual void DisplayChildNodes(const char* node);
+
 protected:
   vtkKWTree();
   ~vtkKWTree();

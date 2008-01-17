@@ -55,7 +55,7 @@
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkKWDirectoryExplorer );
-vtkCxxRevisionMacro(vtkKWDirectoryExplorer, "$Revision: 1.36 $");
+vtkCxxRevisionMacro(vtkKWDirectoryExplorer, "$Revision: 1.39 $");
 
 vtkIdType vtkKWDirectoryExplorer::IdCounter = 1;
 
@@ -837,17 +837,19 @@ void vtkKWDirectoryExplorer::OpenDirectoryNode(const char* node,
   // Set internal flag
 
   this->Internals->IsOpeningDirectory = 1;
-
-  // Open the node
-
-  if (opennode)
-    {
-    this->DirectoryTree->GetWidget()->OpenNode(node_str.c_str());
-    }
     
   // Check/Load all the directories and files under this node  
 
   this->UpdateDirectoryNode(node_str.c_str());
+
+  // Open the node
+
+  if (opennode && 
+    !this->DirectoryTree->GetWidget()->IsNodeOpen(node_str.c_str()))
+    {
+    this->DirectoryTree->GetWidget()->OpenNode(node_str.c_str());
+    this->DirectoryTree->GetWidget()->DisplayChildNodes(node_str.c_str());
+    }
 
   // Select the node
 
@@ -1000,6 +1002,34 @@ void vtkKWDirectoryExplorer::Update()
       menu->AddCommand(menutext.c_str(), this, menucommand.c_str());
       it++;
       offset++;
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
+void vtkKWDirectoryExplorer::ScrollToDirectory(const char* prefix)
+{
+  if(prefix && *prefix)
+    {
+    vtkKWTree *dirTree = this->DirectoryTree->GetWidget();
+    vtksys_stl::string parentnode = this->GetNthSelectedNode(0);
+
+    vtksys_stl::vector<vtksys_stl::string> children;
+    vtksys::SystemTools::Split(dirTree->
+      GetNodeChildren(parentnode.c_str()), children, ' ');
+    vtksys_stl::vector<vtksys_stl::string>::iterator it = children.begin();
+    vtksys_stl::vector<vtksys_stl::string>::iterator end = children.end();
+
+    vtksys_stl::string nodetext;
+    
+    for (; it != end; it++)
+      {
+      nodetext = dirTree->GetNodeText((*it).c_str());
+      if (!strncmp(nodetext.c_str(), prefix, strlen(prefix)))
+        {
+        dirTree->SeeNode((*it).c_str());
+        break;
+        }
       }
     }
 }
