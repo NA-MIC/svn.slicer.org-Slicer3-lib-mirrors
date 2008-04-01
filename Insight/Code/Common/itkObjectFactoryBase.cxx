@@ -3,8 +3,13 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkObjectFactoryBase.cxx,v $
   Language:  C++
+<<<<<<< itkObjectFactoryBase.cxx
   Date:      $Date: 2007/01/04 06:28:39 $
   Version:   $Revision: 1.43 $
+=======
+  Date:      $Date: 2007-11-23 23:04:19 $
+  Version:   $Revision: 1.43.4.1 $
+>>>>>>> 1.43.4.1
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -37,18 +42,15 @@ class CleanUpObjectFactory
 {
 public:
   inline void Use() 
-  {
-  }
+    {
+    }
   ~CleanUpObjectFactory()
-  {
+    {
     itk::ObjectFactoryBase::UnRegisterAllFactories();
-  }  
+    }  
 };
 static CleanUpObjectFactory CleanUpObjectFactoryGlobal;
 }
-
-
-
 
 namespace itk
 {
@@ -122,6 +124,7 @@ ObjectFactoryBase
     LightObject::Pointer newobject = (*i)->CreateObject(itkclassname);
     if(newobject)
       {
+      newobject->Register();
       return newobject;
       }
     }
@@ -217,9 +220,11 @@ ObjectFactoryBase
     }
   std::string::size_type EndSeparatorPosition = 0;
   std::string::size_type StartSeparatorPosition = 0;
+
   while ( StartSeparatorPosition != std::string::npos )
     {
     StartSeparatorPosition = EndSeparatorPosition;
+
     /**
      * find PathSeparator in LoadPath
      */
@@ -227,21 +232,25 @@ ObjectFactoryBase
                                          StartSeparatorPosition);
     if(EndSeparatorPosition == std::string::npos)
       {
-      EndSeparatorPosition = LoadPath.size();
+      EndSeparatorPosition = LoadPath.size() + 1; // Add 1 to simulate
+                                                  // having a separator
       }
     std::string CurrentPath = 
-      LoadPath.substr(StartSeparatorPosition, EndSeparatorPosition);
+      LoadPath.substr(StartSeparatorPosition,
+                      EndSeparatorPosition - StartSeparatorPosition);
+
     ObjectFactoryBase::LoadLibrariesInPath(CurrentPath.c_str());
+
     /**
-     * move past separator
+     * Move past separator
      */
-    if(EndSeparatorPosition == LoadPath.size())
+    if(EndSeparatorPosition > LoadPath.size())
       {
       StartSeparatorPosition = std::string::npos;
       }
     else
       {
-      EndSeparatorPosition++;
+      EndSeparatorPosition++; // Skip the separator
       }
     }
 }
@@ -289,14 +298,22 @@ typedef ObjectFactoryBase* (* ITK_LOAD_FUNCTION)();
 inline bool 
 NameIsSharedLibrary(const char* name)
 {
+  std::string extension = itksys::DynamicLoader::LibExtension();
+
+#ifdef __APPLE__
+  // possible bug: CMake generated build file on the Mac makes
+  // libraries with a .dylib extension.  kwsys guesses the extension
+  // should be ".so"
+  extension = ".dylib";
+#endif
+  
   std::string sname = name;
-  if ( sname.find(DynamicLoader::LibExtension()) != std::string::npos )
+  if ( sname.rfind(extension) == sname.size() - extension.size() )
     {
     return true;
     }
   return false;
 }
-
 
 /**
  *
@@ -339,6 +356,7 @@ ObjectFactoryBase
         if ( loadfunction )
           {
           ObjectFactoryBase* newfactory = (*loadfunction)();
+
           /**
            * initialize class members if load worked
            */
@@ -382,10 +400,6 @@ ObjectFactoryBase::ObjectFactoryBase()
 ObjectFactoryBase
 ::~ObjectFactoryBase()
 {
-  if(m_LibraryHandle)
-    {
-    DynamicLoader::CloseLibrary((LibHandle)m_LibraryHandle);
-    }
   m_OverrideMap->erase(m_OverrideMap->begin(), m_OverrideMap->end());
   delete m_OverrideMap;
 }
@@ -442,6 +456,8 @@ ObjectFactoryBase
        << std::endl;
     os << indent << "Enable flag: " << (*i).second.m_EnabledFlag
        << std::endl;
+    os << indent << "Create object: " << (*i).second.m_CreateObject
+       << std::endl;
     os << std::endl;
     }
 }
@@ -460,8 +476,8 @@ ObjectFactoryBase
     {
     if ( factory == *i )
       {
-      m_RegisteredFactories->remove(factory);
       factory->UnRegister();
+      m_RegisteredFactories->remove(factory);
       return;
       }
     }
@@ -478,11 +494,31 @@ ObjectFactoryBase
   
   if ( ObjectFactoryBase::m_RegisteredFactories )
     {
+    // Collect up all the library handles so they can be closed
+    // AFTER the factory has been deleted.
+    std::list<void *> libs;
     for ( std::list<ObjectFactoryBase*>::iterator i 
             = m_RegisteredFactories->begin();
           i != m_RegisteredFactories->end(); ++i )
       {
-      (*i)->UnRegister();
+      libs.push_back(static_cast<void *>((*i)->m_LibraryHandle));
+      }
+    // Unregister each factory
+    for ( std::list<ObjectFactoryBase*>::iterator f 
+            = m_RegisteredFactories->begin();
+          f != m_RegisteredFactories->end(); ++f )
+      {
+      (*f)->UnRegister();
+      }
+    // And delete the library handles all at once
+    for ( std::list<void *>::iterator lib = libs.begin();
+          lib != libs.end();
+          ++lib)
+      {
+      if((*lib))
+        {
+        DynamicLoader::CloseLibrary(static_cast<LibHandle>(*lib));
+        }
       }
     delete ObjectFactoryBase::m_RegisteredFactories;
     ObjectFactoryBase::m_RegisteredFactories = 0;
@@ -507,6 +543,7 @@ ObjectFactoryBase
   info.m_OverrideWithName = subclass;
   info.m_EnabledFlag = enableFlag;
   info.m_CreateObject = createFunction;
+
   m_OverrideMap->insert(OverRideMap::value_type(classOverride, info));
 }
 
@@ -515,10 +552,15 @@ LightObject::Pointer
 ObjectFactoryBase
 ::CreateObject(const char* itkclassname)
 {
-  OverRideMap::iterator pos = m_OverrideMap->find(itkclassname);
-  if ( pos != m_OverrideMap->end() )
+  OverRideMap::iterator start = m_OverrideMap->lower_bound(itkclassname);
+  OverRideMap::iterator end = m_OverrideMap->upper_bound(itkclassname);
+
+  for ( OverRideMap::iterator i = start; i != end; ++i )
     {
-    return (*pos).second.m_CreateObject->CreateObject();
+    if ( i != m_OverrideMap->end() && (*i).second.m_EnabledFlag)
+      {
+      return (*i).second.m_CreateObject->CreateObject();
+      }
     }
   return 0;
 }

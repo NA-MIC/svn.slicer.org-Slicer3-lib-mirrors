@@ -1,5 +1,3 @@
-/.cvsignore/1.1/Thu Nov 15 15:24:53 2007//TITK-3-4
-/CMakeLists.txt/1.19/Thu Nov 15 15:24:53 2007//TITK-3-4
 /gdcm.h/1.5/Thu Nov 15 15:24:53 2007//TITK-3-4
 /gdcmArgMgr.cxx/1.5/Thu Nov 15 15:24:53 2007//TITK-3-4
 /gdcmArgMgr.h/1.2/Thu Nov 15 15:24:53 2007//TITK-3-4
@@ -96,6 +94,8 @@
 /gdcmValEntry.h/1.4/Thu Nov 15 15:24:53 2007//TITK-3-4
 /gdcmValidator.cxx/1.5/Thu Nov 15 15:24:53 2007//TITK-3-4
 /gdcmValidator.h/1.2/Thu Nov 15 15:24:53 2007//TITK-3-4
-/jdatadst.cxx/1.4/Thu Nov 15 15:24:53 2007//TITK-3-4
-/jdatasrc.cxx/1.6/Thu Nov 15 15:24:53 2007//TITK-3-4
+/.cvsignore/1.1/Fri Mar 14 14:57:21 2008//TITK-3-4
+/CMakeLists.txt/1.19/Fri Mar 14 14:57:21 2008//TITK-3-4
+/jdatadst.cxx/1.4/Fri Mar 14 14:57:21 2008//TITK-3-4
+/jdatasrc.cxx/1.6/Fri Mar 14 14:57:21 2008//TITK-3-4
 D

@@ -1,9 +1,6 @@
 D/FEM////
 D/NeuralNetworks////
 D/Statistics////
-/CMakeLists.txt/1.36/Thu Nov 15 15:55:37 2007//TITK-3-4
-/README/1.2/Thu Nov 15 15:23:37 2007//TITK-3-4
-/cvsrmvend/1.1/Thu Nov 15 15:23:37 2007//TITK-3-4
 /itkAmoebaOptimizer.cxx/1.28/Thu Nov 15 15:23:37 2007//TITK-3-4
 /itkAmoebaOptimizer.h/1.25/Thu Nov 15 15:23:37 2007//TITK-3-4
 /itkCacheableScalarFunction.cxx/1.7/Thu Nov 15 15:23:37 2007//TITK-3-4
@@ -68,3 +65,6 @@ D/Statistics////
 /itkVersorTransformOptimizer.cxx/1.10/Thu Nov 15 15:23:37 2007//TITK-3-4
 /itkVersorTransformOptimizer.h/1.11/Thu Nov 15 15:23:37 2007//TITK-3-4
 /lbfgsb.c/1.14/Thu Nov 15 15:23:37 2007//TITK-3-4
+/CMakeLists.txt/1.36/Fri Mar 14 14:56:02 2008//TITK-3-4
+/README/1.2/Fri Mar 14 14:56:02 2008//TITK-3-4
+/cvsrmvend/1.1/Fri Mar 14 14:56:02 2008//TITK-3-4

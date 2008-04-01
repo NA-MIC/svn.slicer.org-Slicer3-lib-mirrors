@@ -3,8 +3,13 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPermuteAxesImageFilter.txx,v $
   Language:  C++
+<<<<<<< itkPermuteAxesImageFilter.txx
   Date:      $Date: 2006/08/01 19:16:18 $
   Version:   $Revision: 1.14 $
+=======
+  Date:      $Date: 2007-11-21 18:55:47 $
+  Version:   $Revision: 1.14.6.1 $
+>>>>>>> 1.14.6.1
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -159,8 +164,11 @@ PermuteAxesImageFilter<TImage>
   unsigned int i, j;
   for ( j = 0; j < ImageDimension; j++ )
     {
+    // origin does not change by a Permute.  But spacing, directions,
+    // size and start index do.
+    outputOrigin[j]  = inputOrigin[j];
+    
     outputSpacing[j] = inputSpacing[m_Order[j]];
-    outputOrigin[j]  = inputOrigin[m_Order[j]];
     outputSize[j]    = inputSize[m_Order[j]];
     outputStartIndex[j] = inputStartIndex[m_Order[j]];
     for ( i = 0; i < ImageDimension; i++ )

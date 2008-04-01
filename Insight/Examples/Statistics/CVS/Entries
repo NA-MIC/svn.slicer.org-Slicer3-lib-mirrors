@@ -1,7 +1,6 @@
 /BayesianClassifier.cxx/1.2/Thu Nov 15 15:25:25 2007//TITK-3-4
 /BayesianClassifierInitializer.cxx/1.1/Thu Nov 15 15:25:25 2007//TITK-3-4
 /BayesianPluginClassifier.cxx/1.20/Thu Nov 15 15:25:25 2007//TITK-3-4
-/CMakeLists.txt/1.31/Thu Nov 15 15:55:42 2007//TITK-3-4
 /EuclideanDistance.cxx/1.13/Thu Nov 15 15:25:25 2007//TITK-3-4
 /ExpectationMaximizationMixtureModelEstimator.cxx/1.13/Thu Nov 15 15:25:25 2007//TITK-3-4
 /GaussianDensityFunction.cxx/1.17/Thu Nov 15 15:25:25 2007//TITK-3-4
@@ -34,10 +33,11 @@
 /ScalarImageKmeansModelEstimator.cxx/1.7/Thu Nov 15 15:25:25 2007//TITK-3-4
 /ScalarImageMarkovRandomField1.cxx/1.16/Thu Nov 15 15:25:25 2007//TITK-3-4
 /SelectiveSubsampleGenerator.cxx/1.9/Thu Nov 15 15:25:25 2007//TITK-3-4
-/StatisticsExamplesTests.cxx/1.3/Thu Nov 15 15:25:25 2007//TITK-3-4
-/StatisticsExamplesTests2.cxx/1.1/Thu Nov 15 15:25:25 2007//TITK-3-4
-/StatisticsExamplesTests3.cxx/1.1/Thu Nov 15 15:25:25 2007//TITK-3-4
-/StatisticsExamplesTests4.cxx/1.1/Thu Nov 15 15:25:25 2007//TITK-3-4
 /Subsample.cxx/1.11/Thu Nov 15 15:25:25 2007//TITK-3-4
 /WeightedSampleStatistics.cxx/1.13/Thu Nov 15 15:25:25 2007//TITK-3-4
+/CMakeLists.txt/1.31/Fri Mar 14 14:57:56 2008//TITK-3-4
+/StatisticsExamplesTests.cxx/1.3/Fri Mar 14 14:57:56 2008//TITK-3-4
+/StatisticsExamplesTests2.cxx/1.1/Fri Mar 14 14:57:56 2008//TITK-3-4
+/StatisticsExamplesTests3.cxx/1.1/Fri Mar 14 14:57:56 2008//TITK-3-4
+/StatisticsExamplesTests4.cxx/1.1/Fri Mar 14 14:57:56 2008//TITK-3-4
 D

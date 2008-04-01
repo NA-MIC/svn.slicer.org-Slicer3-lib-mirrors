@@ -1,10 +1,8 @@
-/CMakeLists.txt/1.14/Thu Nov 15 15:24:10 2007//TITK-3-4
 /Copyright.txt/1.1/Thu Nov 15 15:24:10 2007//TITK-3-4
 /DICOMAppHelper.cxx/1.72/Thu Nov 15 15:24:10 2007//TITK-3-4
 /DICOMAppHelper.h/1.30/Thu Nov 15 15:55:50 2007//TITK-3-4
 /DICOMBuffer.cxx/1.2/Thu Nov 15 15:24:10 2007//TITK-3-4
 /DICOMBuffer.h/1.2/Thu Nov 15 15:24:10 2007//TITK-3-4
-/DICOMCMakeConfig.h.in/1.2/Thu Nov 15 15:24:10 2007//TITK-3-4
 /DICOMCallback.h/1.8/Thu Nov 15 15:24:10 2007//TITK-3-4
 /DICOMConfig.h/1.4/Thu Nov 15 15:24:10 2007//TITK-3-4
 /DICOMFile.cxx/1.21/Thu Nov 15 15:24:10 2007//TITK-3-4
@@ -15,4 +13,6 @@
 /DICOMSource.cxx/1.2/Thu Nov 15 15:24:10 2007//TITK-3-4
 /DICOMSource.h/1.3/Thu Nov 15 15:24:10 2007//TITK-3-4
 /DICOMTypes.h/1.4/Thu Nov 15 15:24:10 2007//TITK-3-4
+/CMakeLists.txt/1.14/Fri Mar 14 14:56:35 2008//TITK-3-4
+/DICOMCMakeConfig.h.in/1.2/Fri Mar 14 14:56:35 2008//TITK-3-4
 D

@@ -3,8 +3,13 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkOrientImageFilter.txx,v $
 Language:  C++
+<<<<<<< itkOrientImageFilter.txx
 Date:      $Date: 2007/08/20 18:06:27 $
 Version:   $Revision: 1.15 $
+=======
+Date:      $Date: 2007-11-21 18:55:47 $
+Version:   $Revision: 1.15.2.1 $
+>>>>>>> 1.15.2.1
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -546,6 +551,7 @@ OrientImageFilter<TInputImage, TOutputImage>
     {
     flip->SetInput(flipInput);
     flip->SetFlipAxes(m_FlipAxes);
+    flip->FlipAboutOriginOff();
     flip->ReleaseDataFlagOn();
     DEBUG_EXECUTE(
                   std::cerr << "Flip Axes: ";

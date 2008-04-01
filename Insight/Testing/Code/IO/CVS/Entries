@@ -1,11 +1,6 @@
-/BigEndian_hdr.h/1.3/Thu Nov 15 15:25:14 2007//TITK-3-4
-/BigEndian_img.h/1.3/Thu Nov 15 15:25:14 2007//TITK-3-4
-/CMakeLists.txt/1.162/Thu Nov 15 15:55:43 2007//TITK-3-4
 /ImageCompare.cxx/1.7/Thu Nov 15 15:55:43 2007//TITK-3-4
 /ImageCompareCommand.cxx/1.9/Thu Nov 15 15:55:43 2007//TITK-3-4
 /ImageCopy.cxx/1.3/Thu Nov 15 15:55:43 2007//TITK-3-4
-/LittleEndian_hdr.h/1.3/Thu Nov 15 15:25:14 2007//TITK-3-4
-/LittleEndian_img.h/1.3/Thu Nov 15 15:25:14 2007//TITK-3-4
 /itkAnalyzeImageIOTest.cxx/1.26/Thu Nov 15 15:25:14 2007//TITK-3-4
 /itkArchetypeSeriesFileNamesTest.cxx/1.1/Thu Nov 15 15:25:14 2007//TITK-3-4
 /itkBMPImageIOTest.cxx/1.4/Thu Nov 15 15:25:14 2007//TITK-3-4
@@ -22,8 +17,6 @@
 /itkGDCMSeriesReadImageWrite.cxx/1.9/Thu Nov 15 15:25:14 2007//TITK-3-4
 /itkGEImageIOTest.cxx/1.14/Thu Nov 15 15:25:14 2007//TITK-3-4
 /itkGiplImageIOTest.cxx/1.5/Thu Nov 15 15:25:14 2007//TITK-3-4
-/itkIOHeaderObjCxxTest.mm/1.1/Thu Aug 23 14:27:48 2007//TITK-3-4
-/itkIOHeaderTest.cxx/1.43/Thu Nov 15 15:25:14 2007//TITK-3-4
 /itkIOPrintTest.cxx/1.9/Thu Nov 15 15:25:14 2007//TITK-3-4
 /itkIOTests.cxx/1.53/Thu Nov 15 15:55:43 2007//TITK-3-4
 /itkImageFileWriterTest.cxx/1.1/Thu Nov 15 15:25:14 2007//TITK-3-4
@@ -79,4 +72,11 @@
 /testMetaSurface.cxx/1.11/Thu Nov 15 15:25:14 2007//TITK-3-4
 /testMetaTube.cxx/1.7/Thu Nov 15 15:25:14 2007//TITK-3-4
 /testMetaUtils.cxx/1.11/Thu Nov 15 15:25:14 2007//TITK-3-4
+/BigEndian_hdr.h/1.3/Fri Mar 14 14:57:46 2008//TITK-3-4
+/BigEndian_img.h/1.3/Fri Mar 14 14:57:46 2008//TITK-3-4
+/CMakeLists.txt/1.162/Fri Mar 14 14:57:46 2008//TITK-3-4
+/LittleEndian_hdr.h/1.3/Fri Mar 14 14:57:46 2008//TITK-3-4
+/LittleEndian_img.h/1.3/Fri Mar 14 14:57:46 2008//TITK-3-4
+/itkIOHeaderObjCxxTest.mm/1.1/Fri Mar 14 14:57:46 2008//TITK-3-4
+/itkIOHeaderTest.cxx/1.43/Fri Mar 14 14:57:46 2008//TITK-3-4
 D

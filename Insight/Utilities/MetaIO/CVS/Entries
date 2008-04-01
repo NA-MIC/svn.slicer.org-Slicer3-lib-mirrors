@@ -1,7 +1,5 @@
 D/doc////
 D/tests////
-/CMakeLists.txt/1.42/Thu Nov 15 15:55:50 2007//TITK-3-4
-/localMetaConfiguration.h/1.5/Thu Nov 15 15:55:50 2007//TITK-3-4
 /metaArray.cxx/1.8/Thu Nov 15 15:55:50 2007//TITK-3-4
 /metaArray.h/1.5/Thu Nov 15 15:55:50 2007//TITK-3-4
 /metaArrow.cxx/1.8/Thu Nov 15 15:55:50 2007//TITK-3-4
@@ -54,3 +52,5 @@ D/tests////
 /metaUtils.h/1.31/Thu Nov 15 15:55:50 2007//TITK-3-4
 /metaVesselTube.cxx/1.14/Thu Nov 15 15:55:50 2007//TITK-3-4
 /metaVesselTube.h/1.9/Thu Nov 15 15:55:50 2007//TITK-3-4
+/CMakeLists.txt/1.42/Fri Mar 14 14:57:23 2008//TITK-3-4
+/localMetaConfiguration.h/1.5/Fri Mar 14 14:57:23 2008//TITK-3-4

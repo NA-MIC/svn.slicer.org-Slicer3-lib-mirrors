@@ -1,5 +1,4 @@
 /AutomaticMesh.cxx/1.9/Thu Nov 15 15:25:25 2007//TITK-3-4
-/CMakeLists.txt/1.22/Thu Nov 15 15:55:41 2007//TITK-3-4
 /ImageToPointSet.cxx/1.4/Thu Nov 15 15:25:25 2007//TITK-3-4
 /Mesh1.cxx/1.17/Thu Nov 15 15:25:25 2007//TITK-3-4
 /Mesh2.cxx/1.17/Thu Nov 15 15:25:25 2007//TITK-3-4
@@ -7,7 +6,6 @@
 /MeshCellVisitor.cxx/1.15/Thu Nov 15 15:25:25 2007//TITK-3-4
 /MeshCellVisitor2.cxx/1.15/Thu Nov 15 15:25:25 2007//TITK-3-4
 /MeshCellsIteration.cxx/1.14/Thu Nov 15 15:25:25 2007//TITK-3-4
-/MeshExamples.cxx/1.2/Thu Nov 15 15:25:25 2007//TITK-3-4
 /MeshKComplex.cxx/1.22/Thu Nov 15 15:25:25 2007//TITK-3-4
 /MeshPolyLine.cxx/1.5/Thu Nov 15 15:25:25 2007//TITK-3-4
 /MeshTraits.cxx/1.15/Thu Nov 15 15:55:41 2007//TITK-3-4
@@ -17,4 +15,6 @@
 /PointSetWithCovariantVectors.cxx/1.14/Thu Nov 15 15:25:25 2007//TITK-3-4
 /PointSetWithVectors.cxx/1.17/Thu Nov 15 15:25:25 2007//TITK-3-4
 /RGBPointSet.cxx/1.11/Thu Nov 15 15:25:25 2007//TITK-3-4
+/CMakeLists.txt/1.22/Fri Mar 14 14:57:57 2008//TITK-3-4
+/MeshExamples.cxx/1.2/Fri Mar 14 14:57:57 2008//TITK-3-4
 D

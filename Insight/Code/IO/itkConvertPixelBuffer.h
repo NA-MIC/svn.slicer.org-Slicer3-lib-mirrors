@@ -3,8 +3,13 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConvertPixelBuffer.h,v $
   Language:  C++
+<<<<<<< itkConvertPixelBuffer.h
   Date:      $Date: 2007/03/22 14:28:48 $
   Version:   $Revision: 1.9 $
+=======
+  Date:      $Date: 2008-01-17 10:55:53 $
+  Version:   $Revision: 1.9.2.1 $
+>>>>>>> 1.9.2.1
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -109,6 +114,13 @@ protected:
                                           int inputNumberOfComponents,
                                           OutputPixelType* outputData , 
                                           int size);
+
+  /** Convert tensor output. */
+  /** Each input is made into a 6 component symmetric pixel */
+  static void ConvertTensor6ToTensor6(InputPixelType* inputData, 
+                               OutputPixelType* outputData , int size);
+  static void ConvertTensor9ToTensor6(InputPixelType* inputData, 
+                               OutputPixelType* outputData , int size);
     
 private:
   ConvertPixelBuffer();

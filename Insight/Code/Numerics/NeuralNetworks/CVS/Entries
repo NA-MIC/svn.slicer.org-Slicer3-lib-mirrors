@@ -1,4 +1,3 @@
-/CMakeLists.txt/1.3/Thu Nov 15 15:23:32 2007//TITK-3-4
 /itkBackPropagationLayer.h/1.7/Thu Nov 15 15:55:37 2007//TITK-3-4
 /itkBackPropagationLayer.txx/1.9/Thu Nov 15 15:55:37 2007//TITK-3-4
 /itkBatchSupervisedTrainingFunction.h/1.3/Thu Nov 15 15:55:37 2007//TITK-3-4
@@ -70,4 +69,5 @@
 /itkTwoHiddenLayerBackPropagationNeuralNetwork.txx/1.3/Thu Nov 15 15:55:37 2007//TITK-3-4
 /itkWeightSetBase.h/1.9/Thu Nov 15 15:55:38 2007//TITK-3-4
 /itkWeightSetBase.txx/1.12/Thu Nov 15 15:55:38 2007//TITK-3-4
+/CMakeLists.txt/1.3/Fri Mar 14 14:55:57 2008//TITK-3-4
 D

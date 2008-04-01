@@ -1,4 +1,3 @@
-/CMakeLists.txt/1.32/Thu Nov 15 15:55:42 2007//TITK-3-4
 /ComplexImageReadWrite.cxx/1.6/Thu Nov 15 15:25:27 2007//TITK-3-4
 /CovariantVectorImageExtractComponent.cxx/1.16/Thu Nov 15 15:25:27 2007//TITK-3-4
 /CovariantVectorImageRead.cxx/1.13/Thu Nov 15 15:25:27 2007//TITK-3-4
@@ -11,9 +10,6 @@
 /DicomSeriesReadImageWrite2.cxx/1.16/Thu Nov 15 15:55:42 2007//TITK-3-4
 /DicomSeriesReadPrintTags.cxx/1.15/Thu Nov 15 15:25:27 2007//TITK-3-4
 /DicomSeriesReadSeriesWrite.cxx/1.9/Thu Nov 15 15:25:27 2007//TITK-3-4
-/DicomSliceRead.java/1.3/Thu Nov 15 15:25:27 2007//TITK-3-4
-/DicomSliceRead.py/1.1/Thu Nov 15 15:25:27 2007//TITK-3-4
-/DicomSliceRead.tcl/1.1/Thu Nov 15 15:25:27 2007//TITK-3-4
 /ImageReadCastWrite.cxx/1.14/Thu Nov 15 15:25:27 2007//TITK-3-4
 /ImageReadDicomSeriesWrite.cxx/1.1/Thu Nov 15 15:25:27 2007//TITK-3-4
 /ImageReadExportVTK.cxx/1.14/Thu Nov 15 15:25:27 2007//TITK-3-4
@@ -28,5 +24,9 @@
 /RGBImageSeriesReadWrite.cxx/1.10/Thu Nov 15 15:25:27 2007//TITK-3-4
 /TransformReadWrite.cxx/1.4/Thu Nov 15 15:25:27 2007//TITK-3-4
 /VectorImageReadWrite.cxx/1.10/Thu Nov 15 15:25:27 2007//TITK-3-4
-/itk.dic/1.1/Thu Nov 15 15:25:27 2007//TITK-3-4
+/CMakeLists.txt/1.32/Fri Mar 14 14:57:58 2008//TITK-3-4
+/DicomSliceRead.java/1.3/Fri Mar 14 14:57:58 2008//TITK-3-4
+/DicomSliceRead.py/1.1/Fri Mar 14 14:57:58 2008//TITK-3-4
+/DicomSliceRead.tcl/1.1/Fri Mar 14 14:57:58 2008//TITK-3-4
+/itk.dic/1.1/Fri Mar 14 14:57:58 2008//TITK-3-4
 D
