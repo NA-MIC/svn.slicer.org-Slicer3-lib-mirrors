@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmStandardIncludes.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/16 14:33:23 $
-  Version:   $Revision: 1.62 $
+  Date:      $Date: 2008-02-24 19:05:11 $
+  Version:   $Revision: 1.72 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -27,6 +27,7 @@
 // include configure generated  header to define CMAKE_NO_ANSI_STREAM_HEADERS,
 // CMAKE_NO_STD_NAMESPACE, and other macros.
 #include "cmConfigure.h"
+#include <cmsys/Configure.hxx>
 
 #define CMake_VERSION \
   CMAKE_TO_STRING(CMake_VERSION_MAJOR) "." \
@@ -37,10 +38,18 @@
   CMAKE_TO_STRING(CMake_VERSION_MINOR) "." \
   CMAKE_TO_STRING(CMake_VERSION_PATCH)
 
+#define CMake_VERSION_ENCODE(major, minor, patch) \
+  ((major)*0x10000u + (minor)*0x100u + (patch))
+
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )
 #pragma warning ( disable : 4503 )
+#pragma warning ( disable : 4512 ) /* operator=() could not be generated */
 #define CMAKE_NO_ANSI_FOR_SCOPE
+#endif
+
+#ifdef __BORLANDC__
+#pragma warn -8030 /* Temporary used for parameter */
 #endif
 
 #ifdef __ICL
@@ -66,6 +75,20 @@ public:
     Ref6 = sizeof(cfsetispeed(0,0))
   };
 };
+#endif
+
+// Include stream compatibility layer from KWSys.
+// This is needed to work with large file support
+// on some platforms whose stream operators do not
+// support the large integer types.
+#if defined(CMAKE_BUILD_WITH_CMAKE)
+# include <cmsys/IOStream.hxx>
+# undef GetCurrentDirectory // Borland <iosfwd> includes windows.h
+#endif
+
+// Avoid warnings in system headers.
+#if defined(_MSC_VER)
+# pragma warning (push,1)
 #endif
 
 #ifndef CMAKE_NO_ANSI_STREAM_HEADERS
@@ -96,6 +119,10 @@ public:
 #include <list>
 #include <set>
 #include <deque>
+
+#if defined(_MSC_VER)
+# pragma warning(pop)
+#endif
 
 // include the "c" string header
 #include <string.h>
@@ -293,9 +320,16 @@ extern void operator << (std::ostream&, const cmOStringStream&);
 /** Standard documentation entry for cmDocumentation's formatting.  */
 struct cmDocumentationEntry
 {
-  const char* name;
-  const char* brief;
-  const char* full;
+  std::string Name;
+  std::string Brief;
+  std::string Full;
+  cmDocumentationEntry(){};
+  cmDocumentationEntry(const char *doc[3])
+  { if (doc[0]) this->Name = doc[0]; 
+  if (doc[1]) this->Brief = doc[1]; 
+  if (doc[2]) this->Full = doc[2]; };
+  cmDocumentationEntry(const char *n, const char *b, const char *f)
+  { if (n) this->Name = n; if (b) this->Brief = b; if (f) this->Full = f; };
 };
 
 /** Data structure to represent a single command line.  */
@@ -341,7 +375,7 @@ static thisClass* SafeDownCast(cmObject *c) \
 { \
   if ( c && c->IsA(#thisClass) ) \
     { \
-    return (thisClass *)c; \
+    return static_cast<thisClass *>(c); \
     } \
   return 0;\
 }

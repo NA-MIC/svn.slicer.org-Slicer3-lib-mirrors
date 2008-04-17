@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio8Generator.h,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 20:05:57 $
-  Version:   $Revision: 1.4.2.2 $
+  Date:      $Date: 2008-02-15 16:49:58 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -49,14 +49,33 @@ public:
    */
   virtual void Configure();
   virtual void Generate();
+
+  /**
+   * Where does this version of Visual Studio look for macros for the
+   * current user? Returns the empty string if this version of Visual
+   * Studio does not implement support for VB macros.
+   */
+  virtual std::string GetUserMacrosDirectory();
+
+  /**
+   * What is the reg key path to "vsmacros" for this version of Visual
+   * Studio?
+   */
+  virtual std::string GetUserMacrosRegKeyBase();
+
 protected:
+
+  virtual bool VSLinksDependencies() const { return false; }
+
+  static cmVS7FlagTable const* GetExtraFlagTableVS8();
   virtual void AddPlatformDefinitions(cmMakefile* mf);
   virtual void WriteSLNFile(std::ostream& fout, cmLocalGenerator* root,
                             std::vector<cmLocalGenerator*>& generators);
   virtual void WriteSLNHeader(std::ostream& fout);
   virtual void WriteSolutionConfigurations(std::ostream& fout);
   virtual void WriteProjectConfigurations(std::ostream& fout,
-                                          const char* name, bool in_all);
+                                          const char* name,
+                                          bool partOfDefaultBuild);
   std::string PlatformName; // Win32 or x64 
 };
 #endif

@@ -6,26 +6,31 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTEST_CXX_FLAGS")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DTEST_C_FLAGS")
 SET(CMAKE_C_FLAGS "${CMAKE_ANSI_CFLAGS} ${CMAKE_C_FLAGS}")
 
-IF(NOT CMAKE_TEST_DIFFERENT_GENERATOR)
+IF(COMPLEX_TEST_CMAKELIB)
   # Link to CMake lib
   LINK_DIRECTORIES(${Complex_BINARY_DIR}/../../Source)
   LINK_DIRECTORIES(${Complex_BINARY_DIR}/../../Source/kwsys)
   LINK_DIRECTORIES(${Complex_BINARY_DIR}/../../Utilities/cmexpat)
   LINK_DIRECTORIES(${Complex_BINARY_DIR}/../../Utilities/cmzlib)
+  LINK_DIRECTORIES(${Complex_BINARY_DIR}/../../Utilities/cmcurl)
   LINK_DIRECTORIES(${Complex_BINARY_DIR}/../../Utilities/cmtar)
-ENDIF(NOT CMAKE_TEST_DIFFERENT_GENERATOR)
+ENDIF(COMPLEX_TEST_CMAKELIB)
 
   # Use LINK_LIBRARIES instead of TARGET_LINK_LIBRARIES to 
 SET(COMPLEX_LIBS CMakeTestLibrary;CMakeTestLibraryShared;CMakeTestCLibraryShared)
 LINK_LIBRARIES(${COMPLEX_LIBS})
 
-ADD_EXECUTABLE(A A.cxx)
+# Test forcing a .cxx file to not build.
+SET_SOURCE_FILES_PROPERTIES(complex_nobuild.cxx PROPERTIES
+  HEADER_FILE_ONLY 1)
+
+ADD_EXECUTABLE(A A.cxx A.hh A.h A.txt)
 ADD_EXECUTABLE(complex complex testcflags.c )
 #  Sub1/NameConflictTest.c Sub2/NameConflictTest.c)
-ADD_EXECUTABLE(complex.file complex.file.cxx)
-IF(NOT CMAKE_TEST_DIFFERENT_GENERATOR)
-  TARGET_LINK_LIBRARIES(complex CMakeLib cmsys cmexpat cmzlib cmtar)
-ENDIF(NOT CMAKE_TEST_DIFFERENT_GENERATOR)
+ADD_EXECUTABLE(complex.file complex.file.cxx complex_nobuild.cxx)
+IF(COMPLEX_TEST_CMAKELIB)
+  TARGET_LINK_LIBRARIES(complex CMakeLib cmsys cmexpat cmzlib cmtar cmcurl)
+ENDIF(COMPLEX_TEST_CMAKELIB)
 
 IF (UNIX)
   TARGET_LINK_LIBRARIES(complex ${CMAKE_DL_LIBS})
@@ -36,6 +41,12 @@ ELSE(UNIX)
     ENDIF(NOT MINGW)
   ENDIF(NOT BORLAND)
 ENDIF (UNIX)
+
+# Test linking to static lib when a shared lib has the same name.
+IF(CMAKE_EXE_LINK_STATIC_CXX_FLAGS)
+  ADD_DEFINITIONS(-DCOMPLEX_TEST_LINK_STATIC)
+  TARGET_LINK_LIBRARIES(complex CMakeTestLinkStatic)
+ENDIF(CMAKE_EXE_LINK_STATIC_CXX_FLAGS)
 
 # can we get the path to a source file
 GET_SOURCE_FILE_PROPERTY(A_LOCATION A.cxx LOCATION)
@@ -55,6 +66,14 @@ IF ("${LF_VALUE}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt;${CMAKE_C
   ADD_DEFINITIONS(-DCMAKE_FOUND_LISTFILE_STACK)
 ENDIF ("${LF_VALUE}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt;${CMAKE_CURRENT_SOURCE_DIR}/Included.cmake")
 
+# Test add/remove definitions.
+ADD_DEFINITIONS(
+  -DCOMPLEX_DEFINED_PRE
+  -DCOMPLEX_DEFINED
+  -DCOMPLEX_DEFINED_POST
+  -DCOMPLEX_DEFINED
+  )
+REMOVE_DEFINITIONS(-DCOMPLEX_DEFINED)
 
 # Test pre-build/pre-link/post-build rules for an executable.
 ADD_CUSTOM_COMMAND(TARGET complex PRE_BUILD
@@ -73,7 +92,9 @@ ADD_CUSTOM_COMMAND(TARGET complex POST_BUILD
                         "${Complex_BINARY_DIR}/Executable/postbuild2.txt")
 
 SET_SOURCE_FILES_PROPERTIES(complex
-  COMPILE_FLAGS "-DFILE_HAS_EXTRA_COMPILE_FLAGS"
+  COMPILE_FLAGS
+  "-DFILE_HAS_EXTRA_COMPILE_FLAGS"
+  #" -DFILE_DEFINE_STRING=\\\"hello\\\""
   OBJECT_DEPENDS ${Complex_BINARY_DIR}/cmTestGeneratedHeader.h
 )
 SET_TARGET_PROPERTIES(complex PROPERTIES COMPILE_FLAGS "-DCOMPLEX_TARGET_FLAG")
@@ -87,6 +108,20 @@ ADD_CUSTOM_COMMAND(
   DEPENDS ${CMAKE_COMMAND}
 )
 
+# Test creating an executable that is not built by default.
+ADD_EXECUTABLE(notInAllExe EXCLUDE_FROM_ALL notInAllExe.cxx)
+TARGET_LINK_LIBRARIES(notInAllExe notInAllLib)
+
+# Test user-value flag mapping for the VS IDE.
+IF(MSVC)
+  SET_TARGET_PROPERTIES(notInAllExe PROPERTIES
+    LINK_FLAGS "/NODEFAULTLIB:LIBC;LIBCMT;MSVCRT")
+ENDIF(MSVC)
+
+# Test creating a custom target that builds not-in-all targets.
+ADD_CUSTOM_TARGET(notInAllCustom)
+ADD_DEPENDENCIES(notInAllCustom notInAllExe)
+
 #
 # Output the files required by 'complex' to a file.
 #
@@ -95,6 +130,11 @@ ADD_CUSTOM_COMMAND(
 # due to source list expansion done twice).
 #
 ADD_SUBDIRECTORY(Temp)
+
+IF(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_INCLUDE_SYSTEM_FLAG_CXX)
+  ADD_EXECUTABLE(testSystemDir testSystemDir.cxx)
+  SET_TARGET_PROPERTIES(testSystemDir PROPERTIES COMPILE_FLAGS "-Werror")
+ENDIF(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_INCLUDE_SYSTEM_FLAG_CXX)
 
 #
 # Extra coverage.Not used.

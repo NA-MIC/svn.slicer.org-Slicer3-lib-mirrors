@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGetTargetPropertyCommand.h,v $
   Language:  C++
-  Date:      $Date: 2005/11/16 17:11:14 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-01-23 15:27:59 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -31,12 +31,13 @@ public:
    * This is called when the command is first encountered in
    * the input file.
    */
-  virtual bool InitialPass(std::vector<std::string> const& args);
+  virtual bool InitialPass(std::vector<std::string> const& args,
+                           cmExecutionStatus &status);
 
   /**
    * The name of the command as specified in CMakeList.txt.
    */
-  virtual const char* GetName() { return "GET_TARGET_PROPERTY";}
+  virtual const char* GetName() { return "get_target_property";}
 
   /**
    * Succinct documentation.
@@ -52,16 +53,23 @@ public:
   virtual const char* GetFullDocumentation()
     {
       return
-        "  GET_TARGET_PROPERTY(VAR target property)\n"
+        "  get_target_property(VAR target property)\n"
         "Get a property from a target.   The value of the property is "
         "stored in the variable VAR.  If the property is not found, VAR "
-        "will be set to \"NOTFOUND\".  Use SET_TARGET_PROPERTIES to set "
+        "will be set to \"NOTFOUND\".  Use set_target_properties to set "
         "property values.  Properties are usually used to control how "
         "a target is built.\n"
+        "The read-only property \"<CONFIG>_LOCATION\" provides the full "
+        "path to the file on disk that will be created for the target when "
+        "building under configuration <CONFIG> "
+        "(in upper-case, such as \"DEBUG_LOCATION\"). "
         "The read-only property \"LOCATION\" specifies "
         "the full path to the file on disk that will be created for the "
-        "target.  This is very useful for executable targets to get "
-        "the path to the executable file for use in a custom command. "
+        "target. The path may contain a build-system-specific portion that "
+        "is replaced at build time with the configuration getting built "
+        "(such as \"$(ConfigurationName)\" in VS). "
+        "This is very useful for executable targets to get "
+        "the path to the executable file for use in a custom command.\n"
         "The read-only property \"TYPE\" returns which type the specified "
         "target has (EXECUTABLE, STATIC_LIBRARY, SHARED_LIBRARY, "
         "MODULE_LIBRARY, UTILITY, INSTALL_FILES or INSTALL_PROGRAMS). "

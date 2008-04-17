@@ -9,6 +9,9 @@
 /* Define if your system has a working minor */
 #cmakedefine HAVE_MINOR @HAVE_MINOR@
 
+/* Define if your system has a working minor */
+#cmakedefine HAVE_MAKEDEV @HAVE_MAKEDEV@
+
 /* Define to 1 if you have the <ctype.h> header file. */
 #cmakedefine HAVE_CTYPE_H @HAVE_CTYPE_H@
 
@@ -30,6 +33,9 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #cmakedefine HAVE_INTTYPES_H @HAVE_INTTYPES_H@
 
+/* Define to 1 if you have the <io.h> header file. */
+#cmakedefine HAVE_IO_H @HAVE_IO_H@
+
 /* Define to 1 if you have the `lchown' function. */
 #cmakedefine HAVE_LCHOWN @HAVE_LCHOWN@
 
@@ -38,9 +44,6 @@
 
 /* Define to 1 if you have the `z' library (-lz). */
 #cmakedefine HAVE_LIBZ @HAVE_LIBZ@
-
-/* Define to 1 if you have the VTK's `z' library */
-#cmakedefine HAVE_VTK_LIBZ @HAVE_VTK_LIBZ@
 
 /* Define to 1 if the system has the type `major_t'. */
 #cmakedefine HAVE_MAJOR_T @HAVE_MAJOR_T@
@@ -206,3 +209,5 @@
 
 /* Define to `long long' if not defined in system header files. */
 #cmakedefine uint64_t @uint64_t@
+
+#define CMTAR_ZLIB_HEADER "@CMTAR_ZLIB_HEADER@"

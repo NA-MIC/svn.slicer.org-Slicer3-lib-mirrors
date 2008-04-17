@@ -1,115 +1,70 @@
-Changes in CMake 2.4.2
+Changes in CMake 2.6.0 RC 8
 
-* Run symlink command from correct directory for executable versions
+- Fix sun make very poor performance
+- Fix includes for automoc in FindQt4
 
-* Fix for universal binaries and Xcode depend problem
+Changes in CMake 2.6.0 RC 7
 
-* Changes to LIST command, see --help-command LIST
+- Fix for chrpath on sun with gcc
+- Fix FindJNI on unix with HKEY issue bug 6688
+- Change install location on mac for cmake-gui
+- Fix for bugs 6730 and 6720 in FindQt4 configured headers in binary dir
+- Add VS9 support to InstallRequiredSystemLibraries.cmake
+- Fix some bugs in framework support
+- Have make edit_cache work with cmake-gui and eclipse generator
+- Fix find_* to not mistakenly construct network paths on windows
+- Several bug fixes in cmake-gui Qt program.
 
-* Fix FindQT to be able to use full paths to source files
+Changes in CMake 2.6.0 RC 6
 
-* Fix CPack ZIP on windows command line problem
+- Added ChangeLog.manual
+- Allow CMakeImportBuildSettings force compiler to be optional
+- Change cpack deb packager to detect the architecture
+- Fix FindCurses to be backwards compatible with cache variable CURSES_LIBRARY
+- Add version variables to FindQt4.cmake
+- Fix CPack Deb generator to not hard code /usr
+- Better default size for cmake-gui help dialog
+- Fix problem where incorrect path was used for cmake.exe when 
+  used to do incremental linking on windows nmake or make
+- Fix build with system libraries on
+- Add color output in kdevelop
+- Create non-verbose makefiles in kdevelop
+- Fix some missing flags for vs IDE flag map
+- Fix MacOSX install symlink crash problem
+- Fix turning of Dev warnings with gui's
+- Fix backwards compatibility issue with FindMPI.cmake
+- Fix for bug 6605, add -L path for optimized in debug sometimes for
+  backwards compatibility
+- Allow for CMP0000 to be set before any warnings happen
+- Do not use FAT32 hack in VS 2005 and 2008 unless on a FAT32 disk,
+  causes try-compiles to be 3 times slower if FAT hack is present.
+- Fixes to debian cpack 
+- Can now check if a proprty is SET or not
+- Fix for generate with vs 2005 and vista not being able to create stamp file
+- set_property with an empty value unsets that property now
+- Fix FindQt4 on windows with some \ style paths
 
-* Find executables with no extension on windows mingw
+Changes in CMake 2.6.0 
 
-* Fix FindQt3 to use QTDIR over path
-
-* Significant speedup in try-compile for nmake
-
-* CPack improvments including tar bzip2
-
-* FindQt4 windows path fix
-
-* Sunos cc optimize flags are correct
-
-* Fix crash with ${} empty variable
-
-* Increase depend speed on Mac OS.
-
-* install command CONFIGURATIONS option.
-
-* Fix MSVC60, MSVC70, MSVC71, MSVC80 definitions for IDE builds
-
-* Fix for C++ compiler being used for c code in VS IDE
-
-Changes in CMake 2.4.1
-
-* Several ctest and cpack bug fixes
-
-* Many updates and fixes for FindQt4.cmake
-
-* Fix CMAKE_REQUIRED_FLAGS in CheckCXXSourceCompiles.cmake 
-
-* Handle running make from a symlinked build tree
-
-* Automatic color ouput detection for shells building with make
-
-* Kdevelop generator handles CMakeFiles directory better
-
-* add correct depend information for fluid 
-
-* allow the cache to be saved even if a fatal error occurs
-
-* fix bug in relative path subdir and add_subdirectoy commands
-
-* support in vs for two object files with the same name
-
-* short file names used for library paths in visual studio
-
-* package target only shows up when you have cpack config files
-
-* Use dl and not -ldl for adding in the dynamic library
-
-* Fix check c/cxx source compiles macros to not clobber log files
- 
-* Fix nmake version detection of cl and create correct pdb files
-
-* Fix msys bootstrap
-
-* Change color output to be more readable
-
-* Fix vs6 library naming
-
-Changes in CMake 2.4.0
-
-* CPack beta
-
-* Visual Studio 2005 win64 support
-
-* Improved install support
-
-* Improved FIND_PROGRAM, FIND_LIBRARY, FIND_PATH, FIND_FILE
-
-* Improved support for finding/using OSX Frameworks
-
-* Multiple output support for custom commands
-
-* Color output in make with vt100 terminals CMAKE_COLOR_MAKFILE
-
-* Better variables for MSVC MSVC80 
-
-* Library path order is preserved
-
-* Fix for text file busy in xcodebuild runs
-
-* Better bundle support on OSX
-
-* ctest -S scripts can run in new process with new environment
-
-* OSX universal binary support
-
-* Watcom support
- 
-* MinGW and MSYS support
-
-* Visual studio 2005 manifest support
-
-* Better handling of RPATH, no longer put rpath in install tree
-
-* Fix OUTPUT_NAME 
-
-* ctest captures output from vcexpress
-
-* cmake --help-module can give help for cmake modules
-
-* Lots of bug fixes
+- Documentation for all variables
+- Automatic reload of projects in visual stuido 7 and greater
+  when cmake is re-run.
+- Direct CDash submit support
+- Bullseye coverage support
+- Use full paths for linking to libraries on all platforms. No longer
+  separate into -L and -l.
+- Enhance the install command
+- export command and ability to have imported targets
+- CPack support for rpm and deb
+- Cross compile support
+- New Qt GUI
+- Introduction of the cmake_policy command
+- Much better Fortran support
+- Mac OSX Framework creation support
+- Project generators for Eclipse and CodeBlocks
+- Beta support for asm in makefiles
+- Enhanced find_package() command with support for project-installed 
+  FooConfig.cmake files
+- New CMAKE_PREFIX_PATH environment variable to specify user search dirs 
+  for find_xxx()
+- Lots of bug fixes

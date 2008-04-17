@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddTestCommand.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/16 14:33:23 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008-01-23 15:27:59 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -39,12 +39,13 @@ public:
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const& args);
+  virtual bool InitialPass(std::vector<std::string> const& args,
+                           cmExecutionStatus &status);
 
   /**
    * The name of the command as specified in CMakeList.txt.
    */
-  virtual const char* GetName() { return "ADD_TEST";}
+  virtual const char* GetName() { return "add_test";}
 
   /**
    * Succinct documentation.
@@ -60,13 +61,13 @@ public:
   virtual const char* GetFullDocumentation()
     {
     return
-      "  ADD_TEST(testname Exename arg1 arg2 ...)\n"
+      "  add_test(testname Exename arg1 arg2 ...)\n"
       "If the ENABLE_TESTING command has been run, this command adds a "
       "test target to the current directory. If ENABLE_TESTING has not "
       "been run, this command does nothing.  "
       "The tests are run by the testing subsystem by executing Exename "
       "with the specified arguments.  Exename can be either an executable "
-      "built by built by this project or an arbitrary executable on the "
+      "built by this project or an arbitrary executable on the "
       "system (like tclsh).  The test will be run with the current working "
       "directory set to the CMakeList.txt files corresponding directory "
       "in the binary tree.";

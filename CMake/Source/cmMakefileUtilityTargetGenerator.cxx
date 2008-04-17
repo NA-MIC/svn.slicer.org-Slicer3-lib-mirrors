@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileUtilityTargetGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/02/15 21:35:16 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-02-18 21:38:34 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -17,12 +17,19 @@
 #include "cmMakefileUtilityTargetGenerator.h"
 
 #include "cmGeneratedFileStream.h"
-#include "cmGlobalGenerator.h"
+#include "cmGlobalUnixMakefileGenerator3.h"
 #include "cmLocalUnixMakefileGenerator3.h"
 #include "cmMakefile.h"
 #include "cmSourceFile.h"
 #include "cmTarget.h"
 
+//----------------------------------------------------------------------------
+cmMakefileUtilityTargetGenerator
+::cmMakefileUtilityTargetGenerator(cmTarget* target):
+  cmMakefileTargetGenerator(target)
+{
+  this->CustomCommandDriver = OnUtility;
+}
 
 //----------------------------------------------------------------------------
 void cmMakefileUtilityTargetGenerator::WriteRuleFiles()
@@ -33,7 +40,7 @@ void cmMakefileUtilityTargetGenerator::WriteRuleFiles()
     << "# Utility rule file for " << this->Target->GetName() << ".\n\n";
 
   // write the custom commands for this target
-  this->WriteCustomCommandsForTarget();
+  this->WriteTargetBuildRules();
 
   // Collect the commands and dependencies.
   std::vector<std::string> commands;
@@ -42,43 +49,51 @@ void cmMakefileUtilityTargetGenerator::WriteRuleFiles()
   // Utility targets store their rules in pre- and post-build commands.
   this->LocalGenerator->AppendCustomDepends
     (depends, this->Target->GetPreBuildCommands());
+
   this->LocalGenerator->AppendCustomDepends
     (depends, this->Target->GetPostBuildCommands());
+
   this->LocalGenerator->AppendCustomCommands
     (commands, this->Target->GetPreBuildCommands());
+
+  // Depend on all custom command outputs for sources
+  this->DriveCustomCommands(depends);
+
   this->LocalGenerator->AppendCustomCommands
     (commands, this->Target->GetPostBuildCommands());
 
   // Add dependencies on targets that must be built first.
   this->AppendTargetDepends(depends);
-  
+
   // Add a dependency on the rule file itself.
-  std::string relPath = this->LocalGenerator->GetHomeRelativeOutputPath();
-  std::string objTarget = relPath;
-  objTarget += this->BuildFileName;
-  this->LocalGenerator->AppendRuleDepend(depends, objTarget.c_str());
+  this->LocalGenerator->AppendRuleDepend(depends,
+                                         this->BuildFileNameFull.c_str());
+
+  // If the rule is empty add the special empty rule dependency needed
+  // by some make tools.
+  if(depends.empty() && commands.empty())
+    {
+    std::string hack = this->GlobalGenerator->GetEmptyRuleHackDepends();
+    if(!hack.empty())
+      {
+      depends.push_back(hack);
+      }
+    }
 
   // Write the rule.
   this->LocalGenerator->WriteMakeRule(*this->BuildFileStream, 0,
                                       this->Target->GetName(),
                                       depends, commands, true);
 
-  // Write convenience targets.
-  std::string dir = this->Makefile->GetStartOutputDirectory();
-  dir += "/";
-  dir += this->LocalGenerator->GetTargetDirectory(*this->Target);
-  std::string buildTargetRuleName = dir;
-  buildTargetRuleName += "/build";
-  buildTargetRuleName = 
-    this->LocalGenerator->Convert(buildTargetRuleName.c_str(),
-                                  cmLocalGenerator::HOME_OUTPUT,
-                                  cmLocalGenerator::MAKEFILE);
-  this->LocalGenerator->WriteConvenienceRule(*this->BuildFileStream, 
-                                             this->Target->GetName(),
-                                             buildTargetRuleName.c_str());
+  // Write the main driver rule to build everything in this target.
+  this->WriteTargetDriverRule(this->Target->GetName(), false);
 
   // Write clean target
   this->WriteTargetCleanRules();
+
+  // Write the dependency generation rule.  This must be done last so
+  // that multiple output pair information is available.
+  this->WriteTargetDependRules();
 
   // close the streams
   this->CloseFileStreams();

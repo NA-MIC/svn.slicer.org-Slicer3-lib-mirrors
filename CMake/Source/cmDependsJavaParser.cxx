@@ -33,6 +33,11 @@
    define necessary library symbols; they are noted "INFRINGES ON
    USER NAME SPACE" below.  */
 
+/* turn off some warning as this is generated code */
+#if defined(_MSC_VER)
+#  pragma warning ( disable : 4702 ) /* unreachable code */
+#endif
+
 /* Identify Bison output.  */
 #define YYBISON 1
 
@@ -282,8 +287,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsJavaParser.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/15 22:05:23 $
-  Version:   $Revision: 1.4.6.1 $
+  Date:      $Date: 2007-03-05 15:36:06 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -338,6 +343,9 @@ yyGetParser->AddClassFound(str); yyGetParser->DeallocateParserType(&(str))
 /* Disable some warnings in the generated code.  */
 #ifdef __BORLANDC__
 # pragma warn -8004 /* Variable assigned a value that is not used.  */
+# pragma warn -8008 /* condition always returns true */
+# pragma warn -8060 /* possibly incorrect assignment */
+# pragma warn -8066 /* unreachable code */
 #endif
 #ifdef _MSC_VER
 # pragma warning (disable: 4102) /* Unused goto label.  */

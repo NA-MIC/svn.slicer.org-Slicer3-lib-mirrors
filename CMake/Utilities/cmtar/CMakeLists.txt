@@ -6,6 +6,11 @@ INCLUDE_REGULAR_EXPRESSION("^.*$")
 SET(CMAKE_C_FLAGS "${CMAKE_ANSI_CFLAGS} ${CMAKE_C_FLAGS}")
 SET(CMAKE_REQUIRED_FLAGS ${CMAKE_ANSI_CFLAGS})
 
+# Disable warnings on Borland to avoid changing 3rd party code.
+IF(BORLAND)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w-")
+ENDIF(BORLAND)
+
 # If we are on AIX, do the _ALL_SOURCE magic
 IF(${CMAKE_SYSTEM_NAME} MATCHES AIX)
   SET(_ALL_SOURCE 1)
@@ -57,7 +62,6 @@ ENDMACRO(CHECK_SYMBOL_EXISTS_EX)
 
 
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}")
-INCLUDE_DIRECTORIES(${CURL_SPECIAL_LIBZ_INCLUDES})
 
 #check for stdc headers
 CHECK_INCLUDE_FILES("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
@@ -67,6 +71,7 @@ FOREACH(file
   "ctype.h"
   "fnmatch.h"
   "inttypes.h"
+  "io.h"
   "libgen.h"
   "memory.h"
   "sys/mkdev.h"
@@ -102,9 +107,15 @@ FOREACH(func
     glob
     major
     minor
+    makedev
     )
   CHECK_SYMBOL_EXISTS_EX("${func}")
 ENDFOREACH(func)
+
+# on Syllable lchown() is there, but always returns "Not implemented"
+IF("${CMAKE_SYSTEM_NAME}" MATCHES syllable)
+  SET(HAVE_LCHOWN 0)
+ENDIF("${CMAKE_SYSTEM_NAME}" MATCHES syllable)
 
 CHECK_TYPE_SIZE("dev_t" SIZEOF_DEV_T)
 IF(HAVE_SIZEOF_DEV_T)
@@ -201,7 +212,7 @@ ELSE(HAVE_SIZEOF_UID_T)
 ENDIF(HAVE_SIZEOF_UID_T)
 
 #SET (HAVE_BASENAME 0)
-#SET (HAVE_CTYPE_H 0)
+SET (HAVE_CTYPE_H 1) # all our platforms have <ctype.h>
 #SET (HAVE_DEV_T 1)
 #SET (HAVE_DIRNAME 0)
 #SET (HAVE_FNMATCH 1)
@@ -230,7 +241,13 @@ SET (HAVE_LIBZ 1)
 #SET (HAVE_UNISTD_H 1)
 SET (MAJOR_IN_MKDEV 0)
 SET (MAJOR_IN_SYSMACROS 0)
+
+# for most systems makedev is two args on qnx it is three
+# try run is nothing but trouble so just hard code it 
 SET (MAKEDEV_THREE_ARGS 0)
+IF(QNXNTO)
+  SET(MAKEDEV_THREE_ARGS 1)
+ENDIF(QNXNTO)
 #SET (NEED_BASENAME 0)
 #SET (NEED_DIRNAME 0)
 #SET (NEED_FNMATCH 1)
@@ -355,11 +372,18 @@ ENDIF(NOT HAVE_FNMATCH)
 #SET(NEED_GLOB 1)
 #ENDIF(NOT HAVE_GLOB)
 
+# Setup zlib.
+IF(NOT CMTAR_ZLIB_LIBRARIES)
+  MESSAGE(FATAL_ERROR "Parent project must set CMTAR_ZLIB_LIBRARIES.")
+ENDIF(NOT CMTAR_ZLIB_LIBRARIES)
+IF(NOT CMTAR_ZLIB_HEADER)
+  MESSAGE(FATAL_ERROR "Parent project must set CMTAR_ZLIB_HEADER.")
+ENDIF(NOT CMTAR_ZLIB_HEADER)
+INCLUDE_DIRECTORIES(${CMTAR_ZLIB_INCLUDE_DIRS})
 
 CONFIGURE_FILE(${LIBTAR_SOURCE_DIR}/config.h.in
   ${LIBTAR_BINARY_DIR}/libtar/config.h)
 
 ADD_LIBRARY(cmtar STATIC ${libtar_SRC})
 ADD_EXECUTABLE(tartest libtar.c)
-TARGET_LINK_LIBRARIES(tartest cmtar ${CMAKE_ZLIB_LIBRARIES})
-
+TARGET_LINK_LIBRARIES(tartest cmtar ${CMTAR_ZLIB_LIBRARIES})

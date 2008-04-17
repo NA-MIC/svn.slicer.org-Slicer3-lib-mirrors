@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalVisualStudio8Win64Generator.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 20:05:57 $
-  Version:   $Revision: 1.1.2.1 $
+  Date:      $Date: 2007-10-22 16:48:39 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -33,6 +33,7 @@ cmLocalGenerator *cmGlobalVisualStudio8Win64Generator::CreateLocalGenerator()
   cmLocalVisualStudio7Generator *lg = new cmLocalVisualStudio7Generator;
   lg->SetVersion8();
   lg->SetPlatformName(this->PlatformName.c_str());
+  lg->SetExtraFlagTable(this->GetExtraFlagTableVS8());
   lg->SetGlobalGenerator(this);
   return lg;
 }
@@ -41,15 +42,15 @@ cmLocalGenerator *cmGlobalVisualStudio8Win64Generator::CreateLocalGenerator()
 void cmGlobalVisualStudio8Win64Generator
 ::GetDocumentation(cmDocumentationEntry& entry) const
 {
-  entry.name = this->GetName();
-  entry.brief = "Generates Visual Studio .NET 2005 Win64 project files.";
-  entry.full = "";
+  entry.Name = this->GetName();
+  entry.Brief = "Generates Visual Studio .NET 2005 Win64 project files.";
+  entry.Full = "";
 }
 
 void cmGlobalVisualStudio8Win64Generator
 ::EnableLanguage(std::vector<std::string>const &  lang, 
-                                                         cmMakefile *mf)
+                 cmMakefile *mf, bool optional)
 {
   mf->AddDefinition("CMAKE_FORCE_WIN64", "TRUE");
-  cmGlobalVisualStudio8Generator::EnableLanguage(lang, mf);
+  cmGlobalVisualStudio8Generator::EnableLanguage(lang, mf, optional);
 }

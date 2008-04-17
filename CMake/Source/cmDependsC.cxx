@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmDependsC.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 02:15:08 $
-  Version:   $Revision: 1.21.2.2 $
+  Date:      $Date: 2007-12-15 01:31:27 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -16,27 +16,38 @@
 =========================================================================*/
 #include "cmDependsC.h"
 
-#include "cmSystemTools.h"
 #include "cmFileTimeComparison.h"
+#include "cmLocalGenerator.h"
+#include "cmSystemTools.h"
 
 #include <ctype.h> // isspace
 
+
+#define INCLUDE_REGEX_LINE \
+  "^[ \t]*#[ \t]*(include|import)[ \t]*[<\"]([^\">]+)([\">])"
+
+#define INCLUDE_REGEX_LINE_MARKER "#IncludeRegexLine: "
+#define INCLUDE_REGEX_SCAN_MARKER "#IncludeRegexScan: "
+#define INCLUDE_REGEX_COMPLAIN_MARKER "#IncludeRegexComplain: "
+
 //----------------------------------------------------------------------------
 cmDependsC::cmDependsC():
-  IncludePath(0), GeneratedFiles(0)
+  IncludePath(0)
 {
 }
 //----------------------------------------------------------------------------
 // yummy look at all those constructor arguments
 cmDependsC::cmDependsC(std::vector<std::string> const& includes,
                        const char* scanRegex, const char* complainRegex,
-                       std::set<cmStdString> const& generatedFiles,
                        const cmStdString& cacheFileName):
   IncludePath(&includes),
-  IncludeRegexLine("^[ \t]*#[ \t]*include[ \t]*[<\"]([^\">]+)([\">])"),
+  IncludeRegexLine(INCLUDE_REGEX_LINE),
   IncludeRegexScan(scanRegex),
   IncludeRegexComplain(complainRegex),
-  GeneratedFiles(&generatedFiles),
+  IncludeRegexLineString(INCLUDE_REGEX_LINE_MARKER INCLUDE_REGEX_LINE),
+  IncludeRegexScanString(std::string(INCLUDE_REGEX_SCAN_MARKER)+scanRegex),
+  IncludeRegexComplainString(
+    std::string(INCLUDE_REGEX_COMPLAIN_MARKER)+complainRegex),
   CacheFileName(cacheFileName)
 {
   this->ReadCacheFile();
@@ -48,7 +59,7 @@ cmDependsC::~cmDependsC()
   this->WriteCacheFile();
 
   for (std::map<cmStdString, cmIncludeLines*>::iterator it=
-         this->fileCache.begin(); it!=this->fileCache.end(); ++it)
+         this->FileCache.begin(); it!=this->FileCache.end(); ++it)
     {
     delete it->second;
     }
@@ -85,6 +96,13 @@ bool cmDependsC::WriteDependencies(const char *src, const char *obj,
   std::set<cmStdString> dependencies;
   std::set<cmStdString> scanned;
 
+  // Use reserve to allocate enough memory for both strings,
+  // so that during the loops no memory is allocated or freed
+  std::string cacheKey;
+  cacheKey.reserve(4*1024);
+  std::string tempPathStr;
+  tempPathStr.reserve(4*1024);
+
   while(!this->Unscanned.empty())
     {
     // Get the next file to scan.
@@ -95,15 +113,13 @@ bool cmDependsC::WriteDependencies(const char *src, const char *obj,
     std::string fullName;
     if(first || cmSystemTools::FileIsFullPath(current.FileName.c_str()))
       {
-      if(this->FileExistsOrIsGenerated(current.FileName, scanned,
-                                       dependencies))
+      if(cmSystemTools::FileExists(current.FileName.c_str(), true))
         {
         fullName = current.FileName;
         }
       }
     else if(!current.QuotedLocation.empty() &&
-            this->FileExistsOrIsGenerated(current.QuotedLocation, scanned,
-                                          dependencies))
+            cmSystemTools::FileExists(current.QuotedLocation.c_str(), true))
       {
       // The include statement producing this entry was a double-quote
       // include and the included file is present in the directory of
@@ -112,26 +128,49 @@ bool cmDependsC::WriteDependencies(const char *src, const char *obj,
       }
     else
       {
+      // With GCC distribution of STL, assigning to a string directly
+      // throws away the internal buffer of the left-hand-side.  We
+      // want to keep the pre-allocated buffer so we use C-style
+      // string assignment and then operator+=.  We could call
+      // .clear() instead of assigning to an empty string but the
+      // method does not exist on some older compilers.
+      cacheKey = "";
+      cacheKey += current.FileName;
+
       for(std::vector<std::string>::const_iterator i = 
+            this->IncludePath->begin(); i != this->IncludePath->end(); ++i)
+        {
+        cacheKey+=*i;
+        }
+      std::map<cmStdString, cmStdString>::iterator
+        headerLocationIt=this->HeaderLocationCache.find(cacheKey);
+      if (headerLocationIt!=this->HeaderLocationCache.end())
+        {
+        fullName=headerLocationIt->second;
+        }
+      else for(std::vector<std::string>::const_iterator i =
             this->IncludePath->begin(); i != this->IncludePath->end(); ++i)
         {
         // Construct the name of the file as if it were in the current
         // include directory.  Avoid using a leading "./".
-        std::string temp = *i;
-        if(temp == ".")
+
+        tempPathStr = "";
+        if((*i) == ".")
           {
-          temp = "";
+          tempPathStr += current.FileName;
           }
         else
           {
-          temp += "/";
+            tempPathStr += *i;
+            tempPathStr+="/";
+            tempPathStr+=current.FileName;
           }
-        temp += current.FileName;
 
         // Look for the file in this location.
-        if(this->FileExistsOrIsGenerated(temp, scanned, dependencies))
+        if(cmSystemTools::FileExists(tempPathStr.c_str(), true))
           {
-          fullName = temp;
+            fullName = tempPathStr;
+            HeaderLocationCache[cacheKey]=fullName;
           break;
           }
         }
@@ -155,8 +194,8 @@ bool cmDependsC::WriteDependencies(const char *src, const char *obj,
 
       // Check whether this file is already in the cache
       std::map<cmStdString, cmIncludeLines*>::iterator fileIt=
-        this->fileCache.find(fullName);
-      if (fileIt!=this->fileCache.end())
+        this->FileCache.find(fullName);
+      if (fileIt!=this->FileCache.end())
         {
         fileIt->second->Used=true;
         dependencies.insert(fullName);
@@ -194,13 +233,18 @@ bool cmDependsC::WriteDependencies(const char *src, const char *obj,
     first = false;
     }
 
-  // Write the dependencies to the output stream.
+  // Write the dependencies to the output stream.  Makefile rules
+  // written by the original local generator for this directory
+  // convert the dependencies to paths relative to the home output
+  // directory.  We must do the same here.
   internalDepends << obj << std::endl;
   for(std::set<cmStdString>::iterator i=dependencies.begin();
       i != dependencies.end(); ++i)
     {
-    makeDepends << obj << ": "
-                << cmSystemTools::ConvertToOutputPath(i->c_str()).c_str()
+    makeDepends << obj << ": " << 
+      this->LocalGenerator->Convert(i->c_str(),
+                                    cmLocalGenerator::HOME_OUTPUT,
+                                    cmLocalGenerator::MAKEFILE)
                 << std::endl;
     internalDepends << " " << i->c_str() << std::endl;
     }
@@ -246,7 +290,33 @@ void cmDependsC::ReadCacheFile()
       if ((res==true) && (newer==1)) //cache is newer than the parsed file
         {
         cacheEntry=new cmIncludeLines;
-        this->fileCache[line]=cacheEntry; 
+        this->FileCache[line]=cacheEntry;
+        }
+      // file doesn't exist, check that the regular expressions
+      // haven't changed
+      else if (res==false)
+        {
+        if (line.find(INCLUDE_REGEX_LINE_MARKER) == 0)
+          {
+          if (line != this->IncludeRegexLineString)
+            {
+            return;
+            }
+          }
+        else if (line.find(INCLUDE_REGEX_SCAN_MARKER) == 0)
+          {
+          if (line != this->IncludeRegexScanString)
+            {
+            return;
+            }
+          }
+        else if (line.find(INCLUDE_REGEX_COMPLAIN_MARKER) == 0)
+          {
+          if (line != this->IncludeRegexComplainString)
+            {
+            return;
+            }
+          }
         }
       }
     else if (cacheEntry!=0)
@@ -278,9 +348,13 @@ void cmDependsC::WriteCacheFile() const
     return;
     }
   
+  cacheOut << this->IncludeRegexLineString << "\n\n";
+  cacheOut << this->IncludeRegexScanString << "\n\n";
+  cacheOut << this->IncludeRegexComplainString << "\n\n";
+
   for (std::map<cmStdString, cmIncludeLines*>::const_iterator fileIt=
-         this->fileCache.begin(); 
-       fileIt!=this->fileCache.end(); ++fileIt)
+         this->FileCache.begin();
+       fileIt!=this->FileCache.end(); ++fileIt)
     {
     if (fileIt->second->Used)
       {
@@ -311,7 +385,7 @@ void cmDependsC::Scan(std::istream& is, const char* directory,
 {
   cmIncludeLines* newCacheEntry=new cmIncludeLines;
   newCacheEntry->Used=true;
-  this->fileCache[fullName]=newCacheEntry;
+  this->FileCache[fullName]=newCacheEntry;
   
   // Read one line at a time.
   std::string line;
@@ -322,8 +396,8 @@ void cmDependsC::Scan(std::istream& is, const char* directory,
       {
       // Get the file being included.
       UnscannedEntry entry;
-      entry.FileName = this->IncludeRegexLine.match(1);
-      if(this->IncludeRegexLine.match(2) == "\"" &&
+      entry.FileName = this->IncludeRegexLine.match(2);
+      if(this->IncludeRegexLine.match(3) == "\"" &&
          !cmSystemTools::FileIsFullPath(entry.FileName.c_str()))
         {
         // This was a double-quoted include with a relative path.  We
@@ -351,58 +425,5 @@ void cmDependsC::Scan(std::istream& is, const char* directory,
           }
         }
       }
-    }
-}
-
-//----------------------------------------------------------------------------
-bool cmDependsC::FileExistsOrIsGenerated(const std::string& fname,
-                                         std::set<cmStdString>& scanned,
-                                         std::set<cmStdString>& dependencies)
-{
-  // Check for a generated file.
-  if(this->FileIsGenerated(fname, scanned, dependencies))
-    {
-    return true;
-    }
-  else if(cmSystemTools::FileIsFullPath(fname.c_str()))
-    {
-    // The generated file may have been listed with a relative path.
-    // Note that CMAKE_GENERATED_FILES is written with a conversion
-    // relative to the home output directory.
-    std::string rname =
-      cmSystemTools::RelativePath(this->HomeOutputDirectory.c_str(), 
-                                  fname.c_str());
-    if(this->FileIsGenerated(rname, scanned, dependencies))
-      {
-      return true;
-      }
-    }
-
-  // Check for an existing file.
-  return cmSystemTools::FileExists(fname.c_str());
-}
-
-//----------------------------------------------------------------------------
-bool cmDependsC::FileIsGenerated(const std::string& fname,
-                                 std::set<cmStdString>& scanned,
-                                 std::set<cmStdString>& dependencies)
-{
-  if(this->GeneratedFiles &&
-     std::set<cmStdString>::const_iterator(this->GeneratedFiles->find(fname)) 
-     != this->GeneratedFiles->end())
-    {
-    // If the file does not really exist yet pretend it has already
-    // been scanned.  When it exists later then dependencies will be
-    // rescanned.
-    if(!cmSystemTools::FileExists(fname.c_str()))
-      {
-      scanned.insert(fname);
-      dependencies.insert(fname);
-      }
-    return true;
-    }
-  else
-    {
-    return false;
     }
 }

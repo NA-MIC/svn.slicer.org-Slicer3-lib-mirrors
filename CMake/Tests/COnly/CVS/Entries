@@ -1,9 +1,9 @@
-/CMakeLists.txt/1.9/Mon Jun 20 15:49:29 2005//TCMake-2-4-2
-/conly.c/1.3.14.1/Sun May  7 14:55:41 2006//TCMake-2-4-2
-/foo.c/1.2/Mon Oct  7 13:20:47 2002//TCMake-2-4-2
-/foo.h/1.2/Mon Oct  7 13:20:47 2002//TCMake-2-4-2
-/libc1.c/1.1/Tue Dec 31 20:22:48 2002//TCMake-2-4-2
-/libc1.h/1.1/Tue Dec 31 20:22:48 2002//TCMake-2-4-2
-/libc2.c/1.2/Wed Jan  1 19:26:50 2003//TCMake-2-4-2
-/libc2.h/1.3/Fri Jan  3 21:14:14 2003//TCMake-2-4-2
+/CMakeLists.txt/1.13.2.1/Thu Apr 17 17:11:11 2008//TCMake-2-6
+/conly.c/1.4/Thu Apr 17 17:11:11 2008//TCMake-2-6
+/foo.c/1.2/Fri Mar 14 14:40:01 2008//TCMake-2-6
+/foo.h/1.2/Fri Mar 14 14:40:01 2008//TCMake-2-6
+/libc1.c/1.1/Fri Mar 14 14:40:01 2008//TCMake-2-6
+/libc1.h/1.1/Fri Mar 14 14:40:01 2008//TCMake-2-6
+/libc2.c/1.2/Fri Mar 14 14:40:01 2008//TCMake-2-6
+/libc2.h/1.3/Fri Mar 14 14:40:01 2008//TCMake-2-6
 D

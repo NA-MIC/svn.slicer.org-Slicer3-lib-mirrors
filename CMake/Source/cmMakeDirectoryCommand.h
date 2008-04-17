@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakeDirectoryCommand.h,v $
   Language:  C++
-  Date:      $Date: 2004/02/23 03:07:02 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008-01-23 15:27:59 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -43,12 +43,13 @@ public:
    * This is called when the command is first encountered in
    * the CMakeLists.txt file.
    */
-  virtual bool InitialPass(std::vector<std::string> const& args);
+  virtual bool InitialPass(std::vector<std::string> const& args,
+                           cmExecutionStatus &status);
 
   /**
    * The name of the command as specified in CMakeList.txt.
    */
-  virtual const char* GetName() { return "MAKE_DIRECTORY";}
+  virtual const char* GetName() { return "make_directory";}
   
   /**
    * This determines if the command is invoked when in script mode.
@@ -60,7 +61,7 @@ public:
    */
   virtual const char* GetTerseDocumentation() 
     {
-    return "Create a directory on the file system.";
+    return "Deprecated. Use the file(MAKE_DIRECTORY ) command instead.";
     }
   
   /**
@@ -69,12 +70,18 @@ public:
   virtual const char* GetFullDocumentation()
     {
     return
-      "  MAKE_DIRECTORY(directory)\n"
+      "  make_directory(directory)\n"
       "Creates the specified directory.  Full paths should be given.  Any "
       "parent directories that do not exist will also be created.  Use with "
       "care.";
     }
   
+  /** This command is kept for compatibility with older CMake versions. */
+  virtual bool IsDiscouraged()
+    {
+    return true;
+    }
+
   cmTypeMacro(cmMakeDirectoryCommand, cmCommand);
 };
 

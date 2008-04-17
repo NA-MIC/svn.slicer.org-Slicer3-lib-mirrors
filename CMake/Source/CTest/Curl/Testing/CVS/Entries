@@ -1,6 +1,4 @@
-/CMakeLists.txt/1.2/Fri Jun 24 13:00:13 2005//TCMake-2-4-2
 /curlgtk.c/1.1/Tue Jan  7 02:17:48 2003//TCMake-2-4-2
-/curltest.c/1.9/Fri May  2 12:43:59 2003//TCMake-2-4-2
 /ftpget.c/1.1/Tue Jan  7 02:17:48 2003//TCMake-2-4-2
 /ftpgetresp.c/1.1/Tue Jan  7 02:17:48 2003//TCMake-2-4-2
 /ftpupload.c/1.2/Mon Nov  3 21:59:15 2003//TCMake-2-4-2
@@ -13,6 +11,4 @@
 /sepheaders.c/1.1/Tue Jan  7 02:17:48 2003//TCMake-2-4-2
 /simple.c/1.1/Tue Jan  7 02:17:48 2003//TCMake-2-4-2
 /simplessl.c/1.1/Tue Jan  7 02:17:48 2003//TCMake-2-4-2
-/testconfig.h.in/1.1/Tue Jan  7 02:17:48 2003//TCMake-2-4-2
-/win32sockets.c/1.1/Tue Jan  7 02:17:48 2003//TCMake-2-4-2
 D

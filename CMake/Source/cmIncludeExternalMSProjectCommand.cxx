@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmIncludeExternalMSProjectCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 20:05:57 $
-  Version:   $Revision: 1.13.2.2 $
+  Date:      $Date: 2008-01-28 13:38:35 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,13 +18,13 @@
 
 // cmIncludeExternalMSProjectCommand
 bool cmIncludeExternalMSProjectCommand
-::InitialPass(std::vector<std::string> const& args)
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 2) 
   {
   this->SetError("INCLUDE_EXTERNAL_MSPROJECT called with incorrect "
                  "number of arguments");
-    return false;
+  return false;
   }
 // only compile this for win32 to avoid coverage errors
 #ifdef _WIN32
@@ -40,19 +40,27 @@ bool cmIncludeExternalMSProjectCommand
         depends.push_back(args[i]); 
         }
       }
-    
+
+    // Hack together a utility target storing enough information
+    // to reproduce the target inclusion.
     std::string utility_name("INCLUDE_EXTERNAL_MSPROJECT");
     utility_name += "_";
     utility_name += args[0];
     std::string path = args[1];
     cmSystemTools::ConvertToUnixSlashes(path);
-    const char* no_output = 0;
-    const char* no_working_directory = 0;
-    this->Makefile->AddUtilityCommand(utility_name.c_str(), true,
-                                  no_output, depends,
-                                  no_working_directory,
-                                  args[0].c_str(), path.c_str());
-    
+
+    // Create a target instance for this utility.
+    cmTarget* target=this->Makefile->AddNewTarget(cmTarget::UTILITY, 
+                                                  utility_name.c_str());
+    target->SetProperty("EXCLUDE_FROM_ALL","FALSE");
+    std::vector<std::string> no_outputs;
+    cmCustomCommandLines commandLines;
+    cmCustomCommandLine commandLine;
+    commandLine.push_back(args[0]);
+    commandLine.push_back(path);
+    commandLines.push_back(commandLine);
+    cmCustomCommand cc(no_outputs, depends, commandLines, 0, 0);
+    target->GetPostBuildCommands().push_back(cc);
     }
 #endif
   return true;

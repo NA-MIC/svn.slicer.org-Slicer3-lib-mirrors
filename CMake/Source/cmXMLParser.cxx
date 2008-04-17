@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmXMLParser.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/03/30 18:49:55 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007-07-31 01:38:50 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -16,7 +16,7 @@
 =========================================================================*/
 #include "cmXMLParser.h"
 
-#include <cmexpat/expat.h>
+#include <cm_expat.h>
 #include <ctype.h>
 
 //----------------------------------------------------------------------------
@@ -39,7 +39,7 @@ cmXMLParser::~cmXMLParser()
 int cmXMLParser::Parse(const char* string)
 {
   return (int)this->InitializeParser() &&
-    this->ParseChunk(string, (unsigned int)strlen(string)) && 
+    this->ParseChunk(string, strlen(string)) && 
     this->CleanupParser();
 }
 
@@ -84,7 +84,8 @@ int cmXMLParser::InitializeParser()
 }
 
 //----------------------------------------------------------------------------
-int cmXMLParser::ParseChunk(const char* inputString, unsigned int length)
+int cmXMLParser::ParseChunk(const char* inputString, 
+                            std::string::size_type length)
 {
   if ( !this->Parser )
     {
@@ -129,10 +130,11 @@ int cmXMLParser::CleanupParser()
 }
 
 //----------------------------------------------------------------------------
-int cmXMLParser::ParseBuffer(const char* buffer, unsigned int count)
+int cmXMLParser::ParseBuffer(const char* buffer, std::string::size_type count)
 {
   // Pass the buffer to the expat XML parser.
-  if(!XML_Parse(static_cast<XML_Parser>(this->Parser), buffer, count, 0))
+  if(!XML_Parse(static_cast<XML_Parser>(this->Parser), buffer, 
+                static_cast<int>(count), 0))
     {
     this->ReportXmlParseError();
     return 0;

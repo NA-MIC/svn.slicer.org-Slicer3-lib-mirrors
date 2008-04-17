@@ -5,10 +5,11 @@
  *                            | (__| |_| |  _ <| |___ 
  *                             \___|\___/|_| \_\_____|
  *
- * $Id: ftpupload.c,v 1.1 2005/06/24 13:02:16 andy Exp $
+ * $Id: ftpupload.c,v 1.2 2006-07-09 17:48:37 andy Exp $
  */
 
 #include "curl/curl.h"
+#include "setup.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

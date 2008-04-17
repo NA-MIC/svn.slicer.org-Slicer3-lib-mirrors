@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackTGZGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/07 14:55:39 $
-  Version:   $Revision: 1.13.2.1 $
+  Date:      $Date: 2007-09-27 18:44:10 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -26,7 +26,7 @@
 #include "cmCPackLog.h"
 
 #include <cmsys/SystemTools.hxx>
-#include <cmzlib/zutil.h>
+#include <cm_zlib.h>
 #include <libtar/libtar.h>
 #include <memory> // auto_ptr
 #include <fcntl.h>
@@ -94,7 +94,7 @@ int cmCPackTGZ_Data_Open(void *client_data, const char* pathname,
     mydata->ZLibStream.opaque = Z_NULL;
     int strategy = Z_DEFAULT_STRATEGY;
     if ( deflateInit2(&mydata->ZLibStream, mydata->CompressionLevel,
-        Z_DEFLATED, -MAX_WBITS, DEF_MEM_LEVEL, strategy) != Z_OK )
+        Z_DEFLATED, -MAX_WBITS, 8, strategy) != Z_OK )
       {
       return -1;
       }
@@ -129,7 +129,7 @@ ssize_t cmCPackTGZ_Data_Write(void *client_data, void *buff, size_t n)
 
   if ( mydata->Compress )
     {
-    mydata->ZLibStream.avail_in = n;
+    mydata->ZLibStream.avail_in = static_cast<uInt>(n);
     mydata->ZLibStream.next_in  = reinterpret_cast<Bytef*>(buff);
 
     do {
@@ -157,7 +157,8 @@ ssize_t cmCPackTGZ_Data_Write(void *client_data, void *buff, size_t n)
       }
     if ( n )
       {
-      mydata->CRC = crc32(mydata->CRC, reinterpret_cast<Bytef *>(buff), n);
+      mydata->CRC = crc32(mydata->CRC, reinterpret_cast<Bytef *>(buff), 
+                          static_cast<uInt>(n));
       }
     }
   else
@@ -208,7 +209,8 @@ int cmCPackTGZGenerator::InitializeInternal()
 int cmCPackTGZGenerator::CompressFiles(const char* outFileName,
   const char* toplevel, const std::vector<std::string>& files)
 {
-  cmCPackLogger(cmCPackLog::LOG_DEBUG, "Toplevel: " << toplevel << std::endl);
+  cmCPackLogger(cmCPackLog::LOG_DEBUG, "Toplevel: "
+                << (toplevel ? toplevel : "(NULL)") << std::endl);
   cmCPackTGZ_Data mydata(this, this->Compress);
   TAR *t;
   char buf[TAR_MAXPATHLEN];
@@ -227,11 +229,18 @@ int cmCPackTGZGenerator::CompressFiles(const char* outFileName,
   std::auto_ptr<char> realNamePtr(realName);
   strcpy(realName, outFileName);
   int flags = O_WRONLY | O_CREAT;
+  int options = 0;
+  if(this->GeneratorVerbose)
+    {
+    options |= TAR_VERBOSE;
+    }
+#ifdef __CYGWIN__
+  options |= TAR_GNU;
+#endif 
   if (tar_open(&t, realName,
-      &gztype,
-      flags, 0644,
-      (this->GeneratorVerbose?TAR_VERBOSE:0)
-      | 0) == -1)
+               &gztype,
+               flags, 0644,
+               options) == -1)
     {
     cmCPackLogger(cmCPackLog::LOG_ERROR, "Problem with tar_open(): "
       << strerror(errno) << std::endl);
@@ -281,7 +290,8 @@ int cmCPackTGZGenerator::GenerateHeader(std::ostream* os)
     const int gz_magic[2] = {0x1f, 0x8b}; /* gzip magic header */
     char header[11];
     sprintf(header, "%c%c%c%c%c%c%c%c%c%c", gz_magic[0], gz_magic[1],
-      Z_DEFLATED, 0 /*flags*/, 0,0,0,0 /*time*/, 0 /*xflags*/, OS_CODE);
+            Z_DEFLATED, 0 /*flags*/, 0,0,0,0 /*time*/, 0 /*xflags*/,
+            3 /* zlib os code for UNIX, not really used anyway */);
     os->write(header, 10);
     }
   return 1;

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTest.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/29 15:49:19 $
-  Version:   $Revision: 1.92.2.1 $
+  Date:      $Date: 2008-02-03 13:57:41 $
+  Version:   $Revision: 1.100 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -53,7 +53,7 @@ public:
   typedef std::set<cmStdString> SetOfStrings;
 
   ///! Process Command line arguments
-  int Run(std::vector<std::string>const&, std::string* output = 0);
+  int Run(std::vector<std::string> &, std::string* output = 0);
 
   /**
    * Initialize and finalize testing
@@ -92,7 +92,7 @@ public:
   int TestDirectory(bool memcheck);
 
   ///! what is the configuraiton type, e.g. Debug, Release etc.
-  std::string GetConfigType();
+  std::string const& GetConfigType();
   double GetTimeOut() { return this->TimeOut; }
   void SetTimeOut(double t) { this->TimeOut = t; }
 
@@ -137,6 +137,13 @@ public:
   ///! Get the current time as string
   std::string CurrentTime();
 
+  /** 
+   * Return the time remaianing that the script is allowed to run in
+   * seconds if the user has set the variable CTEST_TIME_LIMIT. If that has
+   * not been set it returns 1e7 seconds
+   */
+  double GetRemainingTimeAllowed();
+    
   ///! Open file in the output directory and set the stream
   bool OpenOutputFile(const std::string& path,
                       const std::string& name,
@@ -225,7 +232,7 @@ public:
   //! Run command specialized for tests. Returns process status and retVal is
   // return value or exception.
   int RunTest(std::vector<const char*> args, std::string* output, int *retVal,
-    std::ostream* logfile);
+    std::ostream* logfile, double testTimeOut);
 
   /**
    * Execute handler and return its result. If the handler fails, it returns
@@ -269,6 +276,9 @@ public:
   //! Set the output log file name
   void SetOutputLogFileName(const char* name);
 
+  //! Set the visual studio or Xcode config type
+  void SetConfigType(const char* ct);
+
   //! Various log types
   enum {
     DEBUG = 0,
@@ -291,8 +301,7 @@ public:
   SetOfStrings* GetSubmitFiles() { return &this->SubmitFiles; }
 
   //! Read the custom configuration files and apply them to the current ctest
-  int ReadCustomConfigurationFileTree(const char* dir, cmMakefile* mf,
-    bool fast = false);
+  int ReadCustomConfigurationFileTree(const char* dir, cmMakefile* mf);
 
   std::vector<cmStdString> &GetInitialCommandLineArguments()
   { return this->InitialCommandLineArguments; };
@@ -369,6 +378,18 @@ private:
   void BlockTestErrorDiagnostics();
 
 
+  //! parse the option after -D and convert it into the appropriate steps
+  bool AddTestsForDashboardType(std::string &targ);
+
+  //! parse and process most common command line arguments
+  void HandleCommandLineArguments(size_t &i, 
+                                  std::vector<std::string> &args);
+
+  //! hande the -S -SP and -SR arguments
+  void HandleScriptArguments(size_t &i, 
+                             std::vector<std::string> &args,
+                             bool &SRArgumentSpecified);
+
   //! Reread the configuration file
   bool UpdateCTestConfiguration();
 
@@ -377,7 +398,7 @@ private:
     const VectorOfStrings& files);
 
   ///! Find the running cmake
-  void FindRunningCMake(const char* arg0);
+  void FindRunningCMake();
 
   //! Check if the argument is the one specified
   bool CheckArgument(const std::string& arg, const char* varg1,

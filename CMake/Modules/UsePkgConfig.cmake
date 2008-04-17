@@ -1,4 +1,4 @@
-# - pkg-config module for CMake
+# - obsolete pkg-config module for CMake
 #
 # Defines the following macros:
 #
@@ -15,6 +15,8 @@
 FIND_PROGRAM(PKGCONFIG_EXECUTABLE NAMES pkg-config PATHS /usr/local/bin )
 
 MACRO(PKGCONFIG _package _include_DIR _link_DIR _link_FLAGS _cflags)
+  message(STATUS
+    "WARNING: you are using the obsolete 'PKGCONFIG' macro use FindPkgConfig")
 # reset the variables at the beginning
   SET(${_include_DIR})
   SET(${_link_DIR})
@@ -29,13 +31,22 @@ MACRO(PKGCONFIG _package _include_DIR _link_DIR _link_FLAGS _cflags)
     # and if the package of interest also exists for pkg-config, then get the information
     IF(NOT _return_VALUE)
 
-      EXEC_PROGRAM(${PKGCONFIG_EXECUTABLE} ARGS ${_package} --variable=includedir OUTPUT_VARIABLE ${_include_DIR} )
+      EXEC_PROGRAM(${PKGCONFIG_EXECUTABLE} ARGS ${_package} --variable=includedir 
+        OUTPUT_VARIABLE ${_include_DIR} )
+      string(REGEX REPLACE "[\r\n]" " " ${_include_DIR} "${${_include_DIR}}")
+    
 
-      EXEC_PROGRAM(${PKGCONFIG_EXECUTABLE} ARGS ${_package} --variable=libdir OUTPUT_VARIABLE ${_link_DIR} )
+      EXEC_PROGRAM(${PKGCONFIG_EXECUTABLE} ARGS ${_package} --variable=libdir 
+        OUTPUT_VARIABLE ${_link_DIR} )
+      string(REGEX REPLACE "[\r\n]" " " ${_link_DIR} "${${_link_DIR}}")
 
-      EXEC_PROGRAM(${PKGCONFIG_EXECUTABLE} ARGS ${_package} --libs OUTPUT_VARIABLE ${_link_FLAGS} )
+      EXEC_PROGRAM(${PKGCONFIG_EXECUTABLE} ARGS ${_package} --libs 
+        OUTPUT_VARIABLE ${_link_FLAGS} )
+      string(REGEX REPLACE "[\r\n]" " " ${_link_FLAGS} "${${_link_FLAGS}}")
 
-      EXEC_PROGRAM(${PKGCONFIG_EXECUTABLE} ARGS ${_package} --cflags OUTPUT_VARIABLE ${_cflags} )
+      EXEC_PROGRAM(${PKGCONFIG_EXECUTABLE} ARGS ${_package} --cflags 
+        OUTPUT_VARIABLE ${_cflags} )
+      string(REGEX REPLACE "[\r\n]" " " ${_cflags} "${${_cflags}}")
 
     ENDIF(NOT _return_VALUE)
 

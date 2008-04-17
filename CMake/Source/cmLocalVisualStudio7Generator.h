@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio7Generator.h,v $
   Language:  C++
-  Date:      $Date: 2006/05/14 19:22:42 $
-  Version:   $Revision: 1.22.2.1 $
+  Date:      $Date: 2008-01-30 17:04:38 $
+  Version:   $Revision: 1.50 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -17,29 +17,34 @@
 #ifndef cmLocalVisualStudio7Generator_h
 #define cmLocalVisualStudio7Generator_h
 
-#include "cmLocalGenerator.h"
+#include "cmLocalVisualStudioGenerator.h"
 
-class cmMakeDepend;
 class cmTarget;
 class cmSourceFile;
 class cmCustomCommand;
 class cmSourceGroup;
 struct cmVS7FlagTable;
 
+class cmLocalVisualStudio7GeneratorOptions;
+class cmLocalVisualStudio7GeneratorFCInfo;
+class cmLocalVisualStudio7GeneratorInternals;
+
 /** \class cmLocalVisualStudio7Generator
- * \brief Write a LocalUnix makefiles.
+ * \brief Write Visual Studio .NET project files.
  *
- * cmLocalVisualStudio7Generator produces a LocalUnix makefile from its
- * member Makefile.
+ * cmLocalVisualStudio7Generator produces a Visual Studio .NET project
+ * file for each target in its directory.
  */
-class cmLocalVisualStudio7Generator : public cmLocalGenerator
+class cmLocalVisualStudio7Generator : public cmLocalVisualStudioGenerator
 {
 public:
   ///! Set cache only and recurse to false by default.
   cmLocalVisualStudio7Generator();
 
   virtual ~cmLocalVisualStudio7Generator();
-  
+
+  virtual void AddHelperCommands();
+
   /**
    * Generate the makefile for this directory. 
    */
@@ -52,33 +57,34 @@ public:
    */
   void SetBuildType(BuildType,const char *name);
 
-  /**
-   * Return array of created DSP names in a STL vector.
-   * Each executable must have its own dsp.
-   */
-  std::vector<std::string> GetCreatedProjectNames() 
-    {
-    return this->CreatedProjectNames;
-    }
   void SetVersion71() {this->Version = 71;}
   void SetVersion8() {this->Version = 8;}
+  void SetVersion9() {this->Version = 9;}
   void SetPlatformName(const char* n) { this->PlatformName = n;}
   virtual void ConfigureFinalPass();
+  void GetTargetObjectFileDirectories(cmTarget* target,
+                                      std::vector<std::string>& 
+                                      dirs); 
+
+  void SetExtraFlagTable(cmVS7FlagTable const* table)
+    { this->ExtraFlagTable = table; }
 private:
-  void FillFlagMapFromCommandFlags(std::map<cmStdString, 
-                                   cmStdString>& flagMap,
-                                   cmVS7FlagTable* flagTable,
-                                   std::string& flags);
+  typedef cmLocalVisualStudio7GeneratorOptions Options;
+  typedef cmLocalVisualStudio7GeneratorFCInfo FCInfo;
+  void ReadAndStoreExternalGUID(const char* name,
+                                const char* path);
   std::string GetBuildTypeLinkerFlags(std::string rootLinkerFlags,
                                       const char* configName);
-  void OutputVCProjFile();
+  void FixGlobalTargets();
+  void WriteProjectFiles();
+  void WriteStampFiles();
   void WriteVCProjHeader(std::ostream& fout, const char *libName,
                          cmTarget &tgt, std::vector<cmSourceGroup> &sgs);
   void WriteVCProjFooter(std::ostream& fout);
   void CreateSingleVCProj(const char *lname, cmTarget &tgt);
   void WriteVCProjFile(std::ostream& fout, const char *libName, 
                        cmTarget &tgt);
-  void AddVCProjBuildRule(cmTarget& tgt);
+  cmSourceFile* CreateVCProjBuildRule();
   void WriteConfigurations(std::ostream& fout,
                            const char *libName, cmTarget &tgt);
   void WriteConfiguration(std::ostream& fout,
@@ -87,16 +93,12 @@ private:
   std::string EscapeForXML(const char* s);
   std::string ConvertToXMLOutputPath(const char* path);
   std::string ConvertToXMLOutputPathSingle(const char* path);
-  void OutputDefineFlags(const char* flags,
-                         std::ostream& fout);
-  void OutputTargetRules(std::ostream& fout, cmTarget &target, 
-                         const char *libName);
+  void OutputTargetRules(std::ostream& fout, const char* configName, 
+                         cmTarget &target, const char *libName);
   void OutputBuildTool(std::ostream& fout, const char* configName,
-                       const char* libname, cmTarget& t);
-  void OutputLibraries(std::ostream& fout,
-                       std::vector<cmStdString> const& libs);
+                       cmTarget& t, bool debug);
   void OutputLibraryDirectories(std::ostream& fout,
-                                std::vector<cmStdString> const& dirs);
+                                std::vector<std::string> const& dirs);
   void OutputModuleDefinitionFile(std::ostream& fout, cmTarget &target);
   void WriteProjectStart(std::ostream& fout, const char *libName,
                          cmTarget &tgt, std::vector<cmSourceGroup> &sgs);
@@ -104,25 +106,51 @@ private:
                           const char* group,
                           const char* filter);
   void WriteVCProjEndGroup(std::ostream& fout);
+  
   void WriteCustomRule(std::ostream& fout,
                        const char* source,
-                       const char* command,
-                       const char* comment,
-                       const std::vector<std::string>& depends,
-                       const std::vector<std::string>& outputs,
-                       const char* extraFlags);
+                       const cmCustomCommand& command,
+                       FCInfo& fcinfo);
+  void WriteTargetVersionAttribute(std::ostream& fout, cmTarget& target);
 
   void WriteGroup(const cmSourceGroup *sg, 
-                  cmTarget target, std::ostream &fout, 
+                  cmTarget& target, std::ostream &fout,
                   const char *libName, std::vector<std::string> *configs);
-  virtual std::string GetTargetDirectory(cmTarget&);
+  virtual std::string GetTargetDirectory(cmTarget const&) const;
 
-  std::vector<std::string> CreatedProjectNames;
-  std::string LibraryOutputPath;
-  std::string ExecutableOutputPath;
+  friend class cmLocalVisualStudio7GeneratorFCInfo;
+  friend class cmLocalVisualStudio7GeneratorInternals;
+
+  cmVS7FlagTable const* ExtraFlagTable;
   std::string ModuleDefinitionFile;
   int Version;
   std::string PlatformName; // Win32 or x64 
+  cmLocalVisualStudio7GeneratorInternals* Internal;
+};
+
+// This is a table mapping XML tag IDE names to command line options
+struct cmVS7FlagTable
+{
+  const char* IDEName;  // name used in the IDE xml file
+  const char* commandFlag; // command line flag
+  const char* comment;     // comment
+  const char* value; // string value
+  unsigned int special; // flags for special handling requests
+  enum
+  {
+    UserValue    = (1<<0), // flag contains a user-specified value
+    UserIgnored  = (1<<1), // ignore any user value
+    UserRequired = (1<<2), // match only when user value is non-empty
+    Continue     = (1<<3), // continue looking for matching entries
+    SemicolonAppendable = (1<<4), // a flag that if specified multiple times
+                                  // should have its value appended to the
+                                  // old value with semicolons (e.g.
+                                  // /NODEFAULTLIB: => 
+                                  // IgnoreDefaultLibraryNames)
+
+    UserValueIgnored  = UserValue | UserIgnored,
+    UserValueRequired = UserValue | UserRequired
+  };
 };
 
 #endif

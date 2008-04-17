@@ -1,5 +1,6 @@
 # a simple C only test case
-PROJECT (littleMacroTest)
+cmake_minimum_required (VERSION 2.6)
+PROJECT (MacroTest)
 
 SET(CMAKE_C_FLAGS "${CMAKE_ANSI_CFLAGS} ${CMAKE_C_FLAGS}")
 
@@ -37,11 +38,11 @@ MACRO(strange_macro m)
 ENDMACRO(strange_macro m)
 STRANGE_MACRO(var)
 set(second_var "second_var")
-IF("${var}" EQUAL "strange_macro" AND "${second_var}" EQUAL "second_var")
+IF("${var}" STREQUAL "strange_macro" AND "${second_var}" STREQUAL "second_var")
   PASS("Case Test" "(${var} ${second_var})")
-ELSE("${var}" EQUAL "strange_macro" AND "${second_var}" EQUAL "second_var")
+ELSE("${var}" STREQUAL "strange_macro" AND "${second_var}" STREQUAL "second_var")
   FAILED("Case test" "(${var} ${second_var})")
-ENDIF("${var}" EQUAL "strange_macro" AND "${second_var}" EQUAL "second_var")
+ENDIF("${var}" STREQUAL "strange_macro" AND "${second_var}" STREQUAL "second_var")
 
 # test backing up command
 MACRO(ADD_EXECUTABLE exec)

@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestTestHandler.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/16 16:34:58 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2008-01-30 16:17:36 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) 2002 Kitware, Inc. All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -73,6 +73,23 @@ public:
    */
   bool SetTestsProperties(const std::vector<std::string>& args);
 
+  void Initialize();
+
+  struct cmCTestTestProperties
+  {
+    cmStdString Name;
+    cmStdString Directory;
+    std::vector<std::string> Args;
+    std::vector<std::pair<cmsys::RegularExpression,
+                          std::string> > ErrorRegularExpressions;
+    std::vector<std::pair<cmsys::RegularExpression,
+                          std::string> > RequiredRegularExpressions;
+    std::map<cmStdString, cmStdString> Measurements;
+    bool IsInBasedOnREOptions;
+    bool WillFail;
+    double Timeout;
+  };
+
   struct cmCTestTestResult
   {
     std::string Name;
@@ -85,23 +102,24 @@ public:
     std::string Output;
     std::string RegressionImages;
     int         TestCount;
+    cmCTestTestProperties* Properties;
   };
 
-  void Initialize();
+  // add configuraitons to a search path for an executable
+  static void AddConfigurations(cmCTest *ctest, 
+                                std::vector<std::string> &attempted,
+                                std::vector<std::string> &attemptedConfigs,
+                                std::string filepath,
+                                std::string &filename);
+
+  // full signature static method to find an executable
+  static std::string FindExecutable(cmCTest *ctest,
+                                    const char *testCommand,
+                                    std::string &resultingConfig,
+                                    std::vector<std::string> &extraPaths,
+                                    std::vector<std::string> &failed);
 
 protected:
-  struct cmCTestTestProperties
-  {
-    cmStdString Name;
-    cmStdString Directory;
-    std::vector<std::string> Args;
-    std::vector<cmsys::RegularExpression> ErrorRegularExpressions;
-    std::vector<cmsys::RegularExpression> RequiredRegularExpressions;
-    bool IsInBasedOnREOptions;
-    bool WillFail;
-  };
-
-
   virtual int PreProcessHandler();
   virtual int PostProcessHandler();
   virtual void GenerateTestCommand(std::vector<const char*>& args);
@@ -118,9 +136,20 @@ protected:
   std::vector<cmStdString> CustomTestsIgnore;
   std::string             StartTest;
   std::string             EndTest;
+  unsigned int            StartTestTime;
+  unsigned int            EndTestTime;
   bool MemCheck;
   int CustomMaximumPassedTestOutputSize;
   int CustomMaximumFailedTestOutputSize;
+protected:
+  /**
+   *  Run one test
+   */
+  virtual void ProcessOneTest(cmCTestTestProperties *props,
+                              std::vector<cmStdString> &passed,
+                              std::vector<cmStdString> &failed,
+                              int count, int tmsize);
+
 
 
 private:
@@ -144,11 +173,10 @@ private:
   virtual void GenerateDartOutput(std::ostream& os);
 
   /**
-   * Run the test for a directory and any subdirectories
+   * Run the tests for a directory and any subdirectories
    */
   void ProcessDirectory(std::vector<cmStdString> &passed,
                         std::vector<cmStdString> &failed);
-
 
   typedef std::vector<cmCTestTestProperties> ListOfTests;
   /**

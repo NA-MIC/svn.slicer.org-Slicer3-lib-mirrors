@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCommandArgumentParserHelper.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 02:15:08 $
-  Version:   $Revision: 1.12.2.2 $
+  Date:      $Date: 2007-06-06 20:20:02 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -27,7 +27,7 @@ cmCommandArgumentParserHelper::cmCommandArgumentParserHelper()
 {
   this->FileLine = -1;
   this->FileName = 0;
-
+  this->RemoveEmpty = true;
   this->EmptyVariable[0] = 0;
   strcpy(this->DCURLYVariable, "${");
   strcpy(this->RCURLYVariable, "}");
@@ -37,6 +37,7 @@ cmCommandArgumentParserHelper::cmCommandArgumentParserHelper()
   strcpy(this->BSLASHVariable, "\\");
 
   this->NoEscapeMode = false;
+  this->ReplaceAtSyntax = false;
 }
 
 
@@ -69,7 +70,7 @@ char* cmCommandArgumentParserHelper::ExpandSpecialVariable(const char* key,
   if ( !key )
     {
     return this->ExpandVariable(var);
-    }
+    } 
   if ( strcmp(key, "ENV") == 0 )
     {
     char *ptr = getenv(var);
@@ -108,11 +109,43 @@ char* cmCommandArgumentParserHelper::ExpandVariable(const char* var)
     return this->AddString(ostr.str().c_str());
     } 
   const char* value = this->Makefile->GetDefinition(var);
+  if(!value && !this->RemoveEmpty)
+    {
+    return 0;
+    }
   if (this->EscapeQuotes && value)
     {
     return this->AddString(cmSystemTools::EscapeQuotes(value).c_str());
     }
   return this->AddString(value);
+}
+
+char* cmCommandArgumentParserHelper::ExpandVariableForAt(const char* var)
+{
+  if(this->ReplaceAtSyntax)
+    {
+    // try to expand the variable
+    char* ret = this->ExpandVariable(var);
+    // if the return was 0 and we want to replace empty strings
+    // then return an empty string 
+    if(!ret && this->RemoveEmpty)
+      {
+      return this->AddString(ret);
+      }
+    // if the ret was not 0, then return it
+    if(ret)
+      {
+      return ret;
+      }
+    }
+  // at this point we want to put it back because of one of these cases:
+  // - this->ReplaceAtSyntax is false  
+  // - this->ReplaceAtSyntax is true, but this->RemoveEmpty is false,
+  //   and the variable was not defined
+  std::string ref = "@";
+  ref += var;
+  ref += "@";
+  return this->AddString(ref.c_str());
 }
 
 char* cmCommandArgumentParserHelper::CombineUnions(char* in1, char* in2)
@@ -139,7 +172,7 @@ void cmCommandArgumentParserHelper::AllocateParserType
   pt->str = 0;
   if ( len == 0 )
     {
-    len = (int)strlen(str);
+    len = static_cast<int>(strlen(str));
     }
   if ( len == 0 )
     {
@@ -154,15 +187,6 @@ void cmCommandArgumentParserHelper::AllocateParserType
 bool cmCommandArgumentParserHelper::HandleEscapeSymbol
 (cmCommandArgumentParserHelper::ParserType* pt, char symbol)
 {
-  if ( this->NoEscapeMode )
-    {
-    char buffer[3];
-    buffer[0] = '\\';
-    buffer[1] = symbol;
-    buffer[2] = 0;
-    this->AllocateParserType(pt, buffer, 2);
-    return true;
-    }
   switch ( symbol )
     {
   case '\\':
@@ -172,6 +196,7 @@ bool cmCommandArgumentParserHelper::HandleEscapeSymbol
   case '(':
   case ')':
   case '$':
+  case '@':
   case '^':
     this->AllocateParserType(pt, &symbol, 1);
     break;
@@ -200,6 +225,8 @@ bool cmCommandArgumentParserHelper::HandleEscapeSymbol
   return true;
 }
 
+void cmCommandArgument_SetupEscapes(yyscan_t yyscanner, bool noEscapes);
+
 int cmCommandArgumentParserHelper::ParseString(const char* str, int verb)
 {
   if ( !str)
@@ -216,6 +243,7 @@ int cmCommandArgumentParserHelper::ParseString(const char* str, int verb)
   yyscan_t yyscanner;
   cmCommandArgument_yylex_init(&yyscanner);
   cmCommandArgument_yyset_extra(this, yyscanner);
+  cmCommandArgument_SetupEscapes(yyscanner, this->NoEscapeMode);
   int res = cmCommandArgument_yyparse(yyscanner);
   cmCommandArgument_yylex_destroy(yyscanner);
   if ( res != 0 )

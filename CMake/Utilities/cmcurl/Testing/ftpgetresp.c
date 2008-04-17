@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___ 
  *                             \___|\___/|_| \_\_____|
  *
- * $Id: ftpgetresp.c,v 1.1 2005/06/24 13:02:16 andy Exp $
+ * $Id: ftpgetresp.c,v 1.2 2006-07-09 17:48:37 andy Exp $
  */
 
 #include "curl/curl.h"
@@ -34,6 +34,7 @@ int main(int argc, char **argv)
   CURLcode res;
   FILE *ftpfile;
   FILE *respfile;
+  (void)argc; (void)argv;
   
   /* local file name to store the file as */
   ftpfile = fopen(LIBCURL_BINARY_DIR "/Testing/ftpgetresp-list.txt", "wb"); /* b is binary, needed on win32 */

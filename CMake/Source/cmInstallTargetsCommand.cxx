@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetsCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 20:05:58 $
-  Version:   $Revision: 1.12.2.1 $
+  Date:      $Date: 2008-01-23 15:27:59 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,13 +18,17 @@
 
 // cmExecutableCommand
 bool cmInstallTargetsCommand
-::InitialPass(std::vector<std::string> const& args)
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 2 )
     {
     this->SetError("called with incorrect number of arguments");
     return false;
     }
+
+  // Enable the install target.
+  this->Makefile->GetLocalGenerator()
+    ->GetGlobalGenerator()->EnableInstallTarget();
 
   cmTargets &tgts = this->Makefile->GetTargets();
   std::vector<std::string>::const_iterator s = args.begin();

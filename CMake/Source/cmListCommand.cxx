@@ -3,14 +3,14 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmListCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/16 18:04:08 $
-  Version:   $Revision: 1.4.2.4 $
+  Date:      $Date: 2008-03-18 14:23:54 $
+  Version:   $Revision: 1.18.2.1 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -21,14 +21,15 @@
 #include <stdlib.h> // required for atoi
 #include <ctype.h>
 //----------------------------------------------------------------------------
-bool cmListCommand::InitialPass(std::vector<std::string> const& args)
+bool cmListCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 1)
     {
     this->SetError("must be called with at least one argument.");
     return false;
     }
-  
+
   const std::string &subCommand = args[0];
   if(subCommand == "LENGTH")
     {
@@ -42,6 +43,10 @@ bool cmListCommand::InitialPass(std::vector<std::string> const& args)
     {
     return this->HandleAppendCommand(args);
     }
+  if(subCommand == "FIND")
+    {
+    return this->HandleFindCommand(args);
+    }
   if(subCommand == "INSERT")
     {
     return this->HandleInsertCommand(args);
@@ -54,7 +59,19 @@ bool cmListCommand::InitialPass(std::vector<std::string> const& args)
     {
     return this->HandleRemoveItemCommand(args);
     }
-  
+  if(subCommand == "REMOVE_DUPLICATES")
+    {
+    return this->HandleRemoveDuplicatesCommand(args);
+    }
+  if(subCommand == "SORT")
+    {
+    return this->HandleSortCommand(args);
+    }
+  if(subCommand == "REVERSE")
+    {
+    return this->HandleReverseCommand(args);
+    }
+
   std::string e = "does not recognize sub-command "+subCommand;
   this->SetError(e.c_str());
   return false;
@@ -151,8 +168,8 @@ bool cmListCommand::HandleGetCommand(std::vector<std::string> const& args)
     if ( item < 0 || nitem <= (size_t)item )
       {
       cmOStringStream str;
-      str << "index: " << item << " out of range (-" 
-          << varArgsExpanded.size() << ", " 
+      str << "index: " << item << " out of range (-"
+          << varArgsExpanded.size() << ", "
           << varArgsExpanded.size()-1 << ")";
       this->SetError(str.str().c_str());
       return false;
@@ -167,10 +184,16 @@ bool cmListCommand::HandleGetCommand(std::vector<std::string> const& args)
 //----------------------------------------------------------------------------
 bool cmListCommand::HandleAppendCommand(std::vector<std::string> const& args)
 {
+  if(args.size() < 2)
+    {
+    this->SetError("sub-command APPEND requires at least one argument.");
+    return false;
+    }
+
+  // Skip if nothing to append.
   if(args.size() < 3)
     {
-    this->SetError("sub-command APPEND requires at least two arguments.");
-    return false;
+    return true;
     }
 
   const std::string& listName = args[1];
@@ -188,6 +211,43 @@ bool cmListCommand::HandleAppendCommand(std::vector<std::string> const& args)
     }
 
   this->Makefile->AddDefinition(listName.c_str(), listString.c_str());
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool cmListCommand::HandleFindCommand(std::vector<std::string> const& args)
+{
+  if(args.size() != 4)
+    {
+    this->SetError("sub-command FIND requires three arguments.");
+    return false;
+    }
+
+  const std::string& listName = args[1];
+  const std::string& variableName = args[args.size() - 1];
+  // expand the variable
+  std::vector<std::string> varArgsExpanded;
+  if ( !this->GetList(varArgsExpanded, listName.c_str()) )
+    {
+    this->Makefile->AddDefinition(variableName.c_str(), "-1");
+    return true;
+    }
+
+  std::vector<std::string>::iterator it;
+  unsigned int index = 0;
+  for ( it = varArgsExpanded.begin(); it != varArgsExpanded.end(); ++ it )
+    {
+    if ( *it == args[2] )
+      {
+      char indexString[32];
+      sprintf(indexString, "%d", index);
+      this->Makefile->AddDefinition(variableName.c_str(), indexString);
+      return true;
+      }
+    index++;
+    }
+
+  this->Makefile->AddDefinition(variableName.c_str(), "-1");
   return true;
 }
 
@@ -215,20 +275,20 @@ bool cmListCommand::HandleInsertCommand(std::vector<std::string> const& args)
 
   if ( varArgsExpanded.size() != 0 )
     {
-  size_t nitem = varArgsExpanded.size();
-  if ( item < 0 )
-    {
-    item = (int)nitem + item;
-    }
-  if ( item < 0 || nitem <= (size_t)item )
-    {
-    cmOStringStream str;
-    str << "index: " << item << " out of range (-" 
-        << varArgsExpanded.size() << ", " 
+    size_t nitem = varArgsExpanded.size();
+    if ( item < 0 )
+      {
+      item = (int)nitem + item;
+      }
+    if ( item < 0 || nitem <= (size_t)item )
+      {
+      cmOStringStream str;
+      str << "index: " << item << " out of range (-"
+        << varArgsExpanded.size() << ", "
         << (varArgsExpanded.size() == 0?0:(varArgsExpanded.size()-1)) << ")";
-    this->SetError(str.str().c_str());
-    return false;
-    }
+      this->SetError(str.str().c_str());
+      return false;
+      }
     }
   size_t cc;
   size_t cnt = 0;
@@ -258,7 +318,7 @@ bool cmListCommand
 {
   if(args.size() < 3)
     {
-    this->SetError("sub-command REMOVE requires at least two arguments.");
+    this->SetError("sub-command REMOVE_ITEM requires two or more arguments.");
     return false;
     }
 
@@ -267,6 +327,7 @@ bool cmListCommand
   std::vector<std::string> varArgsExpanded;
   if ( !this->GetList(varArgsExpanded, listName.c_str()) )
     {
+    this->SetError("sub-command REMOVE_ITEM requires list to be present.");
     return false;
     }
 
@@ -280,7 +341,10 @@ bool cmListCommand
         {
         varArgsExpanded.erase(varArgsExpanded.begin()+kk);
         }
-      kk ++;
+      else
+        {
+        kk ++;
+        }
       }
     }
 
@@ -299,12 +363,146 @@ bool cmListCommand
 }
 
 //----------------------------------------------------------------------------
+bool cmListCommand
+::HandleReverseCommand(std::vector<std::string> const& args)
+{
+  if(args.size() < 2)
+    {
+    this->SetError("sub-command REVERSE requires a list as an argument.");
+    return false;
+    }
+
+  const std::string& listName = args[1];
+  // expand the variable
+  std::vector<std::string> varArgsExpanded;
+  if ( !this->GetList(varArgsExpanded, listName.c_str()) )
+    {
+    this->SetError("sub-command REVERSE requires list to be present.");
+    return false;
+    }
+
+  std::string value;
+  std::vector<std::string>::reverse_iterator it;
+  for ( it = varArgsExpanded.rbegin(); it != varArgsExpanded.rend(); ++ it )
+    {
+    if (value.size())
+      {
+      value += ";";
+      }
+    value += it->c_str();
+    }
+
+  this->Makefile->AddDefinition(listName.c_str(), value.c_str());
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool cmListCommand
+::HandleRemoveDuplicatesCommand(std::vector<std::string> const& args)
+{
+  if(args.size() < 2)
+    {
+    this->SetError(
+      "sub-command REMOVE_DUPLICATES requires a list as an argument.");
+    return false;
+    }
+
+  const std::string& listName = args[1];
+  // expand the variable
+  std::vector<std::string> varArgsExpanded;
+  if ( !this->GetList(varArgsExpanded, listName.c_str()) )
+    {
+    this->SetError(
+      "sub-command REMOVE_DUPLICATES requires list to be present.");
+    return false;
+    }
+
+  std::string value;
+
+#if 0 
+  // Fast version, but does not keep the ordering
+
+  std::set<std::string> unique(varArgsExpanded.begin(), varArgsExpanded.end());
+  std::set<std::string>::iterator it;
+  for ( it = unique.begin(); it != unique.end(); ++ it )
+    {
+    if (value.size())
+      {
+      value += ";";
+      }
+    value += it->c_str();
+    }
+
+#else
+
+  // Slower version, keep the ordering
+
+  std::set<std::string> unique;
+  std::vector<std::string>::iterator it;
+  for ( it = varArgsExpanded.begin(); it != varArgsExpanded.end(); ++ it )
+    {
+    if (unique.find(*it) != unique.end())
+      {
+      continue;
+      }
+    unique.insert(*it);
+
+    if (value.size())
+      {
+      value += ";";
+      }
+    value += it->c_str();
+    }
+#endif
+
+
+  this->Makefile->AddDefinition(listName.c_str(), value.c_str());
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool cmListCommand
+::HandleSortCommand(std::vector<std::string> const& args)
+{
+  if(args.size() < 2)
+    {
+    this->SetError("sub-command SORT requires a list as an argument.");
+    return false;
+    }
+
+  const std::string& listName = args[1];
+  // expand the variable
+  std::vector<std::string> varArgsExpanded;
+  if ( !this->GetList(varArgsExpanded, listName.c_str()) )
+    {
+    this->SetError("sub-command SORT requires list to be present.");
+    return false;
+    }
+
+  std::sort(varArgsExpanded.begin(), varArgsExpanded.end());
+
+  std::string value;
+  std::vector<std::string>::iterator it;
+  for ( it = varArgsExpanded.begin(); it != varArgsExpanded.end(); ++ it )
+    {
+    if (value.size())
+      {
+      value += ";";
+      }
+    value += it->c_str();
+    }
+
+  this->Makefile->AddDefinition(listName.c_str(), value.c_str());
+  return true;
+}
+
+//----------------------------------------------------------------------------
 bool cmListCommand::HandleRemoveAtCommand(
   std::vector<std::string> const& args)
 {
   if(args.size() < 3)
     {
-    this->SetError("sub-command REMOVE_ITEM requires at least "
+    this->SetError("sub-command REMOVE_AT requires at least "
                    "two arguments.");
     return false;
     }
@@ -314,6 +512,7 @@ bool cmListCommand::HandleRemoveAtCommand(
   std::vector<std::string> varArgsExpanded;
   if ( !this->GetList(varArgsExpanded, listName.c_str()) )
     {
+    this->SetError("sub-command REMOVE_AT requires list to be present.");
     return false;
     }
 
@@ -330,8 +529,8 @@ bool cmListCommand::HandleRemoveAtCommand(
     if ( item < 0 || nitem <= (size_t)item )
       {
       cmOStringStream str;
-      str << "index: " << item << " out of range (-" 
-          << varArgsExpanded.size() << ", " 
+      str << "index: " << item << " out of range (-"
+          << varArgsExpanded.size() << ", "
           << varArgsExpanded.size()-1 << ")";
       this->SetError(str.str().c_str());
       return false;

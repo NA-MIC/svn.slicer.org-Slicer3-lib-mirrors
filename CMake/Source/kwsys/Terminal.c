@@ -142,13 +142,19 @@ static const char* kwsysTerminalVT100Names[] =
   "con80x50",
   "con80x60",
   "console",
+  "cygwin",
   "konsole",
+  "konsole-256color",
   "linux",
   "msys",
   "rxvt",
+  "rxvt-unicode",
+  "screen",
+  "screen-256color",
   "vt100",
   "xterm",
   "xterm-color",
+  "xterm-256color",
   0
 };
 
@@ -157,6 +163,15 @@ static const char* kwsysTerminalVT100Names[] =
 static int kwsysTerminalStreamIsVT100(FILE* stream, int default_vt100,
                                       int default_tty)
 {
+  /* If running inside emacs the terminal is not VT100.  Some emacs
+     seem to claim the TERM is xterm even though they do not support
+     VT100 escapes.  */
+  const char* emacs = getenv("EMACS");
+  if(emacs && *emacs == 't')
+    {
+    return 0;
+    }
+
   /* Check for a valid terminal.  */
   if(!default_vt100)
     {

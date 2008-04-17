@@ -1,3 +1,7 @@
+# Default output files will be CPackConfig.cmake and CPackSourceConfig.cmake.
+# This can be overwritten with CPACK_OUTPUT_CONFIG_FILE and
+# CPACK_SOURCE_OUTPUT_CONFIG_FILE.
+
 # Pick a configuration file
 SET(cpack_input_file "${CMAKE_ROOT}/Templates/CPackConfig.cmake.in")
 IF(EXISTS "${CMAKE_SOURCE_DIR}/CPackConfig.cmake.in")
@@ -16,17 +20,20 @@ MACRO(cpack_set_if_not_set name value)
 ENDMACRO(cpack_set_if_not_set)
 
 # Macro to encode variables for the configuration file
+# find any varable that stars with CPACK and create a variable
+# _CPACK_OTHER_VARIABLES_ that contains SET commands for
+# each cpack variable.  _CPACK_OTHER_VARIABLES_ is then
+# used as an @ replacment in configure_file for the CPackConfig.
 MACRO(cpack_encode_variables)
   SET(_CPACK_OTHER_VARIABLES_)
   GET_CMAKE_PROPERTY(res VARIABLES)
   FOREACH(var ${res})
-    IF("xxx${var}" MATCHES "xxxCPACK")
+    IF("xxx${var}" MATCHES "xxxCPACK")  
       SET(_CPACK_OTHER_VARIABLES_
         "${_CPACK_OTHER_VARIABLES_}\nSET(${var} \"${${var}}\")")
-    ENDIF("xxx${var}" MATCHES "xxxCPACK")
+      ENDIF("xxx${var}" MATCHES "xxxCPACK")
   ENDFOREACH(var ${res})
 ENDMACRO(cpack_encode_variables)
-
 
 # Set the package name
 cpack_set_if_not_set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
@@ -48,6 +55,8 @@ cpack_set_if_not_set(CPACK_RESOURCE_FILE_README
 cpack_set_if_not_set(CPACK_RESOURCE_FILE_WELCOME
   "${CMAKE_ROOT}/Templates/CPack.GenericWelcome.txt")
 
+cpack_set_if_not_set(CPACK_MODULE_PATH "${CMAKE_MODULE_PATH}")
+
 IF(CPACK_NSIS_MODIFY_PATH)
   SET(CPACK_NSIS_MODIFY_PATH ON)
 ENDIF(CPACK_NSIS_MODIFY_PATH)
@@ -64,36 +73,106 @@ cpack_set_if_not_set(CPACK_SYSTEM_NAME "${__cpack_system_name}")
 
 # <project>-<major>.<minor>.<patch>-<release>-<platform>.<pkgtype>
 cpack_set_if_not_set(CPACK_PACKAGE_FILE_NAME
-  "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-${CPACK_SYSTEM_NAME}")
+  "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}")
 cpack_set_if_not_set(CPACK_PACKAGE_INSTALL_DIRECTORY
   "${CPACK_PACKAGE_NAME} ${CPACK_PACKAGE_VERSION}")
 cpack_set_if_not_set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY
   "${CPACK_PACKAGE_NAME} ${CPACK_PACKAGE_VERSION}")
+cpack_set_if_not_set(CPACK_PACKAGE_DEFAULT_LOCATION "/")
+cpack_set_if_not_set(CPACK_PACKAGE_RELOCATABLE "true")
 
-MACRO(cpack_check_file_exists file description)
-IF(NOT EXISTS "${file}")
-  MESSAGE(SEND_ERROR "CPack ${description} file: \"${file}\" could not be found.")
-ENDIF(NOT EXISTS "${file}")
-ENDMACRO(cpack_check_file_exists)
+# always force to exactly "true" or "false" for CPack.Info.plist.in:
+if(CPACK_PACKAGE_RELOCATABLE)
+  set(CPACK_PACKAGE_RELOCATABLE "true")
+else(CPACK_PACKAGE_RELOCATABLE)
+  set(CPACK_PACKAGE_RELOCATABLE "false")
+endif(CPACK_PACKAGE_RELOCATABLE)
+
+macro(cpack_check_file_exists file description)
+  if(NOT EXISTS "${file}")
+    message(SEND_ERROR "CPack ${description} file: \"${file}\" could not be found.")
+  endif(NOT EXISTS "${file}")
+endmacro(cpack_check_file_exists)
+
 cpack_check_file_exists("${CPACK_PACKAGE_DESCRIPTION_FILE}" "package description")
 cpack_check_file_exists("${CPACK_RESOURCE_FILE_LICENSE}"    "license resource")
 cpack_check_file_exists("${CPACK_RESOURCE_FILE_README}"     "readme resource")
 cpack_check_file_exists("${CPACK_RESOURCE_FILE_WELCOME}"    "welcome resource")
 
-# Pick a generator
-IF(NOT CPACK_GENERATOR)
-  IF(UNIX)
-    IF(APPLE)
-      SET(CPACK_GENERATOR "PackageMaker")
-    ELSE(APPLE)
-      SET(CPACK_GENERATOR "STGZ")
-    ENDIF(APPLE)
-    SET(CPACK_SOURCE_GENERATOR "TGZ")
-  ELSE(UNIX)
-    SET(CPACK_GENERATOR "NSIS")
-    SET(CPACK_SOURCE_GENERATOR "ZIP")
-  ENDIF(UNIX)
-ENDIF(NOT CPACK_GENERATOR)
+macro(cpack_optional_append _list _cond _item)
+  if(${_cond})
+    set(${_list} ${${_list}} ${_item})
+  endif(${_cond})
+endmacro(cpack_optional_append _list _cond _item)
+
+# Provide options to choose generators
+# we might check here if the required tools for the generates exist
+# and set the defaults according to the results
+if(NOT CPACK_GENERATOR)
+  if(UNIX)
+    if(CYGWIN)
+      option(CPACK_CYGWIN_BINARY "Enable to build Cygwin binary packages" ON)
+    else(CYGWIN)
+      if(APPLE)
+        option(CPACK_PACKAGEMAKER "Enable to build PackageMaker packages" ON)
+        option(CPACK_OSXX11       "Enable to build OSX X11 packages"      OFF)
+      else(APPLE)
+        option(CPACK_TZ  "Enable to build TZ packages"     ON)
+      endif(APPLE)
+      option(CPACK_STGZ "Enable to build STGZ packages"    ON)
+      option(CPACK_TGZ  "Enable to build TGZ packages"     ON)
+      option(CPACK_TBZ2 "Enable to build TBZ2 packages"    ON)
+      option(CPACK_DEB  "Enable to build Debian packages"  OFF)
+      option(CPACK_RPM  "Enable to build RPM packages"     OFF)
+      option(CPACK_NSIS "Enable to build NSIS packages"    OFF)
+    endif(CYGWIN)
+  else(UNIX)
+    option(CPACK_NSIS "Enable to build NSIS packages" ON)
+    option(CPACK_ZIP  "Enable to build ZIP packages" ON)
+  endif(UNIX)
+  
+  cpack_optional_append(CPACK_GENERATOR  CPACK_PACKAGEMAKER   PackageMaker)
+  cpack_optional_append(CPACK_GENERATOR  CPACK_OSXX11         OSXX11)
+  cpack_optional_append(CPACK_GENERATOR  CPACK_CYGWIN_BINARY  CygwinBinary)
+  cpack_optional_append(CPACK_GENERATOR  CPACK_DEB            DEB)
+  cpack_optional_append(CPACK_GENERATOR  CPACK_RPM            RPM)
+  cpack_optional_append(CPACK_GENERATOR  CPACK_NSIS           NSIS)
+  cpack_optional_append(CPACK_GENERATOR  CPACK_STGZ           STGZ)
+  cpack_optional_append(CPACK_GENERATOR  CPACK_TGZ            TGZ)
+  cpack_optional_append(CPACK_GENERATOR  CPACK_TBZ2           TBZ2)
+  cpack_optional_append(CPACK_GENERATOR  CPACK_TZ             TZ)
+  cpack_optional_append(CPACK_GENERATOR  CPACK_ZIP            ZIP)
+  
+endif(NOT CPACK_GENERATOR)
+
+# Provide options to choose source generators
+if(NOT CPACK_SOURCE_GENERATOR)
+  if(UNIX)
+    if(CYGWIN)
+      option(CPACK_SOURCE_CYGWIN "Enable to build Cygwin source packages" ON)
+    else(CYGWIN)
+      option(CPACK_SOURCE_TBZ2 "Enable to build TBZ2 source packages" ON)
+      option(CPACK_SOURCE_TGZ  "Enable to build TGZ source packages"  ON)
+      option(CPACK_SOURCE_TZ   "Enable to build TZ source packages"   ON)
+      option(CPACK_SOURCE_ZIP  "Enable to build ZIP source packages"  OFF)
+    endif(CYGWIN)
+  else(UNIX)
+    option(CPACK_SOURCE_ZIP "Enable to build ZIP source packages" ON)
+  endif(UNIX)
+
+  cpack_optional_append(CPACK_SOURCE_GENERATOR  CPACK_SOURCE_CYGWIN  CygwinSource)
+  cpack_optional_append(CPACK_SOURCE_GENERATOR  CPACK_SOURCE_TGZ     TGZ)
+  cpack_optional_append(CPACK_SOURCE_GENERATOR  CPACK_SOURCE_TBZ2    TBZ2)
+  cpack_optional_append(CPACK_SOURCE_GENERATOR  CPACK_SOURCE_TZ      TZ)
+  cpack_optional_append(CPACK_SOURCE_GENERATOR  CPACK_SOURCE_ZIP     ZIP)
+endif(NOT CPACK_SOURCE_GENERATOR)
+
+# mark the above options as advanced
+mark_as_advanced(CPACK_CYGWIN_BINARY CPACK_PACKAGEMAKER CPACK_OSXX11
+                 CPACK_STGZ CPACK_TGZ CPACK_TBZ2 CPACK_DEB CPACK_RPM 
+                 CPACK_TZ CPACK_NSIS CPACK_ZIP 
+                 CPACK_SOURCE_CYGWIN CPACK_SOURCE_TBZ2 CPACK_SOURCE_TGZ 
+                 CPACK_SOURCE_TZ CPACK_SOURCE_ZIP)
 
 # Set some other variables
 cpack_set_if_not_set(CPACK_INSTALL_CMAKE_PROJECTS
@@ -103,16 +182,27 @@ cpack_set_if_not_set(CPACK_TOPLEVEL_TAG "${CPACK_SYSTEM_NAME}")
 
 cpack_set_if_not_set(CPACK_NSIS_DISPLAY_NAME "@CPACK_PACKAGE_INSTALL_DIRECTORY@")
 
+cpack_set_if_not_set(CPACK_OUTPUT_CONFIG_FILE
+  "${CMAKE_BINARY_DIR}/CPackConfig.cmake")
+
+cpack_set_if_not_set(CPACK_SOURCE_OUTPUT_CONFIG_FILE
+  "${CMAKE_BINARY_DIR}/CPackSourceConfig.cmake")
+
+cpack_set_if_not_set(CPACK_SET_DESTDIR OFF)
+cpack_set_if_not_set(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+
+cpack_set_if_not_set(CPACK_NSIS_INSTALLER_ICON_CODE "")
+cpack_set_if_not_set(CPACK_NSIS_INSTALLER_MUI_ICON_CODE "")
+
 cpack_encode_variables()
-CONFIGURE_FILE("${cpack_input_file}"
-  "${CMAKE_BINARY_DIR}/CPackConfig.cmake" @ONLY IMMEDIATE)
+configure_file("${cpack_input_file}" "${CPACK_OUTPUT_CONFIG_FILE}" @ONLY IMMEDIATE)
 
 # Generate source file
 cpack_set_if_not_set(CPACK_SOURCE_INSTALLED_DIRECTORIES
   "${CMAKE_SOURCE_DIR};/")
 cpack_set_if_not_set(CPACK_SOURCE_TOPLEVEL_TAG "${CPACK_SYSTEM_NAME}-Source")
 cpack_set_if_not_set(CPACK_SOURCE_PACKAGE_FILE_NAME
-  "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-Source")
+  "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-Source")
 cpack_set_if_not_set(CPACK_SOURCE_IGNORE_FILES
   "/CVS/;/\\\\\\\\.svn/;\\\\\\\\.swp$;\\\\\\\\.#;/#")
 SET(CPACK_INSTALL_CMAKE_PROJECTS "${CPACK_SOURCE_INSTALL_CMAKE_PROJECTS}")
@@ -124,5 +214,5 @@ SET(CPACK_IGNORE_FILES "${CPACK_SOURCE_IGNORE_FILES}")
 SET(CPACK_STRIP_FILES "${CPACK_SOURCE_STRIP_FILES}")
 
 cpack_encode_variables()
-CONFIGURE_FILE("${cpack_source_input_file}"
-  "${CMAKE_BINARY_DIR}/CPackSourceConfig.cmake" @ONLY IMMEDIATE)
+configure_file("${cpack_source_input_file}"
+  "${CPACK_SOURCE_OUTPUT_CONFIG_FILE}" @ONLY IMMEDIATE)

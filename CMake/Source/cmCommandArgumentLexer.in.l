@@ -4,8 +4,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCommandArgumentLexer.in.l,v $
   Language:  C++
-  Date:      $Date: 2005/06/17 19:50:08 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-06-05 13:19:27 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -24,9 +24,10 @@ Run flex like this:
   flex --prefix=cmCommandArgument_yy --header-file=cmCommandArgumentLexer.h -ocmCommandArgumentLexer.cxx cmCommandArgumentLexer.in.l
 
 Modify cmCommandArgumentLexer.cxx:
+  - add #include "cmStandardIncludes.h" to top of file
   - remove TABs
   - remove "yyscanner" argument from these methods:
-      yy_fatal_error, yyalloc, yyrealloc, yyfree
+      yy_fatal_error, cmCommandArgument_yyalloc, cmCommandArgument_yyrealloc, cmCommandArgument_yyfree
   - remove all YY_BREAK lines occurring right after return statements
   - change while ( 1 ) to for(;;)
 
@@ -38,25 +39,9 @@ Modify cmCommandArgumentLexer.h:
 
 */
 
+#include "cmStandardLexer.h"
+
 #include "cmCommandArgumentParserHelper.h"
-
-/* Disable some warnings.  */
-#if defined(_MSC_VER)
-# pragma warning ( disable : 4127 )
-# pragma warning ( disable : 4131 )
-# pragma warning ( disable : 4244 )
-# pragma warning ( disable : 4251 )
-# pragma warning ( disable : 4267 )
-# pragma warning ( disable : 4305 )
-# pragma warning ( disable : 4309 )
-# pragma warning ( disable : 4706 )
-# pragma warning ( disable : 4786 )
-#endif
-
-/* Disable features we do not need. */
-#define YY_NEVER_INTERACTIVE 1
-#undef ECHO /* SGI termios defines this differently. */
-#define ECHO
 
 /* Replace the lexer input function.  */
 #undef YY_INPUT
@@ -66,32 +51,24 @@ Modify cmCommandArgumentLexer.h:
 /* Include the set of tokens from the parser.  */
 #include "cmCommandArgumentParserTokens.h"
 
-
-#if defined( _WIN32 ) && !defined( __CYGWIN__ )
-/* Handle Windows properly */
-#  include <io.h>
-#  if defined( _MSC_VER )
-#    define isatty _isatty
-#  endif
-#  define YY_NO_UNISTD_H 1
-#endif
-
 /*--------------------------------------------------------------------------*/
 %}
 
 %option reentrant
 %option noyywrap
 %pointer
+%s ESCAPES
+%s NOESCAPES
 
 %%
 
-\$[A-Za-z0-9/_.-]+\{ { 
+\$[A-Za-z0-9/_.+-]+\{ { 
   //std::cerr << __LINE__ << " here: [" << yytext << "]" << std::endl;
   yyextra->AllocateParserType(yylvalp, yytext+1, strlen(yytext)-2); 
   return cal_NCURLY; 
 } 
 
-@[A-Za-z0-9/_.-]+@ { 
+@[A-Za-z0-9/_.+-]+@ { 
   //std::cerr << __LINE__ << " here: [" << yytext << "]" << std::endl;
   yyextra->AllocateParserType(yylvalp, yytext+1, strlen(yytext)-2); 
   return cal_ATNAME; 
@@ -100,31 +77,31 @@ Modify cmCommandArgumentLexer.h:
 "${" {
   //std::cerr << __LINE__ << " here: [" << yytext << "]" << std::endl;
   //yyextra->AllocateParserType(yylvalp, yytext, strlen(yytext)); 
-  yylvalp->str = yyextra->m_DCURLYVariable;
+  yylvalp->str = yyextra->DCURLYVariable;
   return cal_DCURLY;
 }
 
 "}" {
   //std::cerr << __LINE__ << " here: [" << yytext << "]" << std::endl;
   //yyextra->AllocateParserType(yylvalp, yytext, strlen(yytext)); 
-  yylvalp->str = yyextra->m_RCURLYVariable;
+  yylvalp->str = yyextra->RCURLYVariable;
   return cal_RCURLY;
 }
 
 "@" {
   //std::cerr << __LINE__ << " here: [" << yytext << "]" << std::endl;
   //yyextra->AllocateParserType(yylvalp, yytext, strlen(yytext)); 
-  yylvalp->str = yyextra->m_ATVariable;
+  yylvalp->str = yyextra->ATVariable;
   return cal_AT;
 }
 
-[A-Za-z0-9/_.-]+ { 
+[A-Za-z0-9/_.+-]+ { 
   //std::cerr << __LINE__ << " here: [" << yytext << "]" << std::endl;
   yyextra->AllocateParserType(yylvalp, yytext, strlen(yytext)); 
   return cal_NAME; 
 }
 
-\\. {
+<ESCAPES>\\. {
   if ( !yyextra->HandleEscapeSymbol(yylvalp, *(yytext+1)) )
     {
     return cal_ERROR;
@@ -140,20 +117,41 @@ Modify cmCommandArgumentLexer.h:
 
 "$" {
   //yyextra->AllocateParserType(yylvalp, yytext, strlen(yytext)); 
-  yylvalp->str = yyextra->m_DOLLARVariable;
+  yylvalp->str = yyextra->DOLLARVariable;
   return cal_DOLLAR; 
 }
 
 "{" {
   //yyextra->AllocateParserType(yylvalp, yytext, strlen(yytext)); 
-  yylvalp->str = yyextra->m_LCURLYVariable;
+  yylvalp->str = yyextra->LCURLYVariable;
   return cal_LCURLY; 
 }
 
-"\\" {
+<ESCAPES>"\\" {
   //yyextra->AllocateParserType(yylvalp, yytext, strlen(yytext)); 
-  yylvalp->str = yyextra->m_BSLASHVariable;
+  yylvalp->str = yyextra->BSLASHVariable;
   return cal_BSLASH; 
 }
 
+<NOESCAPES>"\\" {
+  //yyextra->AllocateParserType(yylvalp, yytext, strlen(yytext));
+  yylvalp->str = yyextra->BSLASHVariable;
+  return cal_SYMBOL;
+}
+
 %%
+
+/*--------------------------------------------------------------------------*/
+void cmCommandArgument_SetupEscapes(yyscan_t yyscanner, bool noEscapes)
+{
+  /* Hack into the internal flex-generated scanner to set the state.  */
+  struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+  if(noEscapes)
+    {
+    BEGIN(NOESCAPES);
+    }
+  else
+    {
+    BEGIN(ESCAPES);
+    }
+}

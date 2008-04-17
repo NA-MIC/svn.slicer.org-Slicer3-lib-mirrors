@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmExecuteProcessCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 02:15:09 $
-  Version:   $Revision: 1.6.2.1 $
+  Date:      $Date: 2008-01-23 15:27:59 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,11 +19,21 @@
 
 #include <cmsys/Process.h>
 
-void cmExecuteProcessCommandFixText(std::vector<char>& output);
+#include <ctype.h> /* isspace */
+
+static bool cmExecuteProcessCommandIsWhitespace(char c)
+{
+  return (isspace((int)c) || c == '\n' || c == '\r');
+}
+
+void cmExecuteProcessCommandFixText(std::vector<char>& output,
+                                    bool strip_trailing_whitespace);
+void cmExecuteProcessCommandAppend(std::vector<char>& output,
+                                   const char* data, int length);
 
 // cmExecuteProcessCommand
 bool cmExecuteProcessCommand
-::InitialPass(std::vector<std::string> const& args)
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 1 )
     {
@@ -36,6 +46,8 @@ bool cmExecuteProcessCommand
   size_t command_index = 0;
   bool output_quiet = false;
   bool error_quiet = false;
+  bool output_strip_trailing_whitespace = false;
+  bool error_strip_trailing_whitespace = false;
   std::string timeout_string;
   std::string input_file;
   std::string output_file;
@@ -166,9 +178,26 @@ bool cmExecuteProcessCommand
       doing_command = false;
       error_quiet = true;
       }
+    else if(args[i] == "OUTPUT_STRIP_TRAILING_WHITESPACE")
+      {
+      doing_command = false;
+      output_strip_trailing_whitespace = true;
+      }
+    else if(args[i] == "ERROR_STRIP_TRAILING_WHITESPACE")
+      {
+      doing_command = false;
+      error_strip_trailing_whitespace = true;
+      }
     else if(doing_command)
       {
       cmds[command_index].push_back(args[i].c_str());
+      }
+    else
+      {
+      cmOStringStream e;
+      e << " given unknown argument \"" << args[i] << "\".";
+      this->SetError(e.str().c_str());
+      return false;
       }
     }
 
@@ -278,14 +307,14 @@ bool cmExecuteProcessCommand
         }
       else
         {
-        tempOutput.insert(tempOutput.end(), data, data+length);
+        cmExecuteProcessCommandAppend(tempOutput, data, length);
         }
       }
     else if(p == cmsysProcess_Pipe_STDERR && !error_quiet)
       {
       if(!error_variable.empty())
         {
-        tempError.insert(tempError.end(), data, data+length);
+        cmExecuteProcessCommandAppend(tempError, data, length);
         }
       }
     }
@@ -294,8 +323,10 @@ bool cmExecuteProcessCommand
   cmsysProcess_WaitForExit(cp, 0);
 
   // Fix the text in the output strings.
-  cmExecuteProcessCommandFixText(tempOutput);
-  cmExecuteProcessCommandFixText(tempError);
+  cmExecuteProcessCommandFixText(tempOutput,
+                                 output_strip_trailing_whitespace);
+  cmExecuteProcessCommandFixText(tempError,
+                                 error_strip_trailing_whitespace);
 
   // Store the output obtained.
   if(!output_variable.empty() && tempOutput.size())
@@ -344,7 +375,8 @@ bool cmExecuteProcessCommand
 }
 
 //----------------------------------------------------------------------------
-void cmExecuteProcessCommandFixText(std::vector<char>& output)
+void cmExecuteProcessCommandFixText(std::vector<char>& output,
+                                    bool strip_trailing_whitespace)
 {
   // Remove \0 characters and the \r part of \r\n pairs.
   unsigned int in_index = 0;
@@ -358,8 +390,38 @@ void cmExecuteProcessCommandFixText(std::vector<char>& output)
       output[out_index++] = c;
       }
     }
+
+  // Remove trailing whitespace if requested.
+  if(strip_trailing_whitespace)
+    {
+    while(out_index > 0 &&
+          cmExecuteProcessCommandIsWhitespace(output[out_index-1]))
+      {
+      --out_index;
+      }
+    }
+
+  // Shrink the vector to the size needed.
   output.resize(out_index);
 
   // Put a terminator on the text string.
   output.push_back('\0');
+}
+
+//----------------------------------------------------------------------------
+void cmExecuteProcessCommandAppend(std::vector<char>& output,
+                                   const char* data, int length)
+{
+#if defined(__APPLE__)
+  // HACK on Apple to work around bug with inserting at the
+  // end of an empty vector.  This resulted in random failures
+  // that were hard to reproduce.
+  if(output.empty() && length > 0)
+    {
+    output.push_back(data[0]);
+    ++data;
+    --length;
+    }
+#endif
+  output.insert(output.end(), data, data+length);
 }

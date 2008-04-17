@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestStartCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/04/29 15:49:20 $
-  Version:   $Revision: 1.12.2.1 $
+  Date:      $Date: 2008-01-23 15:28:01 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -20,8 +20,8 @@
 #include "cmLocalGenerator.h"
 #include "cmGlobalGenerator.h"
 
-bool cmCTestStartCommand::InitialPass(
-  std::vector<std::string> const& args)
+bool cmCTestStartCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if (args.size() < 1)
     {
@@ -76,9 +76,15 @@ bool cmCTestStartCommand::InitialPass(
       "as an argument or set CTEST_BINARY_DIRECTORY");
     return false;
     }
+
+  cmSystemTools::AddKeepPath(src_dir);
+  cmSystemTools::AddKeepPath(bld_dir);
+
   this->CTest->EmptyCTestConfiguration();
-  this->CTest->SetCTestConfiguration("SourceDirectory", src_dir);
-  this->CTest->SetCTestConfiguration("BuildDirectory", bld_dir);
+  this->CTest->SetCTestConfiguration("SourceDirectory",
+    cmSystemTools::CollapseFullPath(src_dir).c_str());
+  this->CTest->SetCTestConfiguration("BuildDirectory",
+    cmSystemTools::CollapseFullPath(bld_dir).c_str());
 
   cmCTestLog(this->CTest, HANDLER_OUTPUT, "Run dashboard with model "
     << smodel << std::endl

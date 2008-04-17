@@ -10,6 +10,11 @@
 
 #include "xmlrpc_config.h"
 
+#if defined(__BEOS__)
+/* Some helpful system header has char==bool, then bool.h does int==bool. */
+#define HAVE_BOOL 1
+#endif
+
 #include "bool.h"
 #include "mallocvar.h"
 #include "linklist.h"
@@ -43,7 +48,10 @@
    static char THIS_FILE[] = __FILE__;
 #endif /*WIN32 && _DEBUG*/
 
-
+static void xmlrpc_abort(void)
+{
+  abort();
+}
 
 struct clientTransport {
 #if defined (HAVE_PTHREADS)
@@ -570,7 +578,7 @@ rpcCreate(xmlrpc_env *             const envP,
 #if defined(HAVE_PTHREADS)
                 createRpcThread(envP, rpcP, &rpcP->thread);
 #else 
-                abort();
+                xmlrpc_abort();
 #endif
                 if (!envP->fault_occurred)
                     rpcP->threadExists = TRUE;
@@ -589,7 +597,10 @@ rpcCreate(xmlrpc_env *             const envP,
                     destroyCurlTransaction(rpcP->curlTransactionP);
         }
         if (envP->fault_occurred)
-            free(rpcP);
+          {
+          free(rpcP);
+          rpcP = 0; /* set this to null as it is used later on */
+          }
     }
     *rpcPP = rpcP;
 }
@@ -658,7 +669,7 @@ finishRpc(struct list_head * const headerP,
         result = pthread_join(rpcP->thread, &status);
         (void)result;
 #else
-        abort();
+        xmlrpc_abort();
 #endif
         
         rpcP->threadExists = FALSE;
@@ -690,7 +701,7 @@ finishAsynch(struct clientTransport * const clientTransportP ATTR_UNUSED,
 #if defined(HAVE_PTHREADS)
     pthread_mutex_lock(&clientTransportP->listLock);
 #else
-        abort();
+    xmlrpc_abort();
 #endif
 
     list_foreach(&clientTransportP->rpcList, finishRpc, NULL);
@@ -698,7 +709,7 @@ finishAsynch(struct clientTransport * const clientTransportP ATTR_UNUSED,
 #if defined(HAVE_PTHREADS)
     pthread_mutex_unlock(&clientTransportP->listLock);
 #else
-        abort();
+    xmlrpc_abort();
 #endif
 }
 

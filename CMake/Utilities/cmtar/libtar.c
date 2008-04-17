@@ -35,18 +35,7 @@
 # include <signal.h>
 #endif
 
-#ifdef HAVE_LIBZ
-#ifdef HAVE_VTK_LIBZ
-# include <vtkzlib/zlib.h>
-# define cm_zlib_gzdopen gzdopen
-# define cm_zlib_gzclose gzclose
-# define cm_zlib_gzread gzread
-# define cm_zlib_gzwrite gzwrite
-
-#else
-# include <cmzlib/zlib.h>
-#endif
-#endif
+#include CMTAR_ZLIB_HEADER
 
 #include <libtar/compat.h>
 
@@ -83,7 +72,8 @@ struct gzStruct GZStruct;
 #endif
 #endif
 
-int libtar_gzopen(void* call_data, const char *pathname, int oflags, mode_t mode)
+static int libtar_gzopen(void* call_data, const char *pathname,
+  int oflags, mode_t mode)
 {
   char *gzoflags;
   int fd;
@@ -109,14 +99,19 @@ int libtar_gzopen(void* call_data, const char *pathname, int oflags, mode_t mode
     return -1;
     }
 
-#if !defined(_WIN32) || defined(__CYGWIN__)
-  if ((oflags & O_CREAT) && fchmod(fd, mode))
+#if defined(__BEOS__) && !defined(__ZETA__)  /* no fchmod on BeOS...do pathname instead. */
+  if ((oflags & O_CREAT) && chmod(pathname, mode & 07777))
+    {
+    return -1;
+    }
+#elif !defined(_WIN32) || defined(__CYGWIN__)
+  if ((oflags & O_CREAT) && fchmod(fd, mode & 07777))
     {
     return -1;
     }
 #endif
 
-  gzf->GZFile = cm_zlib_gzdopen(fd, gzoflags);
+  gzf->GZFile = gzdopen(fd, gzoflags);
   if (!gzf->GZFile)
   {
     errno = ENOMEM;
@@ -126,22 +121,22 @@ int libtar_gzopen(void* call_data, const char *pathname, int oflags, mode_t mode
   return fd;
 }
 
-int libtar_gzclose(void* call_data)
+static int libtar_gzclose(void* call_data)
 {
   struct gzStruct* gzf = (struct gzStruct*)call_data;
-  return cm_zlib_gzclose(gzf->GZFile);
+  return gzclose(gzf->GZFile);
 }
 
-ssize_t libtar_gzread(void* call_data, void* buf, size_t count)
+static ssize_t libtar_gzread(void* call_data, void* buf, size_t count)
 {
   struct gzStruct* gzf = (struct gzStruct*)call_data;
-  return cm_zlib_gzread(gzf->GZFile, buf, count);
+  return gzread(gzf->GZFile, buf, (unsigned int)count);
 }
 
-ssize_t libtar_gzwrite(void* call_data, const void* buf, size_t count)
+static ssize_t libtar_gzwrite(void* call_data, const void* buf, size_t count)
 {
   struct gzStruct* gzf = (struct gzStruct*)call_data;
-  return cm_zlib_gzwrite(gzf->GZFile, (void*)buf, count);
+  return gzwrite(gzf->GZFile, (void*)buf, (unsigned int)count);
 }
 
 tartype_t gztype = { 
@@ -155,7 +150,7 @@ tartype_t gztype = {
 #endif /* HAVE_LIBZ */
 
 
-int
+static int
 create(char *tarfile, char *rootdir, libtar_list_t *l)
 {
   TAR *t;
@@ -212,7 +207,7 @@ create(char *tarfile, char *rootdir, libtar_list_t *l)
 }
 
 
-int
+static int
 list(char *tarfile)
 {
   TAR *t;
@@ -272,7 +267,7 @@ list(char *tarfile)
 }
 
 
-int
+static int
 extract(char *tarfile, char *rootdir)
 {
   TAR *t;
@@ -316,7 +311,7 @@ extract(char *tarfile, char *rootdir)
 }
 
 
-void
+static void
 usage()
 {
   printf("Usage: %s [-C rootdir] [-g] [-z] -x|-t filename.tar\n",

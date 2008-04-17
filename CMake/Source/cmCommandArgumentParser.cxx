@@ -1,3 +1,19 @@
+/*=========================================================================
+
+  Program:   CMake - Cross-Platform Makefile Generator
+  Module:    $RCSfile: cmCommandArgumentParser.cxx,v $
+  Language:  C++
+  Date:      $Date: 2007-07-27 14:55:24 $
+  Version:   $Revision: 1.13 $
+
+  Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
+  See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
+
+     This software is distributed WITHOUT ANY WARRANTY; without even 
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     PURPOSE.  See the above copyright notices for more information.
+
+=========================================================================*/
 /* A Bison parser, made by GNU Bison 2.1.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison, Copyright (C) 1984,
@@ -33,6 +49,11 @@
    There are some unavoidable exceptions within include files to
    define necessary library symbols; they are noted "INFRINGES ON
    USER NAME SPACE" below.  */
+
+/* turn off some warning as this is generated code */
+#if defined(_MSC_VER)
+#  pragma warning ( disable : 4702 ) /* unreachable code */
+#endif
 
 /* Identify Bison output.  */
 #define YYBISON 1
@@ -102,8 +123,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCommandArgumentParser.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 02:15:08 $
-  Version:   $Revision: 1.5.2.1 $
+  Date:      $Date: 2007-07-27 14:55:24 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -128,6 +149,8 @@ Modify cmCommandArgumentParser.cxx:
 
 */
 
+#include "cmStandardIncludes.h"
+
 /* Configure the parser to use a lexer object.  */
 #define YYPARSE_PARAM yyscanner
 #define YYLEX_PARAM yyscanner
@@ -135,6 +158,11 @@ Modify cmCommandArgumentParser.cxx:
 #define cmCommandArgument_yyerror(x) \
         cmCommandArgumentError(yyscanner, x)
 #define yyGetParser (cmCommandArgument_yyget_extra(yyscanner))
+
+/* Make sure malloc and free are available on QNX.  */
+#ifdef __QNX__
+# include <malloc.h>
+#endif
 
 /* Make sure the parser uses standard memory allocation.  The default
    generated parser malloc/free declarations do not work on all
@@ -155,13 +183,17 @@ YY_DECL;
 static void cmCommandArgumentError(yyscan_t yyscanner, const char* message);
 
 #define YYDEBUG 1
-//#define YYMAXDEPTH 100000
-//#define YYINITDEPTH 10000
+// Set these high so that
+#define YYMAXDEPTH 100000
+#define YYINITDEPTH 10000
 
 
 /* Disable some warnings in the generated code.  */
 #ifdef __BORLANDC__
 # pragma warn -8004 /* Variable assigned a value that is not used.  */
+# pragma warn -8008 /* condition always returns true */
+# pragma warn -8060 /* possibly incorrect assignment */
+# pragma warn -8066 /* unreachable code */
 #endif
 #ifdef _MSC_VER
 # pragma warning (disable: 4102) /* Unused goto label.  */
@@ -1310,7 +1342,7 @@ yyreduce:
   case 17:
 #line 178 "cmCommandArgumentParser.y"
     {
-  (yyval.str) = yyGetParser->ExpandVariable((yyvsp[0].str));
+  (yyval.str) = yyGetParser->ExpandVariableForAt((yyvsp[0].str));
 }
     break;
 

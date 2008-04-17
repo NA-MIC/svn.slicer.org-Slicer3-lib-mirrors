@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmMakefileLibraryTargetGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/16 20:19:00 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-04-08 16:22:50 $
+  Version:   $Revision: 1.6.2.1 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -23,6 +23,8 @@ class cmMakefileLibraryTargetGenerator:
   public cmMakefileTargetGenerator
 {
 public:
+  cmMakefileLibraryTargetGenerator(cmTarget* target);
+
   /* the main entry point for this class. Writes the Makefiles associated
      with this target */
   virtual void WriteRuleFiles();  
@@ -33,6 +35,12 @@ protected:
   void WriteModuleLibraryRules(bool relink);
   void WriteLibraryRules(const char *linkRule, const char *extraFlags,
                          bool relink);
+  // MacOSX Framework support methods
+  void WriteFrameworkRules(bool relink);
+  void CreateFramework();
+
+  // Store the computd framework version for OS X Frameworks.
+  std::string FrameworkVersion;
 };
 
 #endif

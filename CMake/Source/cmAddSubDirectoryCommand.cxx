@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmAddSubDirectoryCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 20:05:56 $
-  Version:   $Revision: 1.4.2.2 $
+  Date:      $Date: 2008-01-23 15:27:59 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,7 +18,7 @@
 
 // cmAddSubDirectoryCommand
 bool cmAddSubDirectoryCommand::InitialPass
-(std::vector<std::string> const& args)
+(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if(args.size() < 1 )
     {
@@ -30,7 +30,7 @@ bool cmAddSubDirectoryCommand::InitialPass
   std::string srcArg = args[0];
   std::string binArg;
   
-  bool intoplevel = true;
+  bool excludeFromAll = false;
 
   // process the rest of the arguments looking for optional args
   std::vector<std::string>::const_iterator i = args.begin();
@@ -39,7 +39,7 @@ bool cmAddSubDirectoryCommand::InitialPass
     {
     if(*i == "EXCLUDE_FROM_ALL")
       {
-      intoplevel = false;
+      excludeFromAll = true;
       continue;
       }
     else if (!binArg.size())
@@ -53,74 +53,76 @@ bool cmAddSubDirectoryCommand::InitialPass
       }
     }
 
-  // check for relative arguments
-  bool relativeSource = true;
-  std::string binPath = binArg;
-  std::string srcPath = std::string(this->Makefile->GetCurrentDirectory()) + 
-    "/" + srcArg;
-  // if the path does not exist then the arg was relative
-  if (!cmSystemTools::FileIsDirectory(srcPath.c_str()))
+  // Compute the full path to the specified source directory.
+  // Interpret a relative path with respect to the current source directory.
+  std::string srcPath;
+  if(cmSystemTools::FileIsFullPath(srcArg.c_str()))
     {
-    relativeSource = false;
     srcPath = srcArg;
-    if (!cmSystemTools::FileIsDirectory(srcPath.c_str()))
-      {
-      std::string error = "Incorrect ADD_SUBDIRECTORY command. Directory: ";
-      error += srcArg + " does not exists.";
-      this->SetError(error.c_str());   
-      return false;
-      }
     }
-  
-  // at this point srcPath has the full path to the source directory
-  // now we need to compute the binPath if it was not provided
-  
-  // if the argument was provided then use it
-  if (binArg.size())
-    {
-    if (!cmSystemTools::FileIsFullPath(binPath.c_str()))
-      {
-      binPath = std::string(this->Makefile->GetCurrentOutputDirectory()) + 
-        "/" + binArg.c_str();
-      }
-    }
-  // otherwise compute the binPath from the srcPath
   else
     {
-    // if the srcArg was relative then we just do the same for the binPath
-    if (relativeSource)
+    srcPath = this->Makefile->GetCurrentDirectory();
+    srcPath += "/";
+    srcPath += srcArg;
+    }
+  if(!cmSystemTools::FileIsDirectory(srcPath.c_str()))
+    {
+    std::string error = "given source \"";
+    error += srcArg;
+    error += "\" which is not an existing directory.";
+    this->SetError(error.c_str());
+    return false;
+    }
+  srcPath = cmSystemTools::CollapseFullPath(srcPath.c_str());
+
+  // Compute the full path to the binary directory.
+  std::string binPath;
+  if(binArg.empty())
+    {
+    // No binary directory was specified.  If the source directory is
+    // not a subdirectory of the current directory then it is an
+    // error.
+    if(!cmSystemTools::FindLastString(srcPath.c_str(),
+                                      this->Makefile->GetCurrentDirectory()))
       {
-      binPath = std::string(this->Makefile->GetCurrentOutputDirectory()) + 
-        "/" + srcArg;
+      cmOStringStream e;
+      e << "not given a binary directory but the given source directory "
+        << "\"" << srcPath << "\" is not a subdirectory of \""
+        << this->Makefile->GetCurrentDirectory() << "\".  "
+        << "When specifying an out-of-tree source a binary directory "
+        << "must be explicitly specified.";
+      this->SetError(e.str().c_str());
+      return false;
       }
-    // otherwise we try to remove the CurrentDirectory from the srcPath and
-    // replace it with the CurrentOutputDirectory. This may not really work
-    // because the source dir they provided may not be "in" the source
-    // tree. This is an error if this happens.
+
+    // Remove the CurrentDirectory from the srcPath and replace it
+    // with the CurrentOutputDirectory.
+    binPath = srcPath;
+    cmSystemTools::ReplaceString(binPath,
+                                 this->Makefile->GetCurrentDirectory(),
+                                 this->Makefile->GetCurrentOutputDirectory());
+    }
+  else
+    {
+    // Use the binary directory specified.
+    // Interpret a relative path with respect to the current binary directory.
+    if(cmSystemTools::FileIsFullPath(binArg.c_str()))
+      {
+      binPath = binArg;
+      }
     else
       {
-      // try replacing the home dir with the home output dir
-      binPath = srcPath;
-      if (!cmSystemTools::FindLastString(binPath.c_str(), 
-                                         this->Makefile->GetHomeDirectory()))
-        {
-        this->SetError("A full source directory was specified that is not "
-                       "in the source tree but no binary directory was "
-                       "specified. If you specify an out of tree source "
-                       "directory then you must provide the binary "
-                       "directory as well.");   
-        return false;
-        }
-      cmSystemTools::ReplaceString(binPath,
-                                   this->Makefile->GetHomeDirectory(), 
-                                   this->Makefile->GetHomeOutputDirectory());
+      binPath = this->Makefile->GetCurrentOutputDirectory();
+      binPath += "/";
+      binPath += binArg;
       }
     }
-  
-  // now we have all the arguments
+  binPath = cmSystemTools::CollapseFullPath(binPath.c_str());
+
+  // Add the subdirectory using the computed full paths.
   this->Makefile->AddSubDirectory(srcPath.c_str(), binPath.c_str(),
-                              intoplevel, false, true);
+                                  excludeFromAll, false, true);
 
   return true;
 }
-

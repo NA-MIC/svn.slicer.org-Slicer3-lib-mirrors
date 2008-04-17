@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmLocalVisualStudio6Generator.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/20 20:16:32 $
-  Version:   $Revision: 1.13.2.1 $
+  Date:      $Date: 2008-01-29 22:30:34 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -17,9 +17,8 @@
 #ifndef cmLocalVisualStudio6Generator_h
 #define cmLocalVisualStudio6Generator_h
 
-#include "cmLocalGenerator.h"
+#include "cmLocalVisualStudioGenerator.h"
 
-class cmMakeDepend;
 class cmTarget;
 class cmSourceFile;
 class cmSourceGroup;
@@ -31,14 +30,16 @@ class cmCustomCommand;
  * cmLocalVisualStudio6Generator produces a LocalUnix makefile from its
  * member this->Makefile.
  */
-class cmLocalVisualStudio6Generator : public cmLocalGenerator
+class cmLocalVisualStudio6Generator : public cmLocalVisualStudioGenerator
 {
 public:
   ///! Set cache only and recurse to false by default.
   cmLocalVisualStudio6Generator();
 
   virtual ~cmLocalVisualStudio6Generator();
-  
+
+  virtual void AddHelperCommands();
+
   /**
    * Generate the makefile for this directory. 
    */
@@ -61,7 +62,10 @@ public:
     {
     return this->CreatedProjectNames;
     }
-
+  virtual std::string GetTargetDirectory(cmTarget const& target) const;
+  void GetTargetObjectFileDirectories(cmTarget* target,
+                                      std::vector<std::string>& 
+                                      dirs);
 private:
   std::string DSPHeaderTemplate;
   std::string DSPFooterTemplate;
@@ -82,23 +86,26 @@ private:
   void AddDSPBuildRule(cmTarget& tgt);
   void WriteCustomRule(std::ostream& fout,
                        const char* source,
-                       const char* command,
-                       const char* comment,
-                       const std::vector<std::string>& depends,
-                       const std::vector<std::string>& outputs,
+                       const cmCustomCommand& command,
                        const char* flags);
   void AddUtilityCommandHack(cmTarget& target, int count,
                              std::vector<std::string>& depends,
                              const cmCustomCommand& origCommand);
-  void WriteGroup(const cmSourceGroup *sg, cmTarget target,
+  void WriteGroup(const cmSourceGroup *sg, cmTarget& target,
                   std::ostream &fout, const char *libName);
   std::string CreateTargetRules(cmTarget &target, 
+                                const char* configName, 
                                 const char *libName);
   void ComputeLinkOptions(cmTarget& target, const char* configName,
                           const std::string extraOptions,
                           std::string& options);
   std::string IncludeOptions;
   std::vector<std::string> Configurations;
+
+  std::string GetConfigName(std::string const& configuration) const;
+
+  // Special definition check for VS6.
+  virtual bool CheckDefinition(std::string const& define) const;
 };
 
 #endif

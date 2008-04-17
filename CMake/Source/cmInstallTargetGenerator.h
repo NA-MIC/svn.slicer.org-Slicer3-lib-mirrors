@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmInstallTargetGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 20:05:58 $
-  Version:   $Revision: 1.5.2.2 $
+  Date:      $Date: 2008-02-06 19:20:35 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,8 +18,7 @@
 #define cmInstallTargetGenerator_h
 
 #include "cmInstallGenerator.h"
-
-class cmTarget;
+#include "cmTarget.h"
 
 /** \class cmInstallTargetGenerator
  * \brief Generate target installation rules.
@@ -29,27 +28,71 @@ class cmInstallTargetGenerator: public cmInstallGenerator
 public:
   cmInstallTargetGenerator(
     cmTarget& t, const char* dest, bool implib,
-    const char* permissions = "",
+    const char* file_permissions = "",
     std::vector<std::string> const& configurations 
     = std::vector<std::string>(),
-    const char* component = ""
+    const char* component = "",
+    bool optional = false
     );
   virtual ~cmInstallTargetGenerator();
 
+  /** Select the policy for installing shared library linkable name
+      symlinks.  */
+  enum NamelinkModeType
+  {
+    NamelinkModeNone,
+    NamelinkModeOnly,
+    NamelinkModeSkip
+  };
+  void SetNamelinkMode(NamelinkModeType mode) { this->NamelinkMode = mode; }
+  NamelinkModeType GetNamelinkMode() const { return this->NamelinkMode; }
+
+  std::string GetInstallFilename(const char* config) const;
+
+  enum NameType
+  {
+    NameNormal,
+    NameImplib,
+    NameSO,
+    NameReal
+  };
+
+  static std::string GetInstallFilename(cmTarget*target, const char* config,
+                                        NameType nameType = NameNormal);
+
+  cmTarget* GetTarget() const { return this->Target; }
+  bool IsImportLibrary() const { return this->ImportLibrary; }
+
 protected:
+  typedef cmInstallGeneratorIndent Indent;
   virtual void GenerateScript(std::ostream& os);
-  void PrepareScriptReference(std::ostream& os, cmTarget* target,
-                              const char* place, bool useConfigDir,
-                              bool useSOName);
-  std::string GetScriptReference(cmTarget* target, const char* place,
-                                 bool useSOName);
-  void AddInstallNamePatchRule(std::ostream& os, const char* destination);
+  void GenerateScriptForConfig(std::ostream& os,
+                               const char* fromDir,
+                               const char* config,
+                               Indent const& indent);
+  void GenerateScriptForConfigDir(std::ostream& os,
+                                  const char* fromDirConfig,
+                                  const char* config,
+                                  Indent const& indent);
+  void AddInstallNamePatchRule(std::ostream& os, Indent const& indent,
+                               const char* config,
+                               const std::string& toDestDirPath);
+  void AddChrpathPatchRule(std::ostream& os, Indent const& indent,
+                           const char* config,
+                           std::string const& toDestDirPath);
+  
+  void AddStripRule(std::ostream& os, Indent const& indent,
+                    cmTarget::TargetType type,
+                    const std::string& toDestDirPath);
+  void AddRanlibRule(std::ostream& os, Indent const& indent,
+                     cmTarget::TargetType type,
+                     const std::string& toDestDirPath);
+
   cmTarget* Target;
-  std::string Destination;
   bool ImportLibrary;
-  std::string Permissions;
-  std::vector<std::string> Configurations;
-  std::string Component;
+  std::string FilePermissions;
+  bool Optional;
+  NamelinkModeType NamelinkMode;
 };
 
 #endif

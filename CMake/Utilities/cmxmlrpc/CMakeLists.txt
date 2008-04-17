@@ -2,6 +2,11 @@ PROJECT(XMLRPC)
 
 INCLUDE_REGULAR_EXPRESSION("^.*$")
 
+# Disable warnings on Borland to avoid changing 3rd party code.
+IF(BORLAND)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w-")
+ENDIF(BORLAND)
+
 # Include all the necessary files for macros
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
@@ -39,6 +44,8 @@ INCLUDE (TryCompileFromSource)
 SET(HEADER_INCLUDES "${CURRENT_INCLUDES}")
 TRY_COMPILE_FROM_SOURCE("va_list list1, list2; list1 = list2"
   VA_LIST_ISNOT_ARRAY_DEFINE)
+TRY_COMPILE_FROM_SOURCE("va_list list1, list2; va_copy(list1, list2);"
+  HAS_VA_COPY)
 SET(VA_LIST_IS_ARRAY_DEFINE 0)
 IF(NOT VA_LIST_ISNOT_ARRAY_DEFINE)
   SET(VA_LIST_IS_ARRAY_DEFINE 1)

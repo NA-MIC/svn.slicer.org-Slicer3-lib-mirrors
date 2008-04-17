@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCPackTGZGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2006/05/07 14:55:39 $
-  Version:   $Revision: 1.8.2.1 $
+  Date:      $Date: 2007-11-05 21:55:45 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc. All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -18,7 +18,7 @@
 #ifndef cmCPackTGZGenerator_h
 #define cmCPackTGZGenerator_h
 
-#include "cmCPackGenericGenerator.h"
+#include "cmCPackGenerator.h"
 
 class cmCPackTGZGeneratorForward;
 
@@ -27,11 +27,11 @@ class cmCPackTGZGeneratorForward;
  *
  * http://people.freebsd.org/~kientzle/libarchive/
  */
-class cmCPackTGZGenerator : public cmCPackGenericGenerator
+class cmCPackTGZGenerator : public cmCPackGenerator
 {
 public:
   friend class cmCPackTGZGeneratorForward;
-  cmCPackTypeMacro(cmCPackTGZGenerator, cmCPackGenericGenerator);
+  cmCPackTypeMacro(cmCPackTGZGenerator, cmCPackGenerator);
 
   /**
    * Construct generator
@@ -44,7 +44,7 @@ protected:
   virtual int GenerateHeader(std::ostream* os);
   int CompressFiles(const char* outFileName, const char* toplevel,
     const std::vector<std::string>& files);
-  virtual const char* GetOutputExtension() { return "tar.gz"; }
+  virtual const char* GetOutputExtension() { return ".tar.gz"; }
 
   bool Compress;
 };

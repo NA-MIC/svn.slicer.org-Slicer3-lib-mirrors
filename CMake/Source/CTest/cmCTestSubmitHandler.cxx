@@ -3,8 +3,8 @@
 Program:   CMake - Cross-Platform Makefile Generator
 Module:    $RCSfile: cmCTestSubmitHandler.cxx,v $
 Language:  C++
-Date:      $Date: 2006/04/29 15:49:20 $
-Version:   $Revision: 1.23.2.1 $
+Date:      $Date: 2008-03-04 18:34:21 $
+Version:   $Revision: 1.31 $
 
 Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
 See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -25,11 +25,10 @@ PURPOSE.  See the above copyright notices for more information.
 #include <cmsys/Base64.h>
 
 // For XML-RPC submission
-#include "xmlrpc.h"
-#include "xmlrpc_client.h"
+#include "cm_xmlrpc.h"
 
 // For curl submission
-#include "cmcurl/curl/curl.h"
+#include "cm_curl.h"
 
 #include <sys/stat.h>
 
@@ -69,11 +68,13 @@ cmCTestSubmitHandler::cmCTestSubmitHandler() : HTTPProxy(), FTPProxy()
 
   this->FTPProxy = "";
   this->FTPProxyType = 0;
+  this->CDash = false;
 }
 
 //----------------------------------------------------------------------------
 void cmCTestSubmitHandler::Initialize()
 {
+  this->CDash = false;
   this->Superclass::Initialize();
   this->HTTPProxy = "";
   this->HTTPProxyType = 0;
@@ -201,14 +202,20 @@ bool cmCTestSubmitHandler::SubmitUsingFTP(const cmStdString& localprefix,
         cmCTestLog(this->CTest, ERROR_MESSAGE, "   Error message was: "
           << error_buffer << std::endl);
         *this->LogFile << "   Error when uploading file: "
-          << local_file.c_str()
-          << std::endl
-          << "   Error message was: " << error_buffer << std::endl
-          << "   Curl output was: "
-          << cmCTestLogWrite(&*chunk.begin(), chunk.size()) << std::endl;
-        cmCTestLog(this->CTest, ERROR_MESSAGE, "CURL output: ["
-          << cmCTestLogWrite(&*chunk.begin(), chunk.size()) << "]"
-          << std::endl);
+                       << local_file.c_str()
+                       << std::endl
+                       << "   Error message was: " 
+                       << error_buffer << std::endl
+                       << "   Curl output was: ";
+        // avoid dereference of empty vector
+        if(chunk.size())
+          {
+          *this->LogFile << cmCTestLogWrite(&*chunk.begin(), chunk.size());
+          cmCTestLog(this->CTest, ERROR_MESSAGE, "CURL output: ["
+                     << cmCTestLogWrite(&*chunk.begin(), chunk.size()) << "]"
+                     << std::endl);
+          }
+        *this->LogFile << std::endl;
         ::curl_easy_cleanup(curl);
         ::curl_global_cleanup();
         return false;
@@ -380,14 +387,20 @@ bool cmCTestSubmitHandler::SubmitUsingHTTP(const cmStdString& localprefix,
         cmCTestLog(this->CTest, ERROR_MESSAGE, "   Error message was: "
           << error_buffer << std::endl);
         *this->LogFile << "   Error when uploading file: "
-          << local_file.c_str()
-          << std::endl
-          << "   Error message was: " << error_buffer << std::endl
-          << "   Curl output was: "
-          << cmCTestLogWrite(&*chunk.begin(), chunk.size()) << std::endl;
-        cmCTestLog(this->CTest, ERROR_MESSAGE, "CURL output: ["
-          << cmCTestLogWrite(&*chunk.begin(), chunk.size()) << "]"
-          << std::endl);
+                       << local_file.c_str()
+                       << std::endl
+                       << "   Error message was: " << error_buffer 
+                       << std::endl;
+        // avoid deref of begin for zero size array
+        if(chunk.size())
+          {
+          *this->LogFile << "   Curl output was: "
+                         << cmCTestLogWrite(&*chunk.begin(), chunk.size())
+                         << std::endl;
+          cmCTestLog(this->CTest, ERROR_MESSAGE, "CURL output: ["
+                     << cmCTestLogWrite(&*chunk.begin(), chunk.size()) << "]"
+                     << std::endl);
+          }
         ::curl_easy_cleanup(curl);
         ::curl_global_cleanup();
         return false;
@@ -500,13 +513,18 @@ bool cmCTestSubmitHandler::TriggerUsingHTTP(
         cmCTestLog(this->CTest, ERROR_MESSAGE, "   Error message was: "
           << error_buffer << std::endl);
         *this->LogFile << "\tTrigerring failed with error: " << error_buffer
-          << std::endl
-          << "   Error message was: " << error_buffer << std::endl
-          << "   Curl output was: "
-          << cmCTestLogWrite(&*chunk.begin(), chunk.size()) << std::endl;
-        cmCTestLog(this->CTest, ERROR_MESSAGE, "CURL output: ["
-          << cmCTestLogWrite(&*chunk.begin(), chunk.size()) << "]"
-          << std::endl);
+                       << std::endl
+                       << "   Error message was: " << error_buffer 
+                       << std::endl;
+        if(chunk.size())
+          {
+          *this->LogFile
+            << "   Curl output was: "
+            << cmCTestLogWrite(&*chunk.begin(), chunk.size()) << std::endl;
+          cmCTestLog(this->CTest, ERROR_MESSAGE, "CURL output: ["
+                     << cmCTestLogWrite(&*chunk.begin(), chunk.size()) << "]"
+                     << std::endl);
+          }
         ::curl_easy_cleanup(curl);
         ::curl_global_cleanup();
         return false;
@@ -644,12 +662,14 @@ bool cmCTestSubmitHandler::SubmitUsingXMLRPC(const cmStdString& localprefix,
   const cmStdString& url)
 {
   xmlrpc_env env;
-  std::string ctestVersion = cmVersion::GetCMakeVersion();
+  char ctestString[] = "CTest";
+  std::string ctestVersionString = cmVersion::GetCMakeVersion();
+  char* ctestVersion = const_cast<char*>(ctestVersionString.c_str());
 
   cmStdString realURL = url + "/" + remoteprefix + "/Command/";
 
   /* Start up our XML-RPC client library. */
-  xmlrpc_client_init(XMLRPC_CLIENT_NO_FLAGS, "CTest", ctestVersion.c_str());
+  xmlrpc_client_init(XMLRPC_CLIENT_NO_FLAGS, ctestString, ctestVersion);
 
   /* Initialize our error-handling environment. */
   xmlrpc_env_init(&env);
@@ -677,7 +697,16 @@ bool cmCTestSubmitHandler::SubmitUsingXMLRPC(const cmStdString& localprefix,
       return false;
       }
 
-    size_t fileSize = st.st_size;
+    // off_t can be bigger than size_t.  fread takes size_t.
+    // make sure the file is not too big.
+    if(static_cast<off_t>(static_cast<size_t>(st.st_size)) !=
+       static_cast<off_t>(st.st_size))
+      {
+      cmCTestLog(this->CTest, ERROR_MESSAGE, "  File too big: "
+        << local_file.c_str() << std::endl);
+      return false;
+      }
+    size_t fileSize = static_cast<size_t>(st.st_size);
     FILE* fp = fopen(local_file.c_str(), "rb");
     if ( !fp )
       {
@@ -697,9 +726,9 @@ bool cmCTestSubmitHandler::SubmitUsingXMLRPC(const cmStdString& localprefix,
       }
     fclose(fp);
 
-    std::string remoteCommand = "Submit.put";
-    result = xmlrpc_client_call(&env, realURL.c_str(),
-      remoteCommand.c_str(),
+    char remoteCommand[] = "Submit.put";
+    char* pRealURL = const_cast<char*>(realURL.c_str());
+    result = xmlrpc_client_call(&env, pRealURL, remoteCommand,
       "(6)", fileBuffer, (xmlrpc_int32)fileSize );
 
     delete [] fileBuffer;
@@ -728,6 +757,13 @@ bool cmCTestSubmitHandler::SubmitUsingXMLRPC(const cmStdString& localprefix,
 //----------------------------------------------------------------------------
 int cmCTestSubmitHandler::ProcessHandler()
 {
+  std::string iscdash = this->CTest->GetCTestConfiguration("IsCDash");
+  // cdash does not need to trigger so just return true
+  if(iscdash.size())
+    {
+    this->CDash = true;
+    }
+
   const std::string &buildDirectory
     = this->CTest->GetCTestConfiguration("BuildDirectory");
   if ( buildDirectory.size() == 0 )
@@ -920,23 +956,27 @@ int cmCTestSubmitHandler::ProcessHandler()
       ofs << "   Problems when submitting via FTP" << std::endl;
       return -1;
       }
-    cmCTestLog(this->CTest, HANDLER_OUTPUT, "   Using HTTP trigger method"
-      << std::endl
-      << "   Trigger site: "
-      << this->CTest->GetCTestConfiguration("TriggerSite")
-      << std::endl);
-    if ( !this->TriggerUsingHTTP(files, prefix,
-        this->CTest->GetCTestConfiguration("TriggerSite")) )
+    if(!this->CDash)
       {
-      cmCTestLog(this->CTest, ERROR_MESSAGE,
-        "   Problems when triggering via HTTP" << std::endl);
-      ofs << "   Problems when triggering via HTTP" << std::endl;
-      return -1;
+      cmCTestLog(this->CTest, HANDLER_OUTPUT, "   Using HTTP trigger method"
+                 << std::endl
+                 << "   Trigger site: "
+                 << this->CTest->GetCTestConfiguration("TriggerSite")
+                 << std::endl);
+      if ( !this->
+           TriggerUsingHTTP(files, prefix,
+                            this->CTest->GetCTestConfiguration("TriggerSite")))
+        {
+        cmCTestLog(this->CTest, ERROR_MESSAGE,
+                   "   Problems when triggering via HTTP" << std::endl);
+        ofs << "   Problems when triggering via HTTP" << std::endl;
+        return -1;
+        }
+      cmCTestLog(this->CTest, HANDLER_OUTPUT, "   Submission successful"
+                 << std::endl);
+      ofs << "   Submission successful" << std::endl;
+      return 0;
       }
-    cmCTestLog(this->CTest, HANDLER_OUTPUT, "   Submission successful"
-      << std::endl);
-    ofs << "   Submission successful" << std::endl;
-    return 0;
     }
   else if ( this->CTest->GetCTestConfiguration("DropMethod") == "http" )
     {
@@ -971,21 +1011,25 @@ int cmCTestSubmitHandler::ProcessHandler()
       ofs << "   Problems when submitting via HTTP" << std::endl;
       return -1;
       }
-    cmCTestLog(this->CTest, HANDLER_OUTPUT, "   Using HTTP trigger method"
-      << std::endl
-      << "   Trigger site: "
-      << this->CTest->GetCTestConfiguration("TriggerSite")
-      << std::endl);
-    if ( !this->TriggerUsingHTTP(files, prefix,
-        this->CTest->GetCTestConfiguration("TriggerSite")) )
+    if(!this->CDash)
       {
-      cmCTestLog(this->CTest, ERROR_MESSAGE,
-        "   Problems when triggering via HTTP" << std::endl);
-      ofs << "   Problems when triggering via HTTP" << std::endl;
-      return -1;
+      cmCTestLog(this->CTest, HANDLER_OUTPUT, "   Using HTTP trigger method"
+                 << std::endl
+                 << "   Trigger site: "
+                 << this->CTest->GetCTestConfiguration("TriggerSite")
+                 << std::endl);
+      if ( !this->
+           TriggerUsingHTTP(files, prefix,
+                            this->CTest->GetCTestConfiguration("TriggerSite")))
+        {
+        cmCTestLog(this->CTest, ERROR_MESSAGE,
+                   "   Problems when triggering via HTTP" << std::endl);
+        ofs << "   Problems when triggering via HTTP" << std::endl;
+        return -1;
+        }
       }
     cmCTestLog(this->CTest, HANDLER_OUTPUT, "   Submission successful"
-      << std::endl);
+               << std::endl);
     ofs << "   Submission successful" << std::endl;
     return 0;
     }

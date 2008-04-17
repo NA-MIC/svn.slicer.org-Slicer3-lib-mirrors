@@ -8,12 +8,11 @@
 extern "C" {
 #include "testConly.h"
 }
-#ifndef CMAKE_TEST_DIFFERENT_GENERATOR
+#ifdef COMPLEX_TEST_CMAKELIB
 #include "cmStandardIncludes.h"
 #include "cmSystemTools.h"
 #include "cmDynamicLoader.h"
 #include "cmSystemTools.h"
-#include "cmOrderLinkDirectories.h"
 #include "cmGeneratedFileStream.h"
 #include <cmsys/DynamicLoader.hxx>
 #else
@@ -23,6 +22,12 @@ extern "C" {
 #include <string.h>
 #endif
 
+#ifdef COMPLEX_TEST_LINK_STATIC
+extern "C"
+{
+  int TestLinkGetType();
+}
+#endif
 
 int cm_passed = 0;
 int cm_failed = 0;
@@ -42,104 +47,27 @@ void cmPassed(const char* Message, const char* m2="")
   cm_passed++;
 }
 
+#ifndef COMPLEX_DEFINED_PRE
+# error "COMPLEX_DEFINED_PRE not defined!"
+#endif
+
+#ifdef COMPLEX_DEFINED
+# error "COMPLEX_DEFINED is defined but it should not!"
+#endif
+
+#ifndef COMPLEX_DEFINED_POST
+# error "COMPLEX_DEFINED_POST not defined!"
+#endif
+
 #ifndef CMAKE_IS_REALLY_FUN
-This is a problem. Looks like ADD_DEFINITIONS and REMOVE_DEFINITIONS does not work
+# error This is a problem. Looks like ADD_DEFINITIONS and REMOVE_DEFINITIONS does not work
 #endif
 
-#ifndef CMAKE_TEST_DIFFERENT_GENERATOR
-// Here is a stupid function that tries to use std::string methods
-// so that the dec cxx compiler will instantiate the stuff that
-// we are using from the CMakeLib library....
-bool TestLibraryOrder(bool shouldFail)
-{ 
-  std::string Adir = std::string(BINARY_DIR) + std::string("/A");
-  std::string Bdir = std::string(BINARY_DIR) + std::string("/B");
-  std::string Cdir = std::string(BINARY_DIR) + std::string("/C");
-#ifdef _WIN32
-  // Avoid case problems for windows paths.
-  if(Adir[0] >= 'A' && Adir[0] <= 'Z') { Adir[0] += 'a' - 'A'; }
-  if(Bdir[0] >= 'A' && Bdir[0] <= 'Z') { Bdir[0] += 'a' - 'A'; }
-  if(Cdir[0] >= 'A' && Cdir[0] <= 'Z') { Cdir[0] += 'a' - 'A'; }
-  Adir = cmSystemTools::GetActualCaseForPath(Adir.c_str());
-  Bdir = cmSystemTools::GetActualCaseForPath(Bdir.c_str());
-  Cdir = cmSystemTools::GetActualCaseForPath(Cdir.c_str());
+#if defined(NDEBUG) && !defined(CMAKE_IS_FUN_IN_RELEASE_MODE)
+# error Per-configuration directory-level definition not inherited.
 #endif
-  
-  if(!shouldFail)
-    {
-    std::string rm = Bdir;
-    rm += "/libA.a";
-    cmSystemTools::RemoveFile(rm.c_str());
-    }
-  std::vector<std::string> linkLibraries;
-  std::vector<std::string> linkDirectories;
-  linkDirectories.push_back(Adir);
-  linkDirectories.push_back(Bdir);
-  linkDirectories.push_back(Cdir);
-  linkDirectories.push_back("/lib/extra/stuff");
-  Adir += "/libA.a";
-  Bdir += "/libB.a";
-  Cdir += "/libC.a";
-  linkLibraries.push_back(Adir);
-  linkLibraries.push_back(Bdir);
-  linkLibraries.push_back(Cdir);
-  linkLibraries.push_back("-lm");
-  std::vector<cmStdString> sortedpaths;
-  std::vector<cmStdString> linkItems;
-  cmOrderLinkDirectories orderLibs;
-  orderLibs.DebugOn();
-  orderLibs.AddLinkExtension(".so");
-  orderLibs.AddLinkExtension(".a");
-  orderLibs.SetLinkPrefix("lib");
-  cmTargetManifest manifest;
-  orderLibs.SetLinkInformation("test", linkLibraries, linkDirectories,
-                               manifest, "");
-  bool ret = orderLibs.DetermineLibraryPathOrder();
-  if(!ret)
-    {
-    std::cout << orderLibs.GetWarnings() << "\n";
-    }
-  orderLibs.GetLinkerInformation(sortedpaths, linkItems);
-  std::cout << "Sorted Link Paths:\n";
-  for(std::vector<cmStdString>::iterator i = sortedpaths.begin();
-      i != sortedpaths.end(); ++i)
-    {
-    std::cout << *i << "\n";
-    }
-  std::cout << "Link Items: \n";
-  for(std::vector<cmStdString>::iterator i = linkItems.begin();
-      i != linkItems.end(); ++i)
-    {
-    std::cout << *i << "\n";
-    }
-  if(!(linkItems[0] == "A" && 
-       linkItems[1] == "B" && 
-       linkItems[2] == "C" && 
-       linkItems[3] == "-lm" ))
-    {
-    std::cout << "fail because link items should be A B C -lm and the are not\n";
-    return shouldFail;
-    }
-  
-     
-  // if this is not the fail test then the order should be f B C A
-  if(!shouldFail)
-    {
-    char order[5];
-    order[4] = 0;
-    for(int i =0; i < 4; ++i)
-      {
-      order[i] = sortedpaths[i][sortedpaths[i].size()-1];
-      }
-    if(!(strcmp(order, "fBCA") == 0 || strcmp(order, "BCAf") == 0))
-      {
-      std::cout << "fail because order should be /lib/extra/stuff B C A and it is not\n";
-      return false;
-      }
-    }
-  return ret;
-}
 
+#ifdef COMPLEX_TEST_CMAKELIB
 // ======================================================================
 
 void TestAndRemoveFile(const char* filename) 
@@ -264,6 +192,9 @@ void TestCMGeneratedFileSTream()
 }
 #endif
 
+// Here is a stupid function that tries to use std::string methods
+// so that the dec cxx compiler will instantiate the stuff that
+// we are using from the CMakeLib library....
 void ForceStringUse()
 {
   std::vector<std::string> v;
@@ -302,14 +233,19 @@ extern "C" int NameConflictTest2();
 int main()
 {
   std::string lib = BINARY_DIR;
-  lib += "/bin/";
+  lib += "/lib/";
 #ifdef  CMAKE_INTDIR
   lib += CMAKE_INTDIR;
   lib += "/";
 #endif
-  std::string exe = lib;
+  std::string exe = BINARY_DIR;
+  exe += "/bin/";
+#ifdef  CMAKE_INTDIR
+  exe += CMAKE_INTDIR;
+  exe += "/";
+#endif
 
-#ifndef CMAKE_TEST_DIFFERENT_GENERATOR  
+#ifdef COMPLEX_TEST_CMAKELIB  
   // Test a single character executable to test a: in makefiles
   exe += "A";
   exe += cmSystemTools::GetExecutableExtension();
@@ -372,6 +308,7 @@ int main()
         cmPassed("Module loaded and ModuleFunction called correctly.");
       }
     }
+  cmDynamicLoader::FlushCache(); // fix memory leaks 
   if(sharedFunction() != 1)
     {
     cmFailed("Call to sharedFunction from shared library failed.");
@@ -426,6 +363,12 @@ int main()
   cmPassed("COMPILE_FLAGS did work with SET_TARGET_PROPERTIES");
 #endif
   
+#ifdef ELSEIF_RESULT
+  cmPassed("ELSEIF did work");
+#else
+  cmFailed("ELSEIF did not work");
+#endif
+
   if(file2() != 1)
     {
     cmFailed("Call to file2 function from library failed.");
@@ -1035,7 +978,7 @@ int main()
     }
 #endif
 
-#ifndef CMAKE_TEST_DIFFERENT_GENERATOR  
+#ifdef COMPLEX_TEST_CMAKELIB  
   // ----------------------------------------------------------------------
   // Some pre-build/pre-link/post-build custom-commands have been
   // attached to the lib (see Library/).
@@ -1108,6 +1051,21 @@ int main()
   cmFailed("SET_SOURCE_FILES_PROPERTIES failed at setting FILE_HAS_EXTRA_COMPILE_FLAGS flag");
 #else
   cmPassed("SET_SOURCE_FILES_PROPERTIES succeeded in setting FILE_HAS_EXTRA_COMPILE_FLAGS flag");
+#endif
+
+#if 0  // Disable until implemented everywhere.
+#ifndef FILE_DEFINE_STRING
+  cmFailed("SET_SOURCE_FILES_PROPERTIES failed at setting FILE_DEFINE_STRING flag");
+#else
+  if(strcmp(FILE_DEFINE_STRING, "hello") != 0)
+    {
+    cmFailed("SET_SOURCE_FILES_PROPERTIES failed at setting FILE_DEFINE_STRING flag correctly");
+    }
+  else
+    {
+    cmPassed("SET_SOURCE_FILES_PROPERTIES succeeded in setting FILE_DEFINE_STRING flag");
+    }
+#endif
 #endif
 
 #ifndef FILE_HAS_ABSTRACT
@@ -1233,32 +1191,22 @@ int main()
   cmPassed("CMake SET CACHE FORCE");
 #endif
 
-#ifndef CMAKE_TEST_DIFFERENT_GENERATOR
-  // first run with shouldFail = true, this will
-  // run with A B C as set by the CMakeList.txt file.
-  if(!TestLibraryOrder(true))
-    {
-    cmPassed("CMake cmOrderLinkDirectories failed when it should.");
-    }
-  else
-    {
-    cmFailed("CMake cmOrderLinkDirectories failed to fail when given an impossible set of paths.");
-    }
-  // next run with shouldPass = true, this will 
-  // run with B/libA.a removed and should create the order
-  // B C A
-  if(TestLibraryOrder(false))
-    {
-    cmPassed("CMake cmOrderLinkDirectories worked.");
-    }
-  else
-    {
-    cmFailed("CMake cmOrderLinkDirectories failed.");
-    }
+#ifdef COMPLEX_TEST_CMAKELIB
   // Test the generated file stream.
   TestCMGeneratedFileSTream();
 #endif
-  
+
+#ifdef COMPLEX_TEST_LINK_STATIC
+  if(TestLinkGetType())
+    {
+    cmPassed("Link to static over shared worked.");
+    }
+  else
+    {
+    cmFailed("Link to static over shared failed.");
+    }
+#endif
+
   // ----------------------------------------------------------------------
   // Summary
 

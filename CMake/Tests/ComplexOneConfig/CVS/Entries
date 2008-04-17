@@ -1,8 +1,8 @@
-/CMakeLists.txt/1.59.2.6/Sun May 14 19:22:47 2006//TCMake-2-4-2
-/VarTests.cmake/1.10/Wed Mar 22 20:01:22 2006//TCMake-2-4-2
-/cmTestConfigure.h.in/1.22/Thu Mar 16 22:20:09 2006//TCMake-2-4-2
-/cmTestConfigureEscape.h.in/1.1/Thu May 23 17:04:00 2002//TCMake-2-4-2
-/cmTestGeneratedHeader.h.in/1.1/Fri Dec 13 22:35:00 2002//TCMake-2-4-2
 D/Cache////
 D/Executable////
 D/Library////
+/CMakeLists.txt/1.69.2.3/Thu Apr 17 17:11:11 2008//TCMake-2-6
+/VarTests.cmake/1.10/Fri Mar 14 14:40:03 2008//TCMake-2-6
+/cmTestConfigure.h.in/1.24/Thu Apr 17 17:11:11 2008//TCMake-2-6
+/cmTestConfigureEscape.h.in/1.1/Fri Mar 14 14:40:03 2008//TCMake-2-6
+/cmTestGeneratedHeader.h.in/1.1/Fri Mar 14 14:40:03 2008//TCMake-2-6

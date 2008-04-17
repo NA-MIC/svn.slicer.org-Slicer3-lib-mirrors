@@ -1,19 +1,14 @@
-/.NoDartCoverage/1.1/Wed Jan 15 00:06:03 2003//TCMake-2-4-2
-/CMakeLists.txt/1.55/Thu Jun 23 16:05:11 2005//TCMake-2-4-2
 /amigaos.c/1.1/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /amigaos.h/1.1/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /arpa_telnet.h/1.5/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /base64.c/1.8/Wed Oct 13 14:01:04 2004//TCMake-2-4-2
 /base64.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
-/ca-bundle.h/1.3/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
-/config.h.in/1.12/Wed Mar 16 17:54:35 2005//TCMake-2-4-2
 /connect.c/1.18/Wed Oct 13 14:01:04 2004//TCMake-2-4-2
 /connect.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /content_encoding.c/1.5/Tue Oct  5 16:42:37 2004//TCMake-2-4-2
 /content_encoding.h/1.3/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /cookie.c/1.8/Wed Oct 13 14:01:04 2004//TCMake-2-4-2
 /cookie.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
-/curl.copyright/1.2/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /curl_memory.h/1.1/Tue Oct  5 16:42:37 2004//TCMake-2-4-2
 /curlx.h/1.1/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /dict.c/1.7/Wed Oct 13 14:45:30 2004//TCMake-2-4-2
@@ -27,8 +22,6 @@
 /formdata.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /ftp.c/1.14/Sun Feb 27 22:36:00 2005//TCMake-2-4-2
 /ftp.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
-/getdate.c/1.12/Tue Oct 26 14:25:58 2004//TCMake-2-4-2
-/getdate.h/1.1/Tue Jan  7 02:13:39 2003//TCMake-2-4-2
 /getenv.c/1.6/Tue Oct  5 16:42:37 2004//TCMake-2-4-2
 /getinfo.c/1.6/Tue Oct  5 16:42:38 2004//TCMake-2-4-2
 /getinfo.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
@@ -54,12 +47,8 @@
 /http_ntlm.h/1.2/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /if2ip.c/1.7/Mon Oct 11 15:47:14 2004//TCMake-2-4-2
 /if2ip.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
-/inet_ntoa_r.h/1.1/Tue Jan  7 02:13:39 2003//TCMake-2-4-2
-/inet_ntop.c/1.2/Mon Oct 11 15:53:29 2004//TCMake-2-4-2
 /inet_ntop.h/1.1/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
-/inet_pton.c/1.2/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /inet_pton.h/1.2/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
-/krb4.c/1.5/Tue Oct  5 16:42:38 2004//TCMake-2-4-2
 /krb4.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /ldap.c/1.9/Tue Oct  5 16:42:38 2004//TCMake-2-4-2
 /ldap.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
@@ -76,7 +65,6 @@
 /nwlib.c/1.2/Tue Oct  5 16:42:38 2004//TCMake-2-4-2
 /progress.c/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /progress.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
-/security.c/1.5/Tue Oct  5 16:42:38 2004//TCMake-2-4-2
 /security.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /sendf.c/1.8/Sun Feb 27 22:36:00 2005//TCMake-2-4-2
 /sendf.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
@@ -89,7 +77,6 @@
 /ssluse.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /strequal.c/1.6/Fri Oct 22 15:04:25 2004//TCMake-2-4-2
 /strequal.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
-/strerror.c/1.3/Wed Oct  6 12:02:18 2004//TCMake-2-4-2
 /strerror.h/1.1/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /strtok.c/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2
 /strtok.h/1.4/Tue Oct  5 13:34:19 2004//TCMake-2-4-2

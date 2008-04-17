@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmGlobalBorlandMakefileGenerator.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 02:15:09 $
-  Version:   $Revision: 1.20.2.2 $
+  Date:      $Date: 2007-10-22 16:48:39 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -25,24 +25,26 @@ cmGlobalBorlandMakefileGenerator::cmGlobalBorlandMakefileGenerator()
   this->FindMakeProgramFile = "CMakeBorlandFindMake.cmake";
   this->ForceUnixPaths = false;
   this->ToolSupportsColor = true;
+  this->UseLinkScript = false;
 }
 
 
 void cmGlobalBorlandMakefileGenerator
-::EnableLanguage(std::vector<std::string>const& l, cmMakefile *mf)
+::EnableLanguage(std::vector<std::string>const& l, 
+                 cmMakefile *mf, 
+                 bool optional)
 {
   std::string outdir = this->CMakeInstance->GetStartOutputDirectory();
   mf->AddDefinition("BORLAND", "1");
   mf->AddDefinition("CMAKE_GENERATOR_CC", "bcc32");
   mf->AddDefinition("CMAKE_GENERATOR_CXX", "bcc32"); 
-  this->cmGlobalUnixMakefileGenerator3::EnableLanguage(l, mf);
+  this->cmGlobalUnixMakefileGenerator3::EnableLanguage(l, mf, optional);
 }
 
 ///! Create a local generator appropriate to this Global Generator
 cmLocalGenerator *cmGlobalBorlandMakefileGenerator::CreateLocalGenerator()
 {
   cmLocalUnixMakefileGenerator3* lg = new cmLocalUnixMakefileGenerator3;
-  lg->SetEchoNeedsQuote(false);
   lg->SetIncludeDirective("!include");
   lg->SetWindowsShell(true);
   lg->SetDefineWindowsNULL(true);
@@ -50,6 +52,8 @@ cmLocalGenerator *cmGlobalBorlandMakefileGenerator::CreateLocalGenerator()
   lg->SetPassMakeflags(true);
   lg->SetGlobalGenerator(this);
   lg->SetUnixCD(false);
+  lg->SetMakeCommandEscapeTargetTwice(true);
+  lg->SetBorlandMakeCurlyHack(true);
   return lg;
 }
 
@@ -58,7 +62,7 @@ cmLocalGenerator *cmGlobalBorlandMakefileGenerator::CreateLocalGenerator()
 void cmGlobalBorlandMakefileGenerator
 ::GetDocumentation(cmDocumentationEntry& entry) const
 {
-  entry.name = this->GetName();
-  entry.brief = "Generates Borland makefiles.";
-  entry.full = "";
+  entry.Name = this->GetName();
+  entry.Brief = "Generates Borland makefiles.";
+  entry.Full = "";
 }

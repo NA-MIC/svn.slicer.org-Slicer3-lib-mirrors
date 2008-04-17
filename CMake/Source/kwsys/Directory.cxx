@@ -143,6 +143,47 @@ bool Directory::Load(const char* name)
   return _findclose(srchHandle) != -1;
 }
 
+unsigned long Directory::GetNumberOfFilesInDirectory(const char* name)
+{
+#if _MSC_VER < 1300
+  long srchHandle;
+#else
+  intptr_t srchHandle;
+#endif
+  char* buf;
+  size_t n = strlen(name);
+  if ( name[n - 1] == '/' )
+    {
+    buf = new char[n + 1 + 1];
+    sprintf(buf, "%s*", name);
+    }
+  else
+    {
+    buf = new char[n + 2 + 1];
+    sprintf(buf, "%s/*", name);
+    }
+  struct _finddata_t data;      // data of current file
+
+  // Now put them into the file array
+  srchHandle = _findfirst(buf, &data);
+  delete [] buf;
+
+  if ( srchHandle == -1 )
+    {
+    return 0;
+    }
+
+  // Loop through names
+  unsigned long count = 0;
+  do
+    {
+    count++;
+    }
+  while ( _findnext(srchHandle, &data) != -1 );
+  _findclose(srchHandle);
+  return count;
+}
+
 } // namespace KWSYS_NAMESPACE
 
 #else
@@ -152,12 +193,26 @@ bool Directory::Load(const char* name)
 #include <sys/types.h>
 #include <dirent.h>
 
+/* There is a problem with the Portland compiler, large file
+support and glibc/Linux system headers: 
+http://www.pgroup.com/userforum/viewtopic.php?
+p=1992&sid=f16167f51964f1a68fe5041b8eb213b6
+*/
+#if defined(__PGI) && defined(__USE_FILE_OFFSET64)
+# define dirent dirent64
+#endif
+
 namespace KWSYS_NAMESPACE
 {
 
 bool Directory::Load(const char* name)
 {
   this->Clear();
+   
+  if (!name)
+    {
+    return 0;
+    }
   DIR* dir = opendir(name);
 
   if (!dir)
@@ -172,6 +227,24 @@ bool Directory::Load(const char* name)
   this->Internal->Path = name;
   closedir(dir);
   return 1;
+}
+
+unsigned long Directory::GetNumberOfFilesInDirectory(const char* name)
+{
+  DIR* dir = opendir(name);
+
+  if (!dir)
+    {
+    return 0;
+    }
+
+  unsigned long count = 0;
+  for (dirent* d = readdir(dir); d; d = readdir(dir) )
+    {
+    count++;
+    }
+  closedir(dir);
+  return count;
 }
 
 } // namespace KWSYS_NAMESPACE

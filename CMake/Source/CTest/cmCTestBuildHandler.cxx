@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestBuildHandler.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 20:05:58 $
-  Version:   $Revision: 1.42.2.2 $
+  Date:      $Date: 2008-03-24 22:23:26 $
+  Version:   $Revision: 1.61.2.1 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -37,6 +37,9 @@
 #include <math.h>
 #include <float.h>
 
+#if defined(__BORLANDC__)
+# pragma warn -8060 /* possibly incorrect assignment */
+#endif
 
 static const char* cmCTestErrorMatches[] = {
   "^[Bb]us [Ee]rror",
@@ -59,6 +62,7 @@ static const char* cmCTestErrorMatches[] = {
   "^fatal error C[0-9]+:",
   ": syntax error ",
   "^collect2: ld returned 1 exit status",
+  "ld terminated with signal",
   "Unsatisfied symbols:",
   "^Unresolved:",
   "Undefined symbols:",
@@ -67,12 +71,13 @@ static const char* cmCTestErrorMatches[] = {
   ":[ \\t]cannot find",
   ":[ \\t]can't find",
   ": \\*\\*\\* No rule to make target \\`.*\\'.  Stop",
+  ": \\*\\*\\* No targets specified and no makefile found",
   ": Invalid loader fixup for symbol",
   ": Invalid fixups exist",
   ": Can't find library for",
   ": internal link edit command failed",
   ": Unrecognized option \\`.*\\'",
-  "\", line [0-9]+\\.[0-9]+: [0-9]+-[0-9]+ \\([^W]\\)",
+  "\", line [0-9]+\\.[0-9]+: [0-9]+-[0-9]+ \\([^WI]\\)",
   "ld: 0706-006 Cannot find or open library file: -l ",
   "ild: \\(argument error\\) can't find library argument ::",
   "^could not be found and will not be loaded.",
@@ -88,6 +93,7 @@ static const char* cmCTestErrorMatches[] = {
   "Makefile:[0-9]+: \\*\\*\\* .*  Stop\\.",
   ": No such file or directory",
   ": Invalid argument",
+  "^The project cannot be built\\.",
   0
 };
 
@@ -96,6 +102,7 @@ static const char* cmCTestErrorExceptions[] = {
   "candidates are:",
   ": warning",
   ": \\(Warning\\)",
+  ": note",
   "makefile:",
   "Makefile:",
   ":[ \\t]+Where:",
@@ -106,6 +113,7 @@ static const char* cmCTestErrorExceptions[] = {
 
 static const char* cmCTestWarningMatches[] = {
   "([^ :]+):([0-9]+): warning:",
+  "([^ :]+):([0-9]+): note:",
   "^cc[^C]*CC: WARNING File = ([^,]+), Line = ([0-9]+)",
   "^ld([^:])*:([ \\t])*WARNING([^:])*:",
   "([^:]+): warning ([0-9]+):",
@@ -116,7 +124,7 @@ static const char* cmCTestWarningMatches[] = {
   "WARNING: ",
   "([^ :]+) : warning",
   "([^:]+): warning",
-  "\", line [0-9]+\\.[0-9]+: [0-9]+-[0-9]+ \\(W\\)",
+  "\", line [0-9]+\\.[0-9]+: [0-9]+-[0-9]+ \\([WI]\\)",
   "^cxx: Warning:",
   ".*file: .* has no symbols",
   "([^ :]+):([0-9]+): (Warning|Warnung)",
@@ -245,6 +253,12 @@ int cmCTestBuildHandler::ProcessHandler()
 {
   cmCTestLog(this->CTest, HANDLER_OUTPUT, "Build project" << std::endl);
 
+  // do we have time for this
+  if (this->CTest->GetRemainingTimeAllowed() < 120)
+    {
+    return 0;
+    }
+
   int entry;
   for ( entry = 0;
     cmCTestWarningErrorFileLine[entry].RegularExpressionString;
@@ -270,6 +284,9 @@ int cmCTestBuildHandler::ProcessHandler()
   // Determine build command and build directory
   const std::string &makeCommand
     = this->CTest->GetCTestConfiguration("MakeCommand");
+  cmCTestLog(this->CTest,
+             HANDLER_VERBOSE_OUTPUT, "MakeCommand:" << makeCommand << 
+             "\n");
   if ( makeCommand.size() == 0 )
     {
     cmCTestLog(this->CTest, ERROR_MESSAGE,
@@ -383,6 +400,7 @@ int cmCTestBuildHandler::ProcessHandler()
 
   // Remember start build time
   this->StartBuild = this->CTest->CurrentTime();
+  this->StartBuildTime = cmSystemTools::GetTime();
   int retVal = 0;
   int res = cmsysProcess_State_Exited;
   if ( !this->CTest->GetShowOnly() )
@@ -398,6 +416,7 @@ int cmCTestBuildHandler::ProcessHandler()
 
   // Remember end build time and calculate elapsed time
   this->EndBuild = this->CTest->CurrentTime();
+  this->EndBuildTime = cmSystemTools::GetTime();
   double elapsed_build_time = cmSystemTools::GetTime() - elapsed_time_start;
   if (res != cmsysProcess_State_Exited || retVal )
     {
@@ -467,6 +486,9 @@ void cmCTestBuildHandler::GenerateDartBuildOutput(
   this->CTest->StartXML(os);
   os << "<Build>\n"
      << "\t<StartDateTime>" << this->StartBuild << "</StartDateTime>\n"
+     << "\t<StartBuildTime>" << 
+    static_cast<unsigned int>(this->StartBuildTime)
+     << "</StartBuildTime>\n"
      << "<BuildCommand>"
      << this->CTest->MakeXMLSafe(
        this->CTest->GetCTestConfiguration("MakeCommand"))
@@ -536,21 +558,21 @@ void cmCTestBuildHandler::GenerateDartBuildOutput(
         }
       if ( !cm->SourceFile.empty() && cm->LineNumber >= 0 )
         {
-      if ( cm->SourceFile.size() > 0 )
-        {
-        os << "\t\t<SourceFile>" << cm->SourceFile << "</SourceFile>"
-           << std::endl;
-        }
-      if ( cm->SourceFileTail.size() > 0 )
-        {
-        os << "\t\t<SourceFileTail>" << cm->SourceFileTail
-           << "</SourceFileTail>" << std::endl;
-        }
-      if ( cm->LineNumber >= 0 )
-        {
-        os << "\t\t<SourceLineNumber>" << cm->LineNumber
-           << "</SourceLineNumber>" << std::endl;
-        }
+        if ( cm->SourceFile.size() > 0 )
+          {
+          os << "\t\t<SourceFile>" << cm->SourceFile << "</SourceFile>"
+            << std::endl;
+          }
+        if ( cm->SourceFileTail.size() > 0 )
+          {
+          os << "\t\t<SourceFileTail>" << cm->SourceFileTail
+            << "</SourceFileTail>" << std::endl;
+          }
+        if ( cm->LineNumber >= 0 )
+          {
+          os << "\t\t<SourceLineNumber>" << cm->LineNumber
+            << "</SourceLineNumber>" << std::endl;
+          }
         }
       os << "\t\t<PreContext>" << this->CTest->MakeXMLSafe(cm->PreContext)
          << "</PreContext>\n"
@@ -570,6 +592,8 @@ void cmCTestBuildHandler::GenerateDartBuildOutput(
     }
   os << "\t<Log Encoding=\"base64\" Compression=\"/bin/gzip\">\n\t</Log>\n"
      << "\t<EndDateTime>" << this->EndBuild << "</EndDateTime>\n"
+     << "\t<EndBuildTime>" << static_cast<unsigned int>(this->EndBuildTime)
+     << "</EndBuildTime>\n"
      << "<ElapsedMinutes>" << static_cast<int>(elapsed_build_time/6)/10.0
      << "</ElapsedMinutes>"
      << "</Build>" << std::endl;
@@ -679,15 +703,37 @@ int cmCTestBuildHandler::RunMakeCommand(const char* command,
 
   if(result == cmsysProcess_State_Exited)
     {
-    *retVal = cmsysProcess_GetExitValue(cp);
-    cmCTestLog(this->CTest, HANDLER_VERBOSE_OUTPUT,
+    if (retVal)
+      {
+      *retVal = cmsysProcess_GetExitValue(cp);
+      cmCTestLog(this->CTest, HANDLER_VERBOSE_OUTPUT,
       "Command exited with the value: " << *retVal << std::endl);
+      // if a non zero return value
+      if (*retVal)
+        {
+        // If there was an error running command, report that on the
+        // dashboard.
+        cmCTestBuildErrorWarning errorwarning;
+        errorwarning.LogLine     = 1;
+        errorwarning.Text 
+          = "*** WARNING non-zero return value in ctest from: ";
+        errorwarning.Text        += argv[0];
+        errorwarning.PreContext  = "";
+        errorwarning.PostContext = "";
+        errorwarning.Error       = false;
+        this->ErrorsAndWarnings.push_back(errorwarning);
+        this->TotalWarnings ++;
+        }
+      }
     }
   else if(result == cmsysProcess_State_Exception)
     {
-    *retVal = cmsysProcess_GetExitException(cp);
-    cmCTestLog(this->CTest, WARNING, "There was an exception: " << *retVal
-      << std::endl);
+    if (retVal)
+      {
+      *retVal = cmsysProcess_GetExitException(cp);
+      cmCTestLog(this->CTest, WARNING, "There was an exception: " << *retVal
+                 << std::endl);
+      }
     }
   else if(result == cmsysProcess_State_Expired)
     {
@@ -724,7 +770,6 @@ void cmCTestBuildHandler::ProcessBuffer(const char* data, int length,
   size_t& tick, size_t tick_len, std::ofstream& ofs,
   t_BuildProcessingQueueType* queue)
 {
-#undef cerr
   const std::string::size_type tick_line_len = 50;
   const char* ptr;
   for ( ptr = data; ptr < data+length; ptr ++ )
@@ -823,8 +868,9 @@ void cmCTestBuildHandler::ProcessBuffer(const char* data, int length,
         {
         // This is not an error or warning.
         // So, figure out if this is a post-context line
-        if ( this->LastErrorOrWarning != this->ErrorsAndWarnings.end() &&
-          this->PostContextCount < this->MaxPostContext )
+        if ( this->ErrorsAndWarnings.size() && 
+             this->LastErrorOrWarning != this->ErrorsAndWarnings.end() &&
+             this->PostContextCount < this->MaxPostContext )
           {
           this->PostContextCount ++;
           this->LastErrorOrWarning->PostContext += line;

@@ -1,7 +1,7 @@
-/CMakeLists.txt/1.4/Tue Jan 17 15:21:45 2006//TCMake-2-4-2
-/vcl_algorithm+vcl_pair+double.foo.c/1.1/Tue Apr 27 13:22:57 2004//TCMake-2-4-2
-/vcl_algorithm_vcl_pair_double.foo.c/1.1/Tue Jan 17 15:21:45 2006//TCMake-2-4-2
 D/AnotherSubdir////
 D/Examples////
 D/Executable////
 D/ThirdSubDir////
+/CMakeLists.txt/1.4.12.1/Thu Apr 17 17:11:12 2008//TCMake-2-6
+/vcl_algorithm+vcl_pair+double.foo.c/1.1/Fri Mar 14 14:40:02 2008//TCMake-2-6
+/vcl_algorithm_vcl_pair_double.foo.c/1.1/Fri Mar 14 14:40:02 2008//TCMake-2-6

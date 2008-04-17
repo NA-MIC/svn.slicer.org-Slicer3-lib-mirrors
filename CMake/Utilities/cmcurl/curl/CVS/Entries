@@ -1,8 +1,8 @@
-/curl.h/1.1/Fri Jun 24 13:02:16 2005//TCMake-2-4-2
-/curlver.h/1.1/Fri Jun 24 13:02:16 2005//TCMake-2-4-2
-/easy.h/1.1/Fri Jun 24 13:02:16 2005//TCMake-2-4-2
-/mprintf.h/1.1/Fri Jun 24 13:02:16 2005//TCMake-2-4-2
-/multi.h/1.1/Fri Jun 24 13:02:16 2005//TCMake-2-4-2
-/stdcheaders.h/1.1/Fri Jun 24 13:02:17 2005//TCMake-2-4-2
-/types.h/1.1/Fri Jun 24 13:02:17 2005//TCMake-2-4-2
+/types.h/1.1/Fri Mar 14 14:40:20 2008//TCMake-2-6
+/curl.h/1.3/Thu Apr 17 17:19:45 2008//TCMake-2-6
+/curlver.h/1.2/Thu Apr 17 17:19:45 2008//TCMake-2-6
+/easy.h/1.2/Thu Apr 17 17:19:45 2008//TCMake-2-6
+/mprintf.h/1.3/Thu Apr 17 17:19:45 2008//TCMake-2-6
+/multi.h/1.2/Thu Apr 17 17:19:45 2008//TCMake-2-6
+/stdcheaders.h/1.2/Thu Apr 17 17:19:45 2008//TCMake-2-6
 D

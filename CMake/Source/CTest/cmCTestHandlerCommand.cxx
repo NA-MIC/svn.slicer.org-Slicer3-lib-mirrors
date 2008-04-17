@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCTestHandlerCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 02:15:09 $
-  Version:   $Revision: 1.7.2.1 $
+  Date:      $Date: 2008-01-23 15:28:01 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -35,8 +35,8 @@ cmCTestHandlerCommand::cmCTestHandlerCommand()
   this->Last = ct_LAST;
 }
 
-bool cmCTestHandlerCommand::InitialPass(
-  std::vector<std::string> const& args)
+bool cmCTestHandlerCommand
+::InitialPass(std::vector<std::string> const& args, cmExecutionStatus &)
 {
   if ( !this->ProcessArguments(args, (unsigned int)this->Last, 
                                &*this->Arguments.begin(),this->Values) )
@@ -48,7 +48,9 @@ bool cmCTestHandlerCommand::InitialPass(
   cmCTestGenericHandler* handler = this->InitializeHandler();
   if ( !handler )
     {
-    this->SetError("internal CTest error. Cannot instantiate test handler");
+    cmCTestLog(this->CTest, ERROR_MESSAGE,
+               "Cannot instantiate test handler " << this->GetName()
+               << std::endl);
     return false;
     }
 
@@ -58,24 +60,28 @@ bool cmCTestHandlerCommand::InitialPass(
   if ( this->Values[ct_BUILD] )
     {
     this->CTest->SetCTestConfiguration("BuildDirectory",
-      this->Values[ct_BUILD]);
+      cmSystemTools::CollapseFullPath(
+        this->Values[ct_BUILD]).c_str());
     }
   else
     {
     this->CTest->SetCTestConfiguration("BuildDirectory",
-      this->Makefile->GetDefinition("CTEST_BINARY_DIRECTORY"));
+      cmSystemTools::CollapseFullPath(
+        this->Makefile->GetDefinition("CTEST_BINARY_DIRECTORY")).c_str());
     }
   if ( this->Values[ct_SOURCE] )
     {
     cmCTestLog(this->CTest, DEBUG,
       "Set source directory to: " << this->Values[ct_SOURCE] << std::endl);
     this->CTest->SetCTestConfiguration("SourceDirectory",
-      this->Values[ct_SOURCE]);
+      cmSystemTools::CollapseFullPath(
+        this->Values[ct_SOURCE]).c_str());
     }
   else
     {
     this->CTest->SetCTestConfiguration("SourceDirectory",
-      this->Makefile->GetDefinition("CTEST_SOURCE_DIRECTORY"));
+      cmSystemTools::CollapseFullPath(
+        this->Makefile->GetDefinition("CTEST_SOURCE_DIRECTORY")).c_str());
     }
   if ( this->Values[ct_SUBMIT_INDEX] )
     {

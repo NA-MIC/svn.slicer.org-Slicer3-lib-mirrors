@@ -3,8 +3,8 @@
   Program:   CMake - Cross-Platform Makefile Generator
   Module:    $RCSfile: cmCustomCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/04/11 15:06:18 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2007-09-17 14:50:46 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
   See Copyright.txt or http://www.cmake.org/HTML/Copyright.html for details.
@@ -19,7 +19,9 @@
 //----------------------------------------------------------------------------
 cmCustomCommand::cmCustomCommand()
 {
-  this->Used = false;
+  this->HaveComment = false;
+  this->EscapeOldStyle = true;
+  this->EscapeAllowMakeVars = false;
 }
 
 //----------------------------------------------------------------------------
@@ -27,25 +29,31 @@ cmCustomCommand::cmCustomCommand(const cmCustomCommand& r):
   Outputs(r.Outputs),
   Depends(r.Depends),
   CommandLines(r.CommandLines),
+  HaveComment(r.HaveComment),
   Comment(r.Comment),
-  WorkingDirectory(r.WorkingDirectory)
+  WorkingDirectory(r.WorkingDirectory),
+  EscapeAllowMakeVars(r.EscapeAllowMakeVars),
+  EscapeOldStyle(r.EscapeOldStyle)
 {
-  this->Used = false;
 }
 
 //----------------------------------------------------------------------------
 cmCustomCommand::cmCustomCommand(const std::vector<std::string>& outputs,
                                  const std::vector<std::string>& depends,
                                  const cmCustomCommandLines& commandLines,
-                                 const char* comment, 
+                                 const char* comment,
                                  const char* workingDirectory):
   Outputs(outputs),
   Depends(depends),
   CommandLines(commandLines),
+  HaveComment(comment?true:false),
   Comment(comment?comment:""),
-  WorkingDirectory(workingDirectory?workingDirectory:"")
+  WorkingDirectory(workingDirectory?workingDirectory:""),
+  EscapeAllowMakeVars(false),
+  EscapeOldStyle(true)
 {
-  this->Used = false;
+  this->EscapeOldStyle = true;
+  this->EscapeAllowMakeVars = false;
 }
 
 //----------------------------------------------------------------------------
@@ -79,5 +87,70 @@ const cmCustomCommandLines& cmCustomCommand::GetCommandLines() const
 //----------------------------------------------------------------------------
 const char* cmCustomCommand::GetComment() const
 {
-  return this->Comment.c_str();
+  const char* no_comment = 0;
+  return this->HaveComment? this->Comment.c_str() : no_comment;
+}
+
+//----------------------------------------------------------------------------
+void cmCustomCommand::AppendCommands(const cmCustomCommandLines& commandLines)
+{
+  for(cmCustomCommandLines::const_iterator i=commandLines.begin();
+      i != commandLines.end(); ++i)
+    {
+    this->CommandLines.push_back(*i);
+    }
+}
+
+//----------------------------------------------------------------------------
+void cmCustomCommand::AppendDepends(const std::vector<std::string>& depends)
+{
+  for(std::vector<std::string>::const_iterator i=depends.begin();
+      i != depends.end(); ++i)
+    {
+    this->Depends.push_back(*i);
+    }
+}
+
+//----------------------------------------------------------------------------
+bool cmCustomCommand::GetEscapeOldStyle() const
+{
+  return this->EscapeOldStyle;
+}
+
+//----------------------------------------------------------------------------
+void cmCustomCommand::SetEscapeOldStyle(bool b)
+{
+  this->EscapeOldStyle = b;
+}
+
+//----------------------------------------------------------------------------
+bool cmCustomCommand::GetEscapeAllowMakeVars() const
+{
+  return this->EscapeAllowMakeVars;
+}
+
+//----------------------------------------------------------------------------
+void cmCustomCommand::SetEscapeAllowMakeVars(bool b)
+{
+  this->EscapeAllowMakeVars = b;
+}
+
+//----------------------------------------------------------------------------
+cmCustomCommand::ImplicitDependsList const&
+cmCustomCommand::GetImplicitDepends() const
+{
+  return this->ImplicitDepends;
+}
+
+//----------------------------------------------------------------------------
+void cmCustomCommand::SetImplicitDepends(ImplicitDependsList const& l)
+{
+  this->ImplicitDepends = l;
+}
+
+//----------------------------------------------------------------------------
+void cmCustomCommand::AppendImplicitDepends(ImplicitDependsList const& l)
+{
+  this->ImplicitDepends.insert(this->ImplicitDepends.end(),
+                               l.begin(), l.end());
 }

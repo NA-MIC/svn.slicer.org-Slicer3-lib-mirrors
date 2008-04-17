@@ -5,12 +5,13 @@
  *                            | (__| |_| |  _ <| |___ 
  *                             \___|\___/|_| \_\_____|
  *
- * $Id: ftpget.c,v 1.1 2005/06/24 13:02:16 andy Exp $
+ * $Id: ftpget.c,v 1.2 2006-07-09 17:48:37 andy Exp $
  */
 
 #include "curl/curl.h"
 #include "curl/types.h"
 #include "curl/easy.h"
+#include "setup.h"
 
 #include "testconfig.h"
 
