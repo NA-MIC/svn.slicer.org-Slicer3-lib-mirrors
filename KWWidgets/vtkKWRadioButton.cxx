@@ -15,9 +15,11 @@
 #include "vtkKWRadioButton.h"
 #include "vtkObjectFactory.h"
 
+#include <vtksys/stl/string>
+
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkKWRadioButton );
-vtkCxxRevisionMacro(vtkKWRadioButton, "$Revision: 1.30 $");
+vtkCxxRevisionMacro(vtkKWRadioButton, "$Revision: 1.33 $");
 
 //----------------------------------------------------------------------------
 void vtkKWRadioButton::CreateWidget()
@@ -25,7 +27,7 @@ void vtkKWRadioButton::CreateWidget()
   // Call the superclass to create the widget and set the appropriate flags
 
   if (!vtkKWWidget::CreateSpecificTkWidget(this,
-        "radiobutton", "-value 1 -highlightthickness 0 -padx 2 -pady 2"))
+        "radiobutton", "-value 1 -highlightthickness 0 -padx 2 -pady 2 -bd 2"))
     {
     vtkErrorMacro("Failed creating widget " << this->GetClassName());
     return;
@@ -61,16 +63,16 @@ int vtkKWRadioButton::GetValueAsInt()
 //----------------------------------------------------------------------------
 void vtkKWRadioButton::SetVariableValue(const char *v)
 {
-  if (this->IsCreated())
+  if (this->IsCreated() && this->GetVariableName())
     {
-    this->Script("set %s {%s}", this->GetVariableName(), v);
+    this->Script("set %s {%s}", this->GetVariableName(), v ? v : "");
     }
 }
 
 //----------------------------------------------------------------------------
 const char* vtkKWRadioButton::GetVariableValue()
 {
-  if (this->IsCreated())
+  if (this->IsCreated() && this->GetVariableName())
     {
     return this->Script("set %s", this->GetVariableName());
     }
@@ -94,18 +96,18 @@ int vtkKWRadioButton::GetVariableValueAsInt()
 //----------------------------------------------------------------------------
 int vtkKWRadioButton::GetSelectedState()
 {
-  if (this->IsCreated())
+  if (this->IsCreated() && this->GetVariableName())
     {
 #if 0
     return atoi(
        this->Script("expr {${%s}} == {[%s cget -value]}",
                     this->VariableName, this->GetWidgetName()));
 #else
-    const char* varvalue =
-      Tcl_GetVar(
-        this->GetApplication()->GetMainInterp(), this->VariableName, TCL_GLOBAL_ONLY);
-    const char *value = this->GetConfigurationOption("-value");
-    return varvalue && value && !strcmp(varvalue, value);
+    vtksys_stl::string varvalue(
+      Tcl_GetVar(this->GetApplication()->GetMainInterp(), 
+                 this->VariableName, TCL_GLOBAL_ONLY));
+    vtksys_stl::string value(this->GetConfigurationOption("-value"));
+    return !strcmp(varvalue.c_str(), value.c_str());
 #endif
     }
   return 0;

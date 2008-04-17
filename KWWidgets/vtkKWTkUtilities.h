@@ -148,13 +148,8 @@ public:
   // Convenience methods are provided to specify a vtkKWApplication
   // instead of the Tcl interpreter. 
   // Return 1 on success, 0 otherwise.
-  static int QueryUserForColor(Tcl_Interp *interp,
-                               const char *dialog_parent,
-                               const char *dialog_title,
-                               double in_r, double in_g, double in_b,
-                               double *out_r, double *out_g, double *out_b);
   static int QueryUserForColor(vtkKWApplication *app,
-                               const char *dialog_parent,
+                               vtkKWWidget *dialog_parent,
                                const char *dialog_title,
                                double in_r, double in_g, double in_b,
                                double *out_r, double *out_g, double *out_b);
@@ -342,6 +337,14 @@ public:
   static int ChangeFontSlantToItalic(vtkKWWidget *widget);
   static int ChangeFontSlantToRoman(Tcl_Interp *interp, const char *widget);
   static int ChangeFontSlantToRoman(vtkKWWidget *widget);
+
+  // Description:
+  // Get the real actual font (i.e. its list of attributes) given a font, 
+  // font name, or incomplete font specification.
+  // It is up to the caller to allocate enough space in 'real_font'.
+  // Return 1 on success, 0 otherwise.
+  static int GetRealActualFont(
+    Tcl_Interp *interp, const char *font, char *real_font);
 
   // Description:
   // Get the number of colums and rows defined in the grid layout of

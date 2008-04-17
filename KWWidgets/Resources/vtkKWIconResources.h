@@ -386,6 +386,20 @@ static const unsigned char image_document[] =
 
 /* 
  * Resource generated for file:
+ *    document_rgb_color.png (zlib, base64) (image file)
+ */
+static const unsigned int  image_document_rgb_color_width          = 16;
+static const unsigned int  image_document_rgb_color_height         = 16;
+static const unsigned int  image_document_rgb_color_pixel_size     = 4;
+static const unsigned long image_document_rgb_color_length         = 104;
+static const unsigned long image_document_rgb_color_decoded_length = 1024;
+
+static const unsigned char image_document_rgb_color[] = 
+  "eNrVk0EKACAIBHu6P5/qEBSoLdShjLlYg4oEFC7QApXIZ2I5y1XBzHjRVwnrC/Gbfzr/nI"
+  "9cxc9cpf/M3e1/5w76Ow8u/VGPCpnZm5w=";
+
+/* 
+ * Resource generated for file:
  *    document_volume_property.png (zlib, base64) (image file)
  */
 static const unsigned int  image_document_volume_property_width          = 16;
@@ -863,6 +877,31 @@ static const unsigned char image_helpbubble[] =
 
 /* 
  * Resource generated for file:
+ *    hsv_diagram.png (zlib, base64) (image file)
+ */
+static const unsigned int  image_hsv_diagram_width          = 16;
+static const unsigned int  image_hsv_diagram_height         = 16;
+static const unsigned int  image_hsv_diagram_pixel_size     = 3;
+static const unsigned long image_hsv_diagram_length         = 896;
+static const unsigned long image_hsv_diagram_decoded_length = 768;
+
+static const unsigned char image_hsv_diagram[] = 
+  "eNpFx/9LlAccwPF/ou0Y+zV62AKfDcunRj9FelnRF9j5hBMiSU/qB4s6L1dkXZ1PccTpZ3"
+  "nP+mGuRfg0WmOj8jEyKiGfrWwNKh87zFwyH215dua39J7nHYzG4PXLK7luldSqrafUmKib"
+  "pehzKSmS7ao0qcdE/Uo+02RjkexXpUVNiVqXXFXWtq4YM+S/CnUT2sGSj1E+oDHE49BTPj"
+  "zCR59SuYTOEIuhSULftRWXyYY1fK/4E8odlD0sXU7JMhIKrjLIspN8spqapXQrFJTXKBdk"
+  "zSbZupYOzc9pvWgNrPyC0hJSGlltiJIWVq9n3wruaBS0PNolWbtNIuVcDvuT4XuEj1K6gS"
+  "/LOBPmWXiYsrOUV3C4lLthCuEpwr9KuS6VW7iqB3n9IXqKSCXVFbTrPNdHqDjP9hqMCPd0"
+  "Cvo0epdsqZIdEW5Eg6noI6IZanazrxYryovoKLWXqDvANzU8jFKIzhC9JZGdsquKnngwHR"
+  "8g/gOxRo428Euc0fg4DVc4mKA9xpM4fnyWeK9U1cruan43ghljEOMnmk+Rbua6wbjxD83d"
+  "nGzlxyRZA9+Yw+iT6j1SX8efZjBr/oVpkzlLe4Yek1dmjsxdvj3HtQxDJr45j/lI6vbKgX"
+  "pcK5iz/sbqoeMilzvos8hZr7H+4OLP3O5gxMK33mJlpT4mjTGe28Fb+yX2Azq76LZ5YpO3"
+  "32D303WT+52M2QT2AvawxL6WpkOMOsGCM4kzQO9v3HcYcph2ZnGGcfpwe5lwCJxFHE8ONc"
+  "mJBBMuBfcN7gj9A2Rdxlzm3HnccdwsL/qZcgncAm5OEifaTqeY9vC9ebwcnseYR95jwVvE"
+  "y+ONM+Ex54Hn4820pU4njyekJS2t6VZJp9/77y3/X/59MnH8HegGDZQ=";
+
+/* 
+ * Resource generated for file:
  *    info_mini.png (zlib, base64) (image file)
  */
 static const unsigned int  image_info_mini_width          = 16;
@@ -982,6 +1021,24 @@ static const unsigned char image_netdrive[] =
   "PyvVoEp8+yGg2lslarFcXEnsqwvfERbP3aegfv7QqUypF+hO2Jn8jxKc/7uQZsf30OZN8i"
   "82UeL0YqdzMFqqurme9gezFrcxXYWKpFwn0aqVenMH+di1I58l+yHogRVqvAo6tlsA385a"
   "FqHx4oywpZRwk4+Rp7qS+umT/XF2f/ACu4pr4=";
+
+/* 
+ * Resource generated for file:
+ *    oblique_probe.png (zlib, base64) (image file)
+ */
+static const unsigned int  image_oblique_probe_width          = 16;
+static const unsigned int  image_oblique_probe_height         = 16;
+static const unsigned int  image_oblique_probe_pixel_size     = 4;
+static const unsigned long image_oblique_probe_length         = 364;
+static const unsigned long image_oblique_probe_decoded_length = 1024;
+
+static const unsigned char image_oblique_probe[] = 
+  "eNqtkz0KhDAQhdNZ2W0leAIL67SewcLazsLaxmLBQkHBnwvZehMLzxCy88KsiBgWdAMPxJ"
+  "ePSWZetNZCPxCvF0nf0Ma8JK348H1fFkWxiot18naGVh6G4TyOo6iqKifNJHEh43VdJ+I4"
+  "zombmX9HUaT7vtfk/xT2YT845pckSdK2bVFjIaWW+sabpkkEQbAQlzKPe8gsy0Rd1yvtkR"
+  "Z+HYZBep63M8wrkluWJfYokmvhVdM0ruM4O8NS+AeP+SvWeKjxZY5zwJlwNpzRwkvcDXc8"
+  "zS5FL9AT7tti4Y2HHqPX6PmfZjcjC8gE5ya31DceMoasIXPH2eED2URGr7J78o6z226+Hb"
+  "y5R28X+gDQIXmI";
 
 /* 
  * Resource generated for file:
@@ -1312,6 +1369,53 @@ static const unsigned char image_stopwatch[] =
   "58wBVmGI6y7xsHH+/BY+o4alXUY/2eL/7M2vs2fkpJOR9n2MeepmoGZs9xguac9cKTT4sF"
   "j/8l+zxf+BbLc9h7wOP5oODWpVeY/ylDB8tn4AvP+9+ToXWG4XG3X2/uEfv4+2fr7fvN+k"
   "8tCF7Dnw==";
+
+/* 
+ * Resource generated for file:
+ *    testtube.png (zlib, base64) (image file)
+ */
+static const unsigned int  image_testtube_width          = 16;
+static const unsigned int  image_testtube_height         = 16;
+static const unsigned int  image_testtube_pixel_size     = 3;
+static const unsigned long image_testtube_length         = 672;
+static const unsigned long image_testtube_decoded_length = 768;
+
+static const unsigned char image_testtube[] = 
+  "eNq7/OTJZbLQlSdPzty/P2f//rJly0qWLAGShYsW1a1evebUqUuPH2Oq33D2bFJXl5SaWk"
+  "J2dnJubkpeXlJurmtgoIqNTe2qVSfv3r3+/DlE5bVnzzadO1e6dOmSgwdj09MTq6uXb9y4"
+  "Zf/+A1evBkVEdMybN3XXruqVK4FaIOqBzqhYvnztqVMfv307d/WqY1LS1vPnv/78CUTFFR"
+  "VA8tmHD71bt07Yvv0G2Iplx441rVv34uNHoNTVmzcx1QPRxYcPgd45dPMmUH3VypWrTp6E"
+  "iAPVqzk6FkycCHTP3vPn0/LzIeKvP30Cmrn4yBGg+ux5884+eABXr2JnF19T0zxlSs+SJX"
+  "D1n3/8WHL06LyDB4Hqs+bOvf70KVy9upNTSkND4+TJXQsXZhQUQMSBCBiwEPVAh22BORiX"
+  "+vdfv07auXM+WP203bsnbt8ODBw86h+8eVO6bNm2ixeB6vdfu1a0ePHpe/dwqf/4/fvKEy"
+  "eqVqy4+vQpUD2QnLF3b8PatdefPbuCoR5o787Ll4GxCXQzUAE0PTx+PGHHDqAJMzdtkre2"
+  "tk1Lq+jtBaqPTE9feOhQ8ZIly48fR0s/QL3rT5/OmT1b2dLSIjraMj7eKznZLS+vdvXqA9"
+  "evXwG7BEsqffp03cmThbW1QNQxezYkQpERAK4JK2s=";
+
+/* 
+ * Resource generated for file:
+ *    time.png (zlib, base64) (image file)
+ */
+static const unsigned int  image_time_width          = 16;
+static const unsigned int  image_time_height         = 16;
+static const unsigned int  image_time_pixel_size     = 4;
+static const unsigned long image_time_length         = 908;
+static const unsigned long image_time_decoded_length = 1024;
+
+static const unsigned char image_time[] = 
+  "eNqtk91PknEUx/uT6qJaW1fddGW5tKVuudnabKUXKgqClFiYmSWYKEGKCqbg+3QiFr4gki"
+  "iKgG8g8AiYbyA+gIA+pt8e2mheOK8823f77nf2OWe/s3MAXMMVaryz+p6h67V2fpC1vzjC"
+  "oeaH2JReWbCjaSro7//KvnMZq1NVNlhHWcc++wz2tl0IhYIgyQA2N6yw6jsx8i33UFmbx7"
+  "2InejkC52mRgT9Htg9QXSPEWjoWUadaglytRMLjh0QdgOGpS8g4z8vPs9q5FV3TYMMKrBL"
+  "QGfeQu84AacvhEAoAn/oEHZvCPJRJ/om3Vgzq6F4mxGVVr68keR/tjKH1+n31Y19qLRuJC"
+  "JIknD83kac9glFzgDxkBN6iwc/FEUQl2XKk/xYW/72lscGhWYdK3Tf6MkZItEoRM0y7NJ1"
+  "wkdH6NGMQecg8bHDAtusElJOGpHkta158WBgE9XtFuzGKASPTnFMJ0rLeVD0DoD5hodRgx"
+  "E2kkKhyAgvYUQzJz2W5EckufHAngs8mRneCEXXOIWPDONdzad/rM5shf8EMAUo5At+weOa"
+  "RFNp2n++53O222VTQ6CyYHKdxBb9YV+YwvDENNz7Iez8AYgo0Ld0AI7UiEVdHUTFqd4k38"
+  "LPlk0oWTBYHKhS2eGnZxWkgPApLdof0Lyf9my5HRrDHAbqMyBgpKuSfNP7V9fbKp7E1kxt"
+  "aFfP44NqDWbiABF6FpEoBQvt+R2rEHdPYUFbgfqClLiQ8+zm+R2Q8HJY36seY2WmAeOzJl"
+  "TKZlBSN40igR7lEj00+inMa7kQM++jlplVftEOisqeciWs1MhAYxbdhw/3igLu5RbMaTjo"
+  "qnmI+sKUw9qSzIrLbkDEzbklLE7r+FL4wNPISIkllPACxiOlkJ19G1d8r38B3koL5g==";
 
 /* 
  * Resource generated for file:

@@ -1,147 +1,127 @@
 /*=========================================================================
 
-  Module:    $RCSfile: vtkKWColorPresetSelector.h,v $
+Copyright (c) 1998-2003 Kitware Inc. 469 Clifton Corporate Parkway,
+Clifton Park, NY, 12065, USA.
 
-  Copyright (c) Kitware, Inc.
-  All rights reserved.
-  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
+All rights reserved. No part of this software may be reproduced, distributed,
+or modified, in any form or by any means, without permission in writing from
+Kitware Inc.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notice for more information.
+IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
+DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
+OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
+EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES, INCLUDING,
+BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
+"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO PROVIDE
+MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 // .NAME vtkKWColorPresetSelector - a color preset selector.
 // .SECTION Description
-// This class displays a color preset selector as an option menu.
-// Different type of presets can be enabled/disabled.
+// This class is a widget that can be used to store color presets. 
+// For example, a list of favorite colors, or a list of "recently picked"
+// colors. 
+// It is used internally by the vtkKWColorPickerWidget class.
+// .SECTION Thanks
+// This work is part of the National Alliance for Medical Image
+// Computing (NAMIC), funded by the National Institutes of Health
+// through the NIH Roadmap for Medical Research, Grant U54 EB005149.
+// Information on the National Centers for Biomedical Computing
+// can be obtained from http://nihroadmap.nih.gov/bioinformatics.
 // .SECTION See Also
-// vtkKWMenuButton
+// vtkKWColorPickerWidget vtkKWColorSpectrumWidget vtkKWPresetSelector
 
 #ifndef __vtkKWColorPresetSelector_h
 #define __vtkKWColorPresetSelector_h
 
-#include "vtkKWMenuButtonWithLabel.h"
+#include "vtkKWPresetSelector.h"
 
-class vtkColorTransferFunction;
-class vtkKWColorPresetSelectorInternals;
-
-class KWWidgets_EXPORT vtkKWColorPresetSelector : public vtkKWMenuButtonWithLabel
+class KWWidgets_EXPORT vtkKWColorPresetSelector : public vtkKWPresetSelector
 {
 public:
   static vtkKWColorPresetSelector* New();
-  vtkTypeRevisionMacro(vtkKWColorPresetSelector,vtkKWMenuButtonWithLabel);
+  vtkTypeRevisionMacro(vtkKWColorPresetSelector, vtkKWPresetSelector);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
-  // Set/Get the color transfer function the preset will be applied to.
-  // Note that a color transfer function is created by default.
-  virtual void SetColorTransferFunction(vtkColorTransferFunction *p);
-  vtkGetObjectMacro(ColorTransferFunction,vtkColorTransferFunction);
+  // Set/Get the color for a given preset.
+  // A method is available to retrieve the Id of the preset that has
+  // been assigned a specific color.
+  // Return 1 on success, 0 on error (id on success, -1 otherwise)
+  virtual void GetPresetColorAsRGB(int id, double &r, double &g, double &b);
+  virtual void GetPresetColorAsRGB(int id, double rgb[3]);
+  virtual int SetPresetColorAsRGB(int id, double r, double g, double b);
+  virtual int SetPresetColorAsRGB(int id, double rgb[3]);
+  virtual void GetPresetColorAsHSV(int id, double &h, double &s, double &v);
+  virtual void GetPresetColorAsHSV(int id, double hsv[3]);
+  virtual int SetPresetColorAsHSV(int id, double h, double s, double v);
+  virtual int SetPresetColorAsHSV(int id, double hsv[3]);
+  virtual int GetIdOfPresetWithColorAsRGB(double r, double g, double b);
+  virtual int GetIdOfPresetWithColorAsRGB(double rgb[3]);
 
   // Description:
-  // Set/Get the scalar range along which the preset will be applied.
-  // Solid color presets will be created using two entries, one at each
-  // end of the range.
-  // Gradient, or custom presets will be scaled appropriately along
-  // the range.
-  // If ApplyPresetBetweenEndPoint is true, the preset is applied
-  // given the scalar range defined between the two end-points (if any)
-  vtkGetVector2Macro(ScalarRange, double);
-  vtkSetVector2Macro(ScalarRange, double);
-  vtkGetMacro(ApplyPresetBetweenEndPoints, int);
-  vtkSetMacro(ApplyPresetBetweenEndPoints, int);
-  vtkBooleanMacro(ApplyPresetBetweenEndPoints, int);
-
-  // Description:
-  // Add a color preset.
-  // A name is required, as well as a color transfer function and a range.
-  // The range specifies the scalar range of the color tfunc, and is used
-  // to store a normalized version of the color transfer function so that
-  // it can be applied to the ColorTransferFunction ivar according to the 
-  // ScalarRange ivar. The color transfer function passed as parameter
-  // is not Register()'ed.
+  // Set/Get the preset comment to the hexadecimal RGB representation
   // Return 1 on success, 0 otherwise
-  virtual int AddPreset(
-    const char *name, vtkColorTransferFunction *func, double range[2]);
+  virtual int SetPresetCommentAsHexadecimalRGB(int id);
+  virtual int GetPresetCommentAsHexadecimalRGB(int id, int &r, int &g, int &b);
+  virtual int HasPresetCommentAsHexadecimalRGB(int id);
 
   // Description:
-  // Remove one (or all) color preset(s).
-  // Return 1 on success, 0 otherwise
-  virtual int RemovePreset(const char *name);
-  virtual int RemoveAllPresets();
+  // Add  a few default color presets (black, white, primary colors).
+  virtual void AddDefaultColorPresets();
 
   // Description:
-  // Add a color preset. 
-  // Add a preset given a solid color, in RGB or HSV format.
-  virtual int AddSolidRGBPreset(const char *name, double rgb[3]);
-  virtual int AddSolidRGBPreset(const char *name, double r,double g, double b);
-  virtual int AddSolidHSVPreset(const char *name, double hsv[3]);
-  virtual int AddSolidHSVPreset(const char *name, double h,double s, double v);
+  // Remove all duplicated colors from the list. 
+  // Return the number of duplicates removed.
+  virtual int RemoveDuplicatedColors();
 
   // Description:
-  // Add a color preset. 
-  // Add a gradient preset given the endpoints of the gradient, in RGB or HSV
-  // format.
-  virtual int AddGradientRGBPreset(
-    const char *name, double rgb1[3], double rgb2[3]);
-  virtual int AddGradientRGBPreset(
-    const char *name, 
-    double r1, double g1, double b1, 
-    double r2, double g2, double b2);
-  virtual int AddGradientHSVPreset(
-    const char *name, double hsv1[3], double hsv2[3]);
-  virtual int AddGradientHSVPreset(
-    const char *name, 
-    double h1, double s1, double v1, 
-    double h2, double s2, double v2);
+  // Set/Get if the color cell (i.e. the cell representing the color
+  // for each preset entry) is drawn as a color button (i.e. a square frame
+  // with a background color set to the preset color, a black outline, and
+  // some margin so that it doesn't touch the row separators) or if the whole
+  // cell background color is used to represent the color. The former option
+  // looks nicer, but is a tad slower to display: while it takes about the
+  // same amount of time to insert a lot of entries (about 1200 entries per 
+  // second), displaying them is a little slower when this option is On (about
+  // 285 vs. 400 entries per second). 
+  // Note: set this option before inserting any entries; for performance
+  // reasons, switching from one to the other interactively is not supported.
+  virtual void SetDrawColorCellAsColorButton(int);
+  vtkGetMacro(DrawColorCellAsColorButton,int);
+  vtkBooleanMacro(DrawColorCellAsColorButton,int);
 
   // Description:
-  // Add a color preset. 
-  // Add a "flag" preset given the number of colors in the flag, a pointer
-  // to those colors, and the number of time the flag should be repeated in
-  // the scalar range.
-  virtual int AddFlagRGBPreset(
-    const char *name, int nb_colors, double **rgb, int repeat);
+  // Set/Get the registry key under which presets will be saved and/or 
+  // restored automatically. Note that presets are saved automatically only
+  // when performing *user-interactions* (add/remove/update/edit). 
+  // For performance reason, adding/removing/changing a preset 
+  // programatically will not save the presets to the registry; it is up
+  // to the user to call SavePresetsToRegistry() manually.
+  // IMPORTANT: make sure this variable is set before calling Create().
+  // This goes as well for composite widgets that embed an instance of this
+  // class. The vtkKWColorPickerWidget class, for example, uses two
+  // color preset selectors: make sure to set their RegistryKey (if needed)
+  // *before* calling the Create() method on the vtkKWColorPickerWidget
+  // instance.
+  vtkSetStringMacro(RegistryKey);
+  vtkGetStringMacro(RegistryKey);
 
   // Description:
-  // Set/Get the preview size. Each entry in the menu also displays a
-  // preview of the preset.
-  vtkGetMacro(PreviewSize, int);
-  virtual void SetPreviewSize(int);
+  // Save/Restore colors to/from registry, using the RegistryKey ivar as key.
+  // Note that presets are saved automatically when performing 
+  // *user-interactions* (see RegistryKey)
+  virtual void SavePresetsToRegistry();
+  virtual void RestorePresetsFromRegistry();
 
   // Description:
-  // Set/Get visibility of solid color presets in menu.
-  vtkGetMacro(SolidColorPresetsVisibility, int);
-  vtkBooleanMacro(SolidColorPresetsVisibility, int);
-  virtual void SetSolidColorPresetsVisibility(int);
-
-  // Description:
-  // Set/Get visibility of gradient presets in menu.
-  vtkGetMacro(GradientPresetsVisibility, int);
-  vtkBooleanMacro(GradientPresetsVisibility, int);
-  virtual void SetGradientPresetsVisibility(int);
-
-  // Description:
-  // Set/Get the preset name visibility in the menu.
-  vtkGetMacro(PresetNameVisibility, int);
-  vtkBooleanMacro(PresetNameVisibility, int);
-  virtual void SetPresetNameVisibility(int);
-
-  // Description:
-  // Specifies a command to associate with the widget. This command is 
-  // invoked when a preset is selected.
-  // The 'object' argument is the object that will have the method called on
-  // it. The 'method' argument is the name of the method to be called and any
-  // arguments in string form. If the object is NULL, the method is still
-  // evaluated as a simple command. 
-  // The following parameters are also passed to the command:
-  // - name of the selected preset: const char*
-  virtual void SetPresetSelectedCommand(vtkObject *object, const char *method);
-
-  // Description:
-  // Callbacks. Internal, do not use.
-  virtual void PresetSelectedCallback(const char *name);
+  // Some constants
+  //BTX
+  static const char *ColorColumnName;
+  //ETX
 
 protected:
   vtkKWColorPresetSelector();
@@ -150,59 +130,44 @@ protected:
   // Description:
   // Create the widget.
   virtual void CreateWidget();
-
-  double ScalarRange[2];
-  vtkColorTransferFunction *ColorTransferFunction;
-  int PreviewSize;
-  int SolidColorPresetsVisibility;
-  int GradientPresetsVisibility;
-  int ApplyPresetBetweenEndPoints;
-  int PresetNameVisibility;
-
-  char *PresetSelectedCommand;
-  virtual void InvokePresetSelectedCommand(const char *name);
-
-  // PIMPL Encapsulation for STL containers
-
-  vtkKWColorPresetSelectorInternals *Internals;
+  
+  // Description:
+  // Create the columns.
+  // Subclasses should override this method to add their own columns and
+  // display their own preset fields (do not forget to call the superclass
+  // first).
+  virtual void CreateColumns();
 
   // Description:
-  // Query if there is a preset with a given name, create a preset
-  // with a given name
-  // Return 1 on success, 0 otherwise
-  virtual int HasPreset(const char *name);
-  virtual int AllocatePreset(const char *name);
+  // Update the preset row, i.e. add a row for that preset if it is not
+  // displayed already, hide it if it does not match GroupFilter, and
+  // update the table columns with the corresponding preset fields.
+  // Subclass should override this method to display their own fields.
+  // Return 1 on success, 0 if the row was not (or can not be) updated.
+  // Subclasses should call the parent's UpdatePresetRow, and abort
+  // if the result is not 1.
+  virtual int UpdatePresetRow(int id);
 
   // Description:
-  // Get a preset color transfer function.
-  // Return the func on success, NULL otherwise
-  virtual vtkColorTransferFunction* GetPresetColorTransferFunction(
-    const char *name);
+  // Convenience methods to get the index of a given column
+  virtual int GetColorColumnIndex();
 
-  // Description:
-  // Create the default presets
-  virtual void CreateDefaultPresets();
+  int DrawColorCellAsColorButton;
+  char *RegistryKey;
 
-  // Description:
-  // Map one transfer function to another
-  // Return 1 on success, 0 otherwise
-  virtual int MapColorTransferFunction(
-    vtkColorTransferFunction *source, double source_range[2],
-    vtkColorTransferFunction *target, double target_range[2]);
+  virtual void InvokePresetAddCommand();
+  virtual void InvokePresetRemovedCommand();
+  virtual void InvokePresetUpdateCommand(int id);
+  virtual void InvokePresetHasChangedCommand(int id);
 
-  // Description:
-  // Create preview (icon/image) for a preset
-  virtual int CreateColorTransferFunctionPreview(
-    vtkColorTransferFunction *func, const char *img_name);
-
-  // Description:
-  // Populate the preset menu
-  virtual void PopulatePresetMenu();
+  static int CompareRGBColors(double rgb1[3], double rgb2[3]);
+  static int CompareRGBColors(double r1, double g1, double b1, 
+                              double r2, double g2, double b2);
 
 private:
+
   vtkKWColorPresetSelector(const vtkKWColorPresetSelector&); // Not implemented
-  void operator=(const vtkKWColorPresetSelector&); // Not Implemented
+  void operator=(const vtkKWColorPresetSelector&); // Not implemented
 };
 
 #endif
-

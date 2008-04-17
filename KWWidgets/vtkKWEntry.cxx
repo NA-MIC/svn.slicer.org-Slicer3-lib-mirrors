@@ -24,7 +24,7 @@
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkKWEntry);
-vtkCxxRevisionMacro(vtkKWEntry, "$Revision: 1.93 $");
+vtkCxxRevisionMacro(vtkKWEntry, "$Revision: 1.97 $");
 
 //----------------------------------------------------------------------------
 vtkKWEntry::vtkKWEntry()
@@ -63,7 +63,7 @@ void vtkKWEntry::CreateWidget()
   // Call the superclass to set the appropriate flags then create manually
 
   if (!vtkKWWidget::CreateSpecificTkWidget(this, 
-        "entry", "-highlightthickness 0"))
+        "entry", "-highlightthickness 0 -bd 2 -background white"))
     {
     vtkErrorMacro("Failed creating widget " << this->GetClassName());
     return;
@@ -239,6 +239,11 @@ void vtkKWEntry::SetValue(const char *s)
       this->Script("if {[string is integer \"%s\"]} {%s insert 0 \"%s\"}", 
                    val ? val : "", this->GetWidgetName(), val ? val : "");
       }
+    else if (this->RestrictValue == vtkKWEntry::RestrictHexadecimal)
+      {
+      this->Script("if {[string is xdigit \"%s\"]} {%s insert 0 \"%s\"}", 
+                   val ? val : "", this->GetWidgetName(), val ? val : "");
+      }
     else if (this->RestrictValue == vtkKWEntry::RestrictDouble)
       {
       this->Script("if {[string is double \"%s\"]} {%s insert 0 \"%s\"}", 
@@ -332,6 +337,31 @@ void vtkKWEntry::SetValueAsFormattedDouble(double f, int size)
 }
 
 //----------------------------------------------------------------------------
+void vtkKWEntry::SetHexadecimalValueAsRGB(int r, int g, int b)
+{
+  int old_r, old_g, old_b;
+  this->GetHexadecimalValueAsRGB(old_r, old_g, old_b);
+  if (old_r < 0 || old_g < 0 || old_b < 0 ||
+      r != old_r || g != old_g || b != old_b)
+    {
+    static char buffer[20];
+    sprintf(buffer, "%02x%02x%02x", r, g, b);
+    this->SetValue(buffer);
+    }
+}
+
+//----------------------------------------------------------------------------
+void vtkKWEntry::GetHexadecimalValueAsRGB(int &r, int &g, int &b)
+{
+  const char *value = this->GetValue();
+  if (!value || !*value || strlen(value) != 6 ||
+      sscanf(value, "%02x%02x%02x", &r, &g, &b) != 3)
+    {
+    r = g = b = -1;
+    }
+}
+
+//----------------------------------------------------------------------------
 void vtkKWEntry::SetReadOnly(int arg)
 {
   if (this->ReadOnly == arg)
@@ -367,6 +397,11 @@ void vtkKWEntry::SetRestrictValueToInteger()
 void vtkKWEntry::SetRestrictValueToDouble()
 { 
   this->SetRestrictValue(vtkKWEntry::RestrictDouble); 
+}
+
+void vtkKWEntry::SetRestrictValueToHexadecimal()
+{ 
+  this->SetRestrictValue(vtkKWEntry::RestrictHexadecimal); 
 }
 
 void vtkKWEntry::SetRestrictValueToNone()
@@ -407,6 +442,10 @@ int vtkKWEntry::ValidationCallback(const char *value)
     res &= atoi(this->Script(
           "expr {[string is integer %s] || [string is integer \"%s0\"]}", 
           value, value));
+    }
+  else if (this->RestrictValue == vtkKWEntry::RestrictHexadecimal)
+    {
+    res &= atoi(this->Script("expr {[string is xdigit %s]}", value));
     }
   else if (this->RestrictValue == vtkKWEntry::RestrictDouble)
     {

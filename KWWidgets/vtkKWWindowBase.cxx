@@ -34,7 +34,7 @@
 
 #include <vtksys/SystemTools.hxx>
 
-vtkCxxRevisionMacro(vtkKWWindowBase, "$Revision: 1.59 $");
+vtkCxxRevisionMacro(vtkKWWindowBase, "$Revision: 1.61 $");
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkKWWindowBase );
@@ -449,12 +449,17 @@ void vtkKWWindowBase::PopulateHelpMenu()
   int idx;
   vtksys_stl::string cmd;
 
+  int tcl_major, tcl_minor, tcl_patch_level;
+  Tcl_GetVersion(&tcl_major, &tcl_minor, &tcl_patch_level, NULL);
+  int show_icons = (tcl_major > 8 || (tcl_major == 8 && tcl_minor >= 5));
+
   if (this->SupportHelp)
     {
     cmd = "DisplayHelpDialog ";
     cmd += this->GetTclName();
     idx = menu->AddCommand(this->GetHelpTopicsMenuLabel(), app, cmd.c_str());
     menu->SetItemAccelerator(idx, "F1");
+    menu->SetBindingForItemAccelerator(idx, menu->GetParentTopLevel());
     }
 
   if (app->HasCheckForUpdates())
@@ -469,7 +474,12 @@ void vtkKWWindowBase::PopulateHelpMenu()
   sprintf(buffer, this->GetHelpAboutMenuLabel(), app->GetPrettyName());
   cmd = "DisplayAboutDialog ";
   cmd += this->GetTclName();
-  menu->AddCommand(buffer, this->GetApplication(), cmd.c_str());
+  idx = menu->AddCommand(buffer, this->GetApplication(), cmd.c_str());
+  if (show_icons)
+    {
+    menu->SetItemImageToPredefinedIcon(idx, vtkKWIcon::IconInfoMini);
+    menu->SetItemCompoundModeToLeft(idx);
+    }
 }
 
 //----------------------------------------------------------------------------

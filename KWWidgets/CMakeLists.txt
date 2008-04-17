@@ -81,7 +81,9 @@ SET(KWWidgets_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 
 SET(KWWidgets_CMAKE_DIR "${KWWidgets_SOURCE_DIR}/CMake" CACHE INTERNAL "")
 SUBDIRS(CMake)
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${KWWidgets_CMAKE_DIR}")
+# Make sure VTK_CMAKE_DIR is at the beginning so that VTK's FindTCL is
+# used before CMake's FindTCL.
+SET(CMAKE_MODULE_PATH "${VTK_CMAKE_DIR}" ${CMAKE_MODULE_PATH} "${KWWidgets_CMAKE_DIR}")
 
 SET(KWWidgets_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES})
 
@@ -160,15 +162,25 @@ SET(KWWidgets_SRCS
   vtkKWCheckButton.cxx
   vtkKWCheckButtonWithChangeColorButton.cxx
   vtkKWCheckButtonWithPopupFrame.cxx
+  vtkKWClipboardHelper.cxx
+  vtkKWColorPickerDialog.cxx
+  vtkKWColorPickerWidget.cxx
+  vtkKWColorPresetSelector.cxx
+  vtkKWColorSpectrumWidget.cxx
   vtkKWComboBox.cxx
   vtkKWCompositeWidget.cxx
   vtkKWCoreWidget.cxx
   vtkKWDialog.cxx
+  vtkKWDirectoryExplorer.cxx 
   vtkKWDragAndDropTargetSet.cxx
   vtkKWEntry.cxx
   vtkKWEvent.cxx
   vtkKWEventMap.cxx
   vtkKWExtent.cxx
+  vtkKWFavoriteDirectoriesFrame.cxx 
+  vtkKWFileBrowserDialog.cxx
+  vtkKWFileBrowserWidget.cxx 
+  vtkKWFileListTable.cxx 
   vtkKWFrame.cxx
   vtkKWFrameWithLabel.cxx
   vtkKWFrameWithScrollbar.cxx
@@ -181,8 +193,8 @@ SET(KWWidgets_SRCS
   vtkKWListBoxToListBoxSelectionEditor.cxx
   vtkKWLoadSaveButton.cxx
   vtkKWLoadSaveDialog.cxx
-  vtkKWLogWidget.cxx
   vtkKWLogDialog.cxx
+  vtkKWLogWidget.cxx
   vtkKWMaterialPropertyWidget.cxx
   vtkKWMatrixWidget.cxx
   vtkKWMenu.cxx
@@ -219,11 +231,11 @@ SET(KWWidgets_SRCS
   vtkKWSplitFrame.cxx
   vtkKWStateMachine.cxx
   vtkKWStateMachineCluster.cxx
+  vtkKWStateMachineDOTWriter.cxx
   vtkKWStateMachineInput.cxx
   vtkKWStateMachineState.cxx
   vtkKWStateMachineTransition.cxx
   vtkKWStateMachineWriter.cxx
-  vtkKWStateMachineDOTWriter.cxx
   vtkKWTclInteractor.cxx
   vtkKWText.cxx
   vtkKWTheme.cxx
@@ -251,12 +263,6 @@ SET(KWWidgets_SRCS
   vtkKWWizardStep.cxx
   vtkKWWizardWidget.cxx
   vtkKWWizardWorkflow.cxx
-  vtkKWDirectoryExplorer.cxx 
-  vtkKWFileListTable.cxx 
-  vtkKWFavoriteDirectoriesFrame.cxx 
-  vtkKWFileBrowserWidget.cxx 
-  vtkKWFileBrowserDialog.cxx
-# vtkKWColorPicker.cxx
 )
 
 IF(KWWidgets_BUILD_VTK_WIDGETS)
@@ -264,7 +270,7 @@ IF(KWWidgets_BUILD_VTK_WIDGETS)
     MESSAGE(FATAL_ERROR "Please set VTK_USE_TK to ON in VTK for KWWidgets_BUILD_VTK_WIDGETS to be ON as well.")
   ENDIF(NOT VTK_USE_TK)
   SET(KWWidgets_SRCS ${KWWidgets_SRCS}
-    vtkKWColorPresetSelector.cxx
+    vtkKWColorPresetMenu.cxx
     vtkKWColorTransferFunctionEditor.cxx
     vtkKWCornerAnnotationEditor.cxx
     vtkKWGenericRenderWindowInteractor.cxx
@@ -314,6 +320,7 @@ SET_SOURCE_FILES_PROPERTIES(
   vtkKWUserInterfaceManager.cxx
   vtkKWWidgetSet.cxx
   vtkKWWidgetWithScrollbars.cxx
+  vtkKWClipboardHelper.cxx
   vtkKWRegistryHelper.cxx
   ${KWWidgets_UTILS_SRCS}
   ABSTRACT
@@ -379,6 +386,7 @@ SET(list
   vtkKWCheckButton
   vtkKWComboBox
   vtkKWEntry
+  vtkKWFrame
   vtkKWLabel
   vtkKWLabelWithLabel
   vtkKWPushButton
@@ -505,22 +513,23 @@ IF(WIN32)
     INCLUDE(FindHTMLHelp)
   ENDIF(HTML_HELP_INCLUDE_PATH AND HTML_HELP_LIBRARY)
   IF(HTML_HELP_INCLUDE_PATH AND HTML_HELP_LIBRARY)
-    SET(KWWidgets_INCLUDE_PATH ${KWWidgets_INCLUDE_PATH} 
-      ${HTML_HELP_INCLUDE_PATH} CACHE INTERNAL "" FORCE)
     SET(KWWidgets_USE_HTML_HELP 1)
   ELSE(HTML_HELP_INCLUDE_PATH AND HTML_HELP_LIBRARY)
     SET(KWWidgets_USE_HTML_HELP 0)
   ENDIF(HTML_HELP_INCLUDE_PATH AND HTML_HELP_LIBRARY)
+  IF(KWWidgets_USE_HTML_HELP)
+    SET(KWWidgets_INCLUDE_PATH ${KWWidgets_INCLUDE_PATH} 
+      ${HTML_HELP_INCLUDE_PATH} CACHE INTERNAL "" FORCE)
+  ENDIF(KWWidgets_USE_HTML_HELP)
 ENDIF(WIN32)
 
 # --------------------------------------------------------------------------
 # Internationalization
 
-IF(DEFINED KWWidgets_USE_INTERNATIONALIZATION)
-  SET(default_val ${KWWidgets_USE_INTERNATIONALIZATION})
-ELSE(DEFINED KWWidgets_USE_INTERNATIONALIZATION)
-  SET(default_val 0)
-ENDIF(DEFINED KWWidgets_USE_INTERNATIONALIZATION)
+SET(default_val 0)
+IF(DEFINED KWWidgets_USE_INTERNATIONALIZATION_DEFAULT)
+  SET(default_val ${KWWidgets_USE_INTERNATIONALIZATION_DEFAULT})
+ENDIF(DEFINED KWWidgets_USE_INTERNATIONALIZATION_DEFAULT)
 OPTION(KWWidgets_USE_INTERNATIONALIZATION 
   "Enable internationalization support in KWWidgets." ${default_val})
 MARK_AS_ADVANCED(KWWidgets_USE_INTERNATIONALIZATION)
@@ -549,11 +558,10 @@ ENDIF(KWWidgets_USE_INTERNATIONALIZATION)
 # --------------------------------------------------------------------------
 # Use [incr Tcl]
 
-IF(DEFINED KWWidgets_USE_INCR_TCL)
-  SET(default_val ${KWWidgets_USE_INCR_TCL})
-ELSE(DEFINED KWWidgets_USE_INCR_TCL)
-  SET(default_val 0)
-ENDIF(DEFINED KWWidgets_USE_INCR_TCL)
+SET(default_val 0)
+IF(DEFINED KWWidgets_USE_INCR_TCL_DEFAULT)
+  SET(default_val ${KWWidgets_USE_INCR_TCL_DEFAULT})
+ENDIF(DEFINED KWWidgets_USE_INCR_TCL_DEFAULT)
 OPTION(KWWidgets_USE_INCR_TCL 
   "Enable [incr Tcl] support in KWWidgets." ${default_val})
 MARK_AS_ADVANCED(KWWidgets_USE_INCR_TCL)
@@ -568,8 +576,16 @@ INCLUDE_DIRECTORIES(
   ${KWWidgets_INCLUDE_PATH}
   ${VTK_INCLUDE_DIR}
   ${TKDND_INCLUDE_PATH}
-  ${TKTREECTRL_INCLUDE_PATH}
   )
+
+# A tricky one. Tcl/Tk 8.5.0 provides (for the first time) some of the
+# "internal headers" we usually provide in VTK (tclPort.h, tclWinPort.h, etc).
+# Alas, tclPort.h is buggy by default, as it tries to explicitly include
+# "../win/tclWinPort.h" instead of "tclWinPort.h". Our VTK internal headers
+# were fixed. The trick is therefore to include ours before ActiveState's,
+# by using the BEFORE keyword below.
+
+INCLUDE_DIRECTORIES(BEFORE ${TKTREECTRL_INCLUDE_PATH})
 
 # --------------------------------------------------------------------------
 # Wrapping
@@ -786,7 +802,14 @@ SET(KWWidgets_NEED_TO_BUILD_EXAMPLES ${KWWidgets_BUILD_EXAMPLES})
 
 INCLUDE(Dart)
 MARK_AS_ADVANCED(BUILD_TESTING DART_ROOT TCL_TCLSH)
-IF(BUILD_TESTING AND NOT KWWidgets_DISABLE_TESTING)
+
+SET(default_val 1)
+IF(DEFINED KWWidgets_BUILD_TESTING_DEFAULT)
+  SET(default_val ${KWWidgets_BUILD_TESTING_DEFAULT})
+ENDIF(DEFINED KWWidgets_BUILD_TESTING_DEFAULT)
+OPTION(KWWidgets_BUILD_TESTING "Enable testing in KWWidgets." ${default_val})
+MARK_AS_ADVANCED(KWWidgets_BUILD_TESTING)
+IF(BUILD_TESTING AND KWWidgets_BUILD_TESTING)
   ENABLE_TESTING()
   #SET(BUILDNAME "${PROJECT_NAME}-${BUILDNAME}")
   SET(KWWidgets_NEED_TO_BUILD_EXAMPLES 1)
@@ -797,7 +820,7 @@ IF(BUILD_TESTING AND NOT KWWidgets_DISABLE_TESTING)
     MARK_AS_ADVANCED(KWWidgets_TEST_INSTALLATION)
   ENDIF(KWWidgets_TEST_OUT_OF_SOURCE)
   SUBDIRS(Testing)
-ENDIF(BUILD_TESTING AND NOT KWWidgets_DISABLE_TESTING)
+ENDIF(BUILD_TESTING AND KWWidgets_BUILD_TESTING)
 
 # --------------------------------------------------------------------------
 # Build the utilities

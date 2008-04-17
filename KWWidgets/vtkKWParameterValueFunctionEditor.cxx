@@ -40,7 +40,7 @@
 #include <vtksys/stl/algorithm>
 #include <vtksys/SystemTools.hxx>
 
-vtkCxxRevisionMacro(vtkKWParameterValueFunctionEditor, "$Revision: 1.104 $");
+vtkCxxRevisionMacro(vtkKWParameterValueFunctionEditor, "$Revision: 1.108 $");
 
 //----------------------------------------------------------------------------
 #define VTK_KW_PVFE_POINT_RADIUS_MIN         2
@@ -49,6 +49,9 @@ vtkCxxRevisionMacro(vtkKWParameterValueFunctionEditor, "$Revision: 1.104 $");
 #define VTK_KW_PVFE_CANVAS_WIDTH_MIN         (5 + 10)
 #define VTK_KW_PVFE_CANVAS_HEIGHT_MIN        10
 #define VTK_KW_PVFE_CANVAS_DELETE_MARGIN     35
+
+#define VTK_KW_PVFE_FIXED_FONT "fixed"
+#define VTK_KW_PVFE_FIXED_FONT_85 "TkDefaultFont"
 
 #define VTK_KW_PVFE_TICKS_TEXT_SIZE          7
 #define VTK_KW_PVFE_TICKS_SEP                2
@@ -99,6 +102,7 @@ vtkKWParameterValueFunctionEditor::vtkKWParameterValueFunctionEditor()
   this->LockPointsValue             = 0;
   this->RescaleBetweenEndPoints     = 0;
   this->DisableAddAndRemove         = 0;
+  this->EnableDirectMove            = 0;
   this->DisableRedraw               = 0;
   this->PointRadiusX                = 4;
   this->PointRadiusY                = this->PointRadiusX;
@@ -1266,6 +1270,7 @@ void vtkKWParameterValueFunctionEditor::CreateWidget()
   this->Canvas->SetHeight(this->RequestedCanvasHeight);
   this->Canvas->SetWidth(
     this->ExpandCanvasWidth ? 0 : this->RequestedCanvasWidth);
+  this->Canvas->SetConfigurationOptionAsInt("-takefocus", 0);
 
   // Both are needed, the first one in case the canvas is not visible, the
   // second because if it is visible, we want it to notify us precisely
@@ -1482,7 +1487,10 @@ void vtkKWParameterValueFunctionEditor::CreateRangeLabel()
     this->RangeLabel->SetBorderWidth(0);
     this->RangeLabel->SetAnchorToWest();
     this->UpdateRangeLabel();
-    this->Bind(); // in case we have bindings on the label
+    if (this->GetEnabled())
+      {
+      this->Bind(); // in case we have bindings on the label
+      }
     }
 }
 
@@ -1525,6 +1533,7 @@ void vtkKWParameterValueFunctionEditor::CreateParameterEntry()
     this->ParameterEntry->SetParent(this->PointEntriesFrame);
     this->ParameterEntry->Create();
     this->ParameterEntry->GetWidget()->SetWidth(7);
+    this->ParameterEntry->GetWidget()->SetRestrictValueToDouble();
     this->ParameterEntry->GetLabel()->SetText(
       ks_("Transfer Function Editor|Parameter|P:"));
 
@@ -1641,7 +1650,12 @@ void vtkKWParameterValueFunctionEditor::CreateValueTicksCanvas()
     this->ValueTicksCanvas->SetReliefToSolid();
     this->ValueTicksCanvas->SetHeight(0);
     this->ValueTicksCanvas->SetBorderWidth(0);
-    this->Bind(); // in case we have bindings on this canvas
+    this->ValueTicksCanvas->SetConfigurationOptionAsInt("-takefocus", 0);
+
+    if (this->GetEnabled())
+      {
+      this->Bind(); // in case we have bindings on this canvas
+      }
     }
 }
 
@@ -1658,7 +1672,12 @@ void vtkKWParameterValueFunctionEditor::CreateParameterTicksCanvas()
     this->ParameterTicksCanvas->SetBorderWidth(0);
     this->ParameterTicksCanvas->SetHeight(
       VTK_KW_PVFE_TICKS_PARAMETER_CANVAS_HEIGHT);
-    this->Bind(); // in case we have bindings on this canvas
+    this->ParameterTicksCanvas->SetConfigurationOptionAsInt("-takefocus", 0);
+
+    if (this->GetEnabled())
+      {
+      this->Bind(); // in case we have bindings on this canvas
+      }
     }
 }
 
@@ -1675,7 +1694,12 @@ void vtkKWParameterValueFunctionEditor::CreateGuidelineValueCanvas()
     this->GuidelineValueCanvas->SetBorderWidth(0);
     this->GuidelineValueCanvas->SetHeight(
       VTK_KW_PVFE_GUIDELINE_VALUE_CANVAS_HEIGHT);
-    this->Bind(); // in case we have bindings on this canvas
+    this->GuidelineValueCanvas->SetConfigurationOptionAsInt("-takefocus", 0);
+
+    if (this->GetEnabled())
+      {
+      this->Bind(); // in case we have bindings on this canvas
+      }
     }
 }
 
@@ -2056,7 +2080,10 @@ void vtkKWParameterValueFunctionEditor::Bind()
     // Mouse motion
 
     this->Canvas->SetBinding(
-      "<Any-ButtonPress>", this, "StartInteractionCallback %x %y");
+      "<Any-ButtonPress>", this, "StartInteractionCallback %x %y 0");
+
+    this->Canvas->SetBinding(
+      "<Shift-Any-ButtonPress>", this, "StartInteractionCallback %x %y 1");
 
     tk_cmd << canv << " bind " 
            << vtkKWParameterValueFunctionEditor::PointTag
@@ -2232,7 +2259,7 @@ void vtkKWParameterValueFunctionEditor::UnBind()
 
     // Mouse motion
 
-    this->Canvas->RemoveBinding("<ButtonPress-1>");
+    this->Canvas->RemoveBinding("<Any-ButtonPress>");
 
     tk_cmd << canv << " bind " 
            << vtkKWParameterValueFunctionEditor::PointTag 
@@ -5518,6 +5545,8 @@ void vtkKWParameterValueFunctionEditor::RedrawRangeTicks()
 
   vtksys_ios::ostringstream tk_cmd;
 
+  int tcl_major = 0, tcl_minor = 0, tcl_patch_level = 0;
+
   // Create the ticks if not created already
 
   int has_p_tag = 
@@ -5526,6 +5555,16 @@ void vtkKWParameterValueFunctionEditor::RedrawRangeTicks()
     {
     if (this->ParameterTicksVisibility)
       {
+      const char *font = NULL;
+      if (this->ParameterTicksFormat)
+        {
+        if (tcl_major == 0)
+          {
+          Tcl_GetVersion(&tcl_major, &tcl_minor, &tcl_patch_level, NULL);
+          }
+        font = (tcl_major < 8 || (tcl_major == 8 && tcl_minor < 5)) 
+          ? VTK_KW_PVFE_FIXED_FONT : VTK_KW_PVFE_FIXED_FONT_85;
+        }
       for (int i = 0; i < this->NumberOfParameterTicks; i++)
         {
         tk_cmd << canv << " create line 0 0 0 0 "
@@ -5539,7 +5578,8 @@ void vtkKWParameterValueFunctionEditor::RedrawRangeTicks()
         if (this->ParameterTicksFormat)
           {
           tk_cmd << p_t_canv << " create text 0 0 -text {} -anchor n " 
-                 << "-font {{fixed} " << VTK_KW_PVFE_TICKS_TEXT_SIZE << "} "
+                 << "-font {{" << font << "} " 
+                 << VTK_KW_PVFE_TICKS_TEXT_SIZE << "} "
                  << "-tags {p_tick_b_t" << i << " " 
                  << vtkKWParameterValueFunctionEditor::ParameterTicksTag 
                  << "}" 
@@ -5565,6 +5605,12 @@ void vtkKWParameterValueFunctionEditor::RedrawRangeTicks()
     {
     if (this->ValueTicksVisibility)
       {
+      if (tcl_major == 0)
+        {
+        Tcl_GetVersion(&tcl_major, &tcl_minor, &tcl_patch_level, NULL);
+        }
+      const char *font = (tcl_major < 8 || (tcl_major == 8 && tcl_minor < 5)) 
+        ? VTK_KW_PVFE_FIXED_FONT : VTK_KW_PVFE_FIXED_FONT_85;
       for (int i = 0; i < this->NumberOfValueTicks; i++)
         {
         tk_cmd << canv << " create line 0 0 0 0 "
@@ -5576,7 +5622,8 @@ void vtkKWParameterValueFunctionEditor::RedrawRangeTicks()
                << vtkKWParameterValueFunctionEditor::ValueTicksTag << "}" 
                << endl;
         tk_cmd << v_t_canv << " create text 0 0 -text {} -anchor e " 
-               << "-font {{fixed} " << VTK_KW_PVFE_TICKS_TEXT_SIZE << "} "
+               << "-font {{" << font << "} " 
+               << VTK_KW_PVFE_TICKS_TEXT_SIZE << "} "
                << "-tags {v_tick_l_t" << i << " " 
                << vtkKWParameterValueFunctionEditor::ValueTicksTag << "}" 
                << endl;
@@ -5627,8 +5674,13 @@ void vtkKWParameterValueFunctionEditor::RedrawRangeTicks()
                << endl;
         if (this->ParameterTicksFormat)
           {
+#if defined(__APPLE__)
+          int y_offset = 2;
+#else
+          int y_offset = -1;
+#endif
           tk_cmd << p_t_canv << " coords p_tick_b_t" <<  i << " " 
-                 << x << " " << -1 << endl;
+                 << x << " " << y_offset << endl;
           this->MapParameterToDisplayedParameter(p_v_pos, &displayed_p);
           sprintf(buffer, this->ParameterTicksFormat, displayed_p);
           tk_cmd << p_t_canv << " itemconfigure p_tick_b_t" <<  i << " " 
@@ -5899,8 +5951,13 @@ void vtkKWParameterValueFunctionEditor::RedrawPoint(int id,
         int text_size = 7 - (id > 8 ? 1 : 0);
         sprintf(color, "#%02x%02x%02x", 
                 (int)(rgb[0]*255.0), (int)(rgb[1]*255.0), (int)(rgb[2]*255.0));
+        int tcl_major = 0, tcl_minor = 0, tcl_patch_level = 0;
+        Tcl_GetVersion(&tcl_major, &tcl_minor, &tcl_patch_level, NULL);
+        const char *font = (tcl_major < 8 || (tcl_major == 8 && tcl_minor < 5)) 
+          ? VTK_KW_PVFE_FIXED_FONT : VTK_KW_PVFE_FIXED_FONT_85;
         *tk_cmd << canv << " itemconfigure t" << id
-                << " -state normal -font {{fixed} " << text_size << "} -fill " 
+                << " -state normal -font {{" << font << "} " 
+                << text_size << "} -fill " 
                 << color << " -text {";
         if (this->SelectedPointText && id == this->GetSelectedPoint())
           {
@@ -8068,15 +8125,22 @@ void vtkKWParameterValueFunctionEditor::DoubleClickOnPointCallback(
 }
 
 //----------------------------------------------------------------------------
-void vtkKWParameterValueFunctionEditor::StartInteractionCallback(int x, int y)
+void vtkKWParameterValueFunctionEditor::StartInteractionCallback(
+  int x, int y, int shift)
 {
   int id, c_x, c_y;
 
   // No point found, then let's add that point
 
+  int move_selection_to_click = 0;
+
   if (!this->FindFunctionPointAtCanvasCoordinates(x, y, &id, &c_x, &c_y))
     {
-    if (!this->AddPointAtCanvasCoordinates(c_x, c_y, &id))
+    if (this->EnableDirectMove && this->HasSelection())
+      {
+      move_selection_to_click = 1;
+      }
+    else if (!this->AddPointAtCanvasCoordinates(c_x, c_y, &id))
       {
       return;
       }
@@ -8093,12 +8157,18 @@ void vtkKWParameterValueFunctionEditor::StartInteractionCallback(int x, int y)
   // Invoke the commands/callbacks
 
   this->InvokeFunctionStartChangingCommand();
+
+  if (move_selection_to_click)
+    {
+    this->MovePointCallback(x, y, shift);
+    this->EndInteractionCallback(x, y);
+    }
 }
 
 //----------------------------------------------------------------------------
 void vtkKWParameterValueFunctionEditor::MovePointCallback(
   int x, int y, int shift)
-{
+{  
   if (!this->IsCreated() || !this->HasSelection() || !this->InUserInteraction)
     {
     return;
@@ -8436,6 +8506,8 @@ void vtkKWParameterValueFunctionEditor::PrintSelf(
   os << indent << "ParameterCursorInteractionStyle: " << this->ParameterCursorInteractionStyle << endl;
   os << indent << "DisableAddAndRemove: "
      << (this->DisableAddAndRemove ? "On" : "Off") << endl;
+  os << indent << "EnableDirectMove: "
+     << (this->EnableDirectMove ? "On" : "Off") << endl;
   os << indent << "ChangeMouseCursor: "
      << (this->ChangeMouseCursor ? "On" : "Off") << endl;
   os << indent << "SelectedPoint: "<< this->GetSelectedPoint() << endl;

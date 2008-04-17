@@ -44,7 +44,7 @@
 #include <vtksys/stl/map>
 
 vtkStandardNewMacro(vtkKWRenderWidget);
-vtkCxxRevisionMacro(vtkKWRenderWidget, "$Revision: 1.157 $");
+vtkCxxRevisionMacro(vtkKWRenderWidget, "$Revision: 1.163 $");
 
 //----------------------------------------------------------------------------
 class vtkKWRenderWidgetInternals
@@ -96,6 +96,7 @@ vtkKWRenderWidget::vtkKWRenderWidget()
 
   this->RenderWindow = vtkRenderWindow::New();
   this->RenderWindow->SetNumberOfLayers(2);
+  this->RenderWindow->SetAlphaBitPlanes(1);
 
   // Create a default (generic) interactor, which is pretty much
   // the only way to interact with a VTK Tk render widget
@@ -785,10 +786,6 @@ void vtkKWRenderWidget::AddBindings()
     // Setup some default bindings
     
     this->VTKWidget->SetBinding("<Expose>", this, "ExposeCallback");
-    this->VTKWidget->SetBinding("<Enter>", this, "EnterCallback %x %y");
-    this->VTKWidget->SetBinding("<Leave>", this, "LeaveCallback %x %y");
-    this->VTKWidget->SetBinding("<FocusIn>", this, "FocusInCallback");
-    this->VTKWidget->SetBinding("<FocusOut>", this, "FocusOutCallback");
     }
 
   // Many attemps have been made to attach <Configure> to the VTKWidget
@@ -820,10 +817,6 @@ void vtkKWRenderWidget::RemoveBindings()
   if (this->VTKWidget->IsAlive())
     {
     this->VTKWidget->RemoveBinding("<Expose>");
-    this->VTKWidget->RemoveBinding("<Enter>");
-    this->VTKWidget->RemoveBinding("<Leave>");
-    this->VTKWidget->RemoveBinding("<FocusIn>");
-    this->VTKWidget->RemoveBinding("<FocusOut>");
     }
 
   this->RemoveBinding("<Configure>");
@@ -854,6 +847,11 @@ void vtkKWRenderWidget::AddInteractionBindings()
 
   if (this->VTKWidget->IsAlive())
     {
+    this->VTKWidget->SetBinding("<Enter>", this, "EnterCallback %x %y");
+    this->VTKWidget->SetBinding("<Leave>", this, "LeaveCallback %x %y");
+    this->VTKWidget->SetBinding("<FocusIn>", this, "FocusInCallback");
+    this->VTKWidget->SetBinding("<FocusOut>", this, "FocusOutCallback");
+
     typedef struct
     {
       const char *Modifier;
@@ -944,6 +942,11 @@ void vtkKWRenderWidget::RemoveInteractionBindings()
 
   if (this->VTKWidget->IsAlive())
     {
+    this->VTKWidget->RemoveBinding("<Enter>");
+    this->VTKWidget->RemoveBinding("<Leave>");
+    this->VTKWidget->RemoveBinding("<FocusIn>");
+    this->VTKWidget->RemoveBinding("<FocusOut>");
+
     typedef struct
     {
       const char *Modifier;
@@ -1280,11 +1283,11 @@ void vtkKWRenderWidget::UpdateRenderWindowInteractorSize(int width, int height)
 
   if (width == 0) 
     {
-    width=1;
+    width = 1;
     }
   if (height == 0)
     {
-    height=1;
+    height = 1;
     }
 
   // We *need* to propagate the size to the vtkTkRenderWidget
@@ -1393,7 +1396,11 @@ void vtkKWRenderWidget::PopulateAnnotationMenu(vtkKWMenu *menu)
     menu->AddSeparator();
     }
 
-  int index, show_icons = 0;
+  int tcl_major, tcl_minor, tcl_patch_level;
+  Tcl_GetVersion(&tcl_major, &tcl_minor, &tcl_patch_level, NULL);
+  int show_icons = (tcl_major > 8 || (tcl_major == 8 && tcl_minor >= 5));
+
+  int index;
 
   // Corner Annotation
 
