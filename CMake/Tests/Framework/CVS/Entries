@@ -1,0 +1,12 @@
+/CMakeLists.txt/1.8.2.2/Tue Apr  8 16:22:51 2008//TCMake-2-6
+/bar.cxx/1.4/Wed Aug  1 20:15:54 2007//TCMake-2-6
+/foo.cxx/1.4/Wed Aug  1 20:15:54 2007//TCMake-2-6
+/foo.h/1.1/Tue May  8 14:58:35 2007//TCMake-2-6
+/foo2.h/1.1/Tue May  8 14:58:35 2007//TCMake-2-6
+/fooBoth.h/1.1/Tue Aug 14 15:45:15 2007//TCMake-2-6
+/fooDeepPublic.h/1.1.2.2/Wed Apr  9 12:41:34 2008//TCMake-2-6
+/fooNeither.h/1.1/Tue Aug 14 15:45:15 2007//TCMake-2-6
+/fooPrivate.h/1.1/Tue Aug 14 15:45:15 2007//TCMake-2-6
+/fooPublic.h/1.1/Tue Aug 14 15:45:15 2007//TCMake-2-6
+/test.lua/1.2/Tue Aug 14 15:45:15 2007//TCMake-2-6
+D
