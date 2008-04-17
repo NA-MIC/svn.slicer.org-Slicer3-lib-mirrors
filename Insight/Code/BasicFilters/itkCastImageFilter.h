@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCastImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 17:57:01 $
+  Date:      $Date: 2007-08-20 17:57:01 $
   Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

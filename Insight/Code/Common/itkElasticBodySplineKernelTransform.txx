@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkElasticBodySplineKernelTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/12 22:05:02 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2007-10-25 03:55:09 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -35,10 +35,25 @@ ElasticBodySplineKernelTransform<TScalarType, NDimensions>::
 {
 }
 
+/**
+ * This method has been deprecated as of ITK 3.6.
+ * Please use the method: void ComputeG(vector,gmatrix) instead.
+ */
+#if !defined(ITK_LEGACY_REMOVE)
 template <class TScalarType, unsigned int NDimensions>
 const typename ElasticBodySplineKernelTransform<TScalarType, NDimensions>::GMatrixType &
+ElasticBodySplineKernelTransform<TScalarType, NDimensions>::
+ComputeG( const InputVectorType & ) const
+{
+  itkLegacyReplaceBodyMacro(itkElasticBodySplineKernelTransform::ComputeG_vector, 
+    3.6,itkElasticBodySplineKernelTransform::ComputeG_vector_gmatrix);
+  return this->m_GMatrix;
+}
+#endif
+template <class TScalarType, unsigned int NDimensions>
+void
 ElasticBodySplineKernelTransform<TScalarType, NDimensions>
-::ComputeG(const InputVectorType & x) const
+::ComputeG(const InputVectorType & x, GMatrixType & gmatrix) const
 {
   const TScalarType r       = x.GetNorm();
   const TScalarType factor  = -3.0 * r;
@@ -50,13 +65,11 @@ ElasticBodySplineKernelTransform<TScalarType, NDimensions>
     for(unsigned int j=0; j<i; j++)
       {
       const TScalarType value = xi * x[j]; 
-      this->m_GMatrix[i][j] = value;
-      this->m_GMatrix[j][i] = value;
+      gmatrix[i][j] = value;
+      gmatrix[j][i] = value;
       }
-    this->m_GMatrix[i][i] =  radial + xi * x[i];
+    gmatrix[i][i] =  radial + xi * x[i];
     }
-  
-  return this->m_GMatrix;
 }
 
 template <class TScalarType, unsigned int NDimensions>

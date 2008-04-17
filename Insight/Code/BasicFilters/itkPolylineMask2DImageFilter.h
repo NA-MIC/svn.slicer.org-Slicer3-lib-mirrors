@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPolylineMask2DImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/05 19:42:11 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-01-20 18:00:40 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -63,7 +63,8 @@ public:
   
   /** Some convenient typedefs for input image */
   typedef TInputImage                           InputImageType;
-  typedef typename InputImageType::ConstPointer InputImagePointer;
+  typedef typename InputImageType::ConstPointer InputImageConstPointer;
+  typedef typename InputImageType::Pointer      InputImagePointer;
   typedef typename InputImageType::RegionType   InputImageRegionType; 
   typedef typename InputImageType::PixelType    InputImagePixelType; 
 

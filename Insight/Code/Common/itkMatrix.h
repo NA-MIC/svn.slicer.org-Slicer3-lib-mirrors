@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMatrix.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/18 22:10:03 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2008-02-14 04:55:49 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -25,7 +25,7 @@
 #include "vnl/algo/vnl_matrix_inverse.h"
 #include "vnl/vnl_transpose.h"
 #include "vnl/vnl_matrix.h"
-
+#include <vnl/algo/vnl_determinant.h>
 
 namespace itk
 {
@@ -175,7 +175,17 @@ public:
     return !this->operator==(matrix);
   }
 
-
+  inline const Self & operator=( const InternalMatrixType & matrix )
+  {
+    this->m_Matrix = matrix;
+    return *this;
+ }
+ 
+  /**For every operator=, there should be an equivalent copy constructor. */
+  inline explicit Matrix(const InternalMatrixType & matrix)
+  {
+    this->operator=(matrix);
+  }
   /** Assignment operator. */
   inline const Self & operator=( const Self & matrix)
   {
@@ -186,6 +196,10 @@ public:
   /** Return the inverse matrix. */
   inline vnl_matrix_fixed<T,NColumns,NRows> GetInverse( void ) const
   {
+    if (vnl_determinant(m_Matrix) == 0.0)
+      {
+      itkGenericExceptionMacro(<< "Singular matrix. Determinant is 0.");
+      }
     vnl_matrix<T> temp = vnl_matrix_inverse<T>( m_Matrix );
     return temp;
   }

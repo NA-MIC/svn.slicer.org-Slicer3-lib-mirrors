@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFrustumSpatialFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 23:39:52 $
+  Date:      $Date: 2007-01-30 23:39:52 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -1,17 +1,17 @@
 /*=========================================================================
 
-Program:   Insight Segmentation & Registration Toolkit
-Module:    $RCSfile: itkIPLCommonImageIO.h,v $
-Language:  C++
-Date:      $Date: 2007/06/10 12:02:30 $
-Version:   $Revision: 1.20 $
+  Program:   Insight Segmentation & Registration Toolkit
+  Module:    $RCSfile: itkIPLCommonImageIO.h,v $
+  Language:  C++
+  Date:      $Date: 2007-12-15 13:55:14 $
+  Version:   $Revision: 1.22 $
 
-Copyright (c) Insight Software Consortium. All rights reserved.
-See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+  Copyright (c) Insight Software Consortium. All rights reserved.
+  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+     This software is distributed WITHOUT ANY WARRANTY; without even 
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
@@ -31,11 +31,9 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef __itkIPLCommonImageIO_h
 #define __itkIPLCommonImageIO_h
 
-#include <fstream>
 #include "itkImageIOBase.h"
-#include "itkIOCommon.h"
-#include "itkGEImageHeader.h"
 #include "itkIPLFileNameList.h"
+#include "itkGEImageHeader.h"
 
 namespace itk
 {
@@ -140,10 +138,10 @@ protected:
   void sortImageListAscend ();
   void sortImageListDescend ();
   int statTimeToAscii (void *clock, char *timeString);
-  virtual struct GEImageHeader *ReadHeader(const char *FileNameToRead);
+  virtual GEImageHeader *ReadHeader(const char *FileNameToRead);
   //
   // data members
-  struct GEImageHeader  *m_ImageHeader;
+  GEImageHeader         *m_ImageHeader;
   ImageIOBase::ByteOrder m_SystemByteOrder;
   IPLFileNameList       *m_FilenameList;
   //

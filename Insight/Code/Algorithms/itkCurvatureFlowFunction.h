@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCurvatureFlowFunction.h,v $
   Language:  C++
-  Date:      $Date: 2005/10/31 22:13:46 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008-03-03 13:58:40 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -60,7 +60,9 @@ public:
   typedef typename Superclass::PixelType  PixelType;
   typedef typename Superclass::RadiusType RadiusType;
   typedef PixelType  ScalarValueType;
+  typedef typename Superclass::PixelRealType PixelRealType;
   typedef typename Superclass::NeighborhoodType NeighborhoodType;
+  typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
   typedef typename Superclass::FloatOffsetType FloatOffsetType;
   typedef typename Superclass::TimeStepType TimeStepType;
 

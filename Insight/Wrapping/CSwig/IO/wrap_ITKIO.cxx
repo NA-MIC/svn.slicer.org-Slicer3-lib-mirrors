@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_ITKIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/04/15 14:42:45 $
+  Date:      $Date: 2004-04-15 14:42:45 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

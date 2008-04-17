@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMElementBase.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/12/04 13:17:09 $
-  Version:   $Revision: 1.37 $
+  Date:      $Date: 2007-12-31 18:35:16 $
+  Version:   $Revision: 1.38 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -199,7 +199,7 @@ void Element::GetStiffnessMatrix(MatrixType& Ke) const
     this->ShapeFunctionGlobalDerivatives(ip,shapeDgl,&J,&shapeD);
 
     this->GetStrainDisplacementMatrix( B, shapeDgl );
-    Float detJ=this->JacobianDeterminant( ip, &J );
+    detJ=this->JacobianDeterminant( ip, &J );
     Ke+=detJ*w*B.transpose()*D*B; // FIXME: write a more efficient way of computing this.
   }
 }

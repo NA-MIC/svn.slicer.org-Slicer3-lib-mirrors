@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkInterpolateImageFunction.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/06 22:01:56 $
+  Date:      $Date: 2006-02-06 22:01:56 $
   Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

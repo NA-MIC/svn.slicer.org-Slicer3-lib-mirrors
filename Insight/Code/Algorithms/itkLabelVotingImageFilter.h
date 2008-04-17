@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLabelVotingImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/07 11:42:31 $
+  Date:      $Date: 2006-04-07 11:42:31 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

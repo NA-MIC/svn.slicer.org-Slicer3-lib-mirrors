@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMaskImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/30 15:01:09 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2007-09-27 11:36:40 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -124,6 +124,10 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
  
+  /** Runtime information support. */
+  itkTypeMacro(MaskImageFilter, 
+               BinaryFunctorImageFilter);
+
   /** Method to explicitly set the outside value of the mask. Defaults to 0 */
   void SetOutsideValue( const typename TOutputImage::PixelType & outsideValue ) 
     {

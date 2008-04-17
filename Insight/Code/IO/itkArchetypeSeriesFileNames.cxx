@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkArchetypeSeriesFileNames.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/04/02 17:08:34 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008-01-24 21:02:07 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -155,7 +155,7 @@ ArchetypeSeriesFileNames
     // If the element is a number, find its starting index and length.
     if ((*sit) >= '0' && (*sit) <= '9')
       {
-      sIndex = sit - fileName.begin();
+      sIndex = static_cast< int >( sit - fileName.begin() );
       numGroupStart.push_back( sIndex );
       
       // Loop to one past the end of the group of numbers.
@@ -164,7 +164,7 @@ ArchetypeSeriesFileNames
         ++sit;
         }
       
-      numGroupLength.push_back( (sit - fileName.begin()) - sIndex );
+      numGroupLength.push_back( static_cast< int >(sit - fileName.begin()) - sIndex );
         
       if( sit == fileName.end() )
         {

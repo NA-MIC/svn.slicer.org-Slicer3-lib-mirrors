@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPostOrderTreeIterator.h,v $
   Language:  C++
-  Date:      $Date: 2004/12/11 20:29:19 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-01-29 15:27:42 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -27,10 +27,11 @@ class PostOrderTreeIterator : public TreeIteratorBase<TTreeType>
 public:
    
   /** Typedefs */
-  typedef TreeIteratorBase<TTreeType>  Superclass;
-  typedef TTreeType TreeType;
-  typedef typename TTreeType::ValueType ValueType;
-  typedef typename Superclass::TreeNodeType TreeNodeType;
+  typedef PostOrderTreeIterator               Self;
+  typedef TreeIteratorBase<TTreeType>         Superclass;
+  typedef TTreeType                           TreeType;
+  typedef typename TTreeType::ValueType       ValueType;
+  typedef typename Superclass::TreeNodeType   TreeNodeType;
 
   /** Constructor */
   PostOrderTreeIterator(TreeType* tree);

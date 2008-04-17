@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSymmetricForcesDemonsRegistrationFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/06/17 15:25:59 $
+  Date:      $Date: 2004-06-17 15:25:59 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

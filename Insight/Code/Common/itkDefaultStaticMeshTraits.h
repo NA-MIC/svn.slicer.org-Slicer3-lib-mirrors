@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDefaultStaticMeshTraits.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:05 $
-  Version:   $Revision: 1.37 $
+  Date:      $Date: 2007-12-21 15:25:34 $
+  Version:   $Revision: 1.38 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -88,9 +88,12 @@ public:
    * this will probably never change from an integer setting. */
   typedef unsigned long  CellFeatureIdentifier;
   
-  /** The type of point used by the mesh.  This should never change from
-   * this setting, regardless of the mesh type. */
+  /** The type of point used by the mesh. */
   typedef Point< CoordRepType, VPointDimension >  PointType;
+
+  /** The type of point used for hashing.  This should never change from
+   * this setting, regardless of the mesh type. */
+  typedef Point< CoordRepType, VPointDimension >  PointHashType;
 
   /** The container type for use in storing points.  It must conform to
    * the IndexedContainer interface. */

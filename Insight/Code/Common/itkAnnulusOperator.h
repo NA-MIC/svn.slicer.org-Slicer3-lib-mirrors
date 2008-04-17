@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAnnulusOperator.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/08 18:55:54 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-01-07 13:33:59 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -76,9 +76,10 @@ public:
   typedef NeighborhoodOperator<TPixel, TDimension, TAllocator>  Superclass;
 
   /** Additional typedefs */
-  typedef typename Superclass::SizeType   SizeType;
-  typedef typename Superclass::OffsetType OffsetType;
-  typedef Vector<double, TDimension>      SpacingType;
+  typedef typename Superclass::SizeType      SizeType;
+  typedef typename Superclass::SizeValueType SizeValueType;
+  typedef typename Superclass::OffsetType    OffsetType;
+  typedef Vector<double, TDimension>         SpacingType;
   
   itkTypeMacro(AnnulusOperator, NeighborhoodOperator);
   

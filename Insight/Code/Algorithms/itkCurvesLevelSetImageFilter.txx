@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCurvesLevelSetImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/04/08 12:04:39 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008-03-03 13:58:41 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -48,6 +48,25 @@ CurvesLevelSetImageFilter<TInputImage, TFeatureImage, TOutputType>
   m_CurvesFunction->Print(os, indent.GetNextIndent());
 }
 
+template <class TInputImage, class TFeatureImage, class TOutputType>
+void
+CurvesLevelSetImageFilter<TInputImage, TFeatureImage, TOutputType>
+::GenerateData()
+{
+
+  // Make sure the SpeedImage is setup for the case when PropagationScaling
+  // is zero
+  if ( this->GetSegmentationFunction() && 
+       this->GetSegmentationFunction()->GetPropagationWeight() == 0 )
+    {
+    this->GetSegmentationFunction()->AllocateSpeedImage();
+    this->GetSegmentationFunction()->CalculateSpeedImage();
+    }
+
+  // Continue with Superclass implementation
+  Superclass::GenerateData();
+
+}
 
 }// end namespace itk
 

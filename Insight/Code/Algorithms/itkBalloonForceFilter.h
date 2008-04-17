@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBalloonForceFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/05 17:56:57 $
+  Date:      $Date: 2007-04-05 17:56:57 $
   Version:   $Revision: 1.38 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVersorTransformOptimizer.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:29:14 $
+  Date:      $Date: 2007-03-22 14:29:14 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

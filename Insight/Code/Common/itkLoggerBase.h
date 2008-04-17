@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLoggerBase.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/21 09:08:55 $
+  Date:      $Date: 2007-05-21 09:08:55 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

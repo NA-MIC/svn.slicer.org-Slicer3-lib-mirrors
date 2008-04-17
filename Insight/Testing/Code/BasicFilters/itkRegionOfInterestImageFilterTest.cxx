@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegionOfInterestImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/02/21 22:29:52 $
+  Date:      $Date: 2006-02-21 22:29:52 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

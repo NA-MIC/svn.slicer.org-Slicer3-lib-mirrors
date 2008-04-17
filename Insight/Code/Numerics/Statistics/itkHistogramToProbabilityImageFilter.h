@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHistogramToProbabilityImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2005/04/08 21:32:05 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007-10-27 19:51:47 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -91,9 +91,12 @@ public:
   
   /** Standard class typedefs. */
   typedef HistogramToProbabilityImageFilter Self;
-  typedef SmartPointer<Self>   Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>                Pointer;
+  typedef SmartPointer<const Self>          ConstPointer;
   
+  /** Run-time type information (and related methods).   */
+  itkTypeMacro( HistogramToProbabilityImageFilter, HistogramToImageFilter );
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 

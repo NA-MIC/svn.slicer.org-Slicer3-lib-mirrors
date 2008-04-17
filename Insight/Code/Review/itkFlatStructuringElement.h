@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFlatStructuringElement.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/27 13:26:25 $
+  Date:      $Date: 2007-02-27 13:26:25 $
   Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkXMLFilterWatcher.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/22 15:52:31 $
+  Date:      $Date: 2007-08-22 15:52:31 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

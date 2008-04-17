@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkJPEGImageIOTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/27 17:34:28 $
+  Date:      $Date: 2003-09-27 17:34:28 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

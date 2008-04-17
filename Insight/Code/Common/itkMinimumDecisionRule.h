@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMinimumDecisionRule.h,v $
   Language:  C++
-  Date:      $Date: 2005/07/15 21:51:01 $
+  Date:      $Date: 2005-07-15 21:51:01 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

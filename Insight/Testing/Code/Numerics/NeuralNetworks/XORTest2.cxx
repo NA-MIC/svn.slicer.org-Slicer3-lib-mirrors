@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: XORTest2.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 13:10:57 $
+  Date:      $Date: 2007-08-17 13:10:57 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

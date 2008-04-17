@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSphereMeshSourceTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 12:47:12 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-02-03 04:05:34 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -50,7 +50,7 @@ int itkSphereMeshSourceTest(int, char* [] ){
 //  itk::Mesh<float>::PointsContainer::Iterator   m_output = myoutput->Begin();
 
   IPT*  pt_ptr;
-  IPT   pt;
+  IPT   pt; pt.Fill(0.0);
   pt_ptr = &pt;
 
   std::cout << "Testing itk::SphereMeshSource "<< std::endl;

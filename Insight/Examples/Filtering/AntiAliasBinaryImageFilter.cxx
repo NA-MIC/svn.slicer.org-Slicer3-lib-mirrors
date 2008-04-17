@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: AntiAliasBinaryImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/06/21 18:54:44 $
+  Date:      $Date: 2007-06-21 18:54:44 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

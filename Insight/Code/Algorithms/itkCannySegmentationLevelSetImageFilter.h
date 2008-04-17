@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCannySegmentationLevelSetImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/08/29 15:55:09 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007-09-27 11:36:39 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -150,7 +150,7 @@ public:
   typedef typename CannyFunctionType::ScalarValueType ScalarValueType;
   
   /** Run-time type information (and related methods). */
-  itkTypeMacro(CannySegmenationLevelSetImageFilter, SegmentationLevelSetImageFilter);
+  itkTypeMacro(CannySegmentationLevelSetImageFilter, SegmentationLevelSetImageFilter);
 
   /** Method for creation through the object factory */
   itkNewMacro(Self);

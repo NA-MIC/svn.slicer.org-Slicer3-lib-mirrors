@@ -1,17 +1,17 @@
 /*=========================================================================
 
-Program:   Insight Segmentation & Registration Toolkit
-Module:    $RCSfile: itkGE5ImageIO.h,v $
-Language:  C++
-Date:      $Date: 2007/03/29 18:39:27 $
-Version:   $Revision: 1.12 $
+  Program:   Insight Segmentation & Registration Toolkit
+  Module:    $RCSfile: itkGE5ImageIO.h,v $
+  Language:  C++
+  Date:      $Date: 2007-12-03 13:13:08 $
+  Version:   $Revision: 1.13 $
 
-Copyright (c) Insight Software Consortium. All rights reserved.
-See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+  Copyright (c) Insight Software Consortium. All rights reserved.
+  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+     This software is distributed WITHOUT ANY WARRANTY; without even 
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
@@ -35,10 +35,7 @@ PURPOSE.  See the above copyright notices for more information.
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <fstream>
-#include "itkImageIOBase.h"
 #include "itkIPLCommonImageIO.h"
-#include "itkGEImageHeader.h"
 #include "Ge5xHdr.h"
 
 namespace itk
@@ -119,7 +116,7 @@ protected:
   GE5ImageIO();
   ~GE5ImageIO();
 
-  virtual struct GEImageHeader *ReadHeader(const char *FileNameToRead);
+  virtual GEImageHeader *ReadHeader(const char *FileNameToRead);
 private:
   void SwapPixHdr (Ge5xPixelHeader * hdr);
   int CheckGE5xImages (char const * const imageFileTemplate, std::string &reason);

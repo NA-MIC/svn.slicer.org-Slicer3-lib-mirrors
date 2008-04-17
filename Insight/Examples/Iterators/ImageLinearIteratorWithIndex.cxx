@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageLinearIteratorWithIndex.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/15 22:21:19 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2008-01-23 16:43:05 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -201,12 +201,11 @@ int main( int argc, char *argv[] )
     {
     inputIt.GoToBeginOfLine();
     outputIt.GoToEndOfLine();
-    --outputIt;
     while ( ! inputIt.IsAtEndOfLine() )
       {
+      --outputIt;
       outputIt.Set( inputIt.Get() );
       ++inputIt;
-      --outputIt;
       }
     }
 // Software Guide : EndCodeSnippet

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkChainCodeToFourierSeriesPathFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/03/07 14:05:38 $
+  Date:      $Date: 2007-03-07 14:05:38 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEuler3DTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2007/02/07 13:48:18 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2007-12-23 17:59:28 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,7 +30,7 @@ Euler3DTransform<TScalarType>
   Superclass(SpaceDimension, ParametersDimension)
 {
   m_ComputeZYX = false;
-  m_AngleX = m_AngleY = m_AngleZ = 0.0;
+  m_AngleX = m_AngleY = m_AngleZ = NumericTraits<ScalarType>::Zero;
 }
 
 // Constructor with default arguments
@@ -58,7 +58,7 @@ Euler3DTransform<TScalarType>
   Superclass(spaceDimension, parametersDimension)
 {
   m_ComputeZYX = false;
-  m_AngleX = m_AngleY = m_AngleZ = 0.0;
+  m_AngleX = m_AngleY = m_AngleZ = NumericTraits<ScalarType>::Zero;
 }
 
 // Set Parameters

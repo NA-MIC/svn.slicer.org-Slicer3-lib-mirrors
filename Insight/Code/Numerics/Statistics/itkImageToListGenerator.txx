@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToListGenerator.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/25 22:25:16 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007-12-19 17:22:48 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -32,6 +32,7 @@ ImageToListGenerator< TImage, TMaskImage >
   typename ListSampleOutputType::Pointer listSampleDecorator = 
     static_cast< ListSampleOutputType * >( this->MakeOutput(0).GetPointer() );
   this->ProcessObject::SetNthOutput(0, listSampleDecorator.GetPointer());
+  m_MaskValue = NumericTraits<MaskPixelType>::max();
 }
 
 template < class TImage, class TMaskImage >
@@ -134,7 +135,7 @@ ImageToListGenerator< TImage, TMaskImage >
   if (maskImage) // mask specified
     {
     typedef ImageRegionConstIterator< MaskImageType > MaskIteratorType;
-    MaskIteratorType mit( maskImage, maskImage->GetBufferedRegion() );
+    MaskIteratorType mit( maskImage, input->GetBufferedRegion() );
     mit.GoToBegin();
     while (!it.IsAtEnd())
       {

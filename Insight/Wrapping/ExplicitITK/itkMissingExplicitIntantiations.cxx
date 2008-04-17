@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMissingExplicitIntantiations.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/09 19:41:21 $
+  Date:      $Date: 2007-02-09 19:41:21 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

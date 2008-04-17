@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryFunctorImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/30 15:01:09 $
+  Date:      $Date: 2007-08-30 15:01:09 $
   Version:   $Revision: 1.39 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

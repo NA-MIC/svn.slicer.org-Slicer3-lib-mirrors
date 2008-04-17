@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshTopologyChecker.txx,v $
   Language:  C++
-  Date:      $Date: 2007/07/26 06:30:29 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007-12-16 05:14:14 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -33,8 +33,8 @@ QuadEdgeMeshTopologyChecker< TMesh >
   m_ExpectedNumberOfFaces = 0;
   m_ExpectedNumberOfBoundaries = 0;
   m_ExpectedGenus = 0;
+  m_Mesh = 0;
 }
-
 
 template< class TMesh >
 bool

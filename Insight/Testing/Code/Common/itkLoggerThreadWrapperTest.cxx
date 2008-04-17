@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLoggerThreadWrapperTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/09 15:10:09 $
+  Date:      $Date: 2005-11-09 15:10:09 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

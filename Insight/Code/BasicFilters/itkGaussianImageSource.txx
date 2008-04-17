@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianImageSource.txx,v $
   Language:  C++
-  Date:      $Date: 2007/02/13 16:14:57 $
+  Date:      $Date: 2007-02-13 16:14:57 $
   Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

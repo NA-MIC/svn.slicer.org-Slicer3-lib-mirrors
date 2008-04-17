@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshPoint.txx,v $
   Language:  C++
-  Date:      $Date: 2007/09/06 17:45:53 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-01-11 01:09:13 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -118,7 +118,7 @@ int QuadEdgeMeshPoint< TCoordRep, VPointDimension, TQuadEdge >
 template< class TCoordRep, unsigned int VPointDimension, typename TQuadEdge >
 void
 QuadEdgeMeshPoint< TCoordRep, VPointDimension, TQuadEdge >
-::SetEdge( const TQuadEdge * inputEdge ) 
+::SetEdge( TQuadEdge * inputEdge ) 
 { 
   m_Edge = inputEdge; 
 }
@@ -127,7 +127,7 @@ QuadEdgeMeshPoint< TCoordRep, VPointDimension, TQuadEdge >
  *  
  */
 template< class TCoordRep, unsigned int VPointDimension, typename TQuadEdge >
-const TQuadEdge * 
+TQuadEdge * 
 QuadEdgeMeshPoint< TCoordRep, VPointDimension, TQuadEdge >
 ::GetEdge() const 
 { 
@@ -138,11 +138,11 @@ QuadEdgeMeshPoint< TCoordRep, VPointDimension, TQuadEdge >
  *  
  */
 template< class TCoordRep, unsigned int VPointDimension, typename TQuadEdge >
-const TQuadEdge * 
+TQuadEdge * 
 QuadEdgeMeshPoint< TCoordRep, VPointDimension, TQuadEdge >
 ::GetEdge()
 { 
-  return  m_Edge; 
+  return(m_Edge); 
 }
 
 } 

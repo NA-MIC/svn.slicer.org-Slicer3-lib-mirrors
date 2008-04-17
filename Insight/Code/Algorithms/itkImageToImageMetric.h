@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2006/06/29 01:25:50 $
-  Version:   $Revision: 1.23 $
+  Date:      $Date: 2007-11-12 20:00:37 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,15 @@
 =========================================================================*/
 #ifndef __itkImageToImageMetric_h
 #define __itkImageToImageMetric_h
+
+// First make sure that the configuration is available.
+// This line can be removed once the optimized versions
+// gets integrated into the main directories.
+#include "itkConfigure.h"
+
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+#include "itkOptImageToImageMetric.h"
+#else
 
 #include "itkImageBase.h"
 #include "itkTransform.h"
@@ -52,13 +61,13 @@ class ITK_EXPORT ImageToImageMetric : public SingleValuedCostFunction
 {
 public:
   /** Standard class typedefs. */
-  typedef ImageToImageMetric              Self;
-  typedef SingleValuedCostFunction        Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
+  typedef ImageToImageMetric           Self;
+  typedef SingleValuedCostFunction     Superclass;
+  typedef SmartPointer<Self>           Pointer;
+  typedef SmartPointer<const Self>     ConstPointer;
 
   /** Type used for representing point components  */
-  typedef Superclass::ParametersValueType CoordinateRepresentationType;
+  typedef typename Superclass::ParametersValueType CoordinateRepresentationType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImageToImageMetric, SingleValuedCostFunction);
@@ -74,15 +83,18 @@ public:
   typedef typename FixedImageType::RegionType        FixedImageRegionType;
 
   /** Constants for the image dimensions */
-  itkStaticConstMacro(MovingImageDimension, unsigned int,
+  itkStaticConstMacro(MovingImageDimension, 
+                      unsigned int,
                       TMovingImage::ImageDimension);
-  itkStaticConstMacro(FixedImageDimension, unsigned int,
+  itkStaticConstMacro(FixedImageDimension, 
+                      unsigned int,
                       TFixedImage::ImageDimension);
   
   /**  Type of the Transform Base class */
   typedef Transform<CoordinateRepresentationType, 
                     itkGetStaticConstMacro(MovingImageDimension),
-                    itkGetStaticConstMacro(FixedImageDimension)> TransformType;
+                    itkGetStaticConstMacro(FixedImageDimension)> 
+                                                     TransformType;
 
   typedef typename TransformType::Pointer            TransformPointer;
   typedef typename TransformType::InputPointType     InputPointType;
@@ -97,44 +109,45 @@ public:
 
 
   /** Gaussian filter to compute the gradient of the Moving Image */
-  typedef typename NumericTraits<MovingImagePixelType>::RealType RealType;
+  typedef typename NumericTraits<MovingImagePixelType>::RealType 
+                                                     RealType;
   typedef CovariantVector<RealType,
-                          itkGetStaticConstMacro(MovingImageDimension)> GradientPixelType;
+                          itkGetStaticConstMacro(MovingImageDimension)>
+                                                     GradientPixelType;
   typedef Image<GradientPixelType,
-                itkGetStaticConstMacro(MovingImageDimension)> GradientImageType;
-  typedef SmartPointer<GradientImageType>     GradientImagePointer;
+                itkGetStaticConstMacro(MovingImageDimension)> 
+                                                     GradientImageType;
+  typedef SmartPointer<GradientImageType>            GradientImagePointer;
   typedef GradientRecursiveGaussianImageFilter< MovingImageType,
                                                 GradientImageType >
-  GradientImageFilterType;  
-  typedef typename GradientImageFilterType::Pointer GradientImageFilterPointer;
+                                                     GradientImageFilterType;  
+  typedef typename GradientImageFilterType::Pointer  GradientImageFilterPointer;
 
 
   typedef typename InterpolatorType::Pointer         InterpolatorPointer;
 
 
-
   /**  Type for the mask of the fixed image. Only pixels that are "inside"
        this mask will be considered for the computation of the metric */
-  typedef SpatialObject< itkGetStaticConstMacro(FixedImageDimension)
-                                             >       FixedImageMaskType;
+  typedef SpatialObject< itkGetStaticConstMacro(FixedImageDimension) >
+                                                     FixedImageMaskType;
   typedef typename  FixedImageMaskType::Pointer      FixedImageMaskPointer;
 
   /**  Type for the mask of the moving image. Only pixels that are "inside"
        this mask will be considered for the computation of the metric */
-  typedef SpatialObject< itkGetStaticConstMacro(MovingImageDimension)
-                                              >      MovingImageMaskType;
+  typedef SpatialObject< itkGetStaticConstMacro(MovingImageDimension) >
+                                                     MovingImageMaskType;
   typedef typename  MovingImageMaskType::Pointer     MovingImageMaskPointer;
 
 
-
   /**  Type of the measure. */
-  typedef Superclass::MeasureType                    MeasureType;
+  typedef typename Superclass::MeasureType                    MeasureType;
 
   /**  Type of the derivative. */
-  typedef Superclass::DerivativeType                 DerivativeType;
+  typedef typename Superclass::DerivativeType                 DerivativeType;
 
   /**  Type of the parameters. */
-  typedef Superclass::ParametersType                 ParametersType;
+  typedef typename Superclass::ParametersType                 ParametersType;
 
   /** Connect the Fixed Image.  */
   itkSetConstObjectMacro( FixedImage, FixedImageType );
@@ -193,7 +206,7 @@ public:
 
   /** Return the number of parameters required by the Transform */
   unsigned int GetNumberOfParameters(void) const 
-  { return m_Transform->GetNumberOfParameters(); }
+    { return m_Transform->GetNumberOfParameters(); }
 
   /** Initialize the Metric by making sure that all the components
    *  are present and plugged together correctly     */
@@ -201,7 +214,7 @@ public:
 
 protected:
   ImageToImageMetric();
-  virtual ~ImageToImageMetric() {};
+  virtual ~ImageToImageMetric();
   void PrintSelf(std::ostream& os, Indent indent) const;
 
   mutable unsigned long       m_NumberOfPixelsCounted;
@@ -224,7 +237,6 @@ private:
   
   FixedImageRegionType        m_FixedImageRegion;  
 
-
 };
 
 } // end namespace itk
@@ -235,5 +247,4 @@ private:
 
 #endif
 
-
-
+#endif

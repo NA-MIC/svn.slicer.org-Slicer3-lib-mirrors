@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkValuedRegionalMinimaImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/23 22:25:27 $
+  Date:      $Date: 2007-01-23 22:25:27 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

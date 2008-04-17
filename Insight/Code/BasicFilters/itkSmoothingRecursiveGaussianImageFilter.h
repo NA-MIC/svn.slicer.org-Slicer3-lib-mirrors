@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSmoothingRecursiveGaussianImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/13 12:56:08 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007-09-26 15:54:25 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -59,6 +59,10 @@ public:
   typedef typename NumericTraits<PixelType>::RealType    RealType;
   typedef typename NumericTraits<PixelType>::ScalarRealType ScalarRealType;
 
+
+  /** Runtime information support. */
+  itkTypeMacro(SmoothingRecursiveGaussianImageFilter, 
+               ImageToImageFilter);
 
   /** Image dimension. */
   itkStaticConstMacro(ImageDimension, unsigned int,

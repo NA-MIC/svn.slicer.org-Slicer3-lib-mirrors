@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkUnaryMedialNodeMetric.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:40 $
+  Date:      $Date: 2003-09-10 14:28:40 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

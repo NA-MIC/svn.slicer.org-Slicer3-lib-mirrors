@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientRecursiveGaussianFilterTest2.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/16 15:42:37 $
+  Date:      $Date: 2007-09-16 15:42:37 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

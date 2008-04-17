@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSmartPointerForwardReference.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/06 15:07:34 $
+  Date:      $Date: 2006-03-06 15:07:34 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

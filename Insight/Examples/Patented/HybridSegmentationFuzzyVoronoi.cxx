@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: HybridSegmentationFuzzyVoronoi.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/04/24 00:22:39 $
+  Date:      $Date: 2006-04-24 00:22:39 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

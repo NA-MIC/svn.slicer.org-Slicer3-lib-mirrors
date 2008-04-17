@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMersenneTwisterRandomVariateGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/26 17:05:42 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-04-07 12:18:26 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,6 +14,10 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#if defined(_MSC_VER)
+#pragma warning ( disable : 4146 )
+#endif
+
 #ifndef __itkMersenneTwisterRandomVariateGenerator_h
 #define __itkMersenneTwisterRandomVariateGenerator_h
 
@@ -494,7 +498,7 @@ inline double
   }
   
 
-/* Access to a normal randon number distribution */
+/* Access to a normal random number distribution */
 // TODO: Compare with vnl_sample_normal
 inline double 
   MersenneTwisterRandomVariateGenerator::GetNormalVariate( 
@@ -502,7 +506,7 @@ inline double
   {
   // Return a real number from a normal (Gaussian) distribution with given
   // mean and variance by Box-Muller method
-  double r = vcl_sqrt( -2.0 * vcl_log( 1.0-GetVariateWithOpenRange()) ) * variance;
+  double r = vcl_sqrt( -2.0 * vcl_log( 1.0-GetVariateWithOpenRange()) * variance);
   double phi = 2.0 * 3.14159265358979323846264338328 
                           * GetVariateWithOpenUpperRange();
   return mean + r * vcl_cos(phi);

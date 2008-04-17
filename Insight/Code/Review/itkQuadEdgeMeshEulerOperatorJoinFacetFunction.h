@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshEulerOperatorJoinFacetFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/02 23:38:12 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-02-07 15:07:58 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -35,8 +35,8 @@ public:
   /** Standard class typedefs. */
   typedef QuadEdgeMeshEulerOperatorJoinFacetFunction      Self;
   typedef QuadEdgeMeshFunctionBase< TMesh, TQEType* >     Superclass;
-  typedef itk::SmartPointer< Self >                       Pointer;
-  typedef itk::SmartPointer< const Self >                 ConstPointer;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self >                      ConstPointer;
   
   itkNewMacro( Self );
   /** Run-time type information (and related methods). */

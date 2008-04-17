@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWatershedBoundary.txx,v $
   Language:  C++
-  Date:      $Date: 2004/03/03 19:15:19 $
+  Date:      $Date: 2004-03-03 19:15:19 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

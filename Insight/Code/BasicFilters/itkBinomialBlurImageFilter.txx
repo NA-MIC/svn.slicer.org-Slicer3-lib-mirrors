@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinomialBlurImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/08/01 19:16:17 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2008-01-19 19:50:01 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -171,13 +171,13 @@ BinomialBlurImageFilter< TInputImage, TOutputImage >
     // blur each dimension
     for (unsigned int dim = 0; dim < NDimensions; dim ++)
       {
-      TempIterator tempIt = TempIterator(tempPtr,
+      TempIterator tempItDir = TempIterator(tempPtr,
                                          tempPtr->GetRequestedRegion());
-      tempIt.GoToBegin();
-      while( !tempIt.IsAtEnd() )
+      tempItDir.GoToBegin();
+      while( !tempItDir.IsAtEnd() )
         {
         // determine the index of the output pixel
-        index = tempIt.GetIndex();
+        index = tempItDir.GetIndex();
 
         if ( index[dim] < 
              ( startIndex[dim] + static_cast<long>(size[dim]) - 1))
@@ -206,7 +206,7 @@ BinomialBlurImageFilter< TInputImage, TOutputImage >
           progress.CompletedPixel();
           }
 
-        ++tempIt;
+        ++tempItDir;
     
         } // end walk the image forwards
       

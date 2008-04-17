@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageSpatialObjectTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/09/05 14:19:45 $
+  Date:      $Date: 2006-09-05 14:19:45 $
   Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

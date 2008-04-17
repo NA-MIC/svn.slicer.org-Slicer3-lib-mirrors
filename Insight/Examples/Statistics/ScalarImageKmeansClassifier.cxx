@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ScalarImageKmeansClassifier.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/12/10 19:34:53 $
+  Date:      $Date: 2005-12-10 19:34:53 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

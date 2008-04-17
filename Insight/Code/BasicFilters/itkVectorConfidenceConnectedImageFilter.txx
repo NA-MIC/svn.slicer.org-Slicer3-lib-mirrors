@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorConfidenceConnectedImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/26 23:43:03 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-01-18 20:07:32 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -230,9 +230,6 @@ VectorConfidenceConnectedImageFilter<TInputImage,TOutputImage>
     typename SecondFunctionType::Pointer secondFunction = SecondFunctionType::New();
     secondFunction->SetInputImage ( outputImage );
     secondFunction->ThresholdBetween( m_ReplaceValue, m_ReplaceValue );
-
-    CovarianceMatrixType covariance;
-    MeanVectorType       mean;
 
     covariance = CovarianceMatrixType( dimension, dimension );
     mean       = MeanVectorType( dimension );

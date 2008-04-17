@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRelabelComponentImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/22 16:26:44 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2007-10-05 10:31:58 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -32,7 +32,7 @@ namespace itk
  * objects in an image (as from the output of
  * ConnectedComponentImageFilter) such that the label numbers are
  * consecutive with no gaps between the label numbers used.  By
- * default, the relabling will also sort the labels based on the size
+ * default, the relabeling will also sort the labels based on the size
  * of the object: the largest object will have label #1, the second
  * largest will have label #2, etc.
  *
@@ -66,6 +66,8 @@ namespace itk
  * InPlaceImageFilter::InPlaceOn() and InPlaceImageFilter::InPlaceOff().
  *
  * \sa ConnectedComponentImageFilter, BinaryThresholdImageFilter, ThresholdImageFilter
+ *
+ * \ingroup Singlethreaded
  */
 
 template <class TInputImage, class TOutputImage>

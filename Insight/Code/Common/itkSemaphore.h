@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSemaphore.h,v $
   Language:  C++
-  Date:      $Date: 2004/03/12 21:41:50 $
+  Date:      $Date: 2004-03-12 21:41:50 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

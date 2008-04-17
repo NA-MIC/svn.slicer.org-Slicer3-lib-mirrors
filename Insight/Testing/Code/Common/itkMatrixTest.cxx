@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMatrixTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/05/16 00:53:04 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008-02-14 04:56:55 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -26,6 +26,8 @@
 #include "itkCovariantVector.h"
 
 #include "vnl/vnl_vector_fixed.h"
+#include <vnl/vnl_matrix_fixed.txx>
+VNL_MATRIX_FIXED_INSTANTIATE(float,7,7);
 
 
 int itkMatrixTest(int, char* [] ) 
@@ -160,7 +162,7 @@ int itkMatrixTest(int, char* [] )
       std::cout << "m2=" << std::endl;
       std::cout << m2 << std::endl;
 
-
+      
       std::cout << "VNL * VNL Multiplication result: " << std::endl;
       std::cout << m1.GetVnlMatrix()*m2.GetVnlMatrix() << std::endl;
 
@@ -300,10 +302,90 @@ int itkMatrixTest(int, char* [] )
 
   }
 
+  {
+  // Test for vnl_matrix_fixed assignment and construction
+  MatrixType matrixA;
 
+  int counter = 0;
+  for( unsigned int row=0; row < 3; row++)
+    {
+    for( unsigned int col=0; col < 3; col++ )
+      {
+      matrixA[row][col] = counter++;
+      }
+    }
+
+  MatrixType::InternalMatrixType vnlMatrixA = matrixA.GetVnlMatrix();
+
+  MatrixType matrixB( vnlMatrixA ); // Test constructor
+
+    { // verify values
+    const double tolerance = 1e-7;
+    for( unsigned int row=0; row < 3; row++)
+      {
+      for( unsigned int col=0; col < 3; col++ )
+        {
+        if( vcl_abs( matrixB[row][col] - matrixA[row][col] ) > tolerance )
+          {
+          std::cerr << "constructor from vnl_matrix failed ! " << std::endl;
+          return EXIT_FAILURE;
+          }
+        }
+      }
+    }
+
+  MatrixType matrixC;
+  matrixC = vnlMatrixA; // Test assignment
+
+    { // verify values
+    const double tolerance = 1e-7;
+    for( unsigned int row=0; row < 3; row++)
+      {
+      for( unsigned int col=0; col < 3; col++ )
+        {
+        if( vcl_abs( matrixC[row][col] - matrixA[row][col] ) > tolerance )
+          {
+          std::cerr << "assignment from vnl_matrix failed ! " << std::endl;
+          return EXIT_FAILURE;
+          }
+        }
+      }
+    }
+
+  }
+
+  typedef   itk::Matrix<NumericType,7,7> LargeMatrixType;
+  LargeMatrixType matrixBad;
+  matrixBad.Fill( 2.0);
+  bool caught = false;
+  try
+    {
+    matrixBad.GetInverse();
+    }
+  catch (itk::ExceptionObject &excp)
+    {
+    std::cout << "Caught expected exception!" << std::endl;
+    std::cout << excp;
+    caught = true;
+    }
+  if (!caught)
+    {
+    std::cout << "Failed to catch expected exception!" << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  matrixBad.SetIdentity();
+  try
+    {
+    matrixBad.GetInverse();
+    }
+  catch (itk::ExceptionObject &excp)
+    {
+    std::cout << "Caught unexpected exception!" << std::endl;
+    std::cout << excp;
+    return EXIT_FAILURE;
+    }
   std::cout << "Test Passed !" << std::endl;
 
   return EXIT_SUCCESS;
 }
-
-

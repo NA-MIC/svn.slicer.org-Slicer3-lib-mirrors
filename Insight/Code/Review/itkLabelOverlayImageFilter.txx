@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLabelOverlayImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/03/30 16:50:01 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007-10-21 09:54:20 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -32,7 +32,6 @@ LabelOverlayImageFilter<TInputImage, TLabelImage, TOutputImage>
 {
   m_Opacity = 0.5;
   m_BackgroundValue = NumericTraits<LabelPixelType>::Zero;
-  m_UseBackground = false;
 }
 
 /**
@@ -45,7 +44,6 @@ LabelOverlayImageFilter<TInputImage, TLabelImage, TOutputImage>
 {
   this->GetFunctor().SetOpacity(m_Opacity);
   this->GetFunctor().SetBackgroundValue(m_BackgroundValue);
-  this->GetFunctor().SetUseBackground(m_UseBackground);
 }
 
 /**
@@ -89,9 +87,6 @@ LabelOverlayImageFilter<TInputImage, TLabelImage, TOutputImage>
      << indent << "BackgroundValue: "
      << static_cast<
           typename NumericTraits<LabelPixelType>::PrintType>(m_BackgroundValue)
-     << std::endl
-     << indent << "UseBackground: "
-     << static_cast<typename NumericTraits<bool>::PrintType>(m_UseBackground)
      << std::endl;
 }
 

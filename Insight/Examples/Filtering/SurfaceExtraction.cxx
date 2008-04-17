@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: SurfaceExtraction.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/27 01:46:04 $
+  Date:      $Date: 2005-08-27 01:46:04 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

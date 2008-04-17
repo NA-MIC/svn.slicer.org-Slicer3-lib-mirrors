@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: SpatialObjectToImageStatisticsCalculator.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/12/10 17:10:51 $
+  Date:      $Date: 2005-12-10 17:10:51 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

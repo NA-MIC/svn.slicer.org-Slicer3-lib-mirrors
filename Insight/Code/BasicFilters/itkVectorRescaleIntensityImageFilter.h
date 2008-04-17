@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorRescaleIntensityImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/03 15:07:53 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-01-28 17:24:05 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -99,12 +99,18 @@ public:
   typedef SmartPointer<Self>   Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
 
-  typedef typename TOutputImage::PixelType OutputPixelType;
-  typedef typename TInputImage::PixelType  InputPixelType;
-  typedef typename InputPixelType::ValueType      InputValueType;
-  typedef typename OutputPixelType::ValueType     OutputValueType;
-  typedef typename NumericTraits<InputValueType>::RealType InputRealType;
+  typedef typename TOutputImage::PixelType                  OutputPixelType;
+  typedef typename TInputImage::PixelType                   InputPixelType;
+  typedef typename InputPixelType::ValueType                InputValueType;
+  typedef typename OutputPixelType::ValueType               OutputValueType;
+  typedef typename NumericTraits<InputValueType>::RealType  InputRealType;
   typedef typename NumericTraits<OutputValueType>::RealType OutputRealType;
+
+  typedef typename Superclass::InputImageType      InputImageType;
+  typedef typename Superclass::InputImagePointer   InputImagePointer;
+
+  /** Run-time type information (and related methods).   */
+  itkTypeMacro( VectorRescaleIntensityImageFilter, UnaryFunctorImageFilter );
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

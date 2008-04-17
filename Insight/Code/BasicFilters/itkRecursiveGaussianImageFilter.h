@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRecursiveGaussianImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2005/05/12 14:42:04 $
+  Date:      $Date: 2005-05-12 14:42:04 $
   Version:   $Revision: 1.26 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

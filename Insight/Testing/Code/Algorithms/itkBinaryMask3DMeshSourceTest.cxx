@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryMask3DMeshSourceTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/06/01 14:21:16 $
+  Date:      $Date: 2005-06-01 14:21:16 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_IOBase.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/12 23:02:58 $
+  Date:      $Date: 2005-08-12 23:02:58 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

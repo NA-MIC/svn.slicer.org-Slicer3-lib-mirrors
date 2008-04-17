@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSparseFieldLevelSetImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/04/23 04:25:48 $
-  Version:   $Revision: 1.39 $
+  Date:      $Date: 2008-03-07 17:22:20 $
+  Version:   $Revision: 1.44 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -85,9 +85,9 @@ SparseFieldCityBlockNeighborList<TNeighborhoodType>
     }
 }
 
-template<class TInputImage, class TOutputImage>
-double SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
-::m_ConstantGradientValue = 1.0;
+//template<class TInputImage, class TOutputImage>
+//double SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
+//::m_ConstantGradientValue = 1.0;
 
 template<class TInputImage, class TOutputImage>
 ITK_TYPENAME SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::ValueType
@@ -138,6 +138,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
   this->SetRMSChange(static_cast<double>(m_ValueZero));
   m_InterpolateSurfaceLocation = true;
   m_BoundsCheckingActive = false;
+  m_ConstantGradientValue = 1.0;
 }
 
 template<class TInputImage, class TOutputImage>
@@ -524,6 +525,20 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
 {
   unsigned int i;
 
+  if (this->GetUseImageSpacing())
+    {
+    double minSpacing = NumericTraits<double>::max();
+    for (i=0; i<ImageDimension; i++)
+      {
+      minSpacing = vnl_math_min(minSpacing,this->GetInput()->GetSpacing()[i]);
+      }
+    m_ConstantGradientValue = minSpacing;
+    }
+  else
+    {
+    m_ConstantGradientValue = 1.0;
+    }
+
   // Allocate the status image.
   m_StatusImage = StatusImageType::New();
   m_StatusImage->SetRegions(this->GetOutput()->GetRequestedRegion());
@@ -620,10 +635,10 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
   // INSIDE the sparse field layers to a new level set with value less than
   // the innermost layer.
   const ValueType max_layer = static_cast<ValueType>(m_NumberOfLayers);
-  
-  const ValueType outside_value  = max_layer + m_ConstantGradientValue;
-  const ValueType inside_value = -(max_layer + m_ConstantGradientValue);
-  
+
+  const ValueType outside_value  = (max_layer+1) * m_ConstantGradientValue;
+  const ValueType inside_value = -(max_layer+1) * m_ConstantGradientValue;
+ 
   ImageRegionConstIterator<StatusImageType> statusIt(m_StatusImage,
                                                      this->GetOutput()->GetRequestedRegion());
 
@@ -802,8 +817,17 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
 ::InitializeActiveLayerValues()
 {
   const ValueType CHANGE_FACTOR = m_ConstantGradientValue / 2.0;
-  //  const ValueType CHANGE_FACTOR = 0.7;
-  const ValueType MIN_NORM      = 1.0e-6;
+  ValueType MIN_NORM      = 1.0e-6;
+  if (this->GetUseImageSpacing())
+    {
+    double minSpacing = NumericTraits<double>::max();
+    for (unsigned int i=0; i<ImageDimension; i++)
+      {
+      minSpacing = vnl_math_min(minSpacing,this->GetInput()->GetSpacing()[i]);
+      }
+    MIN_NORM *= minSpacing;
+    }
+
   unsigned int i, center;
 
   typename LayerType::ConstIterator activeIt;
@@ -813,6 +837,8 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
   
   center = shiftedIt.Size() /2;
   typename OutputImageType::Pointer output = this->GetOutput();
+
+  const NeighborhoodScalesType neighborhoodScales = this->GetDifferenceFunction()->ComputeNeighborhoodScales();
 
   ValueType dx_forward, dx_backward, length, distance;
 
@@ -827,10 +853,10 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
     length = m_ValueZero;
     for (i = 0; i < ImageDimension; ++i)
       {
-      dx_forward = shiftedIt.GetPixel(center + m_NeighborList.GetStride(i))
-        - shiftedIt.GetCenterPixel();
-      dx_backward = shiftedIt.GetCenterPixel()
-        - shiftedIt.GetPixel(center - m_NeighborList.GetStride(i));
+      dx_forward = ( shiftedIt.GetPixel(center + m_NeighborList.GetStride(i))
+        - shiftedIt.GetCenterPixel() ) * neighborhoodScales[i];
+      dx_backward = ( shiftedIt.GetCenterPixel()
+        - shiftedIt.GetPixel(center - m_NeighborList.GetStride(i)) ) * neighborhoodScales[i];
 
       if ( vnl_math_abs(dx_forward) > vnl_math_abs(dx_backward) )
         {
@@ -877,13 +903,25 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
   ValueType norm_grad_phi_squared, dx_forward, dx_backward, forwardValue,
     backwardValue, centerValue;
   unsigned i;
-  const ValueType MIN_NORM      = 1.0e-6; 
+  ValueType MIN_NORM      = 1.0e-6;
+  if (this->GetUseImageSpacing())
+    {
+    double minSpacing = NumericTraits<double>::max();
+    for (i=0; i<ImageDimension; i++)
+      {
+      minSpacing = vnl_math_min(minSpacing,this->GetInput()->GetSpacing()[i]);
+      }
+    MIN_NORM *= minSpacing;
+    }
+
   void *globalData = df->GetGlobalDataPointer();
   
   typename LayerType::ConstIterator layerIt;
   NeighborhoodIterator<OutputImageType> outputIt(df->GetRadius(),
                     this->GetOutput(), this->GetOutput()->GetRequestedRegion());
   TimeStepType timeStep;
+
+  const NeighborhoodScalesType neighborhoodScales = this->GetDifferenceFunction()->ComputeNeighborhoodScales();
 
   if ( m_BoundsCheckingActive == false )
     {
@@ -948,13 +986,13 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
         }
       
       for (i = 0; i < ImageDimension; ++i)
-        {// Adding sqrt imagedimension "extends the reach" of the interpolation
-         // to surfaces that pass close to the center of cells.  This is a
-         // heuristic fudge factor that improves interpolation and reduces
-         // "wiggling" at convergence.
-                offset[i] = (offset[i] * centerValue) * vcl_sqrt(ImageDimension +0.5)
-                  / (norm_grad_phi_squared + MIN_NORM);
-        //        offset[i] = (offset[i] * centerValue) / (sqrt(norm_grad_phi_squared) + MIN_NORM);
+        {
+#if defined(ITK_USE_DEPRECATED_LEVELSET_INTERPOLATION)
+        offset[i] = (offset[i] * centerValue) * vcl_sqrt(ImageDimension +0.5) 
+                    / (norm_grad_phi_squared + MIN_NORM);
+#else
+        offset[i] = (offset[i] * centerValue) / (norm_grad_phi_squared + MIN_NORM);
+#endif
         }
           
       m_UpdateBuffer.push_back( df->ComputeUpdate(outputIt, globalData, offset) );
@@ -1124,11 +1162,10 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>
   // OUTSIDE the sparse field layers to a new level set with value greater than
   // the outermost layer.
   const ValueType max_layer = static_cast<ValueType>(m_NumberOfLayers);
-  
-  const ValueType inside_value  = max_layer + m_ConstantGradientValue;
-  const ValueType outside_value = -( max_layer + m_ConstantGradientValue);
 
-  
+  const ValueType inside_value  = (max_layer+1) * m_ConstantGradientValue;
+  const ValueType outside_value = -(max_layer+1) * m_ConstantGradientValue;
+ 
   ImageRegionConstIterator<StatusImageType> statusIt(m_StatusImage,
                                                      this->GetOutput()->GetRequestedRegion());
 

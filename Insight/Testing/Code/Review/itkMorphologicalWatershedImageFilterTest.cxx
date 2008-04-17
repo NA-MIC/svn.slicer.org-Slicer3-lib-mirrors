@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMorphologicalWatershedImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/25 14:23:21 $
+  Date:      $Date: 2007-02-25 14:23:21 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_itkTernaryMagnitudeImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/04/19 18:50:54 $
+  Date:      $Date: 2004-04-19 18:50:54 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOpeningByReconstructionImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/12/09 13:45:25 $
+  Date:      $Date: 2005-12-09 13:45:25 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

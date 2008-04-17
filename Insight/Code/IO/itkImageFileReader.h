@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageFileReader.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/06 18:31:36 $
+  Date:      $Date: 2007-09-06 18:31:36 $
   Version:   $Revision: 1.31 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

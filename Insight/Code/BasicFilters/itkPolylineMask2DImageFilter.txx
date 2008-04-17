@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPolylineMask2DImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/06/20 13:04:24 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-01-20 18:00:40 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -77,7 +77,6 @@ void PolylineMask2DImageFilter<TInputImage,TPolyline,TOutputImage>
   typedef  LineIterator<TOutputImage>                   LineIteratorType;
   typedef  ImageLinearIteratorWithIndex< TOutputImage > ImageLineIteratorType;
 
-  typedef typename TInputImage::Pointer                 InputImagePointer;
   typedef ImageRegionConstIterator<TInputImage>         InputImageConstIteratorType;
 
   typedef typename TOutputImage::IndexType              ImageIndexType;

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: CovariantVectorImageWrite.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/27 01:46:07 $
+  Date:      $Date: 2005-08-27 01:46:07 $
   Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

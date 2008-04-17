@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTimeStamp.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:28 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2007-11-19 16:01:30 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -69,13 +69,13 @@ public:
   void Modified();
 
   /** Return this object's Modified time.  */
-  unsigned long int GetMTime() const
+  unsigned long GetMTime() const
     {return m_ModifiedTime;};
 
   /** Support comparisons of time stamp objects directly.  */
-  int operator>(TimeStamp& ts) 
+  bool operator>(TimeStamp& ts) 
     {return (m_ModifiedTime > ts.m_ModifiedTime);}
-  int operator<(TimeStamp& ts) 
+  bool operator<(TimeStamp& ts) 
     {return (m_ModifiedTime < ts.m_ModifiedTime);}
 
   /** Allow for typcasting to unsigned long.  */

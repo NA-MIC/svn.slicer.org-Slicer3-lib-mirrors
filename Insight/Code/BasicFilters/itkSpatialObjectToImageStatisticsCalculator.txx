@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkSpatialObjectToImageStatisticsCalculator.txx,v $
 Language:  C++
-Date:      $Date: 2006/11/02 00:23:07 $
-Version:   $Revision: 1.23 $
+Date:      $Date: 2008-01-20 18:00:40 $
+Version:   $Revision: 1.24 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -111,7 +111,6 @@ SpatialObjectToImageStatisticsCalculator<TInputImage,TInputSpatialObject,TSample
   m_InternalImageTime = m_Image->GetMTime();
   m_InternalSpatialObjectTime = m_SpatialObject->GetMTime();
   
-  typedef typename ImageType::PixelType PixelType;
   m_Sample = SampleType::New();
   m_Sample->SetMeasurementVectorSize( SampleDimension );
    

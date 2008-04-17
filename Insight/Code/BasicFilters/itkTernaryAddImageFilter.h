@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTernaryAddImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/01/23 17:55:48 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2007-09-27 11:36:41 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -80,6 +80,10 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
   
+  /** Runtime information support. */
+  itkTypeMacro(TernaryAddImageFilter, 
+               TernaryFunctorImageFilter);
+
 protected:
   TernaryAddImageFilter() {}
   virtual ~TernaryAddImageFilter() {}

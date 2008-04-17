@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDanielssonDistanceMapImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/17 14:22:26 $
+  Date:      $Date: 2006-03-17 14:22:26 $
   Version:   $Revision: 1.30 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

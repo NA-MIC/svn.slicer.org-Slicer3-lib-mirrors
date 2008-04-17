@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTwoOutputExampleImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:58 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-01-19 19:50:01 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -155,7 +155,6 @@ TwoOutputExampleImageFilter<TImage>
   // walk the regions, threshold each pixel
   while( !outIt.IsAtEnd() )
     {
-    typedef typename TImage::PixelType PixelType;
     const PixelType value = inIt.Get();
     if (m_Lower <= value && value <= m_Upper)
       {

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVariableDimensionHistogramTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/07/26 15:37:03 $
+  Date:      $Date: 2005-07-26 15:37:03 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

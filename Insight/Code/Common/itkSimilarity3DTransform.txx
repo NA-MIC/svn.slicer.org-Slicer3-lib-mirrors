@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSimilarity3DTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2007/09/06 23:11:51 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007-11-27 16:04:48 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -77,7 +77,19 @@ Similarity3DTransform<TScalarType>
   // multiplied by the scale factor, then its determinant
   // must be equal to the cube of the scale factor.
   //
-  double s = vnl_math_cuberoot( vnl_det( matrix.GetVnlMatrix() ) );
+  double det = vnl_det( matrix.GetVnlMatrix() );
+
+  if( det == 0.0 )
+    {
+    itkExceptionMacro( << "Attempting to set a matrix with a zero determinant" );
+    }
+
+  //
+  // A negative scale is not acceptable
+  // It will imply a reflection of the coordinate system.
+  //
+
+  double s = vnl_math_cuberoot( det );
 
   //
   // A negative scale is not acceptable

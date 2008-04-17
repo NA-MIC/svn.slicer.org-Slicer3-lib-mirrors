@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAdaptiveHistogramEqualizationImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:43 $
+  Date:      $Date: 2003-09-10 14:28:43 $
   Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

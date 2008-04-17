@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPermuteAxesImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2003/10/14 17:58:41 $
+  Date:      $Date: 2003-10-14 17:58:41 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

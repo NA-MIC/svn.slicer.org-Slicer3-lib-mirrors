@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDoubleThresholdImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/27 17:01:07 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007-10-16 14:22:34 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -110,8 +110,10 @@ public:
    * produce the current output. This method is scheduled for removal
    * since the implementation now uses a noniterative solution.*/
   unsigned long GetNumberOfIterationsUsed()
-    { itkLegacyBody(itk::DoubleThresholdImageFilter::GetNumberOfIterationsUsed, 2.2);
-      return m_NumberOfIterationsUsed; };
+    { 
+    itkLegacyBodyMacro(itk::DoubleThresholdImageFilter::GetNumberOfIterationsUsed, 2.2);
+    return m_NumberOfIterationsUsed; 
+    };
 
   /**
    * Set/Get whether the connected components are defined strictly by

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNormalVariateGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:47 $
+  Date:      $Date: 2003-09-10 14:29:47 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

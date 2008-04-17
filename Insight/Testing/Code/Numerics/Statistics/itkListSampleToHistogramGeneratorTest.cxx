@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkListSampleToHistogramGeneratorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/24 15:16:15 $
+  Date:      $Date: 2005-08-24 15:16:15 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

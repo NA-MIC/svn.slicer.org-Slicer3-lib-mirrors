@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageMomentsCalculator.txx,v $
   Language:  C++
-  Date:      $Date: 2005/08/10 16:32:57 $
-  Version:   $Revision: 1.52 $
+  Date:      $Date: 2008-01-01 21:23:29 $
+  Version:   $Revision: 1.53 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -50,6 +50,7 @@ ImageMomentsCalculator<TImage>::ImageMomentsCalculator(void)
 {
   m_Valid = false;
   m_Image = NULL;
+  m_SpatialObjectMask = NULL;
   m_M0 = NumericTraits<ScalarType>::Zero;
   m_M1.Fill(NumericTraits<ITK_TYPENAME VectorType::ValueType>::Zero);
   m_M2.Fill(NumericTraits<ITK_TYPENAME MatrixType::ValueType>::Zero);
@@ -112,32 +113,36 @@ Compute()
     double value = it.Value();
     
     IndexType indexPosition = it.GetIndex();
+
     Point<double, ImageDimension> physicalPosition;
-
-    m_M0 += value;
-
-    for(unsigned int i=0; i<ImageDimension; i++)
-      {
-      m_M1[i] += static_cast<double>( indexPosition[i] ) * value; 
-      for(unsigned int j=0; j<ImageDimension; j++)
-        {
-        double weight = value * static_cast<double>( indexPosition[i] ) * 
-          static_cast<double>( indexPosition[j] );
-        m_M2[i][j] += weight;
-        }
-      }
-
     m_Image->TransformIndexToPhysicalPoint(indexPosition, physicalPosition);  
-    
-    for(unsigned int i=0; i<ImageDimension; i++)
-      {
-      m_Cg[i] += physicalPosition[i] * value; 
-      for(unsigned int j=0; j<ImageDimension; j++)
-        {
-        double weight = value * physicalPosition[i] * physicalPosition[j];
-        m_Cm[i][j] += weight;
-        }
 
+    if(m_SpatialObjectMask.IsNull()
+       || m_SpatialObjectMask->IsInside(physicalPosition))
+      {
+      m_M0 += value;
+
+      for(unsigned int i=0; i<ImageDimension; i++)
+        {
+        m_M1[i] += static_cast<double>( indexPosition[i] ) * value; 
+        for(unsigned int j=0; j<ImageDimension; j++)
+          {
+          double weight = value * static_cast<double>( indexPosition[i] ) * 
+            static_cast<double>( indexPosition[j] );
+          m_M2[i][j] += weight;
+          }
+        }
+      
+      for(unsigned int i=0; i<ImageDimension; i++)
+        {
+        m_Cg[i] += physicalPosition[i] * value; 
+        for(unsigned int j=0; j<ImageDimension; j++)
+          {
+          double weight = value * physicalPosition[i] * physicalPosition[j];
+          m_Cm[i][j] += weight;
+          }
+  
+        }
       }
 
     ++it;

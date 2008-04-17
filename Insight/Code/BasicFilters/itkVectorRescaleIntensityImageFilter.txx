@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorRescaleIntensityImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:58 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-01-28 17:24:05 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -74,9 +74,6 @@ VectorRescaleIntensityImageFilter<TInputImage, TOutputImage>
     itkExceptionMacro(<<"Maximum output value cannot be negative. You are passing " << m_OutputMaximumMagnitude);
     return;
     }
-
-  typedef  typename Superclass::InputImageType      InputImageType;
-  typedef  typename Superclass::InputImagePointer   InputImagePointer;
 
   InputImagePointer inputImage =   this->GetInput();
 

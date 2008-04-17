@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkScaleTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2006/10/14 19:58:32 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2007-12-23 17:59:29 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -28,8 +28,8 @@ template<class ScalarType, unsigned int NDimensions>
 ScaleTransform<ScalarType, NDimensions>::
 ScaleTransform():Superclass(SpaceDimension,ParametersDimension)
 {
-  m_Scale.Fill( 1.0 );
-  m_Center.Fill( 0.0 );
+  m_Scale.Fill( NumericTraits<ScalarType>::One );
+  m_Center.Fill( NumericTraits<ScalarType>::Zero );
 }
     
 

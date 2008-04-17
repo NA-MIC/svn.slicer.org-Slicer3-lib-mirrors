@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSimilarity2DTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2006/06/06 21:23:03 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2008-01-24 05:12:41 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -147,7 +147,7 @@ Similarity2DTransform<TScalarType>
 
   if(this->GetMatrix()[1][0]<0.0)
     {
-    this->SetVarAngle( this->GetAngle() );
+    this->SetVarAngle( -this->GetAngle() );
     }
 
   if( ( this->GetMatrix()[1][0] / m_Scale ) - vcl_sin(this->GetAngle()) > 0.000001)

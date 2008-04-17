@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAddImageAdaptor.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:58 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007-10-05 10:34:02 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -24,7 +24,7 @@ namespace itk
 {
  
 /** \class AddImageAdaptor
- * \brief Presents an image as being composed of the vcl_log() of its pixels
+ * \brief Presents an image as being the addition of a constant value to all pixels
  *
  * Additional casting is performed according to the input and output image
  * types following C++ default casting rules.

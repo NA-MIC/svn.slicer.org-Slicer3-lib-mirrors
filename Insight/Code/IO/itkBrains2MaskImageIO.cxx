@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBrains2MaskImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 18:39:27 $
-  Version:   $Revision: 1.27 $
+  Date:      $Date: 2008-04-16 08:48:31 $
+  Version:   $Revision: 1.29 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -73,9 +73,9 @@ void Brains2MaskImageIO::PrintSelf(std::ostream& os, Indent indent) const
 bool Brains2MaskImageIO::CanWriteFile(const char * FileNameToWrite)
 {
   m_FileName=FileNameToWrite;
-  if( ( m_FileName != "" ) &&
-      ( m_FileName.find(".mask") < m_FileName.length() )  // Mask name Given
-    )
+  // Check filename to ensure that it meets the requirement of ending with .mask
+  const std::string FileExtension=itksys::SystemTools::GetFilenameLastExtension(m_FileName);
+  if( FileExtension == std::string(".mask"))// .mask is at the end of the filename
     {
     return true;
     }
@@ -214,9 +214,14 @@ void Brains2MaskImageIO
 // a StateMachine could provide a better implementation
 bool Brains2MaskImageIO::CanReadFile( const char* FileNameToRead )
 {
-  // The following assignment doesn't seem neccessary and was causing 
-  // a problem in MSVC60 which resulted in m_FileName becoming a NULL string.
-  //  m_FileName=FileNameToRead;
+    { // Check filename to ensure that it meets the requirement of ending with .mask
+    const std::string FileName(FileNameToRead);
+    const std::string FileExtension=itksys::SystemTools::GetFilenameLastExtension(FileName);
+    if( FileExtension != std::string(".mask"))// .mask is at the end of the filename
+      {
+      return false;
+      }
+    }
   std::ifstream   local_InputStream;
   local_InputStream.open( FileNameToRead, std::ios::in | std::ios::binary );
   if( local_InputStream.fail() )
@@ -414,9 +419,9 @@ Brains2MaskImageIO
   const unsigned ysize = this->GetDimensions(1);
   const unsigned zsize = this->GetDimensions(2);
 
-  const float xres = this->GetSpacing(0);
-  const float yres = this->GetSpacing(1);
-  const float zres = this->GetSpacing(2);
+  const double xres = this->GetSpacing(0);
+  const double yres = this->GetSpacing(1);
+  const double zres = this->GetSpacing(2);
 
   itk::MetaDataDictionary &thisDic=this->GetMetaDataDictionary();
   std::string temp;

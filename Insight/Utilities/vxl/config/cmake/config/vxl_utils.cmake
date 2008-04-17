@@ -1,7 +1,17 @@
 # CMake 2.4 is not currently required, but when it is we can remove
 #   CMakeConfigurableFile.in from config/cmake/Modules/NewCmake
 #   (This is used in GENERATE_TEST_INCLUDE)
-# CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+IF(COMMAND CMAKE_POLICY)
+  CMAKE_POLICY(SET CMP0003 NEW)
+ENDIF(COMMAND CMAKE_POLICY)
+
+#IF(CMAKE_MINIMUM_REQUIRED_VERSION GREATER "2.3")
+#  MESSAGE(SEND_ERROR
+#    "The file CMakeConfigurableFile.in can be removed\n"
+#    "from config/cmake/Modules/NewCMake/ now!\n"
+#    "It should be available from CMake distribution. (miguelfv)")
+#ENDIF(CMAKE_MINIMUM_REQUIRED_VERSION GREATER "2.3")
 
 #
 # INSTALL_NOBASE_HEADER_FILES(prefix file file file ...)
@@ -92,8 +102,7 @@ MACRO(GENERATE_TEST_INCLUDE LIB SOURCES PREFIX)
   SET(CMAKE_CONFIGURABLE_FILE_CONTENT
       "${CMAKE_CONFIGURABLE_FILE_CONTENT}\n\nint main(){return 0;}\n")
 
-  #CONFIGURE_FILE("${CMAKE_ROOT}/Modules/CMakeConfigurableFile.in"
-  CONFIGURE_FILE("${MODULE_PATH}/NewCMake/CMakeConfigurableFile.in"
+  CONFIGURE_FILE("${CMAKE_ROOT}/Modules/CMakeConfigurableFile.in"
                  "${CMAKE_CURRENT_BINARY_DIR}/test_include.cxx"
                  @ONLY IMMEDIATE)
 

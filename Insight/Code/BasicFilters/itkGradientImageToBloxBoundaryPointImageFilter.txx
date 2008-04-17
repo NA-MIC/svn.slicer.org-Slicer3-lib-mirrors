@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientImageToBloxBoundaryPointImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:56 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-01-19 19:50:01 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -114,8 +114,6 @@ GradientImageToBloxBoundaryPointImageFilter< TInputImage >
   const typename TOutputImage::IndexType& outputRequestedRegionStartIndex
     = outputPtr->GetRequestedRegion().GetIndex();
   
-  typedef typename TInputImage::SizeType      SizeType;
-  typedef typename TInputImage::IndexType     IndexType;
   typedef typename SizeType::SizeValueType    SizeValueType;
   typedef typename IndexType::IndexValueType  IndexValueType;
 
@@ -164,8 +162,6 @@ GradientImageToBloxBoundaryPointImageFilter< TInputImage >
     = inputPtr->GetLargestPossibleRegion().GetIndex();
 
   typename TOutputImage::SpacingType outputSpacing;
-  typedef typename TOutputImage::SizeType     SizeType;
-  typedef typename TOutputImage::IndexType    IndexType;
   typedef typename SizeType::SizeValueType    SizeValueType;
   typedef typename IndexType::IndexValueType  IndexValueType;
 

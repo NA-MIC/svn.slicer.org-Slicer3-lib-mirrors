@@ -1,4 +1,4 @@
-/* $Id: tif_jpeg.c,v 1.2 2007/01/04 16:46:32 ibanez Exp $ */
+/* $Id: tif_jpeg.c,v 1.2 2007-01-04 16:46:32 ibanez Exp $ */
 
 /*
  * Copyright (c) 1994-1997 Sam Leffler

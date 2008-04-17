@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSystemInformationTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 13:00:21 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008-02-16 21:00:51 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -133,6 +133,9 @@ int main(int,char *[])
     {
       ITK_SYSTEM_INFORMATION_DIR "/CMakeCache.txt", 
       ITK_SYSTEM_INFORMATION_DIR "/itkConfigure.h",
+      ITK_SYSTEM_INFORMATION_DIR "/CMakeFiles/CMakeOutput.log",
+      ITK_SYSTEM_INFORMATION_DIR "/CMakeFiles/CMakeError.log",
+      ITK_SYSTEM_INFORMATION_DIR "/CMakeOutput.log",
       ITK_SYSTEM_INFORMATION_DIR "/CMakeError.log",
       ITK_SYSTEM_INFORMATION_DIR "/ITKBuildSettings.cmake",
       ITK_SYSTEM_INFORMATION_DIR "/ITKLibraryDepends.cmake",
@@ -188,8 +191,8 @@ int main(int,char *[])
   Program:   Visualization Toolkit
   Module:    $RCSfile: itkSystemInformationTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 13:00:21 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008-02-16 21:00:51 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) 1993-2002 Ken Martin, Will Schroeder, Bill Lorensen 
   All rights reserved.

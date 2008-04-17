@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanShiftModeSeekerBase.txx,v $
   Language:  C++
-  Date:      $Date: 2005/08/01 19:23:35 $
+  Date:      $Date: 2005-08-01 19:23:35 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

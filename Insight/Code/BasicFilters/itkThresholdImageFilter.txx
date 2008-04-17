@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkThresholdImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/02/10 16:26:38 $
-  Version:   $Revision: 1.28 $
+  Date:      $Date: 2008-01-19 19:50:01 $
+  Version:   $Revision: 1.29 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -155,7 +155,6 @@ ThresholdImageFilter<TImage>
   // walk the regions, threshold each pixel
   while( !outIt.IsAtEnd() )
     {
-    typedef typename TImage::PixelType PixelType;
     const PixelType value = inIt.Get();
     if (m_Lower <= value && value <= m_Upper)
       {

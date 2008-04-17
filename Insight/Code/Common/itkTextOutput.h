@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTextOutput.h,v $
   Language:  C++
-  Date:      $Date: 2006/06/23 02:33:27 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-10-27 19:51:42 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,7 +30,13 @@ public:
   typedef TextOutput                Self;
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
+
+  /** Run-time type information (and related methods).   */
+  itkTypeMacro( TextOutput, OutputWindow );
+
+  /** New macro for creation of through a Smart Pointer   */
   itkNewMacro(TextOutput);
+
   virtual void DisplayText(const char* s)
     { std::cout << s << std::endl; }
 

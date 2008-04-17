@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: DeformableRegistration6.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:42 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008-04-11 16:01:02 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -225,14 +225,15 @@ int main( int argc, char *argv[] )
 
   for(unsigned int r=0; r<ImageDimension; r++)
     {
-    spacingLow[r] *= floor( static_cast<double>(fixedImageSize[r] - 1)  / 
-                            static_cast<double>(gridLowSizeOnImage[r] - 1) );
+    spacingLow[r] *= static_cast<double>(fixedImageSize[r] - 1)  / 
+                     static_cast<double>(gridLowSizeOnImage[r] - 1);
     originLow[r]  -=  spacingLow[r]; 
     }
 
   transformLow->SetGridSpacing( spacingLow );
   transformLow->SetGridOrigin( originLow );
   transformLow->SetGridRegion( bsplineRegion );
+  transformLow->SetGridDirection( fixedImage->GetDirection() );
 
   typedef TransformType::ParametersType     ParametersType;
 
@@ -302,14 +303,15 @@ int main( int argc, char *argv[] )
 
   for(unsigned int rh=0; rh<ImageDimension; rh++)
     {
-    spacingHigh[rh] *= floor( static_cast<double>(fixedImageSize[rh] - 1)  / 
-                            static_cast<double>(gridHighSizeOnImage[rh] - 1) );
+    spacingHigh[rh] *= static_cast<double>(fixedImageSize[rh] - 1)  / 
+                       static_cast<double>(gridHighSizeOnImage[rh] - 1);
     originHigh[rh]  -=  spacingHigh[rh]; 
     }
 
   transformHigh->SetGridSpacing( spacingHigh );
   transformHigh->SetGridOrigin( originHigh );
   transformHigh->SetGridRegion( bsplineRegion );
+  transformHigh->SetGridDirection( fixedImage->GetDirection() );
 
   ParametersType parametersHigh( transformHigh->GetNumberOfParameters() );
   parametersHigh.Fill( 0.0 );
@@ -421,6 +423,7 @@ int main( int argc, char *argv[] )
   resample->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
   resample->SetOutputOrigin(  fixedImage->GetOrigin() );
   resample->SetOutputSpacing( fixedImage->GetSpacing() );
+  resample->SetOutputDirection( fixedImage->GetDirection() );
   resample->SetDefaultPixelValue( 100 );
   
   typedef  unsigned char  OutputPixelType;

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCommandVnlIterationUpdate.h,v $
   Language:  C++
-  Date:      $Date: 2005/08/07 00:43:12 $
+  Date:      $Date: 2005-08-07 00:43:12 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

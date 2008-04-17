@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkContourSpatialObjectPoint.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/21 16:46:25 $
+  Date:      $Date: 2006-03-21 16:46:25 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

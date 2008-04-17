@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ThinPlateSplineWarp.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:42 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-01-01 14:01:45 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,7 +21,9 @@
 
 
 
-//  Command Line Arguments: LandmarksTPS.txt
+//  Command Line Arguments: Insight/Testing/Data/LandmarkWarping3Landmarks1.txt
+//                          inputImage  deformedImage deformationField
+//
 //  Software Guide : BeginLatex
 //  This example deforms a 3D volume with the Thin plate spline.
 //  \index{ThinPlateSplineKernelTransform}
@@ -35,11 +37,11 @@
 #include "itkLinearInterpolateImageFunction.h"
 
 // Software Guide : BeginCodeSnippet
-#include <itkThinPlateSplineKernelTransform.h>
+#include "itkThinPlateSplineKernelTransform.h"
 // Software Guide : EndCodeSnippet
 
 #include "itkPoint.h"
-#include <itkPointSet.h>
+#include "itkPointSet.h"
 #include <fstream>
 
 
@@ -128,9 +130,6 @@ int main( int argc, char * argv[] )
     } 
   infile.close();
 
-  // Set TPS params
-  const unsigned int SpaceDimension = ImageDimension;
-
   // Software Guide : BeginCodeSnippet
   TransformType::Pointer tps = TransformType::New();
   tps->SetSourceLandmarks(sourceLandMarks);
@@ -150,11 +149,13 @@ int main( int argc, char * argv[] )
   resampler->SetInterpolator( interpolator );
   InputImageType::SpacingType spacing = inputImage->GetSpacing();
   InputImageType::PointType   origin  = inputImage->GetOrigin();
+  InputImageType::DirectionType direction  = inputImage->GetDirection();
   InputImageType::RegionType region = inputImage->GetBufferedRegion();
   InputImageType::SizeType   size =  region.GetSize();
 
   // Software Guide : BeginCodeSnippet
   resampler->SetOutputSpacing( spacing );
+  resampler->SetOutputDirection( direction );
   resampler->SetOutputOrigin(  origin  );
   resampler->SetSize( size );
   resampler->SetTransform( tps );
@@ -202,13 +203,15 @@ int main( int argc, char * argv[] )
   DeformationFieldType::IndexType index;
 
   FieldVectorType displacement;
-  int i;
   while( ! fi.IsAtEnd() )
     {
     index = fi.GetIndex();
     field->TransformIndexToPhysicalPoint( index, point1 );
     point2 = tps->TransformPoint( point1 );
-    for (i=0;i<ImageDimension;i++) displacement[i] = point2[i] - point1[i];
+    for ( unsigned int i = 0;i < ImageDimension;i++)
+      {
+      displacement[i] = point2[i] - point1[i];
+      }
     fi.Set( displacement );
     ++fi;
     }
@@ -227,6 +230,7 @@ int main( int argc, char * argv[] )
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
     }
+  return EXIT_SUCCESS;
 }
 
 

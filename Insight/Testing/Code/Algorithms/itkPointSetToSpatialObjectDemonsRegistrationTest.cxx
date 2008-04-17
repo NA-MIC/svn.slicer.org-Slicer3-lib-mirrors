@@ -3,7 +3,7 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkPointSetToSpatialObjectDemonsRegistrationTest.cxx,v $
 Language:  C++
-Date:      $Date: 2004/04/18 16:47:33 $
+Date:      $Date: 2004-04-18 16:47:33 $
 Version:   $Revision: 1.1 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: FourierDescriptors1.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/02/24 17:07:09 $
+  Date:      $Date: 2005-02-24 17:07:09 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

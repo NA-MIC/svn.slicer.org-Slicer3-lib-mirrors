@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshTraits.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/24 20:05:24 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-02-07 15:58:06 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -23,44 +23,10 @@
 #include <itkMapContainer.h>
 #include "itkQuadEdgeMeshPoint.h"
 #include "itkGeometricalQuadEdge.h"
+#include "itkQuadEdgeCellTraitsInfo.h"
 
 namespace itk
 {
-/** \class QuadEdgeMeshCellTraitsInfo
- *  \brief Helper class holding the traits of QuadEdge cells.
- *
- * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
- *
- * This implementation was contributed as a paper to the Insight Journal
- * http://hdl.handle.net/1926/306
- *
- */
-template< int VPointDimension, typename TCoordRep,
-          typename TInterpolationWeight, typename TPointIdentifier,
-          typename TCellIdentifier, typename TCellFeatureIdentifier,
-          typename TPoint, typename TPointsContainer,
-          typename TUsingCellsContainer, typename TQE >
-class QuadEdgeMeshCellTraitsInfo
-{
-public:
-  itkStaticConstMacro( PointDimension, unsigned int, VPointDimension );
-  typedef TCoordRep               CoordRepType;
-  typedef TInterpolationWeight    InterpolationWeightType;
-  typedef TPointIdentifier        PointIdentifier;
-  typedef TCellIdentifier         CellIdentifier;
-  typedef TCellFeatureIdentifier  CellFeatureIdentifier;
-  typedef TPoint                  PointType;
-  typedef TPointsContainer        PointsContainer;
-  typedef TUsingCellsContainer    UsingCellsContainer;
-
-  /** Iterator types. */
-  typedef PointIdentifier*                PointIdIterator;
-  typedef const PointIdentifier*          PointIdConstIterator;  
-  typedef TQE                             QuadEdgeType;
-  typedef typename TQE::IteratorGeom      PointIdInternalIterator;
-  typedef typename TQE::ConstIteratorGeom PointIdInternalConstIterator;
-};
-
 /** \class QuadEdgeMeshTraits
  *  \brief Class holding the traits of the QuadEdgeMesh.
  * 
@@ -70,7 +36,7 @@ public:
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * http://hdl.handle.net/1926/306
+ * http://insight-journal.org/midas/handle.php?handle=1926/306
  *
  *  \sa DefaultDynamicMeshTraits
  *  \sa DefaultStaticMeshTraits
@@ -94,7 +60,7 @@ public:
 
   typedef unsigned long PointIdentifier;
   typedef unsigned long CellIdentifier;
-  typedef unsigned long CellFeatureIdentifier;
+  typedef unsigned char CellFeatureIdentifier; // made small in purpose
 
   typedef std::set< CellIdentifier > UsingCellsContainer;
   typedef std::set< CellIdentifier > PointCellLinksContainer;
@@ -110,6 +76,10 @@ public:
   /// FOR LEO typedef typename QEPrimal::Dual           QEDual;
   typedef typename QEPrimal::OriginRefType     VertexRefType;
   typedef typename QEPrimal::DualOriginRefType FaceRefType;
+
+  /** The type of point used for hashing.  This should never change from
+   * this setting, regardless of the mesh type. */
+  typedef Point< CoordRepType, VPointDimension >       PointHashType;
 
   /** Points have an entry in the Onext ring */
   typedef QuadEdgeMeshPoint< 

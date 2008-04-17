@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageMomentsCalculator.h,v $
   Language:  C++
-  Date:      $Date: 2004/04/25 23:59:26 $
-  Version:   $Revision: 1.37 $
+  Date:      $Date: 2008-01-01 21:23:29 $
+  Version:   $Revision: 1.38 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -20,6 +20,7 @@
 #include "itkAffineTransform.h"
 #include "itkMacro.h"
 #include "itkImage.h"
+#include "itkSpatialObject.h"
 
 #include "vnl/vnl_vector_fixed.h"
 #include "vnl/vnl_matrix_fixed.h"
@@ -81,6 +82,13 @@ public:
   /** Standard vector type within this class. */
   typedef Vector<ScalarType,itkGetStaticConstMacro(ImageDimension)> VectorType;
 
+  /** Spatial Object type within this class. */
+  typedef SpatialObject< itkGetStaticConstMacro(ImageDimension) > SpatialObjectType;
+
+  /** Spatial Object member types used within this class. */
+  typedef typename SpatialObjectType::Pointer SpatialObjectPointer;
+  typedef typename SpatialObjectType::ConstPointer SpatialObjectConstPointer;
+
   /** Standard matrix type within this class. */
   typedef Matrix<ScalarType,
                  itkGetStaticConstMacro(ImageDimension),
@@ -103,6 +111,18 @@ public:
     if ( m_Image != image )
       {
       m_Image = image;
+      this->Modified();
+      m_Valid = false;
+      }
+    }
+
+
+  /** Set the spatial object mask. */
+  virtual void SetSpatialObjectMask( const SpatialObject< itkGetStaticConstMacro( ImageDimension ) > * so )
+    {
+    if ( m_SpatialObjectMask != so )
+      {
+      m_SpatialObjectMask = so;
       this->Modified();
       m_Valid = false;
       }
@@ -199,6 +219,7 @@ private:
   MatrixType m_Pa;                   // Principal axes (physical)
 
   ImageConstPointer m_Image;
+  SpatialObjectConstPointer m_SpatialObjectMask;
 
 };  // class ImageMomentsCalculator
 

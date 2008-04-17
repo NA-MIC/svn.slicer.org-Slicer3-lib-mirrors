@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBloxBoundaryPointImageTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:05 $
+  Date:      $Date: 2003-09-10 14:30:05 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

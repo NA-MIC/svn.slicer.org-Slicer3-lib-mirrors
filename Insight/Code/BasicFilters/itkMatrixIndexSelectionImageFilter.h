@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMatrixIndexSelectionImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/29 14:53:40 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007-10-27 19:51:42 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -86,6 +86,9 @@ public:
   typedef SmartPointer<Self> Pointer;
   typedef SmartPointer<const Self> ConstPointer;
     
+  /** Run-time type information (and related methods).   */
+  itkTypeMacro( MatrixIndexSelectionImageFilter, UnaryFunctorImageFilter );
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 

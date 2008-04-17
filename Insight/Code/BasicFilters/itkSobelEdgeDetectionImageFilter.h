@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSobelEdgeDetectionImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/30 15:36:25 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007-09-23 22:36:00 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -104,6 +104,12 @@ public:
     (Concept::SameDimension<InputImageDimension, ImageDimension>));
   itkConceptMacro(OutputHasNumericTraitsCheck,
     (Concept::HasNumericTraits<OutputPixelType>));
+
+#ifdef ITK_USE_STRICT_CONCEPT_CHECKING
+  itkConceptMacro(OutputPixelIsFloatingPointCheck,
+    (Concept::IsFloatingPoint<OutputPixelType>));
+#endif
+
   /** End concept checking */
 #endif
 

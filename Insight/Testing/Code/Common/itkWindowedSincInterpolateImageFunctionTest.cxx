@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWindowedSincInterpolateImageFunctionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/06/18 13:37:59 $
+  Date:      $Date: 2004-06-18 13:37:59 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

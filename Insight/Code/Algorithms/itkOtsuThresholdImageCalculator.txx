@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOtsuThresholdImageCalculator.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/28 23:46:10 $
+  Date:      $Date: 2006-03-28 23:46:10 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

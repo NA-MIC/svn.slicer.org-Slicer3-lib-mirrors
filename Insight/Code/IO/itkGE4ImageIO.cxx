@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGE4ImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:49 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008-01-01 17:26:50 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -58,6 +58,7 @@ bool GE4ImageIO::CanReadFile( const char* FileNameToRead )
   // Get the Plane from the IMAGE Header.
   if(this->GetStringAt(f, SIGNA_SEHDR_START * 2 + SIGNA_SEHDR_PLANENAME * 2,tmpStr,16,false) == -1)
     {
+    f.close();
     return false;
     }
   tmpStr[16] = '\0';
@@ -77,7 +78,7 @@ bool GE4ImageIO::CanReadFile( const char* FileNameToRead )
   return true;
 }
 
-struct GEImageHeader *GE4ImageIO::ReadHeader(const char *FileNameToRead)
+GEImageHeader *GE4ImageIO::ReadHeader(const char *FileNameToRead)
 {
   // #define VERBOSE_DEBUGGING
 #if defined(VERBOSE_DEBUGGING)
@@ -95,7 +96,7 @@ struct GEImageHeader *GE4ImageIO::ReadHeader(const char *FileNameToRead)
     {
     RAISE_EXCEPTION();
     }
-  struct GEImageHeader *hdr = new struct GEImageHeader;
+  GEImageHeader *hdr = new GEImageHeader;
   if(hdr == 0)
     {
     RAISE_EXCEPTION();

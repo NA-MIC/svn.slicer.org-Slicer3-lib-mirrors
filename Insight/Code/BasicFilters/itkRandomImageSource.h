@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRandomImageSource.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/24 12:45:32 $
-  Version:   $Revision: 1.41 $
+  Date:      $Date: 2007-12-21 15:35:40 $
+  Version:   $Revision: 1.42 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -32,7 +32,9 @@ namespace itk
  * RandomImageSource generates an image of random pixel values.
  * This filter uses an inline random number generator since the library
  * drand48, although thread-safe, is very slow in a threaded environment.
- * The output image may be of any dimension. 
+ * The output image may be of any dimension.
+ * NOTE: To produce deterministic results, set the number of threads
+ * to 1.
  *
  * \ingroup DataSources Multithreaded
  */
@@ -41,9 +43,9 @@ class ITK_EXPORT RandomImageSource : public ImageSource<TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef RandomImageSource   Self;
-  typedef ImageSource<TOutputImage>  Superclass;
-  typedef SmartPointer<Self>  Pointer;
+  typedef RandomImageSource         Self;
+  typedef ImageSource<TOutputImage> Superclass;
+  typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
 
   /** Typedef for the output image PixelType. */

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFRPROptimizer.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/24 15:43:58 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-02-04 22:58:54 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -69,6 +69,10 @@ public:
   typedef  SingleValuedCostFunction         CostFunctionType;
   typedef  CostFunctionType::Pointer        CostFunctionPointer;
 
+  /** Convert gradient to a unit length vector */
+  itkSetMacro( UseUnitLengthGradient, bool );
+  itkGetConstMacro( UseUnitLengthGradient, bool );
+
   /** Start optimization. */
   void StartOptimization();
 
@@ -104,6 +108,8 @@ private:
     }               OptimizationType;
 
   OptimizationType  m_OptimizationType;
+
+  bool              m_UseUnitLengthGradient;
 
 }; // end of class
 

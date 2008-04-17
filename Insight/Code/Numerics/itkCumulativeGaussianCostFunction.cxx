@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCumulativeGaussianCostFunction.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 19:37:00 $
+  Date:      $Date: 2007-03-29 19:37:00 $
   Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -31,8 +31,6 @@ ADD_EXECUTABLE(CastingImageFilters CastingImageFilters.cxx )
 TARGET_LINK_LIBRARIES(CastingImageFilters  ITKIO)
 ADD_EXECUTABLE(CannyEdgeDetectionImageFilter CannyEdgeDetectionImageFilter.cxx )
 TARGET_LINK_LIBRARIES(CannyEdgeDetectionImageFilter  ITKIO)
-ADD_EXECUTABLE(SigmoidImageFilter SigmoidImageFilter.cxx )
-TARGET_LINK_LIBRARIES(SigmoidImageFilter  ITKIO)
 ADD_EXECUTABLE(MedianImageFilter MedianImageFilter.cxx )
 TARGET_LINK_LIBRARIES(MedianImageFilter  ITKIO)
 ADD_EXECUTABLE(MeanImageFilter MeanImageFilter.cxx )
@@ -41,8 +39,6 @@ ADD_EXECUTABLE(MathematicalMorphologyBinaryFilters MathematicalMorphologyBinaryF
 TARGET_LINK_LIBRARIES(MathematicalMorphologyBinaryFilters  ITKIO)
 ADD_EXECUTABLE(MathematicalMorphologyGrayscaleFilters MathematicalMorphologyGrayscaleFilters.cxx )
 TARGET_LINK_LIBRARIES(MathematicalMorphologyGrayscaleFilters  ITKIO)
-ADD_EXECUTABLE(CurvatureFlowImageFilter CurvatureFlowImageFilter.cxx )
-TARGET_LINK_LIBRARIES(CurvatureFlowImageFilter  ITKBasicFilters ITKIO)
 ADD_EXECUTABLE(BinaryMinMaxCurvatureFlowImageFilter BinaryMinMaxCurvatureFlowImageFilter.cxx )
 TARGET_LINK_LIBRARIES(BinaryMinMaxCurvatureFlowImageFilter  ITKBasicFilters ITKIO)
 ADD_EXECUTABLE(DiscreteGaussianImageFilter DiscreteGaussianImageFilter.cxx )
@@ -57,8 +53,6 @@ ADD_EXECUTABLE(BinomialBlurImageFilter BinomialBlurImageFilter.cxx )
 TARGET_LINK_LIBRARIES(BinomialBlurImageFilter  ITKBasicFilters ITKIO)
 ADD_EXECUTABLE(CurvatureAnisotropicDiffusionImageFilter CurvatureAnisotropicDiffusionImageFilter.cxx )
 TARGET_LINK_LIBRARIES(CurvatureAnisotropicDiffusionImageFilter  ITKBasicFilters ITKIO)
-ADD_EXECUTABLE(GradientAnisotropicDiffusionImageFilter GradientAnisotropicDiffusionImageFilter.cxx )
-TARGET_LINK_LIBRARIES(GradientAnisotropicDiffusionImageFilter  ITKBasicFilters ITKIO)
 ADD_EXECUTABLE(VectorGradientAnisotropicDiffusionImageFilter VectorGradientAnisotropicDiffusionImageFilter.cxx )
 TARGET_LINK_LIBRARIES(VectorGradientAnisotropicDiffusionImageFilter  ITKBasicFilters ITKIO)
 ADD_EXECUTABLE(VectorCurvatureAnisotropicDiffusionImageFilter VectorCurvatureAnisotropicDiffusionImageFilter.cxx )
@@ -72,6 +66,12 @@ TARGET_LINK_LIBRARIES(ResampleOrientedImageFilter  ITKBasicFilters ITKIO)
 ADD_EXECUTABLE(ResampleImageFilter2 ResampleImageFilter2.cxx )
 TARGET_LINK_LIBRARIES(ResampleImageFilter2  ITKBasicFilters ITKIO)
 IF(NOT BORLAND)
+ADD_EXECUTABLE(GradientAnisotropicDiffusionImageFilter GradientAnisotropicDiffusionImageFilter.cxx )
+TARGET_LINK_LIBRARIES(GradientAnisotropicDiffusionImageFilter  ITKBasicFilters ITKIO)
+ADD_EXECUTABLE(CurvatureFlowImageFilter CurvatureFlowImageFilter.cxx )
+TARGET_LINK_LIBRARIES(CurvatureFlowImageFilter  ITKBasicFilters ITKIO)
+ADD_EXECUTABLE(SigmoidImageFilter SigmoidImageFilter.cxx )
+TARGET_LINK_LIBRARIES(SigmoidImageFilter  ITKIO)
 ADD_EXECUTABLE(RGBCurvatureAnisotropicDiffusionImageFilter RGBCurvatureAnisotropicDiffusionImageFilter.cxx )
 TARGET_LINK_LIBRARIES(RGBCurvatureAnisotropicDiffusionImageFilter  ITKBasicFilters ITKIO)
 ADD_EXECUTABLE(RGBGradientAnisotropicDiffusionImageFilter RGBGradientAnisotropicDiffusionImageFilter.cxx )
@@ -764,7 +764,7 @@ ADD_TEST( SubsampleVolumeTest ${FILTERING_EXAMPLES4}
 ADD_TEST( DiffusionTensor3DReconstructionImageFilterTest1 ${FILTERING_EXAMPLES5}
   --compare ${BASELINE}/FACorpusCallosum.mhd
             ${TEMP}/FACorpusCallosum.mhd
-  DiffusionTensor3DReconstructionImageFilterTest1
+  DiffusionTensor3DReconstructionImageFilterTest
         ${ITK_SOURCE_DIR}/Testing/Data/Input/DwiCorpusCallosum.nhdr
         80 ${TEMP}/Tensors.mhd ${TEMP}/FACorpusCallosum.mhd
         ${TEMP}/RACorpusCallosum.mhd 0
@@ -772,7 +772,7 @@ ADD_TEST( DiffusionTensor3DReconstructionImageFilterTest1 ${FILTERING_EXAMPLES5}
 ADD_TEST( DiffusionTensor3DReconstructionImageFilterTest2 ${FILTERING_EXAMPLES5}
   --compare ${BASELINE}/RACorpusCallosum.mhd
             ${TEMP}/RACorpusCallosum.mhd
-  DiffusionTensor3DReconstructionImageFilterTest2
+  DiffusionTensor3DReconstructionImageFilterTest
         ${ITK_SOURCE_DIR}/Testing/Data/Input/DwiCorpusCallosum.nhdr
         80 ${TEMP}/Tensors.mhd ${TEMP}/FACorpusCallosum.mhd
         ${TEMP}/RACorpusCallosum.mhd 0

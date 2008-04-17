@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkExpandImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:56 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008-01-19 19:50:01 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -184,8 +184,6 @@ ExpandImageFilter<TInputImage,TOutputImage>
   // pixel to and output pixel
   typename TOutputImage::IndexType outputIndex;
   typename InterpolatorType::ContinuousIndexType inputIndex;
-
-  typedef typename TOutputImage::PixelType OutputPixelType;
 
   // Support progress methods/callbacks
   ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());

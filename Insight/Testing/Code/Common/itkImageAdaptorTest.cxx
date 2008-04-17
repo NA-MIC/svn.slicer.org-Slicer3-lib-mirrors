@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageAdaptorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 13:00:21 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2007-10-27 19:02:23 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -37,14 +37,10 @@
 #include <itkRGBPixel.h>
 #include <itkRedPixelAccessor.h>
 
-
-
-
 //-------------------------------------
 //     Typedefs for convenience
 //-------------------------------------
 typedef itk::Image< itk::RGBPixel<float>,   2 > myImageType;
- 
 
 typedef itk::RedPixelAccessor<float> myRedAccessorType;
 
@@ -139,6 +135,182 @@ int itkImageAdaptorTest(int, char* []) {
     ++it1;
     }
 
+  // Test the Set/Get Methods of the adaptor
+  // First test the get methods of the adaptor
+
+  if (myImage->GetPixelContainer() != myAdaptor->GetPixelContainer())
+    {
+    std::cout << "image pixel container != adaptor pixel container: "
+              << myImage->GetPixelContainer() << " != "
+              << myAdaptor->GetPixelContainer()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  float forigin[2] = {2.0, 3.0};
+  myImage->SetOrigin(forigin);
+  if (myImage->GetOrigin() != myAdaptor->GetOrigin())
+    {
+    std::cout << "image origin != adaptor origin: "
+              << myImage->GetOrigin() << " != "
+              << myAdaptor->GetOrigin()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  double dorigin[2] = {2.0, 3.0};
+  myImage->SetOrigin(dorigin);
+  if (myImage->GetOrigin() != myAdaptor->GetOrigin())
+    {
+    std::cout << "image origin != adaptor origin: "
+              << myImage->GetOrigin() << " != "
+              << myAdaptor->GetOrigin()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+
+  myImageType::PointType imageOrigin;
+  imageOrigin.Fill(10.0);
+  myImage->SetOrigin(imageOrigin);
+  if (myImage->GetOrigin() != myAdaptor->GetOrigin())
+    {
+    std::cout << "image origin != adaptor origin: "
+              << myImage->GetOrigin() << " != "
+              << myAdaptor->GetOrigin()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  float fspacing[2] = {2.0, 3.0};
+  myImage->SetSpacing(fspacing);
+  if (myImage->GetSpacing() != myAdaptor->GetSpacing())
+    {
+    std::cout << "image spacing != adaptor spacing: "
+              << myImage->GetSpacing() << " != "
+              << myAdaptor->GetSpacing()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  double dspacing[2] = {2.0, 3.0};
+  myImage->SetSpacing(dspacing);
+  if (myImage->GetSpacing() != myAdaptor->GetSpacing())
+    {
+    std::cout << "image spacing != adaptor spacing: "
+              << myImage->GetSpacing() << " != "
+              << myAdaptor->GetSpacing()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+
+  myImageType::SpacingType imageSpacing;
+  imageSpacing.Fill(10.0);
+
+  myImage->SetSpacing(imageSpacing);
+  if (myImage->GetSpacing() != myAdaptor->GetSpacing())
+    {
+    std::cout << "image spacing != adaptor spacing: "
+              << myImage->GetSpacing() << " != "
+              << myAdaptor->GetSpacing()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  myImageType::DirectionType imageDirection;
+  imageDirection[1][1]=10.0;
+
+  myImage->SetDirection(imageDirection);
+  if (myImage->GetDirection() != myAdaptor->GetDirection())
+    {
+    std::cout << "image direction != adaptor direction: "
+              << myImage->GetDirection() << " != "
+              << myAdaptor->GetDirection()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  // Now test the set methods of the adaptor
+  forigin[0] = 20.0;
+  myAdaptor->SetOrigin(forigin);
+  if (myImage->GetOrigin() != myAdaptor->GetOrigin())
+    {
+    std::cout << "image origin != adaptor origin: "
+              << myImage->GetOrigin() << " != "
+              << myAdaptor->GetOrigin()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  dorigin[0] = 20.0;
+  myAdaptor->SetOrigin(dorigin);
+  if (myImage->GetOrigin() != myAdaptor->GetOrigin())
+    {
+    std::cout << "image origin != adaptor origin: "
+              << myImage->GetOrigin() << " != "
+              << myAdaptor->GetOrigin()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  imageOrigin.Fill(100.0);
+
+  myAdaptor->SetOrigin(imageOrigin);
+  if (myImage->GetOrigin() != myAdaptor->GetOrigin())
+    {
+    std::cout << "image origin != adaptor origin: "
+              << myImage->GetOrigin() << " != "
+              << myAdaptor->GetOrigin()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  fspacing[0] = 20.0;
+  myAdaptor->SetSpacing(fspacing);
+  if (myImage->GetSpacing() != myAdaptor->GetSpacing())
+    {
+    std::cout << "image spacing != adaptor spacing: "
+              << myImage->GetSpacing() << " != "
+              << myAdaptor->GetSpacing()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  dspacing[0] = 20.0;
+  myAdaptor->SetSpacing(dspacing);
+  if (myImage->GetSpacing() != myAdaptor->GetSpacing())
+    {
+    std::cout << "image spacing != adaptor spacing: "
+              << myImage->GetSpacing() << " != "
+              << myAdaptor->GetSpacing()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  imageSpacing.Fill(100.0);
+
+  myAdaptor->SetSpacing(imageSpacing);
+  if (myImage->GetSpacing() != myAdaptor->GetSpacing())
+    {
+    std::cout << "image spacing != adaptor spacing: "
+              << myImage->GetSpacing() << " != "
+              << myAdaptor->GetSpacing()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  imageDirection[1][1]=100.0;
+
+  myAdaptor->SetDirection(imageDirection);
+  if (myImage->GetDirection() != myAdaptor->GetDirection())
+    {
+    std::cout << "image direction != adaptor direction: "
+              << myImage->GetDirection() << " != "
+              << myAdaptor->GetDirection()
+              << std::endl;
+    return EXIT_FAILURE;
+    }
 
   return EXIT_SUCCESS;
 }

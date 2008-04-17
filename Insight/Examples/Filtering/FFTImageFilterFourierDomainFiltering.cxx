@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: FFTImageFilterFourierDomainFiltering.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/19 16:31:49 $
+  Date:      $Date: 2005-11-19 16:31:49 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

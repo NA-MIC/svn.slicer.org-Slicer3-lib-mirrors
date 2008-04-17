@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkReviewTests.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/31 10:43:20 $
-  Version:   $Revision: 1.42 $
+  Date:      $Date: 2008-04-09 00:27:33 $
+  Version:   $Revision: 1.49 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -25,6 +25,8 @@ void RegisterTests()
 {
   vnl_sample_reseed(8775070);
   REGISTER_TEST(itkFlatStructuringElementTest);
+
+  REGISTER_TEST(itkLabelToRGBImageFilterTest);
   REGISTER_TEST(itkLabelOverlayImageFilterTest);
 
   REGISTER_TEST(itkQuadEdgeTest1);
@@ -49,18 +51,6 @@ void RegisterTests()
 
   REGISTER_TEST(itkContourExtractor2DImageFilterTest);
  
-  REGISTER_TEST(itkSumProjectionImageFilterTest);
-  REGISTER_TEST(itkMaximumProjectionImageFilterTest);
-  REGISTER_TEST(itkMaximumProjectionImageFilterTest2);
-  REGISTER_TEST(itkMaximumProjectionImageFilterTest3);
-  REGISTER_TEST(itkMeanProjectionImageFilterTest);
-  REGISTER_TEST(itkMedianProjectionImageFilterTest);
-  REGISTER_TEST(itkMinimumProjectionImageFilterTest);
-  REGISTER_TEST(itkStandardDeviationProjectionImageFilterTest);
-  REGISTER_TEST(itkBinaryProjectionImageFilterTest);
-  REGISTER_TEST(itkBinaryThresholdProjectionImageFilterTest);
-  REGISTER_TEST(itkProjectionImageFilterTest);
-
   REGISTER_TEST(itkValuedRegionalMinimaImageFilterTest);
   REGISTER_TEST(itkValuedRegionalMaximaImageFilterTest);
   REGISTER_TEST(itkRegionalMaximaImageFilterTest);
@@ -72,6 +62,7 @@ void RegisterTests()
  
   REGISTER_TEST(itkConformalFlatteningMeshFilterTest);
 
+  REGISTER_TEST(itkVTKPolyDataIOQuadEdgeMeshTest);
   REGISTER_TEST(itkVTKPolyDataReaderQuadEdgeMeshTest);
   REGISTER_TEST(itkVTKPolyDataReaderTest);
   REGISTER_TEST(itkVTKPolyDataWriterTest);
@@ -82,7 +73,18 @@ void RegisterTests()
   REGISTER_TEST(itkBinaryMorphologicalClosingImageFilterTest);
   REGISTER_TEST(itkBinaryMorphologicalOpeningImageFilterTest);
 
+  REGISTER_TEST(itkOptImageToImageMetricsTest);
+  REGISTER_TEST(itkTimeAndMemoryProbeTest);
+
+#ifdef ITK_USE_REVIEW
+
 #ifdef ITK_USE_MINC2
   REGISTER_TEST(itkMINC2ImageIOTest);
 #endif 
+
+#ifdef ITK_USE_TRANSFORM_IO_FACTORIES
+  REGISTER_TEST(itkTransformFileReaderWriterTest);
+#endif
+
+#endif
 }

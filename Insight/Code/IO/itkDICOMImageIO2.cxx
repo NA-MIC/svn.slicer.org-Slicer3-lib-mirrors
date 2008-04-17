@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDICOMImageIO2.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:48 $
-  Version:   $Revision: 1.28 $  
+  Date:      $Date: 2008-01-25 00:00:05 $
+  Version:   $Revision: 1.29 $  
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -82,7 +82,7 @@ void DICOMImageIO2::ReadDataCallback( doublebyte,
                                       unsigned char* val,
                                       quadbyte len)
 {
-  unsigned int imageBytes = this->GetImageSizeInBytes();
+  unsigned int imageBytes = static_cast<unsigned int>( this->GetImageSizeInBytes() );
   if (len < 0)
     {
     len = 0;

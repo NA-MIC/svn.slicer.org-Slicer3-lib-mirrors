@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBioGeneNetworkTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:02 $
+  Date:      $Date: 2003-09-10 14:30:02 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

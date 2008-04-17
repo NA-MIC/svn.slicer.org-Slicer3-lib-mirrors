@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPDEDeformableRegistrationFunction.h,v $
   Language:  C++
-  Date:      $Date: 2005/03/12 01:46:56 $
+  Date:      $Date: 2005-03-12 01:46:56 $
   Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

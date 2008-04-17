@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageIOBase.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/15 18:29:56 $
-  Version:   $Revision: 1.47 $
+  Date:      $Date: 2008-01-21 17:11:44 $
+  Version:   $Revision: 1.48 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -81,7 +81,7 @@ public:
    * SCALAR, VECTOR to SCALAR). */
   typedef  enum {UNKNOWNPIXELTYPE,SCALAR,RGB,RGBA,OFFSET,VECTOR,
                  POINT,COVARIANTVECTOR,SYMMETRICSECONDRANKTENSOR,
-                 DIFFUSIONTENSOR3D,COMPLEX,FIXEDARRAY}  IOPixelType;
+                 DIFFUSIONTENSOR3D,COMPLEX,FIXEDARRAY,MATRIX}  IOPixelType;
 
   /** Enums used to manipulate the component type. The component type
    * refers to the actual storage class associated with either a

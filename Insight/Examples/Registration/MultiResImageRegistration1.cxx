@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: MultiResImageRegistration1.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/12 22:08:29 $
-  Version:   $Revision: 1.46 $
+  Date:      $Date: 2008-04-11 21:17:49 $
+  Version:   $Revision: 1.52 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -215,17 +215,20 @@ public:
     OptimizerPointer optimizer = dynamic_cast< OptimizerPointer >( 
                        registration->GetOptimizer() );
 
+    std::cout << "-------------------------------------" << std::endl;
+    std::cout << "MultiResolution Level : "
+              << registration->GetCurrentLevel()  << std::endl;
+    std::cout << std::endl;
+
     if ( registration->GetCurrentLevel() == 0 )
       {
       optimizer->SetMaximumStepLength( 16.00 );  
-      optimizer->SetMinimumStepLength( 2.5 );
+      optimizer->SetMinimumStepLength( 0.01 );
       }
     else
       {
-      optimizer->SetMaximumStepLength( 
-                optimizer->GetCurrentStepLength() );
-      optimizer->SetMinimumStepLength(
-                optimizer->GetMinimumStepLength() / 10.0 );
+      optimizer->SetMaximumStepLength( optimizer->GetMaximumStepLength() / 4.0 );
+      optimizer->SetMinimumStepLength( optimizer->GetMinimumStepLength() / 10.0 );
       }
   }
 // Software Guide : EndCodeSnippet
@@ -287,8 +290,10 @@ int main( int argc, char *argv[] )
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " fixedImageFile  movingImageFile ";
-    std::cerr << "outputImagefile [checkerBoardBefore] [checkerBoardAfter]" 
-      << std::endl;
+    std::cerr << " outputImagefile [backgroundGrayLevel]";
+    std::cerr << " [checkerBoardBefore] [checkerBoardAfter]";
+    std::cerr << " [useExplicitPDFderivatives ] " << std::endl;
+    std::cerr << " [numberOfBins] [numberOfSamples ] " << std::endl;
     return EXIT_FAILURE;
     }
   
@@ -432,8 +437,21 @@ int main( int argc, char *argv[] )
   
   registration->SetInitialTransformParameters( initialParameters );
 
-  metric->SetNumberOfHistogramBins( 20 );
-  metric->SetNumberOfSpatialSamples( 10000 );
+  metric->SetNumberOfHistogramBins( 128 );
+  metric->SetNumberOfSpatialSamples( 50000 );
+
+  if( argc > 8 )
+    {
+    // optionally, override the values with numbers taken from the command line arguments.
+    metric->SetNumberOfHistogramBins( atoi( argv[8] ) );
+    }
+
+  if( argc > 9 )
+    {
+    // optionally, override the values with numbers taken from the command line arguments.
+    metric->SetNumberOfSpatialSamples( atoi( argv[9] ) );
+    }
+
 
  //  Software Guide : BeginLatex
   //  
@@ -449,7 +467,19 @@ int main( int argc, char *argv[] )
   metric->ReinitializeSeed( 76926294 );
   // Software Guide : EndCodeSnippet
  
+
+  if( argc > 7 )
+    {
+    // Define whether to calculate the metric derivative by explicitly
+    // computing the derivatives of the joint PDF with respect to the Transform
+    // parameters, or doing it by progressively accumulating contributions from
+    // each bin in the joint PDF.
+    metric->SetUseExplicitPDFDerivatives( atoi( argv[7] ) );
+    }
+
+
   optimizer->SetNumberOfIterations( 200 );
+  optimizer->SetRelaxationFactor( 0.9 );
 
 
   // Create the Command observer and register it with the optimizer.
@@ -575,10 +605,17 @@ int main( int argc, char *argv[] )
 
   FixedImageType::Pointer fixedImage = fixedImageReader->GetOutput();
 
+  PixelType backgroundGrayLevel = 100;
+  if( argc > 4 )
+    {
+    backgroundGrayLevel = atoi( argv[4] );
+    }
+
   resample->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
   resample->SetOutputOrigin(  fixedImage->GetOrigin() );
   resample->SetOutputSpacing( fixedImage->GetSpacing() );
-  resample->SetDefaultPixelValue( 100 );
+  resample->SetOutputDirection( fixedImage->GetDirection() );
+  resample->SetDefaultPixelValue( backgroundGrayLevel );
 
 
   typedef  unsigned char  OutputPixelType;
@@ -623,18 +660,18 @@ int main( int argc, char *argv[] )
   identityTransform->SetIdentity();
   resample->SetTransform( identityTransform );
 
-  if( argc > 4 )
+  if( argc > 5 )
     {
-    writer->SetFileName( argv[4] );
+    writer->SetFileName( argv[5] );
     writer->Update();
     }
 
  
   // After registration
   resample->SetTransform( finalTransform );
-  if( argc > 5 )
+  if( argc > 6 )
     {
-    writer->SetFileName( argv[5] );
+    writer->SetFileName( argv[6] );
     writer->Update();
     }
 

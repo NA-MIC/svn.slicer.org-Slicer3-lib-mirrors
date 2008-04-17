@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDistanceMetric.txx,v $
   Language:  C++
-  Date:      $Date: 2005/11/21 02:40:48 $
+  Date:      $Date: 2005-11-21 02:40:48 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

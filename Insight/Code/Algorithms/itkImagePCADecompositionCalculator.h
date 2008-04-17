@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImagePCADecompositionCalculator.h,v $
   Language:  C++
-  Date:      $Date: 2005/03/21 23:04:03 $
+  Date:      $Date: 2005-03-21 23:04:03 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

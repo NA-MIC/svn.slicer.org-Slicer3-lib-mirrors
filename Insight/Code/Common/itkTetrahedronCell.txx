@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTetrahedronCell.txx,v $
   Language:  C++
-  Date:      $Date: 2007/05/17 21:00:09 $
-  Version:   $Revision: 1.46 $
+  Date:      $Date: 2008-01-07 13:33:59 $
+  Version:   $Revision: 1.47 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -186,9 +186,9 @@ TetrahedronCell< TCellInterface >
     {
     if (closestPoint)
       {
-      for(unsigned int i=0;i <PointDimension;i++)
+      for(unsigned int ii=0;ii <PointDimension;ii++)
         {
-        closestPoint[i] = x[i]; 
+        closestPoint[ii] = x[ii]; 
         }
       if(minDist2)
         {

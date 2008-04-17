@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_ITKBasicFiltersA.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/21 19:18:44 $
+  Date:      $Date: 2005-11-21 19:18:44 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

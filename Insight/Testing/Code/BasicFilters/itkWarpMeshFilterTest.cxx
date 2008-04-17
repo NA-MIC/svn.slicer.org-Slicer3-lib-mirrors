@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWarpMeshFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/11/08 23:07:21 $
+  Date:      $Date: 2004-11-08 23:07:21 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

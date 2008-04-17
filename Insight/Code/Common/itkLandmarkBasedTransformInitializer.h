@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLandmarkBasedTransformInitializer.h,v $
   Language:  C++
-  Date:      $Date: 2005/08/10 20:29:02 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-10-16 14:22:35 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -101,7 +101,7 @@ public:
   void SetFixedImage( const FixedImageType * image )
     {
     this->m_FixedImage = image;
-    itkLegacyBody( SetFixedImage, 2.2 );
+    itkLegacyBodyMacro( SetFixedImage, 2.2 );
     }
 
 
@@ -114,7 +114,7 @@ public:
   void SetMovingImage( const MovingImageType * image )
     {
     this->m_MovingImage = image;
-    itkLegacyBody( SetMovingImage, 2.2 );
+    itkLegacyBodyMacro( SetMovingImage, 2.2 );
     }
     
 

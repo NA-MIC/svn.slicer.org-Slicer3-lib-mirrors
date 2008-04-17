@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanSquaresPointSetToImageMetricTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/12/11 16:29:25 $
+  Date:      $Date: 2004-12-11 16:29:25 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

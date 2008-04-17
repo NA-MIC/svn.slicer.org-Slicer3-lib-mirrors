@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshTest3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/05 18:46:45 $
+  Date:      $Date: 2007-09-05 18:46:45 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

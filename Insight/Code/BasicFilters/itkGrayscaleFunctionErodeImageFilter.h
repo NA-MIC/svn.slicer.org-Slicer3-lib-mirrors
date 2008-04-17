@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGrayscaleFunctionErodeImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/28 19:59:05 $
+  Date:      $Date: 2006-03-28 19:59:05 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

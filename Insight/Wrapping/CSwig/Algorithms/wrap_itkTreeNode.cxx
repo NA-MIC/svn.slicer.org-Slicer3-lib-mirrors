@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_itkTreeNode.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/01/20 15:19:57 $
+  Date:      $Date: 2005-01-20 15:19:57 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHistogramAlgorithmBase.txx,v $
   Language:  C++
-  Date:      $Date: 2005/11/26 16:07:36 $
+  Date:      $Date: 2005-11-26 16:07:36 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

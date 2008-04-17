@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCurvesLevelSetImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/04 13:20:12 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-03-03 13:58:41 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -148,6 +148,10 @@ protected:
 
   CurvesLevelSetImageFilter(const Self &); // purposely not implemented
    void operator=(const Self&); //purposely not implemented
+
+  /** Overridden from Superclass to handle the case when PropagationScaling is zero.*/
+  void GenerateData();
+
 private:
   CurvesFunctionPointer m_CurvesFunction;
 };

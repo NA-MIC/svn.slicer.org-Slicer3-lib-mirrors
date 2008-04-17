@@ -3,7 +3,7 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmRLEFramesInfo.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/07/10 20:08:22 $
+  Date:      $Date: 2006-07-10 20:08:22 $
   Version:   $Revision: 1.5 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de

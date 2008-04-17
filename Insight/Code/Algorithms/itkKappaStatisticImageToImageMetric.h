@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkKappaStatisticImageToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2006/06/28 13:25:49 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -73,7 +73,10 @@ public:
   typedef typename Superclass::TransformPointer         TransformPointer;
   typedef typename Superclass::TransformParametersType  TransformParametersType;
   typedef typename Superclass::TransformJacobianType    TransformJacobianType;
+  typedef typename Superclass::GradientImageType        GradientImageType;
   typedef typename Superclass::GradientPixelType        GradientPixelType;
+  typedef typename Superclass::InputPointType           InputPointType;
+  typedef typename Superclass::OutputPointType          OutputPointType;
 
   typedef typename Superclass::MeasureType              MeasureType;
   typedef typename Superclass::DerivativeType           DerivativeType;

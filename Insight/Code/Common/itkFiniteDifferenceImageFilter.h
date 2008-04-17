@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFiniteDifferenceImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/20 22:45:41 $
-  Version:   $Revision: 1.35 $
+  Date:      $Date: 2008-03-03 13:58:50 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -155,6 +155,9 @@ public:
   typedef FiniteDifferenceFunction<TOutputImage> FiniteDifferenceFunctionType;
   typedef typename FiniteDifferenceFunctionType::TimeStepType TimeStepType;
 
+  typedef typename FiniteDifferenceFunctionType::RadiusType RadiusType;
+  typedef typename FiniteDifferenceFunctionType::NeighborhoodScalesType NeighborhoodScalesType;
+
   typedef enum { UNINITIALIZED = 0, INITIALIZED = 1 } FilterStateType;
   
   /** Get the number of elapsed iterations of the filter. */
@@ -205,8 +208,10 @@ public:
   }
   
   /** Set/Get the state of the filter. */
+#if !defined(CABLE_CONFIGURATION)
   itkSetMacro(State, FilterStateType);
   itkGetConstReferenceMacro(State, FilterStateType);
+#endif
 
   /** Require the filter to be manually reinitialized (by calling
       SetStateToUninitialized() */

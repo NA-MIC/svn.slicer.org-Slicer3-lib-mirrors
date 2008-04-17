@@ -3,13 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConvertPixelBuffer.h,v $
   Language:  C++
-<<<<<<< itkConvertPixelBuffer.h
-  Date:      $Date: 2007/03/22 14:28:48 $
-  Version:   $Revision: 1.9 $
-=======
-  Date:      $Date: 2008-01-17 10:55:53 $
-  Version:   $Revision: 1.9.2.1 $
->>>>>>> 1.9.2.1
+  Date:      $Date: 2008-03-29 19:33:14 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -121,7 +116,16 @@ protected:
                                OutputPixelType* outputData , int size);
   static void ConvertTensor9ToTensor6(InputPixelType* inputData, 
                                OutputPixelType* outputData , int size);
-    
+
+  /** Convertions related to complex */
+  static void ConvertGrayToComplex(InputPixelType * inputData,
+                                OutputPixelType * OutputData, int size);
+  static void ConvertComplexToComplex(InputPixelType* inputData, 
+                                OutputPixelType* outputData , int size);
+  static void ConvertMultiComponentToComplex(InputPixelType* inputData, 
+                                int inputNumberOfComponents,
+                                OutputPixelType* outputData , int size);
+
 private:
   ConvertPixelBuffer();
   ~ConvertPixelBuffer();

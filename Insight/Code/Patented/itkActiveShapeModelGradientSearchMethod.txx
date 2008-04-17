@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkActiveShapeModelGradientSearchMethod.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 18:06:26 $
+  Date:      $Date: 2007-08-17 18:06:26 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

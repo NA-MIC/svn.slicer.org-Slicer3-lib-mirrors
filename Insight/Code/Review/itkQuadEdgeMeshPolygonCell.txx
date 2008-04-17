@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshPolygonCell.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/28 15:53:46 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008-01-11 18:30:38 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -49,7 +49,7 @@ QuadEdgeMeshPolygonCell< TCellInterface >
   // Last topological connection, i.e., close the face
   m_EdgeRingEntry->Splice( last->GetSym() );
   
-  MakePointIds( );
+  //MakePointIds( );
 
 }
 
@@ -61,7 +61,7 @@ QuadEdgeMeshPolygonCell< TCellInterface >
   this->m_Ident = 0;
   this->m_EdgeRingEntry = e;
 
-  MakePointIds( );
+  //MakePointIds( );
 }
 
 // ---------------------------------------------------------------------

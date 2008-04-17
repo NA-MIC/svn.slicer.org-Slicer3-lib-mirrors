@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientMagnitudeImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/27 17:01:10 $
+  Date:      $Date: 2006-03-27 17:01:10 $
   Version:   $Revision: 1.28 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

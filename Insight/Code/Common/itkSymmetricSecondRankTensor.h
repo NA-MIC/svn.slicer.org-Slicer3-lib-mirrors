@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSymmetricSecondRankTensor.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:09 $
-  Version:   $Revision: 1.23 $
+  Date:      $Date: 2008-03-10 22:48:13 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -22,9 +22,9 @@
 #undef SymmetricSecondRankTensor
 #endif
 
-#include <itkIndent.h>
-#include <itkFixedArray.h>
-#include <itkMatrix.h>
+#include "itkIndent.h"
+#include "itkFixedArray.h"
+#include "itkMatrix.h"
 #include "itkSymmetricEigenAnalysis.h"
 
 namespace itk
@@ -164,10 +164,17 @@ public:
   void ComputeEigenAnalysis( EigenValuesArrayType & eigenValues,
                              EigenVectorsMatrixType & eigenVectors ) const;
 
+  /** Pre-Multiply by a Matrix as ResultingTensor = Matrix * ThisTensor. */
+  Self PreMultiply( const MatrixType & m ) const;
+
+  /** Post-Multiply by a Matrix as ResultingTensor = ThisTensor * Matrix. */
+  Self PostMultiply( const MatrixType & m ) const;
+
 private:
 
   
 };
+
 
 /** This extra typedef is necessary for preventing an Internal Compiler Error in
  * Microsoft Visual C++ 6.0. This typedef is not needed for any other compiler. */
@@ -181,14 +188,7 @@ template< typename TComponent, unsigned int NDimension  >
 ITK_EXPORT InputStreamType& operator>>(InputStreamType& is, 
                     SymmetricSecondRankTensor<TComponent,NDimension> & c); 
 
-template <typename TValueType, unsigned int VLength>
-inline SymmetricSecondRankTensor< TValueType, VLength> operator* 
-    (double d, const SymmetricSecondRankTensor< TValueType, VLength > & f)
-{
-  return f * d;
-}
-
-
+   
 
 } // end namespace itk
 

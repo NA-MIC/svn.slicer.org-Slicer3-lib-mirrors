@@ -1,4 +1,4 @@
-/* $Header: /cvsroot/Insight/Insight/Utilities/itktiff/tif_extension.c,v 1.2 2007/01/04 16:46:32 ibanez Exp $ */
+/* $Header: /cvsroot/Insight/Insight/Utilities/itktiff/tif_extension.c,v 1.2 2007-01-04 16:46:32 ibanez Exp $ */
 
 /*
  * Copyright (c) 1988-1997 Sam Leffler

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMinMaxCurvatureFlowImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:35 $
+  Date:      $Date: 2003-09-10 14:28:35 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

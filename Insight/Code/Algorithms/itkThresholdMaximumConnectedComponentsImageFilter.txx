@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkThresholdMaximumConnectedComponentsImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/27 19:05:39 $
+  Date:      $Date: 2007-04-27 19:05:39 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

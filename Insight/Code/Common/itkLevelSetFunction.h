@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLevelSetFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:08 $
-  Version:   $Revision: 1.23 $
+  Date:      $Date: 2008-03-03 13:58:51 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -85,8 +85,10 @@ public:
   typedef typename Superclass::ImageType  ImageType;
   typedef typename Superclass::PixelType  PixelType;
   typedef                      PixelType  ScalarValueType;
+  typedef typename Superclass::PixelRealType  PixelRealType;
   typedef typename Superclass::RadiusType RadiusType;
   typedef typename Superclass::NeighborhoodType NeighborhoodType;
+  typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
   typedef typename Superclass::FloatOffsetType FloatOffsetType;
 
   /** The vector type that will be used in the calculations. */

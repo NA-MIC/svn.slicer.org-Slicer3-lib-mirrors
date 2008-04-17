@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransformIOTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/21 17:26:47 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-01-28 15:06:32 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -80,11 +80,11 @@ static int oneTest(const char *goodname,const char *badname)
     {
     itk::TransformFileReader::TransformListType *list;
     list = reader->GetTransformList();
-    itk::TransformFileReader::TransformListType::iterator i = list->begin();
-    while ( i != list->end() )
+    itk::TransformFileReader::TransformListType::iterator lit = list->begin();
+    while ( lit != list->end() )
       {
-      (*i)->Print ( std::cout );
-      i++;
+      (*lit)->Print ( std::cout );
+      lit++;
       }
     }
   catch( itk::ExceptionObject & excp )

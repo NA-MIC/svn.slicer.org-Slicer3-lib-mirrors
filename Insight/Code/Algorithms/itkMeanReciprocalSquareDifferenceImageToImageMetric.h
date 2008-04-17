@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanReciprocalSquareDifferenceImageToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2004/05/14 15:03:03 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -67,6 +67,8 @@ public:
   typedef typename Superclass::TransformPointer         TransformPointer;
   typedef typename Superclass::TransformParametersType  TransformParametersType;
   typedef typename Superclass::TransformJacobianType    TransformJacobianType;
+  typedef typename Superclass::InputPointType           InputPointType;
+  typedef typename Superclass::OutputPointType          OutputPointType;
 
   typedef typename Superclass::MeasureType              MeasureType;
   typedef typename Superclass::DerivativeType           DerivativeType;

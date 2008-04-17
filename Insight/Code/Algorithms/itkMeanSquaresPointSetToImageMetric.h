@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanSquaresPointSetToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2005/03/29 18:55:24 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008-02-03 04:05:29 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -64,6 +64,8 @@ public:
   typedef typename Superclass::TransformParametersType    TransformParametersType;
   typedef typename Superclass::TransformJacobianType      TransformJacobianType;
   typedef typename Superclass::GradientPixelType          GradientPixelType;
+  typedef typename Superclass::InputPointType             InputPointType;
+  typedef typename Superclass::OutputPointType            OutputPointType;
 
   typedef typename Superclass::MeasureType                MeasureType;
   typedef typename Superclass::DerivativeType             DerivativeType;

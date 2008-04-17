@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLineSpatialObject.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:38 $
-  Version:   $Revision: 1.23 $
+  Date:      $Date: 2008-01-07 21:48:41 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -121,8 +121,8 @@ LineSpatialObject< TDimension >
 
       while(it!= end)
         { 
-        PointType pt = this->GetIndexToWorldTransform()->TransformPoint(
-                                                       (*it).GetPosition());
+        pt = this->GetIndexToWorldTransform()->TransformPoint(
+          (*it).GetPosition());
         const_cast<BoundingBoxType *>(this->GetBounds())->ConsiderPoint(pt);
         it++;
         }

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBoundaryConditionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 13:00:21 $
+  Date:      $Date: 2007-08-20 13:00:21 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkSampleClassifierWithMaskTest.cxx,v $
 Language:  C++
-Date:      $Date: 2005/08/24 15:16:19 $
+Date:      $Date: 2005-08-24 15:16:19 $
 Version:   $Revision: 1.7 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.

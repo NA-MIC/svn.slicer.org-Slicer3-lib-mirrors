@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: HoughTransform2DCirclesImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/31 14:58:37 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-02-01 13:09:18 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -244,10 +244,10 @@ int main( int argc, char *argv[] )
       localIndex[1] =
          (long int)((*itCircles)->GetObjectToParentTransform()->GetOffset()[1] 
                                   + (*itCircles)->GetRadius()[0]*sin(angle));
-      OutputImageType::RegionType region =
+      OutputImageType::RegionType outputRegion =
                                   localOutputImage->GetLargestPossibleRegion();
 
-      if( region.IsInside( localIndex ) )
+      if( outputRegion.IsInside( localIndex ) )
         {
         localOutputImage->SetPixel( localIndex, 255 );
         }

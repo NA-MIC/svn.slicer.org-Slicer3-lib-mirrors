@@ -3,7 +3,7 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkSampleToHistogramProjectionFilter.txx,v $
 Language:  C++
-Date:      $Date: 2007/01/26 12:11:36 $
+Date:      $Date: 2007-01-26 12:11:36 $
 Version:   $Revision: 1.15 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.

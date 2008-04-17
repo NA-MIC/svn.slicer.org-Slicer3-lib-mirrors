@@ -1,4 +1,4 @@
-/* $Id: tif_fax3.c,v 1.3 2007/01/07 23:41:49 ibanez Exp $ */
+/* $Id: tif_fax3.c,v 1.3 2007-01-07 23:41:49 ibanez Exp $ */
 
 /*
  * Copyright (c) 1990-1997 Sam Leffler

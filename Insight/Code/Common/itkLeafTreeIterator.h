@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLeafTreeIterator.h,v $
   Language:  C++
-  Date:      $Date: 2004/12/11 20:29:18 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008-01-29 15:27:42 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -28,10 +28,11 @@ class LeafTreeIterator : public TreeIteratorBase<TTreeType>
 public:
 
   /** Typedefs*/
-  typedef TreeIteratorBase<TTreeType> Superclass;
-  typedef TTreeType TreeType;
-  typedef typename TreeType::ValueType ValueType;
-  typedef TreeNode<ValueType>  TreeNodeType;
+  typedef LeafTreeIterator                Self;
+  typedef TreeIteratorBase<TTreeType>     Superclass;
+  typedef TTreeType                       TreeType;
+  typedef typename TreeType::ValueType    ValueType;
+  typedef TreeNode<ValueType>             TreeNodeType;
 
   /** Constructor */
   LeafTreeIterator( const TreeType* tree );

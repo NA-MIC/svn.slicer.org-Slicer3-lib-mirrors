@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKImageImport.txx,v $
   Language:  C++
-  Date:      $Date: 2004/07/11 16:53:31 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2007-10-05 10:29:23 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -66,6 +66,10 @@ VTKImageImport<TOutputImage>
   else if(typeid(ScalarType) == typeid(char))
     {
     m_ScalarTypeName = "char";
+    }
+  else if(typeid(ScalarType) == typeid(signed char))
+    {
+    m_ScalarTypeName = "signed char";
     }
   else if(typeid(ScalarType) == typeid(unsigned char))
     {

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: metaCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/11 21:26:38 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2008-03-19 20:42:12 $
+  Version:   $Revision: 1.50 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,11 +21,22 @@
 #include "metaCommand.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <string>
 
 #if (METAIO_USE_NAMESPACE)
 namespace METAIO_NAMESPACE {
 #endif
+
+#ifdef METAIO_USE_LIBXML2
+#include <libxml/xmlwriter.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
+#include <libxml/tree.h>
+#endif
+
 
 MetaCommand::
 MetaCommand()
@@ -47,7 +58,7 @@ MetaCommand()
 }
 
 
-/** Extract the date from the $Date: 2007/09/11 21:26:38 $ cvs command */
+/** Extract the date from a CVS Date keyword/value pair.  */
 METAIO_STL::string MetaCommand::
 ExtractDateFromCVS(METAIO_STL::string date)
 {
@@ -70,7 +81,7 @@ SetDateFromCVS(METAIO_STL::string cvsDate)
   this->SetDate( this->ExtractDateFromCVS( cvsDate ).c_str() );
 }
 
-/** Extract the version from the $Revision: 1.36 $ cvs command */
+/** Extract the version from a CVS Revision keyword/value pair.  */
 METAIO_STL::string MetaCommand::
 ExtractVersionFromCVS(METAIO_STL::string version)
 {
@@ -116,13 +127,13 @@ SetOption(METAIO_STL::string name,
     }*/
   if(!m_DisableDeprecatedWarnings && shortTag.size()>1)
     {
-    std::cout << "Warning: as of August 23, 2007 MetaCommand::SetOption()"
+    METAIO_STREAM::cout << "Warning: as of August 23, 2007 MetaCommand::SetOption()"
               << " is expecting a shortTag of exactly one character."
               << " You should use the SetOptionLongTag(optionName,longTagName)"
               << " if you want to use a longer tag. The longtag will be"
               << " refered as --LongTag and the short tag as -ShortTag."
               << " Replace -" << shortTag << " by --" << shortTag 
-              << std::endl;
+              << METAIO_STREAM::endl;
     }
 
   Option option;
@@ -162,13 +173,13 @@ SetOption(METAIO_STL::string name,
 
   if(!m_DisableDeprecatedWarnings && shortTag.size()>1)
     {
-    std::cout << "Warning: as of August 23, 2007 MetaCommand::SetOption() "
+    METAIO_STREAM::cout << "Warning: as of August 23, 2007 MetaCommand::SetOption() "
               << " is expecting a shortTag of exactly one character."
               << " You should use the SetOptionLongTag(optionName,longTagName)"
               << " if you want to use a longer tag. The longtag will be "
               << " refered as --LongTag and the short tag as -ShortTag "
               << " Replace -" << shortTag << " by --" << shortTag 
-              << std::endl;
+              << METAIO_STREAM::endl;
     }
 
   Option option;
@@ -316,7 +327,7 @@ AddOptionField(METAIO_STL::string optionName,
     }
   return false;
 }
-
+                      
 /** Set the range of an option */
 bool MetaCommand::
 SetOptionRange(METAIO_STL::string optionName,
@@ -758,7 +769,7 @@ void MetaCommand::ListOptionsXML()
                           << METAIO_STREAM::endl;
       METAIO_STREAM::cout << "<description>" << (*itField).description.c_str() 
                           << "</description>" << METAIO_STREAM::endl;
-      METAIO_STREAM::cout << "<type>" 
+      METAIO_STREAM::cout << "<type>"
                           << this->TypeToString((*itField).type).c_str() 
                           << "</type>" << METAIO_STREAM::endl;
       METAIO_STREAM::cout << "<value>" << (*itField).value.c_str() 
@@ -812,21 +823,40 @@ void MetaCommand::WriteXMLOptionToCout(METAIO_STL::string optionName,
 
   METAIO_STL::vector<Field>::const_iterator itField = (*it).fields.begin();
 
+  METAIO_STL::string optionType = "";
+
   if((*itField).type == MetaCommand::STRING
      && ( (*itField).externaldata == MetaCommand::DATA_IN
      || (*itField).externaldata == MetaCommand::DATA_OUT))
     {
-    METAIO_STREAM::cout << "<image>" << METAIO_STREAM::endl;
+    optionType = "image";
+    }
+  else if((*itField).type == MetaCommand::FLAG)
+    {
+    optionType = "boolean";
+    }
+  else if((*itField).type == MetaCommand::INT)
+    {
+    optionType = "integer";
     }
   else
     {
-    METAIO_STREAM::cout << "<" << this->TypeToString((*itField).type).c_str() << ">"
-                        << METAIO_STREAM::endl;
+    optionType = this->TypeToString((*itField).type).c_str();
     }
+
+  METAIO_STREAM::cout << "<" << optionType << ">" << METAIO_STREAM::endl;
+ 
+
   METAIO_STREAM::cout << "<name>" << (*it).name.c_str() << "</name>" 
                       << METAIO_STREAM::endl;
   // Label is the description for now
-  METAIO_STREAM::cout << "<label>" << (*it).description.c_str() << "</label>" 
+  METAIO_STL::string label = (*it).label;
+  if(label.size()==0)
+    {
+    label = (*it).name;
+    }
+
+  METAIO_STREAM::cout << "<label>" << label.c_str() << "</label>" 
                       << METAIO_STREAM::endl;
   METAIO_STREAM::cout << "<description>" << (*it).description.c_str() 
                       << "</description>" << METAIO_STREAM::endl;
@@ -861,18 +891,8 @@ void MetaCommand::WriteXMLOptionToCout(METAIO_STL::string optionName,
     METAIO_STREAM::cout << "<channel>output</channel>" << METAIO_STREAM::endl;
     } 
       
-      
-  if((*itField).type == MetaCommand::STRING
-     && ( (*itField).externaldata == MetaCommand::DATA_IN
-        || (*itField).externaldata == MetaCommand::DATA_OUT))
-    {
-    METAIO_STREAM::cout << "</image>" << METAIO_STREAM::endl;
-    }
-  else
-    {
-    METAIO_STREAM::cout << "</" << this->TypeToString((*itField).type).c_str() << ">"
-                        << METAIO_STREAM::endl;
-    }
+  // Write out the closing tag 
+  METAIO_STREAM::cout << "</" << optionType << ">" << METAIO_STREAM::endl;
 }
 
 /** List the current options in Slicer's xml format (www.slicer.org) */
@@ -1061,9 +1081,11 @@ ParseXML(const char* buffer)
 
 /** List the current options */
 void MetaCommand::
-ListOptionsSimplified()
+ListOptionsSimplified(bool extended)
 {
-  METAIO_STREAM::cout << " System tags: " << METAIO_STREAM::endl
+  if(extended)
+    {
+    METAIO_STREAM::cout << " System tags: " << METAIO_STREAM::endl
             << "   [ -v ] or [ -h ]" 
             << METAIO_STREAM::endl
             << "      = List options in short format" 
@@ -1090,8 +1112,15 @@ ListOptionsSimplified()
             << METAIO_STREAM::endl
             << "   [ -date ]" 
             << METAIO_STREAM::endl
-            << "      = return the cvs checkout date" 
-            << METAIO_STREAM::endl;
+            << "      = return the cvs checkout date"
+#ifdef METAIO_USE_LIBXML2
+            << METAIO_STREAM::endl
+            << "   [ --loadArguments filename ]"           
+            << "      = load the arguments from an XML file" 
+#endif     
+            << METAIO_STREAM::endl;       
+     }
+     
   int count = 0;
   int ntags = 0;
   int nfields = 0;
@@ -1140,7 +1169,7 @@ ListOptionsSimplified()
     while(it != m_OptionVector.end())
       {
       if( (count == 1 && ( (*it).tag.size() > 0 || (*it).longtag.size() > 0 ))
-         || (count == 2 && ( (*it).tag.size() == 0 || (*it).longtag.size() == 0 )) )
+         || (count == 2 && ( (*it).tag.size() == 0 && (*it).longtag.size() == 0 )) )
         {
         if(!(*it).required)
           {
@@ -1624,13 +1653,26 @@ bool MetaCommand::Parse(int argc, char* argv[])
       {
       METAIO_STREAM::cout << "Usage : " << argv[0] << METAIO_STREAM::endl; 
       this->ListOptions();
-      continue;
+      return true;
       }
     // List the options if using -v
     if(!strcmp(argv[i],"-v") || !strcmp(argv[i],"-h"))
       {
       METAIO_STREAM::cout << "Usage : " << argv[0] << METAIO_STREAM::endl; 
       this->ListOptionsSimplified();
+      return true;
+      }
+    // List the options if using -v
+    if(!strcmp(argv[i],"--loadArguments"))
+      {
+      if((i+1)>=(unsigned int)argc)
+        {
+        METAIO_STREAM::cout << "--loadArguments expected a filename as argument" 
+                            << METAIO_STREAM::endl; 
+        return false;
+        }
+      this->LoadArgumentsFromXML(argv[i+1]);
+      i++;
       continue;
       }
     if(!strcmp(argv[i],"-vxml") 
@@ -1844,7 +1886,7 @@ bool MetaCommand::Parse(int argc, char* argv[])
                               << m_OptionVector[currentOption].name.c_str()
                               << " expect a value and got tag: " << argv[i] 
                               << METAIO_STREAM::endl;
-          this->ListOptionsSimplified();
+          this->ListOptionsSimplified(false);
           return false;
           }
 
@@ -1907,8 +1949,7 @@ bool MetaCommand::Parse(int argc, char* argv[])
                         << m_OptionVector[currentOption].name.c_str()
                         << METAIO_STREAM::endl;
     METAIO_STREAM::cout << "Usage: " << argv[0] << METAIO_STREAM::endl;
-    this->ListOptionsSimplified();
-
+    this->ListOptionsSimplified(false);
     return false;
     }
 
@@ -1964,8 +2005,8 @@ bool MetaCommand::Parse(int argc, char* argv[])
 
   if(requiredAndNotDefined)
     {
-    METAIO_STREAM::cout << "Command: " << argv[0] << METAIO_STREAM::endl;
-    this->ListOptionsSimplified();
+    //METAIO_STREAM::cout << "Command: " << argv[0] << METAIO_STREAM::endl;
+    this->ListOptionsSimplified(false);
     return false;
     }
 
@@ -2042,6 +2083,10 @@ METAIO_STL::string MetaCommand::TypeToString(TypeEnumType type)
       return "flag";
     case BOOL:
       return "boolean";
+    case IMAGE:
+      return "image";
+    case FILE:
+      return "file";
     default:
       return "not defined";
     }
@@ -2096,6 +2141,24 @@ bool MetaCommand::SetOptionLongTag(METAIO_STL::string optionName,
   return false;
 }
 
+/** Set the label for the option */
+bool MetaCommand::SetOptionLabel(METAIO_STL::string optionName,
+                                 METAIO_STL::string label)
+{
+  OptionVector::iterator itOption = m_OptionVector.begin();
+  while(itOption != m_OptionVector.end())
+    {
+    if(!strcmp((*itOption).name.c_str(),optionName.c_str()))
+      {
+      (*itOption).label = label;
+      return true;
+      }
+    itOption++;
+    }
+
+  return false;
+}
+
 /** Set the group for a field or an option
  *  If the group doesn't exist it is automatically created. */
 bool MetaCommand::SetParameterGroup(METAIO_STL::string optionName,
@@ -2131,17 +2194,17 @@ bool MetaCommand::SetParameterGroup(METAIO_STL::string optionName,
 
   if(!optionExists)
     {
-    std::cout << "The option " << optionName << " doesn't exist" << std::endl;
+    METAIO_STREAM::cout << "The option " << optionName << " doesn't exist" << METAIO_STREAM::endl;
     return false;
     }
    
   if(!group)
     {
-    ParameterGroup group;
-    group.name = groupName;
-    group.description = groupDescription;
-    group.options.push_back(optionName);
-    m_ParameterGroup.push_back(group);
+    ParameterGroup pgroup;
+    pgroup.name = groupName;
+    pgroup.description = groupDescription;
+    pgroup.options.push_back(optionName);
+    m_ParameterGroup.push_back(pgroup);
     }
   else
     {
@@ -2150,6 +2213,138 @@ bool MetaCommand::SetParameterGroup(METAIO_STL::string optionName,
  
   return true;
 }
+
+/** Load arguments from XML file */
+bool MetaCommand::LoadArgumentsFromXML(const char* filename,
+                                       bool createMissingArguments)
+{
+#ifdef METAIO_USE_LIBXML2
+  xmlDocPtr doc;
+  xmlNodePtr cur;
+  doc = xmlParseFile(filename);
+
+  if (doc == NULL )
+    {
+    METAIO_STREAM::cerr << "Cannot parse XML file" << METAIO_STREAM::endl;
+    return false;
+    }
+
+  cur = xmlDocGetRootElement(doc);
+
+  if (cur == NULL)
+    {
+    METAIO_STREAM::cerr << "XML document is empty" << METAIO_STREAM::endl;
+    xmlFreeDoc(doc);
+    return false;
+    }
+  if (xmlStrcmp(cur->name, (const xmlChar *) "MetaCommand"))
+    {
+    METAIO_STREAM::cerr << "document of the wrong type. Root node shoule be MetaCommand" << METAIO_STREAM::endl;
+    xmlFreeDoc(doc);
+    return false;
+    }
+  xmlCleanupParser();
+  
+  // Simple parsing (two levels hierarchy)
+  cur = cur->children;
+  while(cur)
+    {
+    xmlNodePtr child = cur->children;
+    if(child)
+      {
+      xmlNodePtr subargument = child->next;
+      while(subargument)
+        {
+        xmlNodePtr subargumentChild = subargument->children;
+        if(subargumentChild && subargumentChild->content)
+          {
+          this->SetOptionValue((const char*)cur->name,
+                               (const char*)subargument->name,
+                               (const char*)subargumentChild->content,
+                               createMissingArguments
+                               );
+          }
+        subargument = subargument->next;          
+        }
+      
+      if(child->content)
+        {
+        this->SetOptionValue((const char*)cur->name,
+                             (const char*)cur->name,
+                             (const char*)child->content,
+                             createMissingArguments);
+        }
+      }
+    cur = cur->next;
+    }
+
+#else 
+  METAIO_STREAM::cout << "LoadArguments(" << filename << ") requires libxml2" << METAIO_STREAM::endl; 
+  if(createMissingArguments)
+    {
+    }
+   
+#endif
+  return true;
+}
+
+/** Set the value of an option or a field
+ *  This is used when importing command line arguments
+ *  from XML */
+bool MetaCommand::SetOptionValue(const char* optionName,
+                                 const char* name, 
+                                 const char* value,
+                                 bool createMissingArgument)
+{
+  OptionVector::iterator it = m_OptionVector.begin();
+  while(it != m_OptionVector.end())
+    {
+    if((*it).name == optionName)
+      {
+      (*it).userDefined = true;
+      METAIO_STL::vector<Field> & fields = (*it).fields;
+      METAIO_STL::vector<Field>::iterator itField = fields.begin();
+      while(itField != fields.end())
+        {
+        if((*itField).name == name)
+          {
+          (*itField).userDefined = true;
+          (*itField).value = value;
+          return true;
+          }
+        itField++;
+        }
+      }
+    it++;
+    }
+ 
+  if(createMissingArgument)
+    {
+    Option option;
+    option.tag = "";
+    option.longtag = optionName;
+    option.name = optionName;
+    option.required = false;
+    option.description = "";
+    option.userDefined = true;
+    option.complete = false;
+    
+    Field field;
+    field.name = name;
+    field.externaldata = DATA_NONE;
+    field.type = STRING;
+    field.value = value;
+    field.userDefined = true;
+    field.required = false;
+    field.rangeMin = "";
+    field.rangeMax = "";
+    option.fields.push_back(field);
+    m_OptionVector.push_back(option);  
+    }   
+    
+  return false;
+}
+
 
 #if (METAIO_USE_NAMESPACE)
 };

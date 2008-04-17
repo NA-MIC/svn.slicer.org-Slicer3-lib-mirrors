@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: testMetaArray.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/01 14:57:38 $
+  Date:      $Date: 2006-11-01 14:57:38 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

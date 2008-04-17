@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaSceneConverter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/08 18:56:26 $
+  Date:      $Date: 2007-08-08 18:56:26 $
   Version:   $Revision: 1.25 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

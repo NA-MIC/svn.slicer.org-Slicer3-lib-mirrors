@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTxtTransformIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/10 16:30:14 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-04-05 15:22:57 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -36,7 +36,10 @@ bool
 TxtTransformIO::
 CanReadFile(const char *fileName)
 {
-  return (itksys::SystemTools::GetFilenameLastExtension(fileName) == ".txt");
+  bool recognizedExtension = false;
+  recognizedExtension |= (itksys::SystemTools::GetFilenameLastExtension(fileName) == ".txt");
+  recognizedExtension |= (itksys::SystemTools::GetFilenameLastExtension(fileName) == ".tfm");
+  return recognizedExtension;
   
 }
 

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWeightedMeanCalculator.txx,v $
   Language:  C++
-  Date:      $Date: 2005/07/26 15:55:07 $
+  Date:      $Date: 2005-07-26 15:55:07 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

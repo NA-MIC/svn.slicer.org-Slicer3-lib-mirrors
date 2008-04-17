@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToCooccurrenceListAdaptor.h,v $
   Language:  C++
-  Date:      $Date: 2005/07/28 14:34:29 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-01-16 19:08:02 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -110,10 +110,11 @@ public:
 
   /** Superclass typedefs for Measurement vector, measurement, 
    * Instance Identifier, frequency, size, size element value */
-  typedef typename Superclass::FrequencyType FrequencyType ;
-  typedef typename Superclass::MeasurementType MeasurementType ;
+  typedef typename Superclass::PixelType          PixelType ;
+  typedef typename Superclass::FrequencyType      FrequencyType ;
+  typedef typename Superclass::MeasurementType    MeasurementType ;
   typedef typename Superclass::InstanceIdentifier InstanceIdentifier ;
-  typedef MeasurementVectorType ValueType ;
+  typedef MeasurementVectorType                   ValueType ;
 
   /** Image dimension. */
   itkStaticConstMacro(ImageDimension, unsigned int,

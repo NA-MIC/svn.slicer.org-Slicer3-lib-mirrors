@@ -3,7 +3,7 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmDictEntry.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/20 17:53:28 $
+  Date:      $Date: 2006-02-20 17:53:28 $
   Version:   $Revision: 1.5 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGiplImageIOFactory.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:50 $
+  Date:      $Date: 2007-03-22 14:28:50 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

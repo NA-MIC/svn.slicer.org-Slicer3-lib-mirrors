@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNormalizeImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/13 10:21:01 $
+  Date:      $Date: 2007-02-13 10:21:01 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

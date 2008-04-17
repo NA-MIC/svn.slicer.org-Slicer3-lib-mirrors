@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCorrespondenceDataStructure.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 23:23:19 $
+  Date:      $Date: 2006-03-19 23:23:19 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

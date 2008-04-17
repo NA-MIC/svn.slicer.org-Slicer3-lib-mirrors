@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDeformableMesh3DFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:53 $
-  Version:   $Revision: 1.55 $
+  Date:      $Date: 2008-02-01 13:10:27 $
+  Version:   $Revision: 1.56 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -475,7 +475,7 @@ DeformableMesh3DFilter<TInputMesh, TOutputMesh>
     ++points;
     } 
 
-  for (int i=0; i<m_NumberOfCells; i++) 
+  for (i=0; i<m_NumberOfCells; i++) 
     {
     tp = cells.Value()->GetPointIds();
     tripoints[0] = tp[0];

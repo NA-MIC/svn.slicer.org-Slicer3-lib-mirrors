@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkResamplePhasedArray3DSpecialCoordinatesImageTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/04 15:32:16 $
+  Date:      $Date: 2005-11-04 15:32:16 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

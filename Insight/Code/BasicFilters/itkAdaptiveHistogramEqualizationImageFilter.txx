@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAdaptiveHistogramEqualizationImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:55 $
-  Version:   $Revision: 1.27 $
+  Date:      $Date: 2008-01-18 20:07:32 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -52,7 +52,6 @@ AdaptiveHistogramEqualizationImageFilter<TImageType>
 ::GenerateData()
 {
   
-  typedef TImageType ImageType;
   typename ImageType::ConstPointer input = this->GetInput();
   typename ImageType::Pointer output = this->GetOutput();
   

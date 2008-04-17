@@ -3,7 +3,7 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkOrientImageFilter.h,v $
 Language:  C++
-Date:      $Date: 2007/08/20 18:06:22 $
+Date:      $Date: 2007-08-20 18:06:22 $
 Version:   $Revision: 1.10 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRGBAPixel.txx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:24 $
+  Date:      $Date: 2003-09-10 14:29:24 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

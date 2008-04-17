@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMFiniteDifferenceFunctionLoad.h,v $
   Language:  C++
-  Date:      $Date: 2006/09/25 22:41:06 $
+  Date:      $Date: 2006-09-25 22:41:06 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

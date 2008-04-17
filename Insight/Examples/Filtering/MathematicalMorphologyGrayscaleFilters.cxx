@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: MathematicalMorphologyGrayscaleFilters.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/31 13:55:21 $
+  Date:      $Date: 2005-08-31 13:55:21 $
   Version:   $Revision: 1.26 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

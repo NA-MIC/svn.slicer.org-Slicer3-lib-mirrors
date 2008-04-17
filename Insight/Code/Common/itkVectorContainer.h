@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorContainer.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:09 $
-  Version:   $Revision: 1.57 $
+  Date:      $Date: 2007-12-23 17:59:29 $
+  Version:   $Revision: 1.58 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -87,6 +87,7 @@ public:
 
   /** This type is provided to Adapt this container as an STL container */
   typedef VectorType STLContainerType;
+  typedef typename VectorType::size_type VectorContainerSizeType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

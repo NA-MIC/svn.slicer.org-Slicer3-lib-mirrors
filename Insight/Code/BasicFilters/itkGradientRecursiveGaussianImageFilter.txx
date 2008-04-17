@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientRecursiveGaussianImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/09/16 15:29:35 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2008-02-04 12:34:11 $
+  Version:   $Revision: 1.38 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,11 +14,12 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkGradientRecursiveGaussianImageFilter_txx
-#define _itkGradientRecursiveGaussianImageFilter_txx
+#ifndef __itkGradientRecursiveGaussianImageFilter_txx
+#define __itkGradientRecursiveGaussianImageFilter_txx
 
 #include "itkGradientRecursiveGaussianImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
+#include "itkImageRegionIterator.h"
 
 namespace itk
 {
@@ -32,13 +33,15 @@ GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage>
 ::GradientRecursiveGaussianImageFilter()
 {
   m_NormalizeAcrossScale = false;
+  m_UseImageDirection = false;
 
+  int imageDimensionMinus1 = static_cast<int>(ImageDimension)-1;
   if( ImageDimension > 1)
     {
-    m_SmoothingFilters.resize(ImageDimension-1);
+    m_SmoothingFilters.resize(imageDimensionMinus1);
     }
 
-  for( unsigned int i = 0; i<ImageDimension-1; i++ )
+  for( int i = 0; i<imageDimensionMinus1; i++ )
     {
     m_SmoothingFilters[ i ] = GaussianFilterType::New();
     m_SmoothingFilters[ i ]->SetOrder( GaussianFilterType::ZeroOrder );
@@ -57,7 +60,7 @@ GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage>
     m_SmoothingFilters[0]->SetInput( m_DerivativeFilter->GetOutput() );
     }
 
-  for( unsigned int i = 1; i<ImageDimension-1; i++ )
+  for( int i = 1; i<imageDimensionMinus1; i++ )
     {
     m_SmoothingFilters[ i ]->SetInput( 
       m_SmoothingFilters[i-1]->GetOutput() );
@@ -79,7 +82,8 @@ GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage>
 ::SetSigma( RealType sigma )
 {
 
-  for( unsigned int i = 0; i<ImageDimension-1; i++ )
+  int imageDimensionMinus1 = static_cast<int>(ImageDimension)-1;
+  for( int i = 0; i<imageDimensionMinus1; i++ )
     {
     m_SmoothingFilters[ i ]->SetSigma( sigma );
     }
@@ -88,8 +92,6 @@ GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage>
   this->Modified();
 
 }
-
-
 
 /**
  * Set Normalize Across Scale Space
@@ -102,7 +104,8 @@ GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage>
 
   m_NormalizeAcrossScale = normalize;
 
-  for( unsigned int i = 0; i<ImageDimension-1; i++ )
+  int imageDimensionMinus1 = static_cast<int>(ImageDimension)-1;
+  for( int i = 0; i<imageDimensionMinus1; i++ )
     {
     m_SmoothingFilters[ i ]->SetNormalizeAcrossScale( normalize );
     }
@@ -158,7 +161,7 @@ void
 GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage >
 ::GenerateData(void)
 {
- // Create a process accumulator for tracking the progress of this
+  // Create a process accumulator for tracking the progress of this
   // minipipeline
   ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
@@ -166,7 +169,8 @@ GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage >
   // Compute the contribution of each filter to the total progress.
   const double weight = 1.0 / ( ImageDimension * ImageDimension );
 
-  for( unsigned int i = 0; i<ImageDimension-1; i++ )
+  int imageDimensionMinus1 = static_cast<int>(ImageDimension)-1;
+  for( int i = 0; i<imageDimensionMinus1; i++ )
     {
     progress->RegisterInternalFilter( m_SmoothingFilters[i], weight );
     }
@@ -191,11 +195,11 @@ GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage >
 
   m_DerivativeFilter->SetInput( inputImage );
 
-  for( unsigned int dim=0; dim < ImageDimension; dim++ )
+  for( int dim=0; dim < ImageDimension; dim++ )
     {
-    unsigned int i=0; 
-    unsigned int j=0;
-    while(  i < ImageDimension-1 )
+    int i=0; 
+    int j=0;
+    while(  i < imageDimensionMinus1 )
       {
       if( i == dim ) 
         {
@@ -211,7 +215,8 @@ GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage >
 
     if( ImageDimension > 1 ) 
       {
-      lastFilter = m_SmoothingFilters[ImageDimension-2];
+      int imageDimensionMinus2 = static_cast<int>(ImageDimension)-2;
+      lastFilter = m_SmoothingFilters[imageDimensionMinus2];
       lastFilter->Update();
       }
     else
@@ -256,6 +261,27 @@ GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage >
 
     }
   
+#ifdef ITK_USE_ORIENTED_IMAGE_DIRECTION
+  // If the flag for using the input image direction is ON,
+  // then we apply the direction correction to all the pixels
+  // of the output gradient image.
+  if( this->m_UseImageDirection )
+    {
+    OutputImageType * gradientImage = this->GetOutput();
+    typedef typename InputImageType::DirectionType DirectionType;
+    ImageRegionIterator< OutputImageType > itr( gradientImage,
+      gradientImage->GetRequestedRegion() );
+
+    OutputPixelType correctedGradient;
+    while( !itr.IsAtEnd() )
+      {
+      const OutputPixelType & gradient = itr.Get();
+      inputImage->TransformLocalVectorToPhysicalVector( gradient, correctedGradient );
+      itr.Set( correctedGradient );
+      ++itr;
+      }
+    }
+#endif
 
 }
 
@@ -266,7 +292,9 @@ GradientRecursiveGaussianImageFilter<TInputImage,TOutputImage>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
-  os << "NormalizeAcrossScale: " << m_NormalizeAcrossScale << std::endl;
+  os << indent << "NormalizeAcrossScale: " << m_NormalizeAcrossScale << std::endl;
+  os << indent << "UseImageDirection :   " 
+     << (this->m_UseImageDirection ? "On" : "Off") << std::endl;
 }
 
 

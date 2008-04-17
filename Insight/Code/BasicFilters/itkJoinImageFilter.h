@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkJoinImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/08 12:44:49 $
+  Date:      $Date: 2006-04-08 12:44:49 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

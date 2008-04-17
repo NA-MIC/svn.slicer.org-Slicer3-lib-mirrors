@@ -9,7 +9,10 @@
 
 void RegisterTests()
 {
+REGISTER_TEST(itkBSplineDeformableTransformTest2 );
 REGISTER_TEST(itkCellInterfaceTest);
+REGISTER_TEST(itkImageTransformTest);
+REGISTER_TEST(itkLinearInterpolateImageFunctionTest);
 REGISTER_TEST(itkMaximumDecisionRuleTest );
 REGISTER_TEST(itkMaximumRatioDecisionRuleTest );
 REGISTER_TEST(itkDifferenceImageFilterTest );
@@ -22,6 +25,7 @@ REGISTER_TEST(itkMeshFstreamTest );
 REGISTER_TEST(itkMeshSourceGraftOutputTest );
 REGISTER_TEST(itkMetaDataDictionaryTest );
 REGISTER_TEST(itkMinimumDecisionRuleTest );
+REGISTER_TEST(itkMultiThreaderTest );
 REGISTER_TEST(itkNearestNeighborExtrapolateImageFunctionTest );
 REGISTER_TEST(itkNeighborhoodTest );
 REGISTER_TEST(itkNeighborhoodIteratorTest );
@@ -33,6 +37,8 @@ REGISTER_TEST(itkObjectFactoryTest );
 REGISTER_TEST(itkObjectFactoryTest2 );
 REGISTER_TEST(itkOctreeTest );
 REGISTER_TEST(itkOrthogonallyCorrected2DParametricPathTest );
+REGISTER_TEST(itkOrientedImage3DTest );
+REGISTER_TEST(itkOrientedImage2DTest );
 REGISTER_TEST(itkPathFunctionsTest );
 REGISTER_TEST(itkPathIteratorTest );
 REGISTER_TEST(itkPCAShapeSignedDistanceFunctionTest );
@@ -97,6 +103,8 @@ REGISTER_TEST(itkZeroFluxBoundaryConditionTest );
 //This is a separate executable REGISTER_TEST(itkSystemInformationTest );
 REGISTER_TEST(itkSTLThreadTest );
 REGISTER_TEST(itkVariableLengthVectorTest);
+REGISTER_TEST(itkVariableSizeMatrixTest);
 // REGISTER_TEST(itkQuaternionOrientationAdapterTest);
+REGISTER_TEST(itkImportContainerTest);
 }
 

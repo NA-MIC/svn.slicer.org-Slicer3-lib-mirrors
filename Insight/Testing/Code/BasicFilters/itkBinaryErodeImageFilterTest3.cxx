@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryErodeImageFilterTest3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/26 09:44:16 $
+  Date:      $Date: 2007-01-26 09:44:16 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

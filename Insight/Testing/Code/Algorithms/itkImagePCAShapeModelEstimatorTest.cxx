@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImagePCAShapeModelEstimatorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 12:47:12 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008-02-03 04:05:34 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -214,16 +214,16 @@ int itkImagePCAShapeModelEstimatorTest(int, char* [] )
   //Print the largest two eigen vectors
   for (unsigned int j=1; j< NUMLARGESTPC + 1; j++ )
     {
-    OutputImageType::Pointer outImage = applyPCAShapeEstimator->GetOutput( j );
-    OutputImageIterator outImageIt( outImage, outImage->GetBufferedRegion() );
-    outImageIt.GoToBegin();
+    OutputImageType::Pointer outImage2 = applyPCAShapeEstimator->GetOutput( j );
+    OutputImageIterator outImage2It( outImage2, outImage2->GetBufferedRegion() );
+    outImage2It.GoToBegin();
 
     std::cout << "" << std::endl;
     std::cout << "The eigen vector number: " << j << " is:" << std::endl;
-    while(!outImageIt.IsAtEnd() )
+    while(!outImage2It.IsAtEnd() )
       {
-      std::cout << (double) (outImageIt.Get()) << ";"  << std::endl;  
-      ++outImageIt; 
+      std::cout << (double) (outImage2It.Get()) << ";"  << std::endl;  
+      ++outImage2It; 
       } 
     std::cout << "  " << std::endl;
 

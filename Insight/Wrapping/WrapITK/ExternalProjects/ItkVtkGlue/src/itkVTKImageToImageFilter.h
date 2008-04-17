@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKImageToImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/18 13:55:58 $
+  Date:      $Date: 2006-10-18 13:55:58 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

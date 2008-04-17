@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianOperator.h,v $
   Language:  C++
-  Date:      $Date: 2007/06/28 23:30:49 $
+  Date:      $Date: 2007-06-28 23:30:49 $
   Version:   $Revision: 1.25 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

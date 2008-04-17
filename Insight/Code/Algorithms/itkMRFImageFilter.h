@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMRFImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/05 13:59:34 $
+  Date:      $Date: 2006-04-05 13:59:34 $
   Version:   $Revision: 1.42 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

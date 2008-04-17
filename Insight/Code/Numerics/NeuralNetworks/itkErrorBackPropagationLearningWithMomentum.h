@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkErrorBackPropagationLearningWithMomentum.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/03 21:17:59 $
+  Date:      $Date: 2007-09-03 21:17:59 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMElement2DC0LinearLineStress.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:39 $
+  Date:      $Date: 2003-09-10 14:29:39 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

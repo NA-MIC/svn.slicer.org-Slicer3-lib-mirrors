@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNonUniformBSpline.txx,v $
   Language:  C++
-  Date:      $Date: 2005/01/14 05:17:42 $
+  Date:      $Date: 2005-01-14 05:17:42 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

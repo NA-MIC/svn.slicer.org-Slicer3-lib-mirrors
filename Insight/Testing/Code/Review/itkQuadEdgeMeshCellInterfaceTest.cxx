@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshCellInterfaceTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/06 17:20:06 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007-10-16 01:35:08 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -59,12 +59,21 @@ typedef CellType::CellAutoPointer       CellAutoPointer;
 class CustomQELineVisitor
 {
 public:
-  void Visit(unsigned long cellId, QELineCellType * t ) {}
+  void Visit(unsigned long cellId, QELineCellType * t )
+    {
+    (void)cellId;
+    (void)t;
+    }
 };
+
 class CustomQEPolyVisitor
 {
 public:
-  void Visit(unsigned long cellId, QEPolygonCellType * t ) {}
+  void Visit(unsigned long cellId, QEPolygonCellType * t )
+    {
+    (void)cellId;
+    (void)t;
+    }
 };
 
 // Test the cell interface

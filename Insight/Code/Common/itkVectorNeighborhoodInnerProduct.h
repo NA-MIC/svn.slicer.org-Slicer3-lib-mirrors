@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorNeighborhoodInnerProduct.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:29 $
+  Date:      $Date: 2003-09-10 14:29:29 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAmoebaOptimizerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/10 15:22:47 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008-01-16 19:08:02 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -368,7 +368,7 @@ int itkAmoebaOptimizerTest(int, char* [] )
 
   // Get the final value of the optimizer
   std::cout << "Testing GetValue() : ";
-  OptimizerType::MeasureType finalValue = itkOptimizer->GetValue();
+  finalValue = itkOptimizer->GetValue();
   if(fabs(finalValue+9.99998)>0.01)
     {
     std::cout << "[FAILURE]" << std::endl;

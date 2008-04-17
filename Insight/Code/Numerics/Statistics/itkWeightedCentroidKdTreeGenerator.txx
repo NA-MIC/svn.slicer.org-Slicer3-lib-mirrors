@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWeightedCentroidKdTreeGenerator.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 23:02:37 $
+  Date:      $Date: 2007-01-30 23:02:37 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

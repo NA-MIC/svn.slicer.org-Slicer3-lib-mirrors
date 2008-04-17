@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryMorphologyImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/24 10:06:57 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-04-15 21:35:59 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -40,7 +40,7 @@ BinaryMorphologyImageFilter<TInputImage, TOutputImage, TKernel>
   m_Radius.Fill(1);
   m_ForegroundValue = NumericTraits<InputPixelType>::max();
   m_BackgroundValue = NumericTraits<OutputPixelType>::NonpositiveMin();
-  this->SetNumberOfThreads(1);
+  //this->SetNumberOfThreads(1);
 }
 
 template <class TInputImage, class TOutputImage, class TKernel>

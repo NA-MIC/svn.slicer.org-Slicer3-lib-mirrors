@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanReciprocalSquareDifferenceImageToImageMetric.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:27 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -88,7 +88,7 @@ MeanReciprocalSquareDifferenceImageToImageMetric<TFixedImage,TMovingImage>
 
     index = ti.GetIndex();
     
-    typename Superclass::InputPointType inputPoint;
+    InputPointType inputPoint;
     fixedImage->TransformIndexToPhysicalPoint( index, inputPoint );
 
     if( this->m_FixedImageMask && !this->m_FixedImageMask->IsInside( inputPoint ) )
@@ -97,8 +97,8 @@ MeanReciprocalSquareDifferenceImageToImageMetric<TFixedImage,TMovingImage>
       continue;
       }
 
-    typename Superclass::TransformType const *transform = this->m_Transform;
-    typename Superclass::OutputPointType transformedPoint = transform->TransformPoint( inputPoint );
+    TransformType const *transform = this->m_Transform;
+    OutputPointType transformedPoint = transform->TransformPoint( inputPoint );
 
     if( this->m_MovingImageMask && !this->m_MovingImageMask->IsInside( transformedPoint ) )
       {

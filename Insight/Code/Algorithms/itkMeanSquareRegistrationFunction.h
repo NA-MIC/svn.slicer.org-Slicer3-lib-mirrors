@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanSquareRegistrationFunction.h,v $
   Language:  C++
-  Date:      $Date: 2003/12/09 17:11:13 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -82,6 +82,7 @@ public:
   
   /** Deformation field type. */
   typedef typename Superclass::DeformationFieldType    DeformationFieldType;
+  typedef typename DeformationFieldType::PixelType     DeformationFieldPixelType;
   typedef typename Superclass::DeformationFieldTypePointer   
     DeformationFieldTypePointer;
 

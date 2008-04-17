@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineDerivativeKernelFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/25 23:18:05 $
+  Date:      $Date: 2007-01-25 23:18:05 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBilateralImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/07/24 20:49:07 $
+  Date:      $Date: 2006-07-24 20:49:07 $
   Version:   $Revision: 1.28 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

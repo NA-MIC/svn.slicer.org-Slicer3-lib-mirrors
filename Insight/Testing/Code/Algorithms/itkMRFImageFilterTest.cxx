@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMRFImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 12:47:12 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008-02-03 04:05:34 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -318,9 +318,9 @@ int itkMRFImageFilterTest(int, char* [] )
     SetDecisionRule((DecisionRuleBasePointer) myDecisionRule );
 
   //Add the membership functions
-  for( unsigned int i=0; i<NUM_CLASSES; i++ )
+  for( unsigned int ii=0; ii<NUM_CLASSES; ii++ )
     {
-    myClassifier->AddMembershipFunction( membershipFunctions[i] );
+    myClassifier->AddMembershipFunction( membershipFunctions[ii] );
     }
 
   //----------------------------------------------------------------------

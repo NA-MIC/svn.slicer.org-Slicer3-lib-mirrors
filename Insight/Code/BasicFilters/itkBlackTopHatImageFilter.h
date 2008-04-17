@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBlackTopHatImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2005/08/23 15:16:38 $
+  Date:      $Date: 2005-08-23 15:16:38 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryBallStructuringElement.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 23:21:38 $
+  Date:      $Date: 2006-03-19 23:21:38 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

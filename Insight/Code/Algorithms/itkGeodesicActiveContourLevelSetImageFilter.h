@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGeodesicActiveContourLevelSetImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2004/06/01 18:33:44 $
+  Date:      $Date: 2004-06-01 18:33:44 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

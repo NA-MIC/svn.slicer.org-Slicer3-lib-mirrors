@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkIOTests.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/21 18:01:45 $
-  Version:   $Revision: 1.53 $
+  Date:      $Date: 2008-04-03 16:20:36 $
+  Version:   $Revision: 1.60 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,6 +30,7 @@ void RegisterTests()
   REGISTER_TEST(itkConvertBufferTest);
   REGISTER_TEST(itkConvertBufferTest2);
   REGISTER_TEST(itkBMPImageIOTest);
+  REGISTER_TEST(itkBMPImageIOTest2);
   REGISTER_TEST(itkBioRadImageIOTest);
   REGISTER_TEST(itkLSMImageIOTest);
   REGISTER_TEST(itkDicomImageIOTest);
@@ -39,11 +40,14 @@ void RegisterTests()
   REGISTER_TEST(itkAnalyzeImageIOTest);
   REGISTER_TEST(itkGiplImageIOTest);
   REGISTER_TEST(itkImageSeriesWriterTest);
+  REGISTER_TEST(itkImageReadDICOMSeriesWriteTest);
   REGISTER_TEST(itkIOPrintTest);
   REGISTER_TEST(itkJPEGImageIOTest);
+  REGISTER_TEST(itkMatrixImageWriteReadTest);
   REGISTER_TEST(itkMeshSpatialObjectIOTest);
   REGISTER_TEST(itkMetaImageIOTest);
   REGISTER_TEST(itkMetaImageStreamingIOTest);
+  REGISTER_TEST(itkMetaImageStreamingWriterIOTest);
   REGISTER_TEST(itkNrrdImageIOTest);
   REGISTER_TEST(itkNrrdImageReadWriteTest);
   REGISTER_TEST(itkNrrdRGBImageReadWriteTest);
@@ -71,6 +75,7 @@ void RegisterTests()
   REGISTER_TEST(itkReadWriteSpatialObjectTest);
   REGISTER_TEST(itkRegularExpressionSeriesFileNamesTest);
   REGISTER_TEST(itkArchetypeSeriesFileNamesTest);
+  REGISTER_TEST(itkSymmetricSecondRankTensorImageReadTest);
   REGISTER_TEST(itkStimulateImageIOTest);
   REGISTER_TEST(itkStimulateImageIOTest2);
   REGISTER_TEST(itkGEImageIOTest);
@@ -93,6 +98,9 @@ void RegisterTests()
   REGISTER_TEST(itkTIFFImageIOTest);
   REGISTER_TEST(itkTransformIOTest);
   REGISTER_TEST(itkImageFileWriterTest);
+  REGISTER_TEST(itkImageIODirection2DTest);
+  REGISTER_TEST(itkImageIODirection3DTest);
+  REGISTER_TEST(itkLargeImageWriteReadTest);
   REGISTER_TEST(itkNiftiImageIOTest);
   REGISTER_TEST(itkNiftiImageIOTest2);
   REGISTER_TEST(itkNiftiImageIOTest3);

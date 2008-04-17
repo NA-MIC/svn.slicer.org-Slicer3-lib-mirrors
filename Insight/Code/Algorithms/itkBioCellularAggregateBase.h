@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBioCellularAggregateBase.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/05 20:57:45 $
+  Date:      $Date: 2006-02-05 20:57:45 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

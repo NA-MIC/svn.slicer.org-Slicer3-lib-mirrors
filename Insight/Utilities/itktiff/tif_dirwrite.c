@@ -1,4 +1,4 @@
-/* $Id: tif_dirwrite.c,v 1.2 2007/01/07 23:41:49 ibanez Exp $ */
+/* $Id: tif_dirwrite.c,v 1.2 2007-01-07 23:41:49 ibanez Exp $ */
 
 /*
  * Copyright (c) 1988-1997 Sam Leffler

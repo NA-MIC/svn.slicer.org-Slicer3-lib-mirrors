@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOctreeNode.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/30 18:33:06 $
+  Date:      $Date: 2006-10-30 18:33:06 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

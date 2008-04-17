@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMImageMetricLoad.h,v $
   Language:  C++
-  Date:      $Date: 2006/09/25 22:40:28 $
+  Date:      $Date: 2006-09-25 22:40:28 $
   Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

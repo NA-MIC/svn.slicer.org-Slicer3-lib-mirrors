@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNeuralNetworkTests2.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/09/25 21:28:56 $
+  Date:      $Date: 2006-09-25 21:28:56 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

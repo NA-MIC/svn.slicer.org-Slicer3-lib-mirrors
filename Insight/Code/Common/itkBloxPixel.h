@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBloxPixel.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/05 13:35:52 $
+  Date:      $Date: 2007-02-05 13:35:52 $
   Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

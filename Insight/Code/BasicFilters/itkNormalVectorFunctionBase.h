@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNormalVectorFunctionBase.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:53 $
+  Date:      $Date: 2003-09-10 14:28:53 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

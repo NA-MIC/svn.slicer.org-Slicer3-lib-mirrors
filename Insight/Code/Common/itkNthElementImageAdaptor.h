@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNthElementImageAdaptor.h,v $
   Language:  C++
-  Date:      $Date: 2004/11/10 19:22:12 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-01-13 19:48:38 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -53,7 +53,8 @@ class ITK_EXPORT NthElementImageAdaptorHelper
     
 
 template <class TImage, class TOutputPixelType>
-  class ITK_EXPORT NthElementImageAdaptor : public NthElementImageAdaptorHelper<TImage, TOutputPixelType>::Super
+  class ITK_EXPORT NthElementImageAdaptor 
+  : public NthElementImageAdaptorHelper<TImage, TOutputPixelType>::Super
 {
 public:
   /** Standard class typedefs. */

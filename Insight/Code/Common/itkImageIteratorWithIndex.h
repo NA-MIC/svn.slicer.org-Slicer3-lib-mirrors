@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageIteratorWithIndex.h,v $
   Language:  C++
-  Date:      $Date: 2004/12/11 20:29:18 $
+  Date:      $Date: 2004-12-11 20:29:18 $
   Version:   $Revision: 1.33 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

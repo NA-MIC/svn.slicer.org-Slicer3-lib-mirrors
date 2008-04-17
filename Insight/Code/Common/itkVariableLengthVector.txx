@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVariableLengthVector.txx,v $
   Language:  C++
-  Date:      $Date: 2006/08/17 17:38:40 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-01-21 17:47:32 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -19,6 +19,7 @@
 
 #include "itkVariableLengthVector.h"
 #include "itkNumericTraitsVariableLengthVectorPixel.h"
+#include "vnl/vnl_math.h"
 
 namespace itk
 {
@@ -294,6 +295,17 @@ VariableLengthVector<TValueType >
       }
     }
   return false;
+}
+
+/**
+ * Returns vector's Euclidean Norm
+ */
+template < typename TValueType >
+typename VariableLengthVector< TValueType >::RealValueType
+VariableLengthVector<TValueType >
+::GetNorm( void ) const
+{
+ return (RealValueType)( vcl_sqrt(double(this->GetSquaredNorm()) ));
 }
 
 /**

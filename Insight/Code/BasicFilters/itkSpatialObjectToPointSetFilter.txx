@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkSpatialObjectToPointSetFilter.txx,v $
 Language:  C++
-Date:      $Date: 2005/06/07 20:57:36 $
-Version:   $Revision: 1.7 $
+Date:      $Date: 2008-01-22 13:26:50 $
+Version:   $Revision: 1.9 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -130,7 +130,7 @@ SpatialObjectToPointSetFilter<TInputSpatialObject,TOutputPointSet>
   typename OutputPointSetType::PointType  point;
 
   // add the object it itself
-  unsigned long n = 0;
+  unsigned long n;
   if(dynamic_cast<const PointBasedSpatialObjectType*>(inputObject))
     {
     n = dynamic_cast<const PointBasedSpatialObjectType*>(inputObject)->GetNumberOfPoints();
@@ -155,7 +155,7 @@ SpatialObjectToPointSetFilter<TInputSpatialObject,TOutputPointSet>
     {
     if(dynamic_cast<const PointBasedSpatialObjectType*>((*it).GetPointer()))
       {
-      unsigned long n = dynamic_cast<const PointBasedSpatialObjectType*>((*it).GetPointer())->GetNumberOfPoints();
+      n = dynamic_cast<const PointBasedSpatialObjectType*>((*it).GetPointer())->GetNumberOfPoints();
       for(unsigned int i=0;i<n;i+=m_SamplingFactor)
         {
         typename InputSpatialObjectType::PointType transformedPoint

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSingleValuedNonLinearOptimizer.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/01/21 20:22:49 $
+  Date:      $Date: 2005-01-21 20:22:49 $
   Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

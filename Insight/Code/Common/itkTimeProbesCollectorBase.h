@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTimeProbesCollectorBase.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/21 20:21:39 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-04-03 16:21:58 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,9 +14,14 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef TimeProbesCollectorBase_h
-#define TimeProbesCollectorBase_h
+#ifndef __itkTimeProbesCollectorBase_h
+#define __itkTimeProbesCollectorBase_h
 
+#include "itkConfigure.h"
+
+#ifdef ITK_USE_REVIEW
+#include "../Review/itkTimeProbesCollectorBase.h"
+#else
 
 #include "itkMacro.h"
 #include "itkTimeProbe.h"
@@ -69,4 +74,6 @@ protected:
 
 }
 
-#endif
+#endif // ITK_USE_REVIEW
+
+#endif // __itkTimeProbesCollectorBase_h

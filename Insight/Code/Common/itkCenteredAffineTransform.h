@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCenteredAffineTransform.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:07 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2007-12-13 16:17:55 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -29,13 +29,8 @@ namespace itk
  *
  * This class implements an Affine transform in which the rotation center 
  * can be explicitly selected.
- * Note that the method "ComputeOffset()" must be called just before using 
- * the transform for mapping points, vectors or covariantvectors. 
- * This is necessary for updating the offset of the transform taking into 
- * account the center of rotation.
  *
  * \ingroup Transforms
- *
  */
 template <
  class TScalarType=double,         // Data type for scalars

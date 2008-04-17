@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshBaseIterator.h,v $
   Language:  C++
-  Date:      $Date: 2007/06/27 19:06:04 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-12-23 17:55:34 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -306,7 +306,7 @@ public:
   QuadEdgeMeshConstIterator( const QuadEdgeType* e = (QuadEdgeType*)0,
                              int op = Superclass::OperatorOnext,
                              bool start = true )
-    : Superclass( ( QuadEdgeType* )e, op, start ) {}
+    : Superclass( const_cast<QuadEdgeType*>(e), op, start ) {}
   
   virtual ~QuadEdgeMeshConstIterator() {}
 

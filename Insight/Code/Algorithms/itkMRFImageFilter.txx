@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMRFImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/01/11 19:43:31 $
-  Version:   $Revision: 1.63 $
+  Date:      $Date: 2008-02-14 05:02:22 $
+  Version:   $Revision: 1.64 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -117,8 +117,10 @@ MRFImageFilter<TInputImage, TClassifiedImage>
   InputImagePointer inputPtr = 
     const_cast< InputImageType * >( this->GetInput() );
   OutputImagePointer outputPtr = this->GetOutput();
-  inputPtr->SetRequestedRegion( outputPtr->GetRequestedRegion() );
-  
+  if (inputPtr && outputPtr)
+    {
+    inputPtr->SetRequestedRegion( outputPtr->GetRequestedRegion() );
+    }
 }
 
 

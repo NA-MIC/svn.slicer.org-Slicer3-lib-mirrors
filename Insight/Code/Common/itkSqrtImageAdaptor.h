@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSqrtImageAdaptor.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:59 $
+  Date:      $Date: 2006-03-19 04:36:59 $
   Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

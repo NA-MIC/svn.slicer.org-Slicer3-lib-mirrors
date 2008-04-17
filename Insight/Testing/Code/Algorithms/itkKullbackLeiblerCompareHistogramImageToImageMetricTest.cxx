@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkKullbackLeiblerCompareHistogramImageToImageMetricTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/01/19 17:35:45 $
+  Date:      $Date: 2004-01-19 17:35:45 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

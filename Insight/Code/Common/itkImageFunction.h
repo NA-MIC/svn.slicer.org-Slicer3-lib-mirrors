@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 23:39:53 $
-  Version:   $Revision: 1.43 $
+  Date:      $Date: 2008-01-17 15:28:26 $
+  Version:   $Revision: 1.45 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -121,7 +121,7 @@ public:
    * Subclasses must provide this method. */
   virtual TOutput EvaluateAtIndex( const IndexType & index ) const = 0;
 
-  /** Evaluate the function at specified ContinousIndex position.
+  /** Evaluate the function at specified ContinuousIndex position.
    * Subclasses must provide this method. */
   virtual TOutput EvaluateAtContinuousIndex( 
     const ContinuousIndexType & index ) const = 0;
@@ -172,31 +172,18 @@ public:
     }
 
   /** Convert point to continuous index */
-   void ConvertPointToContinousIndex( const PointType & point,
+   void ConvertPointToContinuousIndex( const PointType & point,
     ContinuousIndexType & cindex ) const
     {
     m_Image->TransformPhysicalPointToContinuousIndex( point, cindex );
     }
 
-// The Windows implementaton of vnl_math_rnd() does not round the
-// same way as the linux versions. It appears to round down on
-// .5. This code replaces the standard vnl implementation that uses
-// assembler code. The code below will be slower for windows but will
-// produce consistent results.
-#if defined (VCL_VC) && !defined(__GCCXML__)
-#define vnl_math_rnd(x) ((x>=0.0)?(int)(x + 0.5):(int)(x - 0.5))
-#endif
   /** Convert continuous index to nearest index. */
-  void ConvertContinuousIndexToNearestIndex( const ContinuousIndexType & cindex,
+  inline void ConvertContinuousIndexToNearestIndex( const ContinuousIndexType & cindex,
     IndexType & index ) const
     {
-    typedef typename IndexType::IndexValueType ValueType;
-    for ( unsigned int j = 0; j < ImageDimension; j++ )
-      { index[j] = static_cast<ValueType>( vnl_math_rnd( cindex[j] ) ); }
+    index.CopyWithRound( cindex );
     }
-#if defined (VCL_VC) && !defined(__GCCXML__)
-#undef vnl_math_rnd
-#endif
   
   itkGetConstReferenceMacro(StartIndex, IndexType);
   itkGetConstReferenceMacro(EndIndex, IndexType);

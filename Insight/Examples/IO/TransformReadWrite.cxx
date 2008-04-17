@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: TransformReadWrite.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/11 20:28:41 $
+  Date:      $Date: 2006-05-11 20:28:41 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

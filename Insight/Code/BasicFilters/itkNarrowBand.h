@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNarrowBand.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/13 21:05:14 $
+  Date:      $Date: 2007-01-13 21:05:14 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

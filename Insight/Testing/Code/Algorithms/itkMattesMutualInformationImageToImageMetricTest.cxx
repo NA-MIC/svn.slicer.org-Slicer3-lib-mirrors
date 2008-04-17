@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMattesMutualInformationImageToImageMetricTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/10/06 17:27:42 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008-03-25 15:51:58 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -45,7 +45,8 @@
  */
 template< class TImage, class TInterpolator>
 int TestMattesMetricWithAffineTransform(
-TInterpolator * interpolator, bool useSampling )
+  TInterpolator * interpolator, bool useSampling, 
+  bool useExplicitJointPDFDerivatives, bool useCachingBSplineWeights )
 {
 
 //------------------------------------------------------------
@@ -166,6 +167,9 @@ TInterpolator * interpolator, bool useSampling )
   // set the number of histogram bins
   metric->SetNumberOfHistogramBins( 50 );
 
+  metric->SetUseExplicitPDFDerivatives( useExplicitJointPDFDerivatives );
+  metric->SetUseCachingOfBSplineWeights( useCachingBSplineWeights );
+
   if( useSampling )
     {
     // set the number of samples to use
@@ -257,6 +261,8 @@ TInterpolator * interpolator, bool useSampling )
 
   double delta = 0.001;
 
+  bool testFailed = false;
+
   for( unsigned int i = 0; i < numberOfParameters; ++i )
     {
     //copy the parameters and perturb the current one.
@@ -290,11 +296,15 @@ TInterpolator * interpolator, bool useSampling )
     if ( vnl_math_abs( ratio - 1.0 ) > 0.012 )
       {
       std::cout << "computed derivative differ from central difference." << std::endl;
-      return EXIT_FAILURE;
+      testFailed = true;
       }
 
-  }
+    }
 
+  if( testFailed )
+    {
+    return EXIT_FAILURE;
+    }
 
 //-------------------------------------------------------
 // exercise misc member functions
@@ -326,7 +336,8 @@ TInterpolator * interpolator, bool useSampling )
  */
 template< class TImage, class TInterpolator>
 int TestMattesMetricWithBSplineDeformableTransform(
-TInterpolator * interpolator, bool useSampling )
+  TInterpolator * interpolator, bool useSampling,
+  bool useExplicitJointPDFDerivatives, bool useCachingBSplineWeights )
 {
 
 //------------------------------------------------------------
@@ -482,6 +493,9 @@ TInterpolator * interpolator, bool useSampling )
   // set the number of histogram bins
   metric->SetNumberOfHistogramBins( 50 );
 
+  metric->SetUseExplicitPDFDerivatives( useExplicitJointPDFDerivatives );
+  metric->SetUseCachingOfBSplineWeights( useCachingBSplineWeights );
+
   if( useSampling )
     {
     // set the number of samples to use
@@ -546,6 +560,8 @@ TInterpolator * interpolator, bool useSampling )
 
   double delta = 0.01 * imgSpacing[0];
 
+  bool testFailed = false;
+
   for( unsigned int i = 0; i < numberOfParameters; ++i )
     {
     //copy the parameters and perturb the current one.
@@ -579,18 +595,36 @@ TInterpolator * interpolator, bool useSampling )
     if ( vnl_math_abs( ratio - 1.0 ) > 0.01 && vnl_math_abs( derivative[i] ) > 1e-4 )
       {
       std::cout << "computed derivative differ from central difference." << std::endl;
-      return EXIT_FAILURE;
+      testFailed = true;
       }
 
-  }
+    }
+
+  if( testFailed )
+    {
+    return EXIT_FAILURE;
+    }
 
   return EXIT_SUCCESS;
 
 }
 
 
-int itkMattesMutualInformationImageToImageMetricTest(int, char* [] )
+int itkMattesMutualInformationImageToImageMetricTest(int argc, char * argv [] )
 {
+
+  bool useExplicitJointPDFDerivatives = true;
+  bool useCachingBSplineWeights = true;
+
+  if( argc > 1 )
+    {
+    useExplicitJointPDFDerivatives = atoi( argv[1] );
+    }
+
+  if( argc > 2 )
+    {
+    useCachingBSplineWeights = atoi( argv[2] );
+    }
 
   int failed;
   typedef itk::Image<unsigned char,2> ImageType;
@@ -608,7 +642,7 @@ int itkMattesMutualInformationImageToImageMetricTest(int, char* [] )
     = LinearInterpolatorType::New();
 
   failed = TestMattesMetricWithAffineTransform<ImageType,LinearInterpolatorType>(
-    linearInterpolator, useSampling );
+    linearInterpolator, useSampling, useExplicitJointPDFDerivatives, useCachingBSplineWeights );
 
   if ( failed ) 
     {
@@ -618,7 +652,7 @@ int itkMattesMutualInformationImageToImageMetricTest(int, char* [] )
 
   useSampling = false;
   failed = TestMattesMetricWithAffineTransform<ImageType,LinearInterpolatorType>(
-    linearInterpolator, useSampling );
+    linearInterpolator, useSampling, useExplicitJointPDFDerivatives, useCachingBSplineWeights );
 
   if ( failed ) 
     {
@@ -638,7 +672,7 @@ int itkMattesMutualInformationImageToImageMetricTest(int, char* [] )
 
   useSampling = true;
   failed = TestMattesMetricWithAffineTransform<ImageType,BSplineInterpolatorType>(
-    bSplineInterpolator, useSampling );
+    bSplineInterpolator, useSampling, useExplicitJointPDFDerivatives, useCachingBSplineWeights );
 
   if ( failed ) 
     {
@@ -648,7 +682,7 @@ int itkMattesMutualInformationImageToImageMetricTest(int, char* [] )
 
   useSampling = false;
   failed = TestMattesMetricWithAffineTransform<ImageType,BSplineInterpolatorType>(
-    bSplineInterpolator, useSampling );
+    bSplineInterpolator, useSampling, useExplicitJointPDFDerivatives, useCachingBSplineWeights );
 
   if ( failed ) 
     {
@@ -660,7 +694,8 @@ int itkMattesMutualInformationImageToImageMetricTest(int, char* [] )
   // Test metric with BSpline deformable transform
   useSampling = true;
   failed = TestMattesMetricWithBSplineDeformableTransform<
-    ImageType,BSplineInterpolatorType>( bSplineInterpolator, useSampling );
+    ImageType,BSplineInterpolatorType>( bSplineInterpolator, useSampling, 
+        useExplicitJointPDFDerivatives, useCachingBSplineWeights );
 
   if ( failed ) 
     {

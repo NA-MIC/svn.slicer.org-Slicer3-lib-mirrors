@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNormalizedCorrelationImageToImageMetric.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:55 $
-  Version:   $Revision: 1.46 $
+  Date:      $Date: 2008-02-03 04:05:29 $
+  Version:   $Revision: 1.48 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -74,7 +74,7 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
 
     index = ti.GetIndex();
     
-    typename Superclass::InputPointType inputPoint;
+    InputPointType inputPoint;
     fixedImage->TransformIndexToPhysicalPoint( index, inputPoint );
 
     if( this->m_FixedImageMask && !this->m_FixedImageMask->IsInside( inputPoint ) )
@@ -83,7 +83,7 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
       continue;
       }
 
-    typename Superclass::OutputPointType transformedPoint = this->m_Transform->TransformPoint( inputPoint );
+    OutputPointType transformedPoint = this->m_Transform->TransformPoint( inputPoint );
 
     if( this->m_MovingImageMask && !this->m_MovingImageMask->IsInside( transformedPoint ) )
       {
@@ -194,7 +194,7 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
 
     index = ti.GetIndex();
     
-    typename Superclass::InputPointType inputPoint;
+    InputPointType inputPoint;
     fixedImage->TransformIndexToPhysicalPoint( index, inputPoint );
 
     if( this->m_FixedImageMask && !this->m_FixedImageMask->IsInside( inputPoint ) )
@@ -203,7 +203,7 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
       continue;
       }
 
-    typename Superclass::OutputPointType transformedPoint = this->m_Transform->TransformPoint( inputPoint );
+    OutputPointType transformedPoint = this->m_Transform->TransformPoint( inputPoint );
 
     if( this->m_MovingImageMask && !this->m_MovingImageMask->IsInside( transformedPoint ) )
       {
@@ -236,7 +236,7 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
 
     index = ti.GetIndex();
     
-    typename Superclass::InputPointType inputPoint;
+    InputPointType inputPoint;
     fixedImage->TransformIndexToPhysicalPoint( index, inputPoint );
 
     if ( this->m_FixedImageMask && !this->m_FixedImageMask->IsInside( inputPoint ) )
@@ -245,7 +245,7 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
       continue;
       }
 
-    typename Superclass::OutputPointType transformedPoint = this->m_Transform->TransformPoint( inputPoint );
+    OutputPointType transformedPoint = this->m_Transform->TransformPoint( inputPoint );
 
     if ( this->m_MovingImageMask && !this->m_MovingImageMask->IsInside( transformedPoint ) )
       {
@@ -263,7 +263,6 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
 
       // Get the gradient by NearestNeighboorInterpolation: 
       // which is equivalent to round up the point components.
-      typedef typename Superclass::OutputPointType OutputPointType;
       typedef typename OutputPointType::CoordRepType CoordRepType;
       typedef ContinuousIndex<CoordRepType,MovingImageType::ImageDimension>
         MovingImageContinuousIndexType;
@@ -272,11 +271,8 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
       this->m_MovingImage->TransformPhysicalPointToContinuousIndex( transformedPoint, tempIndex );
 
       typename MovingImageType::IndexType mappedIndex; 
-      for( unsigned int j = 0; j < MovingImageType::ImageDimension; j++ )
-        {
-        mappedIndex[j] = static_cast<long>( vnl_math_rnd( tempIndex[j] ) );
-        }
-
+      mappedIndex.CopyWithRound( tempIndex );
+      
       const GradientPixelType gradient = 
         this->GetGradientImage()->GetPixel( mappedIndex );
 
@@ -393,7 +389,7 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
 
     index = ti.GetIndex();
     
-    typename Superclass::InputPointType inputPoint;
+    InputPointType inputPoint;
     fixedImage->TransformIndexToPhysicalPoint( index, inputPoint );
 
     if( this->m_FixedImageMask && !this->m_FixedImageMask->IsInside( inputPoint ) )
@@ -402,7 +398,7 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
       continue;
       }
 
-    typename Superclass::OutputPointType transformedPoint = this->m_Transform->TransformPoint( inputPoint );
+    OutputPointType transformedPoint = this->m_Transform->TransformPoint( inputPoint );
 
     if( this->m_MovingImageMask && !this->m_MovingImageMask->IsInside( transformedPoint ) )
       {
@@ -436,7 +432,7 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
 
     index = ti.GetIndex();
     
-    typename Superclass::InputPointType inputPoint;
+    InputPointType inputPoint;
     fixedImage->TransformIndexToPhysicalPoint( index, inputPoint );
 
     if( this->m_FixedImageMask && !this->m_FixedImageMask->IsInside( inputPoint ) )
@@ -445,7 +441,7 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
       continue;
       }
 
-    typename Superclass::OutputPointType transformedPoint = this->m_Transform->TransformPoint( inputPoint );
+    OutputPointType transformedPoint = this->m_Transform->TransformPoint( inputPoint );
 
     if( this->m_MovingImageMask && !this->m_MovingImageMask->IsInside( transformedPoint ) )
       {
@@ -463,7 +459,6 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
 
       // Get the gradient by NearestNeighboorInterpolation: 
       // which is equivalent to round up the point components.
-      typedef typename Superclass::OutputPointType OutputPointType;
       typedef typename OutputPointType::CoordRepType CoordRepType;
       typedef ContinuousIndex<CoordRepType,MovingImageType::ImageDimension>
         MovingImageContinuousIndexType;
@@ -472,11 +467,8 @@ NormalizedCorrelationImageToImageMetric<TFixedImage,TMovingImage>
       this->m_MovingImage->TransformPhysicalPointToContinuousIndex( transformedPoint, tempIndex );
 
       typename MovingImageType::IndexType mappedIndex; 
-      for( unsigned int j = 0; j < MovingImageType::ImageDimension; j++ )
-        {
-        mappedIndex[j] = static_cast<long>( vnl_math_rnd( tempIndex[j] ) );
-        }
-
+      mappedIndex.CopyWithRound( tempIndex );
+      
       const GradientPixelType gradient = 
         this->GetGradientImage()->GetPixel( mappedIndex );
 

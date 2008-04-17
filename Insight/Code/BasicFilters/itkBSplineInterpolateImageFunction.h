@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineInterpolateImageFunction.h,v $
   Language:  C++
-  Date:      $Date: 2005/03/30 15:13:39 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008-01-04 12:56:30 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,9 +17,17 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-
 #ifndef __itkBSplineInterpolateImageFunction_h
 #define __itkBSplineInterpolateImageFunction_h
+
+// First make sure that the configuration is available.
+// This line can be removed once the optimized versions
+// gets integrated into the main directories.
+#include "itkConfigure.h"
+
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+#include "itkOptBSplineInterpolateImageFunction.h"
+#else
 
 #include <vector>
 
@@ -83,7 +91,7 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(BSplineInterpolateImageFunction, InterpolateImageFunction);
 
- 
+
   /** New macro for creation of through a Smart Pointer */
   itkNewMacro( Self );
 
@@ -106,16 +114,16 @@ public:
   typedef typename Superclass::PointType PointType;
 
   /** Iterator typedef support */
-  typedef itk::ImageLinearIteratorWithIndex<TImageType> Iterator;
+  typedef ImageLinearIteratorWithIndex<TImageType> Iterator;
 
   /** Internal Coefficient typedef support */
   typedef TCoefficientType CoefficientDataType;
-  typedef itk::Image<CoefficientDataType, 
+  typedef Image<CoefficientDataType, 
                      itkGetStaticConstMacro(ImageDimension)
     > CoefficientImageType;
 
   /** Define filter for calculating the BSpline coefficients */
-  typedef itk::BSplineDecompositionImageFilter<TImageType, CoefficientImageType> 
+  typedef BSplineDecompositionImageFilter<TImageType, CoefficientImageType> 
   CoefficientFilter;
   typedef typename CoefficientFilter::Pointer CoefficientFilterPointer;
 
@@ -154,6 +162,20 @@ public:
 
   /** Set the input image.  This must be set by the user. */
   virtual void SetInputImage(const TImageType * inputData);
+
+
+  /** The UseImageDirection flag determines whether image derivatives are
+   * computed with respect to the image grid or with respect to the physical
+   * space. When this flag is ON the derivatives are computed with respect to
+   * the coodinate system of physical space. The difference is whether we take
+   * into account the image Direction or not. The flag ON will take into
+   * account the image direction and will result in an extra matrix
+   * multiplication compared to the amount of computation performed when the
+   * flag is OFF.  This flag is OFF by default.*/
+  itkSetMacro( UseImageDirection, bool );
+  itkGetMacro( UseImageDirection, bool );
+  itkBooleanMacro( UseImageDirection );
+
 
 protected:
   BSplineInterpolateImageFunction();
@@ -203,6 +225,10 @@ private:
 
   CoefficientFilterPointer     m_CoefficientFilter;
   
+  // flag to take or not the image direction into account when computing the
+  // derivatives.
+  bool m_UseImageDirection;
+
 };
 
 } // namespace itk
@@ -213,3 +239,4 @@ private:
 
 #endif
 
+#endif

@@ -1,14 +1,14 @@
-/itkActiveShapeModelCalculator.h/1.1/Thu Nov 15 15:23:30 2007//TITK-3-4
-/itkActiveShapeModelCalculator.txx/1.4/Thu Nov 15 15:55:39 2007//TITK-3-4
-/itkActiveShapeModelGradientSearchMethod.h/1.1/Thu Nov 15 15:23:30 2007//TITK-3-4
-/itkActiveShapeModelGradientSearchMethod.txx/1.3/Thu Nov 15 15:55:39 2007//TITK-3-4
-/itkSimpleFuzzyConnectednessImageFilterBase.h/1.3/Thu Nov 15 15:55:39 2007//TITK-3-4
-/itkSimpleFuzzyConnectednessImageFilterBase.txx/1.3/Thu Nov 15 15:23:30 2007//TITK-3-4
-/itkSimpleFuzzyConnectednessRGBImageFilter.h/1.2/Thu Nov 15 15:55:39 2007//TITK-3-4
-/itkSimpleFuzzyConnectednessRGBImageFilter.txx/1.3/Thu Nov 15 15:23:30 2007//TITK-3-4
-/itkSimpleFuzzyConnectednessScalarImageFilter.h/1.1/Thu Nov 15 15:23:30 2007//TITK-3-4
-/itkSimpleFuzzyConnectednessScalarImageFilter.txx/1.3/Thu Nov 15 15:23:30 2007//TITK-3-4
-/itkVectorFuzzyConnectednessImageFilter.h/1.1/Thu Nov 15 15:23:30 2007//TITK-3-4
-/itkVectorFuzzyConnectednessImageFilter.txx/1.5/Thu Nov 15 15:23:30 2007//TITK-3-4
-/CMakeLists.txt/1.2/Fri Mar 14 14:55:54 2008//TITK-3-4
+/CMakeLists.txt/1.2/Thu Jun  8 17:56:06 2006//
+/itkActiveShapeModelCalculator.h/1.1/Sat Oct  9 01:46:37 2004//
+/itkActiveShapeModelCalculator.txx/1.5/Tue Feb  5 16:03:07 2008//
+/itkActiveShapeModelGradientSearchMethod.h/1.1/Sat Oct  9 01:46:37 2004//
+/itkActiveShapeModelGradientSearchMethod.txx/1.3/Fri Aug 17 18:06:26 2007//
+/itkSimpleFuzzyConnectednessImageFilterBase.h/1.3/Wed Sep 19 11:43:27 2007//
+/itkSimpleFuzzyConnectednessImageFilterBase.txx/1.3/Tue Dec 28 18:22:41 2004//
+/itkSimpleFuzzyConnectednessRGBImageFilter.h/1.2/Tue Sep 18 14:30:04 2007//
+/itkSimpleFuzzyConnectednessRGBImageFilter.txx/1.3/Sun Mar 19 04:37:20 2006//
+/itkSimpleFuzzyConnectednessScalarImageFilter.h/1.1/Sat Oct  9 01:46:37 2004//
+/itkSimpleFuzzyConnectednessScalarImageFilter.txx/1.3/Sun Mar 19 04:37:20 2006//
+/itkVectorFuzzyConnectednessImageFilter.h/1.1/Sat Oct  9 01:46:37 2004//
+/itkVectorFuzzyConnectednessImageFilter.txx/1.5/Sun Mar 19 04:37:20 2006//
 D

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCyclicReferences.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:06 $
+  Date:      $Date: 2003-09-10 14:30:06 $
   Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

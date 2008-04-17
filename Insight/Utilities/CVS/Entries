@@ -1,9 +1,6 @@
-D/DICOMParser////
 D/Dart////
+D/DICOMParser////
 D/Doxygen////
-D/KWStyle////
-D/MetaIO////
-D/NrrdIO////
 D/expat////
 D/gdcm////
 D/itkExtHdrs////
@@ -11,17 +8,22 @@ D/itkjpeg////
 D/itkpng////
 D/itktiff////
 D/itkzlib////
+D/KWStyle////
 D/kwsys////
+D/MetaIO////
 D/nifti////
+D/NrrdIO////
 D/openjpeg////
 D/vxl////
 D/zlib////
-/itkThirdParty.h.in/1.3/Thu Nov 15 15:24:55 2007//TITK-3-4
-/itk_png.h/1.1/Thu Nov 15 15:24:55 2007//TITK-3-4
-/itk_tiff.h/1.1/Thu Nov 15 15:24:55 2007//TITK-3-4
-/itk_zlib.h/1.1/Thu Nov 15 15:24:55 2007//TITK-3-4
-/.NoDartCoverage/1.2/Fri Mar 14 14:57:23 2008//TITK-3-4
-/CMakeLists.txt/1.67/Fri Mar 14 14:57:23 2008//TITK-3-4
-/README.kwsys/1.2/Fri Mar 14 14:57:23 2008//TITK-3-4
-/README.vxl/1.1/Fri Mar 14 14:57:23 2008//TITK-3-4
-/itkThirdParty.cmake/1.4/Fri Mar 14 14:57:23 2008//TITK-3-4
+/.NoDartCoverage/1.2/Sat Sep 25 17:27:29 2004//
+/CMakeLists.txt/1.73/Sat Mar 29 20:41:30 2008//
+/README.itklibxml2/1.1/Sat Mar 29 20:42:17 2008//
+/README.kwsys/1.2/Mon Jun 23 17:30:19 2003//
+/README.vxl/1.2/Tue Nov 13 14:56:49 2007//
+/itkThirdParty.cmake/1.4/Thu Sep 28 13:11:06 2006//
+/itkThirdParty.h.in/1.4/Thu Jan 31 02:47:23 2008//
+/itk_png.h/1.1/Thu Sep 28 16:05:07 2006//
+/itk_tiff.h/1.1/Thu Sep 28 15:30:39 2006//
+/itk_zlib.h/1.1/Thu Sep 28 13:11:06 2006//
+/metaIOConfig.h/1.1/Thu Oct 25 18:38:49 2007//

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDataObject.h,v $
   Language:  C++
-  Date:      $Date: 2005/12/03 13:42:08 $
-  Version:   $Revision: 1.67 $
+  Date:      $Date: 2007-12-23 17:59:28 $
+  Version:   $Revision: 1.68 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -480,7 +480,7 @@ private:
    * should only be called from a process object. The second parameter
    * indicates which of the source's outputs corresponds to this data
    * object. */
-  bool ConnectSource(ProcessObject *s, unsigned int idx) const;
+  bool ConnectSource(ProcessObject *s, unsigned long idx) const;
 
   /** Disconnect the specified process object from the data
    * object. This should only be called from a process object. An
@@ -490,7 +490,7 @@ private:
    * this data object. If the specified source output index does not
    * match the index cached when the data object was connected to the
    * pipeline (see ConnectSource), then nothing is done. */
-  bool DisconnectSource(ProcessObject *s, unsigned int idx) const;
+  bool DisconnectSource(ProcessObject *s, unsigned long idx) const;
   
   /** Friends of DataObject */
   friend class ProcessObject;

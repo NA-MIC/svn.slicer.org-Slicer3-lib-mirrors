@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkJoinSeriesImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/09/14 17:59:41 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-02-13 15:59:36 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -88,7 +88,7 @@ JoinSeriesImageFilter<TInputImage,TOutputImage>
     // Copy what we can from the image from spacing and origin of the input
     // This logic needs to be augmented with logic that select which
     // dimensions to copy
-    unsigned int i;
+    unsigned int ii;
     const typename InputImageType::SpacingType&
       inputSpacing = inputPtr->GetSpacing();
     const typename InputImageType::PointType&
@@ -99,15 +99,15 @@ JoinSeriesImageFilter<TInputImage,TOutputImage>
 
     // copy the input to the output and fill the rest of the
     // output with zeros.
-    for (i=0; i < InputImageDimension; ++i)
+    for (ii=0; ii < InputImageDimension; ++ii)
       {
-      outputSpacing[i] = inputSpacing[i];
-      outputOrigin[i] = inputOrigin[i];
+      outputSpacing[ii] = inputSpacing[ii];
+      outputOrigin[ii] = inputOrigin[ii];
       }
-    for (; i < OutputImageDimension; ++i)
+    for (; ii < OutputImageDimension; ++ii)
       {
-      outputSpacing[i] = 1.0;
-      outputOrigin[i] = 0.0;
+      outputSpacing[ii] = 1.0;
+      outputOrigin[ii] = 0.0;
       }
 
     // for the new dimension
@@ -159,6 +159,10 @@ JoinSeriesImageFilter<TInputImage,TOutputImage>
 {
   Superclass::GenerateInputRequestedRegion();
 
+  if (!this->GetOutput())
+    {
+    return;
+    }
   OutputImageRegionType outputRegion = this->GetOutput()->GetRequestedRegion();
   IndexValueType begin = outputRegion.GetIndex(InputImageDimension);
   IndexValueType end = begin + outputRegion.GetSize(InputImageDimension);

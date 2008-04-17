@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkPolygonSpatialObject.txx,v $
 Language:  C++
-Date:      $Date: 2007/05/16 17:03:35 $
-Version:   $Revision: 1.18 $
+Date:      $Date: 2008-01-07 21:48:41 $
+Version:   $Revision: 1.19 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -438,7 +438,7 @@ PolygonSpatialObject<TDimension>
   bool oddNodes = false;
   for(int i = 0; i < numpoints; i++)
     {
-    PointType start = (*it).GetPosition();
+    start = (*it).GetPosition();
     it++;
     PointType end;
     if(i == numpoints - 1)

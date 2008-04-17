@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEquivalencyTable.h,v $
   Language:  C++
-  Date:      $Date: 2006/05/20 14:12:53 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007-12-23 17:59:28 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -98,7 +98,7 @@ public:
    * successive equivalencies.  For example, if the follow entries
    * exist in the table {8=7, 7=6, 6=5}, then RecursiveLookup(8)
    * returns 5.  */
-  unsigned long RecursiveLookup(const unsigned a) const;
+  unsigned long RecursiveLookup(const unsigned long a) const;
 
   /** Returns TRUE if the label is found in the table and FALSE is the label is
    * not found in the table.   */

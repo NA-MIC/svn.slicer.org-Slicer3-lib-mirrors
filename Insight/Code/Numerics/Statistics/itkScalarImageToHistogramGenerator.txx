@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkScalarImageToHistogramGenerator.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/14 22:01:52 $
+  Date:      $Date: 2006-03-14 22:01:52 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

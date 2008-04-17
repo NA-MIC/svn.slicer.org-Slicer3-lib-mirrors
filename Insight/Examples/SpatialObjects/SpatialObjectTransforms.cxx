@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: SpatialObjectTransforms.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/06/12 13:28:17 $
+  Date:      $Date: 2007-06-12 13:28:17 $
   Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

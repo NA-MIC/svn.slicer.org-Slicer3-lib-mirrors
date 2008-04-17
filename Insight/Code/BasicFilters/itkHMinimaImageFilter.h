@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHMinimaImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/28 19:59:05 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007-10-16 14:22:34 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -98,8 +98,10 @@ public:
    * output. This method is scheduled for removal since the
    * implementation now uses a noniterative solution. */
   unsigned long GetNumberOfIterationsUsed()
-    { itkLegacyBody(itk::HMinimaImageFilter::GetNumberOfIterationsUsed, 2.2);
-      return m_NumberOfIterationsUsed; };
+    { 
+    itkLegacyBodyMacro(itk::HMinimaImageFilter::GetNumberOfIterationsUsed, 2.2);
+    return m_NumberOfIterationsUsed; 
+    };
 
   /**
    * Set/Get whether the connected components are defined strictly by

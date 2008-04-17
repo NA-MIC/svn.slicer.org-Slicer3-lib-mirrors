@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSampleAlgorithmBase.h,v $
   Language:  C++
-  Date:      $Date: 2005/07/26 15:55:04 $
+  Date:      $Date: 2005-07-26 15:55:04 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

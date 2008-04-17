@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: BayesianClassifierInitializer.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/12/01 20:47:56 $
+  Date:      $Date: 2005-12-01 20:47:56 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSpatialOrientationAdapter.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 18:02:11 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007-12-24 16:46:28 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -32,7 +32,7 @@ namespace itk
 namespace Function
 {
 
-inline unsigned Max3(float x, float y, float z)
+inline unsigned Max3(double x, double y, double z)
 {
   const double obliquityThresholdCosineValue = 0.001;
   
@@ -56,7 +56,7 @@ inline unsigned Max3(float x, float y, float z)
   return 0;
 }
 
-inline int Sign(float x)
+inline int Sign(double x)
 {
   if(x < 0)
     {

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineKernelFunction.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/18 20:13:35 $
+  Date:      $Date: 2006-03-18 20:13:35 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

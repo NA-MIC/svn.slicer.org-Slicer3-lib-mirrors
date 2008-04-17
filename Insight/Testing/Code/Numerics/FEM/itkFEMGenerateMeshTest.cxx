@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMGenerateMeshTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/12/15 14:13:21 $
+  Date:      $Date: 2003-12-15 14:13:21 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

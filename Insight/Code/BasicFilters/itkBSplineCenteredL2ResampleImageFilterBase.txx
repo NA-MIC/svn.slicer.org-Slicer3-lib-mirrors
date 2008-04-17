@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineCenteredL2ResampleImageFilterBase.txx,v $
   Language:  C++
-  Date:      $Date: 2006/01/10 21:21:07 $
+  Date:      $Date: 2006-01-10 21:21:07 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

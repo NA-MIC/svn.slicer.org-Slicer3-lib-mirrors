@@ -3,7 +3,7 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmException.h,v $
   Language:  C++
-  Date:      $Date: 2007/06/10 12:02:32 $
+  Date:      $Date: 2007-06-10 12:02:32 $
   Version:   $Revision: 1.7 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de

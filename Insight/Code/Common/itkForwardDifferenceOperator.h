@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkForwardDifferenceOperator.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:08 $
+  Date:      $Date: 2003-09-10 14:29:08 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

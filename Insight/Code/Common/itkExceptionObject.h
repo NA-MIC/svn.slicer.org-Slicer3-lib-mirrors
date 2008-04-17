@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkExceptionObject.h,v $
   Language:  C++
-  Date:      $Date: 2006/01/02 17:14:05 $
+  Date:      $Date: 2006-01-02 17:14:05 $
   Version:   $Revision: 1.36 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

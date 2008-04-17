@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLaplacianImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/19 17:24:12 $
+  Date:      $Date: 2007-09-19 17:24:12 $
   Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

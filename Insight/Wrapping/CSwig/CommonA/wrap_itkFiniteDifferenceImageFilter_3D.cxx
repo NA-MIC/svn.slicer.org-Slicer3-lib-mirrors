@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_itkFiniteDifferenceImageFilter_3D.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/20 16:20:01 $
+  Date:      $Date: 2007-09-20 16:20:01 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

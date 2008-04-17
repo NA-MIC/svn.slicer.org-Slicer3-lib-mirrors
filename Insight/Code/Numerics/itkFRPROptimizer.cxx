@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFRPROptimizer.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 19:37:01 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008-02-04 22:58:54 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -28,6 +28,7 @@ const double FRPR_TINY = 1e-20;
 FRPROptimizer
 ::FRPROptimizer()
 {
+  m_UseUnitLengthGradient = false;
   m_OptimizationType = PolakRibiere;
 }
 
@@ -48,6 +49,19 @@ FRPROptimizer
     for(unsigned int i=0; i<this->GetSpaceDimension(); i++)
       {
       (*xi)[i] = -(*xi)[i];
+      }
+    }
+  if(this->GetUseUnitLengthGradient())
+    {
+    double len = (*xi)[0]*(*xi)[0];
+    for(unsigned int i=1; i<this->GetSpaceDimension(); i++)
+      {
+      len += (*xi)[i]*(*xi)[i];
+      }
+    len = sqrt(len);
+    for(unsigned int i=0; i<this->GetSpaceDimension(); i++)
+      {
+      (*xi)[i] /= len;
       }
     }
 }
@@ -226,6 +240,7 @@ FRPROptimizer
   Superclass::PrintSelf(os,indent);
   os << indent << "Optimization Type = " << m_OptimizationType << std::endl;
   os << indent << "0=FletchReeves, 1=PolakRibiere" << std::endl;
+  os << indent << "Use unit length gradient = " << m_UseUnitLengthGradient << std::endl;
 }
 
 } // end of namespace itk

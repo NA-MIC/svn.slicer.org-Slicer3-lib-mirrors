@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLevelSetFunctionWithRefitTerm.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:51 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-03-03 13:58:43 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -69,6 +69,7 @@ public:
   typedef typename Superclass::ScalarValueType ScalarValueType;
   typedef typename Superclass::GlobalDataStruct GlobalDataStruct;
   typedef typename Superclass::NeighborhoodType NeighborhoodType;
+  typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
   typedef typename Superclass::TimeStepType TimeStepType;
 
   /** Index type derived from the ImageType. */
@@ -144,7 +145,10 @@ protected:
   }
   
 private:
-  /** The sparse image that contains the target curvature information. */
+  LevelSetFunctionWithRefitTerm(const Self&); //purposely not implemented                                                                                                            
+  void operator=(const Self&);   //purposely not implemented                                                                                                            
+   
+   /** The sparse image that contains the target curvature information. */
   typename SparseImageType::Pointer m_SparseTargetImage;
 
   /** The minimum vector norm parameter. */

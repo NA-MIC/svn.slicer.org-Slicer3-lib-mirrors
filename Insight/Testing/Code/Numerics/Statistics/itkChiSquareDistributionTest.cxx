@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkChiSquareDistributionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/23 12:37:58 $
+  Date:      $Date: 2007-05-23 12:37:58 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

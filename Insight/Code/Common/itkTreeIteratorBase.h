@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTreeIteratorBase.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/09 19:45:04 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-01-29 15:27:42 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -32,9 +32,9 @@ class TreeIteratorBase
 public: 
   
   /** Typedefs */
-  typedef TreeIteratorBase<TTreeType> Self;
-  typedef typename TTreeType::ValueType ValueType;
-  typedef typename TTreeType::TreeNodeType TreeNodeType;
+  typedef TreeIteratorBase                    Self;
+  typedef typename TTreeType::ValueType       ValueType;
+  typedef typename TTreeType::TreeNodeType    TreeNodeType;
 
   /** Add an element to the tree */
   virtual bool Add(ValueType element);
@@ -164,7 +164,7 @@ public:
   }
 
   /** operator = */
-  virtual Self& operator=(Self& iterator) 
+  const Self & operator=(const Self& iterator) 
     {
     m_Position = iterator.m_Position; 
     m_Begin  = iterator.m_Begin;

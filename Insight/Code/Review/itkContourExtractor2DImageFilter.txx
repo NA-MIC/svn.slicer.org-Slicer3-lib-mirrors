@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkContourExtractor2DImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 19:46:19 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008-02-07 15:07:57 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -546,7 +546,7 @@ ContourExtractor2DImageFilter<TInputImage>
     os << indent << "Custom region: " << m_RequestedRegion << std::endl;
     }
   
-  typedef typename  NumericTraits<InputRealType>::PrintType InputRealPrintType;
+  typedef typename NumericTraits<InputRealType>::PrintType InputRealPrintType;
 
   os << indent << "Contour value: " 
      << static_cast<InputRealPrintType> (m_ContourValue) 

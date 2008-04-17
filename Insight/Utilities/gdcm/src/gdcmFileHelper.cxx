@@ -4,8 +4,8 @@
   Module:    $RCSfile: gdcmFileHelper.cxx,v $
   Language:  C++
 
-  Date:      $Date: 2007/04/15 03:18:01 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2007-12-11 11:19:48 $
+  Version:   $Revision: 1.21 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de
   l'Image). All rights reserved. See Doc/License.txt or
@@ -845,6 +845,36 @@ bool FileHelper::CheckWriteIntegrity()
    }
 
    return true;
+}
+
+size_t FileHelper::ComputeExpectedImageDataSize()
+{
+  int numberBitsAllocated = FileInternal->GetBitsAllocated();
+  if ( numberBitsAllocated == 0 || numberBitsAllocated == 12 )
+    {
+    gdcmWarningMacro( "numberBitsAllocated changed from " 
+      << numberBitsAllocated << " to 16 " 
+      << " for consistency purpose" );
+    numberBitsAllocated = 16;
+    }
+
+  size_t decSize = FileInternal->GetXSize()
+    * FileInternal->GetYSize() 
+    * FileInternal->GetZSize()
+    * FileInternal->GetSamplesPerPixel()
+    * ( numberBitsAllocated / 8 );
+  size_t rgbSize = decSize;
+  if ( FileInternal->HasLUT() )
+    rgbSize = decSize * 3;
+
+  switch(WriteMode)
+    {
+  case WMODE_RAW :
+    return decSize;
+  case WMODE_RGB :
+    return rgbSize;
+    }
+  return 0;
 }
 
 /**

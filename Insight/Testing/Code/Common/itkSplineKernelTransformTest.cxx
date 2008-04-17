@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSplineKernelTransformTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/08/28 21:41:01 $
+  Date:      $Date: 2006-08-28 21:41:01 $
   Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

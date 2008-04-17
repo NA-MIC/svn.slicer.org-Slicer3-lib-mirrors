@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMinimumMaximumImageCalculator.h,v $
   Language:  C++
-  Date:      $Date: 2005/01/21 20:20:27 $
+  Date:      $Date: 2005-01-21 20:20:27 $
   Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

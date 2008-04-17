@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCosImageAdaptor.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 23:23:38 $
+  Date:      $Date: 2006-03-19 23:23:38 $
   Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

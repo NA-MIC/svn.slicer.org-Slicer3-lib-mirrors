@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaDataObjectBase.h,v $
   Language:  C++
-  Date:      $Date: 2005/10/31 22:16:10 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007-12-05 09:09:55 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -66,7 +66,7 @@ namespace itk {
     protected:
       /** Method for creation through the object factory.   */
       // Should not be able to construct a new MetaDataObjectBase
-      static  Pointer New(void);
+//       static  Pointer New(void);
       /**
        * Default destructor
        */

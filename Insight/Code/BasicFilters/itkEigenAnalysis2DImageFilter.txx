@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEigenAnalysis2DImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/07/16 14:04:10 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008-01-24 00:15:02 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -93,7 +93,7 @@ EigenAnalysis2DImageFilter<TInputImage,TEigenValueImage,TEigenVectorImage>
 ::GetMaxEigenValue( void )
 {
   return dynamic_cast<EigenValueImageType *>(
-    this->GetOutput( 0 ) );
+    this->ProcessObject::GetOutput( 0 ) );
 }
 
 
@@ -108,7 +108,7 @@ EigenAnalysis2DImageFilter<TInputImage,TEigenValueImage,TEigenVectorImage>
 ::GetMinEigenValue( void )
 {
   return dynamic_cast<EigenValueImageType *>(
-    this->GetOutput( 1 ) );
+    this->ProcessObject::GetOutput( 1 ) );
 }
 
 
@@ -122,7 +122,7 @@ EigenAnalysis2DImageFilter<TInputImage,TEigenValueImage,TEigenVectorImage>
 ::GetMaxEigenVector( void )
 {
   EigenVectorImageType *eigenVector = dynamic_cast<EigenVectorImageType *>(
-    this->GetOutput( 2 ) );
+    this->ProcessObject::GetOutput( 2 ) );
 
   if (eigenVector)
     {
@@ -132,7 +132,7 @@ EigenAnalysis2DImageFilter<TInputImage,TEigenValueImage,TEigenVectorImage>
     {
     itkWarningMacro(<<"EigenAnalysis2DImageFilter::GetMaxEigenVector(): dynamic_cast has failed. A reinterpret_cast is being attempted." << std::endl << "Type name is: " << typeid( *this->GetOutput( 2 )).name());
     return  reinterpret_cast<EigenVectorImageType *>(
-      this->GetOutput( 2 ) );
+      this->ProcessObject::GetOutput( 2 ) );
     }
 }
 

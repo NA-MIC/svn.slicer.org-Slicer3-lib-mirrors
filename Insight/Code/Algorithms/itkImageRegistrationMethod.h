@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageRegistrationMethod.h,v $
   Language:  C++
-  Date:      $Date: 2005/11/01 21:57:22 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2007-11-19 16:55:38 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -119,7 +119,11 @@ public:
    * StartOptimization()  */
   void StartRegistration(void);
 
-  /** Method that initiates the optimization process. */
+  /** Method that initiates the optimization process. This method should not be
+   * called directly by the users. Instead, this method is intended to be
+   * invoked internally by the StartRegistration() which is in turn invoked by
+   * the Update() method.  
+   * FIXME: This method should be declared protected. */
   void StartOptimization(void);
 
   /** Set/Get the Fixed image. */

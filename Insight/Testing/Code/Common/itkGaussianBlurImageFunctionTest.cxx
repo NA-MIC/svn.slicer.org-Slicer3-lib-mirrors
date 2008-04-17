@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianBlurImageFunctionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/12/26 19:39:26 $
+  Date:      $Date: 2003-12-26 19:39:26 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

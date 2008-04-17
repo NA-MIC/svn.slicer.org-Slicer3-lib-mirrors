@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkChildTreeIterator.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/26 14:28:43 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-01-28 13:52:55 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -29,9 +29,9 @@ class ChildTreeIterator : public TreeIteratorBase<TTreeType>
 public:
   
   /** Typedefs */
+  typedef ChildTreeIterator                 Self;
   typedef TreeIteratorBase<TTreeType>       Superclass;
   typedef TTreeType                         TreeType;
-  typedef typename Superclass::Self         Self;
   typedef typename TTreeType::ValueType     ValueType;
   typedef typename Superclass::TreeNodeType TreeNodeType;
 

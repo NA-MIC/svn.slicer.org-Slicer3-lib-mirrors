@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConnectedRegionsMeshFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/09/02 09:15:06 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -33,7 +33,7 @@ namespace itk
  * ------------------------------------------------
  */
 template <class TInputMesh, class TOutputMesh>
-ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
+ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>
 ::ConnectedRegionsMeshFilter()
 {
   m_ExtractionMode = Self::LargestRegion;
@@ -45,7 +45,7 @@ ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
  */
 template <class TInputMesh, class TOutputMesh>
 void
-ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
+ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>
 ::DeleteSeed(unsigned long id)
 {
   std::vector<unsigned long> tmpVector;
@@ -70,7 +70,7 @@ ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
  */
 template <class TInputMesh, class TOutputMesh>
 void
-ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
+ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>
 ::DeleteSpecifiedRegion(unsigned long id)
 {
   std::vector<unsigned long> tmpVector;
@@ -96,10 +96,10 @@ ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
  */
 template <class TInputMesh, class TOutputMesh>
 void 
-ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
+ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
-  Superclass::PrintSelf(os,indent);
+  Superclass::PrintSelf(os, indent);
 
   os << indent << "Extraction Mode: ";
   if ( m_ExtractionMode == Self::PointSeededRegions )
@@ -134,7 +134,7 @@ ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
  */
 template <class TInputMesh, class TOutputMesh>
 void 
-ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
+ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>
 ::GenerateData()
 {
   InputMeshPointer input = this->GetInput();
@@ -159,8 +159,7 @@ ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
   
   m_RegionSizes.clear();
   m_Visited.resize(numCells);
-  unsigned int i;
-  for ( i=0; i < numCells; i++ )
+  for ( unsigned int i=0; i < numCells; i++ )
     {
     m_Visited[i] = -1;
     }
@@ -317,11 +316,11 @@ ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
       if ( m_Visited[cellId] >= 0 )
         {
         cell->Value()->MakeCopy( cellCopy );
-        outCells->InsertElement(cellId,cellCopy.GetPointer());
+        outCells->InsertElement(cellId, cellCopy.GetPointer());
         cellCopy.ReleaseOwnership();  // Pass cell ownership to output mesh
         if( CellDataPresent )
           {
-          outCellData->InsertElement(cellId,cellData->Value());
+          outCellData->InsertElement(cellId, cellData->Value());
           ++cellData;
           }
         }  
@@ -353,11 +352,11 @@ ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
         if ( inReg )
           {
           cell->Value()->MakeCopy( cellCopy );
-          outCells->InsertElement(cellId,cellCopy.GetPointer());
+          outCells->InsertElement(cellId, cellCopy.GetPointer());
           cellCopy.ReleaseOwnership();  // Pass cell ownership to output mesh
           if( CellDataPresent )
             {
-            outCellData->InsertElement(cellId,cellData->Value());
+            outCellData->InsertElement(cellId, cellData->Value());
             ++cellData;
             }
           }
@@ -373,11 +372,11 @@ ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
       if ( m_Visited[cellId] == static_cast<long>(largestRegionId) )
         {
         cell->Value()->MakeCopy( cellCopy );
-        outCells->InsertElement(cellId,cellCopy.GetPointer());
+        outCells->InsertElement(cellId, cellCopy.GetPointer());
         cellCopy.ReleaseOwnership(); // Pass cell ownership to output mesh
         if( CellDataPresent )
           {
-          outCellData->InsertElement(cellId,cellData->Value());
+          outCellData->InsertElement(cellId, cellData->Value());
           ++cellData;
           }
         }
@@ -411,7 +410,7 @@ ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
 
 template <class TInputMesh, class TOutputMesh>
 void 
-ConnectedRegionsMeshFilter<TInputMesh,TOutputMesh>
+ConnectedRegionsMeshFilter<TInputMesh, TOutputMesh>
 ::PropagateConnectedWave()
 {
   InputMeshPointer input = this->GetInput();

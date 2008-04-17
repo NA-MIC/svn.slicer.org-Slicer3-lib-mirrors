@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBMPImageIOTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/10 20:27:17 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007-10-26 12:36:13 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -38,7 +38,11 @@ int itkBMPImageIOTest( int ac, char* av[] )
                                   = itk::ImageFileReader<myImage>::New();
   
   reader->SetFileName(av[1]);
+  reader->UpdateOutputInformation();
 
+  std::cout << "PixelType: " << reader->GetImageIO()->GetPixelTypeAsString(reader->GetImageIO()->GetPixelType()) << std::endl;
+  std::cout << "ComponentType: " << reader->GetImageIO()->GetComponentTypeAsString(reader->GetImageIO()->GetComponentType()) << std::endl;
+  std::cout << "NumberOfComponents: " << reader->GetImageIO()->GetNumberOfComponents() << std::endl;
   try
     {
     reader->Update();

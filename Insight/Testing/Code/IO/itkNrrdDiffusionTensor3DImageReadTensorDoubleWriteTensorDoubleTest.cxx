@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNrrdDiffusionTensor3DImageReadTensorDoubleWriteTensorDoubleTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/07/08 17:00:30 $
+  Date:      $Date: 2007-07-08 17:00:30 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

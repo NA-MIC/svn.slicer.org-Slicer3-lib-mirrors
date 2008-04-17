@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineInterpolationWeightFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:58 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008-03-21 00:47:43 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -147,7 +147,7 @@ void BSplineInterpolationWeightFunction<TCoordRep, VSpaceDimension,
   for ( j = 0; j < SpaceDimension; j++ )
     {
     startIndex[j] = static_cast<typename IndexType::IndexValueType>(
-      BSplineFloor( index[j] - static_cast<double>( SplineOrder / 2 ) ) );
+      BSplineFloor( index[j] - static_cast<double>( SplineOrder - 1 ) / 2.0 ) );
     }
 
   // Compute the weights

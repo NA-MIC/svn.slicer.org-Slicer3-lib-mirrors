@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMultipleValuedCostFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 21:39:37 $
+  Date:      $Date: 2007-03-22 21:39:37 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

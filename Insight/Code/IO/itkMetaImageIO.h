@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaImageIO.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/11 12:16:58 $
+  Date:      $Date: 2007-09-11 12:16:58 $
   Version:   $Revision: 1.34 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

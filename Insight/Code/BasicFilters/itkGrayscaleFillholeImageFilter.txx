@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGrayscaleFillholeImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/12/15 21:41:24 $
+  Date:      $Date: 2006-12-15 21:41:24 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

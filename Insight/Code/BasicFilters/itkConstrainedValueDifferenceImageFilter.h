@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConstrainedValueDifferenceImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/22 04:33:00 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007-09-27 11:36:40 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -105,6 +105,10 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
+
+  /** Runtime information support. */
+  itkTypeMacro(ConstrainedValueDifferenceImageFilter, 
+               BinaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */

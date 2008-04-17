@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSobelOperator.txx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:26 $
+  Date:      $Date: 2003-09-10 14:29:26 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

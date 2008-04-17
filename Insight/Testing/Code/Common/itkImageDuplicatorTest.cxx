@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageDuplicatorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/02/23 17:29:39 $
+  Date:      $Date: 2004-02-23 17:29:39 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

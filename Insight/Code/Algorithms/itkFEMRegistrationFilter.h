@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMRegistrationFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/11/07 23:23:15 $
+  Date:      $Date: 2006-11-07 23:23:15 $
   Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

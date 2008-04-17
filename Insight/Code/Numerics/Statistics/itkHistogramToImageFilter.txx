@@ -3,7 +3,7 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkHistogramToImageFilter.txx,v $
 Language:  C++
-Date:      $Date: 2007/01/26 09:45:07 $
+Date:      $Date: 2007-01-26 09:45:07 $
 Version:   $Revision: 1.8 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.

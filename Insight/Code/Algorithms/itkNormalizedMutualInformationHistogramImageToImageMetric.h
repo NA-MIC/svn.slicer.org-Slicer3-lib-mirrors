@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNormalizedMutualInformationHistogramImageToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2004/07/13 18:56:40 $
+  Date:      $Date: 2004-07-13 18:56:40 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAnisotropicDiffusionImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2005/10/29 23:04:52 $
+  Date:      $Date: 2005-10-29 23:04:52 $
   Version:   $Revision: 1.41 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

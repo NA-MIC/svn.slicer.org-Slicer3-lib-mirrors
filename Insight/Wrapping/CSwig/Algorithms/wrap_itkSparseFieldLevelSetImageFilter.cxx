@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_itkSparseFieldLevelSetImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/01/25 16:40:03 $
+  Date:      $Date: 2005-01-25 16:40:03 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

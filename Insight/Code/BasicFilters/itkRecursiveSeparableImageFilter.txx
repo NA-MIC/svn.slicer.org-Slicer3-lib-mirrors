@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRecursiveSeparableImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/08/01 19:16:18 $
+  Date:      $Date: 2006-08-01 19:16:18 $
   Version:   $Revision: 1.40 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

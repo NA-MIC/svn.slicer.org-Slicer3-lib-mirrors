@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCenteredEuler3DTransform.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:07 $
+  Date:      $Date: 2007-01-30 20:56:07 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

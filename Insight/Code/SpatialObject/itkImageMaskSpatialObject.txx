@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageMaskSpatialObject.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:25:25 $
+  Date:      $Date: 2007-01-28 19:25:25 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

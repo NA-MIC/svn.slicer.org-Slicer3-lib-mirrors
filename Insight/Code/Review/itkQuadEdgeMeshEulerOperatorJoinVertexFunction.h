@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshEulerOperatorJoinVertexFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/02 23:38:12 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-03-10 22:48:45 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -56,8 +56,8 @@ class ITK_EXPORT QuadEdgeMeshEulerOperatorJoinVertexFunction :
 public:
   /** Standard class typedefs. */
   typedef QuadEdgeMeshEulerOperatorJoinVertexFunction     Self;
-  typedef itk::SmartPointer< Self >                       Pointer;
-  typedef itk::SmartPointer< const Self >                 ConstPointer;
+  typedef SmartPointer< Self >                            Pointer;
+  typedef SmartPointer< const Self      >                 ConstPointer;
   typedef QuadEdgeMeshFunctionBase< TMesh, TQEType* >     Superclass;
   
   itkNewMacro( Self );
@@ -93,6 +93,8 @@ private:
   void operator=(const Self& );        //purposely not implemented
 
   PointIdentifier m_OldPointID;
+
+  bool CommonVertexNeighboor( QEType* e );
 
 };
 

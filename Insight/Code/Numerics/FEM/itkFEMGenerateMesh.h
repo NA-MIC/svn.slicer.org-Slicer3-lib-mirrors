@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMGenerateMesh.h,v $
   Language:  C++
-  Date:      $Date: 2005/08/16 18:10:58 $
+  Date:      $Date: 2005-08-16 18:10:58 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

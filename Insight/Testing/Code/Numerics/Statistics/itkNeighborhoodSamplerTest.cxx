@@ -3,7 +3,7 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkNeighborhoodSamplerTest.cxx,v $
 Language:  C++
-Date:      $Date: 2005/07/26 23:36:40 $
+Date:      $Date: 2005-07-26 23:36:40 $
 Version:   $Revision: 1.7 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.

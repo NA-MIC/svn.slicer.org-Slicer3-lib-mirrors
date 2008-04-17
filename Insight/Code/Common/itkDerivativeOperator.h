@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDerivativeOperator.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/01 14:39:33 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008-01-20 18:00:40 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -51,7 +51,8 @@ public:
   typedef DerivativeOperator Self;
   typedef NeighborhoodOperator<TPixel, VDimension, TAllocator>  Superclass;
   
-  typedef typename Superclass::PixelType PixelType;
+  typedef typename Superclass::PixelType     PixelType;
+  typedef typename Superclass::PixelRealType PixelRealType;
 
   /** Constructor. */
   DerivativeOperator() : m_Order(1) {}

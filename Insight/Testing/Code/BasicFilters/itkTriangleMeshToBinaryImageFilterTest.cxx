@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTriangleMeshToBinaryImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/06/02 20:45:20 $
+  Date:      $Date: 2005-06-02 20:45:20 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

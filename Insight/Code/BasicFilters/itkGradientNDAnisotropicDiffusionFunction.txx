@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientNDAnisotropicDiffusionFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:56 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2008-01-18 20:07:32 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -85,7 +85,6 @@ GradientNDAnisotropicDiffusionFunction<TImage>
   double Cxd;
   
   // PixelType is scalar in this context
-  typedef typename NumericTraits<PixelType>::RealType PixelRealType;  
   PixelRealType delta;
   PixelRealType dx_forward;
   PixelRealType dx_backward;

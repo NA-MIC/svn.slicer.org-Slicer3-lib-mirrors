@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkShapePriorSegmentationLevelSetFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:29 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-03-03 13:58:42 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -128,6 +128,13 @@ ShapePriorSegmentationLevelSetFunction<TImageType, TFeatureImageType>
       }
     }
   
+  double maxScaleCoefficient = 0.0;
+  for (unsigned int i=0; i<ImageDimension; i++)
+    {
+    maxScaleCoefficient = vnl_math_max(this->m_ScaleCoefficients[i],maxScaleCoefficient);
+    }
+  dt /= maxScaleCoefficient;
+ 
   // reset the values  
   d->m_MaxAdvectionChange  = 0;
   d->m_MaxPropagationChange= 0;

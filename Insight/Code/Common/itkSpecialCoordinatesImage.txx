@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSpecialCoordinatesImage.txx,v $
   Language:  C++
-  Date:      $Date: 2004/10/26 13:22:24 $
+  Date:      $Date: 2004-10-26 13:22:24 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

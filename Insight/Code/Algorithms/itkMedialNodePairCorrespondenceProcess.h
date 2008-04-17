@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMedialNodePairCorrespondenceProcess.h,v $
   Language:  C++
-  Date:      $Date: 2005/11/22 17:45:48 $
+  Date:      $Date: 2005-11-22 17:45:48 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

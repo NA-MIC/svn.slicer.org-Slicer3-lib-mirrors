@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDifferenceOfGaussiansGradientImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/28 15:38:51 $
+  Date:      $Date: 2006-03-28 15:38:51 $
   Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

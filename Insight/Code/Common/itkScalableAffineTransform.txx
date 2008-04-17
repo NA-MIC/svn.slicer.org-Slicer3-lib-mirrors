@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkScalableAffineTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2005/05/03 14:19:23 $
+  Date:      $Date: 2005-05-03 14:19:23 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

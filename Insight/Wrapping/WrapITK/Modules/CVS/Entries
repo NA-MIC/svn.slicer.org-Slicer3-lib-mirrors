@@ -12,9 +12,9 @@ D/EdgesAndContours////
 D/FFT////
 D/FFTW////
 D/Filtering////
-D/IO////
 D/IntensityFilters////
 D/Interpolators////
+D/IO////
 D/Iterators////
 D/LevelSet////
 D/Morphology////

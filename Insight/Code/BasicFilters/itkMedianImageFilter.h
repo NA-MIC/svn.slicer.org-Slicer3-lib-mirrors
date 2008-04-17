@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMedianImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/22 16:26:42 $
+  Date:      $Date: 2006-03-22 16:26:42 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

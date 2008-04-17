@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianRadialBasisFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/04/18 11:23:29 $
+  Date:      $Date: 2006-04-18 11:23:29 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBoundingBox.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/10 15:02:44 $
+  Date:      $Date: 2007-01-10 15:02:44 $
   Version:   $Revision: 1.39 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

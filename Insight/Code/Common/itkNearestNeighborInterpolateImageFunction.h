@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNearestNeighborInterpolateImageFunction.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/06 22:01:57 $
+  Date:      $Date: 2006-02-06 22:01:57 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

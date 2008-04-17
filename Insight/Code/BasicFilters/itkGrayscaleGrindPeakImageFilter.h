@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGrayscaleGrindPeakImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/09/26 12:05:05 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2007-10-16 14:22:34 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -99,8 +99,10 @@ public:
    * output. This method id scheduled for removal since the
    * implementation now uses a noniterative solution. */
   unsigned long GetNumberOfIterationsUsed()
-    { itkLegacyBody(itk::GrayscaleGrindPeakImageFilter::GetNumberOfIterationsUsed, 2.2);
-      return m_NumberOfIterationsUsed; };
+    { 
+    itkLegacyBodyMacro(itk::GrayscaleGrindPeakImageFilter::GetNumberOfIterationsUsed, 2.2);
+    return m_NumberOfIterationsUsed;
+    };
 
   /**
    * Set/Get whether the connected components are defined strictly by

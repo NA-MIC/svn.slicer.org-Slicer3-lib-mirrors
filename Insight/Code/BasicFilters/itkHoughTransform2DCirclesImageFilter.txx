@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHoughTransform2DCirclesImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/09/21 12:49:42 $
+  Date:      $Date: 2007-09-21 12:49:42 $
   Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,13 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkObjectFactoryBase.cxx,v $
   Language:  C++
-<<<<<<< itkObjectFactoryBase.cxx
-  Date:      $Date: 2007/01/04 06:28:39 $
-  Version:   $Revision: 1.43 $
-=======
-  Date:      $Date: 2007-11-23 23:04:19 $
-  Version:   $Revision: 1.43.4.1 $
->>>>>>> 1.43.4.1
+  Date:      $Date: 2007-12-26 17:55:49 $
+  Version:   $Revision: 1.56 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -364,6 +359,14 @@ ObjectFactoryBase
           newfactory->m_LibraryPath = fullpath;
           newfactory->m_LibraryDate = 0; // unused for now...
           ObjectFactoryBase::RegisterFactory(newfactory);
+          }
+        else
+          {
+          // We would really like to close the lib if it does not
+          // contain the itkLoad symbol. Unfortuantely, it seems that
+          // some systems crash on the call
+          // DynamicLoader::CloseLibrary(lib) if the lib has symbols
+          // that the current executable is using.
           }
         }
       }

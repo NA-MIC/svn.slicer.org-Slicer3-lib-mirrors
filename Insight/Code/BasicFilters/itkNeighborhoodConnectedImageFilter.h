@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNeighborhoodConnectedImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/30 15:36:24 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007-10-05 10:31:58 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -22,7 +22,7 @@
 
 namespace itk{
 
-/** /class NeighborhoodConnectedImageFilter
+/** \class NeighborhoodConnectedImageFilter
  * \brief Label pixels that are connected to a seed and lie within a neighborhood
  * 
  * NeighborhoodConnectedImageFilter labels pixels with ReplaceValue that

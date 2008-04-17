@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCannyEdgeDetectionImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/11/16 19:31:39 $
+  Date:      $Date: 2005-11-16 19:31:39 $
   Version:   $Revision: 1.52 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

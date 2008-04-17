@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSymmetricEllipsoidInteriorExteriorSpatialFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 23:39:53 $
+  Date:      $Date: 2007-01-30 23:39:53 $
   Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

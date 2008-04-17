@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOnePlusOneEvolutionaryOptimizer.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:29:14 $
+  Date:      $Date: 2007-03-22 14:29:14 $
   Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

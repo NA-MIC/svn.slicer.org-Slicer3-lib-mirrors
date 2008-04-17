@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMItpackSparseMatrix.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/07 23:23:16 $
+  Date:      $Date: 2006-11-07 23:23:16 $
   Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

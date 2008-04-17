@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_itkInPlaceImageFilter_A.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/04/01 16:30:15 $
+  Date:      $Date: 2005-04-01 16:30:15 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

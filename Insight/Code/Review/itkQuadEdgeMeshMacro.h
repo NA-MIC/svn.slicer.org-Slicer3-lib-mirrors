@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshMacro.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/06 00:58:51 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008-02-07 15:58:06 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -37,7 +37,7 @@ namespace itk
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * http://hdl.handle.net/1926/306
+ * http://insight-journal.org/midas/handle.php?handle=1926/306
  *
  * \warning Don't forget to close the opened block with the corresponding
  *          itkQE::itkQEMeshForAllPointsMacro macro.
@@ -93,7 +93,7 @@ namespace itk
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * http://hdl.handle.net/1926/306
+ * http://insight-journal.org/midas/handle.php?handle=1926/306
  *
 
  * \warning Don't forget to close the opened block with the corresponding
@@ -143,7 +143,7 @@ namespace itk
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * http://hdl.handle.net/1926/306
+ * http://insight-journal.org/midas/handle.php?handle=1926/306
  *
  * \warning Don't forget to close the opened block with the corresponding
  *          itkQE::itkQEMeshForAllPrimalEdgesMacro macro.

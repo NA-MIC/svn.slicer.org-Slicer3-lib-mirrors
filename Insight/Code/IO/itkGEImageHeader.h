@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGEImageHeader.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/14 14:56:42 $
+  Date:      $Date: 2007-03-14 14:56:42 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

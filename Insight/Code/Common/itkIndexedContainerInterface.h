@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkIndexedContainerInterface.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:13 $
+  Date:      $Date: 2003-09-10 14:29:13 $
   Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

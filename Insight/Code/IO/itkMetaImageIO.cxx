@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/11 13:22:41 $
-  Version:   $Revision: 1.79 $
+  Date:      $Date: 2008-02-19 17:38:49 $
+  Version:   $Revision: 1.85 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -74,97 +74,6 @@ bool MetaImageIO::CanReadFile( const char* filename )
     }
 
   return m_MetaImage.CanRead(filename);
-
-  /*bool extensionFound = false;
-  std::string::size_type mhaPos = fname.rfind(".mha");
-  if ((mhaPos != std::string::npos)
-      && (mhaPos == fname.length() - 4))
-    {
-    extensionFound = true;
-    }
-
-  std::string::size_type mhdPos = fname.rfind(".mhd");
-  if ((mhdPos != std::string::npos)
-      && (mhdPos == fname.length() - 4))
-    {
-    extensionFound = true;
-    }
-  
-  if( !extensionFound )
-    {
-    itkDebugMacro(<<"The filename extension is not recognized");
-    return false;
-    }
-
-  // Now check the file content
-  std::ifstream inputStream;
-
-  inputStream.open( filename, std::ios::in | std::ios::binary );
-
-  if( inputStream.fail() )
-    {
-    return false;
-    }
-
-  char key[8000];
-
-  inputStream >> key;
-
-  if( inputStream.eof() )
-    {
-    inputStream.close();
-    return false;
-    }
-
-  if( strcmp(key,"NDims") == 0 ) 
-    {
-    inputStream.close();
-    return true;
-    }
-  if( strcmp(key,"ObjectType") == 0 ) 
-    {
-    inputStream.close();
-    return true;
-    }
-  if( strcmp(key,"TransformType") == 0 ) 
-    {
-    inputStream.close();
-    return true;
-    }
-  if( strcmp(key,"ID") == 0 ) 
-    {
-    inputStream.close();
-    return true;
-    }
-  if( strcmp(key,"ParentID") == 0 ) 
-    {
-    inputStream.close();
-    return true;
-    }
-  if( strcmp(key,"BinaryData") == 0 ) 
-    {
-    inputStream.close();
-    return true;
-    }
-  if( strcmp(key,"Comment") == 0 ) 
-    {
-    inputStream.close();
-    return true;
-    }
-  if( strcmp(key,"AcquisitionDate") == 0 ) 
-    {
-    inputStream.close();
-    return true;
-    }
-  if( strcmp(key,"Modality") == 0 ) 
-    {
-    inputStream.close();
-    return true;
-    }
-
-  inputStream.close();
-  return false;*/
-
 }
   
 
@@ -439,8 +348,8 @@ void MetaImageIO::ReadImageInformation()
   
   this->SetNumberOfDimensions(m_MetaImage.NDims());
 
-  int i;
-  for(i=0; i<(int)m_NumberOfDimensions; i++)
+  unsigned int i;
+  for(i=0; i<m_NumberOfDimensions; i++)
     {
     this->SetDimensions(i,m_MetaImage.DimSize(i)/m_SubSamplingFactor);
     this->SetSpacing(i, m_MetaImage.ElementSpacing(i)*m_SubSamplingFactor);
@@ -892,18 +801,20 @@ void MetaImageIO::ReadImageInformation()
           (thisMetaDict, ITK_CoordinateOrientation, coordOrient);
       }
 #endif
-    // Read direction cosines if the dimension of the image is 3.
-    //
-    const double *transformMatrix = m_MetaImage.TransformMatrix();
-    vnl_vector< double > directionAxis( this->GetNumberOfDimensions() );
-    for( unsigned int i=0; i < this->GetNumberOfDimensions(); i++)
+    }
+
+  //
+  // Read direction cosines 
+  //
+  const double *transformMatrix = m_MetaImage.TransformMatrix();
+  vnl_vector< double > directionAxis( this->GetNumberOfDimensions() );
+  for( unsigned int ii=0; ii < this->GetNumberOfDimensions(); ii++)
+    {
+    for( unsigned int jj=0; jj < this->GetNumberOfDimensions(); jj++)
       {
-      for( unsigned int j=0; j < this->GetNumberOfDimensions(); j++)
-        {
-        directionAxis[j] = transformMatrix[i*this->GetNumberOfDimensions() + j];
-        }
-      this->SetDirection( i, directionAxis );
+      directionAxis[jj] = transformMatrix[ii*this->GetNumberOfDimensions() + jj];
       }
+    this->SetDirection( ii, directionAxis );
     }
 } 
 
@@ -911,13 +822,13 @@ void MetaImageIO::ReadImageInformation()
 void MetaImageIO::Read(void* buffer)
 { 
   // Pass the IO region to the MetaImage library
-  int nDims = this->GetNumberOfDimensions();
+  unsigned int nDims = this->GetNumberOfDimensions();
 
   if(m_UseStreamedReading)
     {
     int* indexMin = new int[nDims];
     int* indexMax = new int[nDims];
-    for(int i=0;i<nDims;i++)
+    for(unsigned int i=0;i<nDims;i++)
       {
       indexMin[i] = m_IORegion.GetIndex()[i];
       indexMax[i] = indexMin[i] + m_IORegion.GetSize()[i] -1;
@@ -986,7 +897,7 @@ void
 MetaImageIO
 ::Write( const void* buffer) 
 {
-  int nDims = this->GetNumberOfDimensions();
+  unsigned int nDims = this->GetNumberOfDimensions();
 
   bool binaryData = true;
   if(this->GetFileType() == ASCII)
@@ -1086,7 +997,7 @@ MetaImageIO
       break;
     }
   
-  int i;
+  unsigned int i;
   int * dSize = new int[nDims];
   float * eSpacing = new float[nDims];
   double * eOrigin = new double[nDims];
@@ -1099,7 +1010,7 @@ MetaImageIO
   ImageIORegion::IndexType indx = this->GetIORegion().GetIndex();
   for(i=0; i<nDims; i++)
     {
-    int j;
+    unsigned int j;
     for(j=0; j<nDims; j++)
       {
       eOrigin[i] += indx[j] * eSpacing[j] * this->GetDirection(j)[i];
@@ -1129,11 +1040,11 @@ MetaImageIO
       dirx = this->GetDirection(0);
       diry = this->GetDirection(1);
       dirz = this->GetDirection(2);
-      for(unsigned i = 0; i < 3; i++)
+      for(unsigned ii = 0; ii < 3; ii++)
         {
-        dir[i][0] = dirx[i];
-        dir[i][1] = diry[i];
-        dir[i][2] = dirz[i];
+        dir[ii][0] = dirx[ii];
+        dir[ii][1] = diry[ii];
+        dir[ii][2] = dirz[ii];
         }
       coordOrient = itk::SpatialOrientationAdapter().FromDirectionCosines(dir);
 #if defined(ITKIO_DEPRECATED_METADATA_ORIENTATION)
@@ -1369,25 +1280,48 @@ MetaImageIO
         }
       }
 
-    // Propagage direction cosine information .
-    double *transformMatrix = 
-    static_cast< double *>(malloc(this->GetNumberOfDimensions() * 
-                    this->GetNumberOfDimensions() * sizeof(double)));
-    for( unsigned int i=0; i < this->GetNumberOfDimensions(); i++)
-      {
-      for( unsigned int j=0; j < this->GetNumberOfDimensions(); j++)
-        {
-        transformMatrix[i*this->GetNumberOfDimensions() +j ] =
-                                           this->GetDirection(i)[j];
-        }
-      }
-    m_MetaImage.TransformMatrix( transformMatrix );
-    free(transformMatrix);
     }
 
+  // Propagage direction cosine information .
+  double *transformMatrix = 
+  static_cast< double *>(malloc(this->GetNumberOfDimensions() * 
+                  this->GetNumberOfDimensions() * sizeof(double)));
+  for( unsigned int ii=0; ii < this->GetNumberOfDimensions(); ii++)
+    {
+    for( unsigned int jj=0; jj < this->GetNumberOfDimensions(); jj++)
+      {
+      transformMatrix[ii*this->GetNumberOfDimensions() +jj ] =
+                                         this->GetDirection(ii)[jj];
+      }
+    }
+  m_MetaImage.TransformMatrix( transformMatrix );
+  free(transformMatrix);
   
   m_MetaImage.CompressedData(m_UseCompression);
-  m_MetaImage.Write(m_FileName.c_str());
+
+  if(m_UseCompression && m_UseStreamedWriting)
+    {
+    std::cout << "Cannot use compression while stream reading" << std::endl;
+    }
+  else if(m_UseStreamedWriting)
+    {
+    int* indexMin = new int[nDims];
+    int* indexMax = new int[nDims];
+    for(unsigned int k=0;k<nDims;k++)
+      {
+      indexMin[k] = m_IORegion.GetIndex()[k];
+      indexMax[k] = m_IORegion.GetIndex()[k]+m_IORegion.GetSize()[k];
+      }
+      
+    m_MetaImage.WriteROI(indexMin,indexMax,m_FileName.c_str());
+    
+    delete [] indexMin;
+    delete [] indexMax;
+    }
+  else
+    {
+    m_MetaImage.Write(m_FileName.c_str());
+    }
 
   delete []dSize;
   delete []eSpacing;

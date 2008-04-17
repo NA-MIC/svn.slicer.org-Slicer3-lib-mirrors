@@ -3,7 +3,7 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmFile.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/21 23:50:03 $
+  Date:      $Date: 2007-02-21 23:50:03 $
   Version:   $Revision: 1.8 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de

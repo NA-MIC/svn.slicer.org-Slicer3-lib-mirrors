@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGoodnessOfFitFunctionBase.h,v $
   Language:  C++
-  Date:      $Date: 2004/11/04 20:40:41 $
+  Date:      $Date: 2004-11-04 20:40:41 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

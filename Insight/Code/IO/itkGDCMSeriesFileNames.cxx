@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGDCMSeriesFileNames.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/07/19 10:27:01 $
+  Date:      $Date: 2007-07-19 10:27:01 $
   Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

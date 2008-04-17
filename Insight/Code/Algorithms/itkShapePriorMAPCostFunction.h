@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkShapePriorMAPCostFunction.h,v $
   Language:  C++
-  Date:      $Date: 2004/11/04 20:40:34 $
+  Date:      $Date: 2004-11-04 20:40:34 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

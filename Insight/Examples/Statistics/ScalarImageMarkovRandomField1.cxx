@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ScalarImageMarkovRandomField1.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/12/10 18:23:31 $
+  Date:      $Date: 2005-12-10 18:23:31 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

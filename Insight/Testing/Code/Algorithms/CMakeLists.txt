@@ -90,7 +90,19 @@ ADD_TEST(itkKullbackLeiblerCompareHistogramImageToImageMetricTest ${ALGORITHMS_T
 ADD_TEST(itkLaplacianSegmentationLevelSetImageFilterTest ${ALGORITHMS_TESTS} itkLaplacianSegmentationLevelSetImageFilterTest)
 ADD_TEST(itkLevelSetNeighborhoodExtractorTest ${ALGORITHMS_TESTS} itkLevelSetNeighborhoodExtractorTest)
 ADD_TEST(itkLevelSetVelocityNeighborhoodExtractorTest ${ALGORITHMS_TESTS} itkLevelSetVelocityNeighborhoodExtractorTest)
-ADD_TEST(itkMattesMutualInformationImageToImageMetricTest ${ALGORITHMS_TESTS3} itkMattesMutualInformationImageToImageMetricTest)
+
+ADD_TEST(itkMattesMutualInformationImageToImageMetricTest 
+  ${ALGORITHMS_TESTS3} itkMattesMutualInformationImageToImageMetricTest 1 1)
+
+ADD_TEST(itkMattesMutualInformationImageToImageMetricTest2
+  ${ALGORITHMS_TESTS3} itkMattesMutualInformationImageToImageMetricTest 1 0)
+
+ADD_TEST(itkMattesMutualInformationImageToImageMetricTest3
+  ${ALGORITHMS_TESTS3} itkMattesMutualInformationImageToImageMetricTest 0 1)
+
+ADD_TEST(itkMattesMutualInformationImageToImageMetricTest4
+  ${ALGORITHMS_TESTS3} itkMattesMutualInformationImageToImageMetricTest 0 0)
+
 ADD_TEST(itkMeanSquaresImageMetricTest ${ALGORITHMS_TESTS3} itkMeanSquaresImageMetricTest)
 ADD_TEST(itkMeanSquaresHistogramImageToImageMetricTest ${ALGORITHMS_TESTS3} itkMeanSquaresHistogramImageToImageMetricTest)
 ADD_TEST(itkMinMaxCurvatureFlowImageFilterTest ${ALGORITHMS_TESTS3} itkMinMaxCurvatureFlowImageFilterTest)
@@ -107,7 +119,11 @@ itkMultiResolutionImageRegistrationMethodTest_1  )
 ADD_TEST(itkMultiResolutionImageRegistrationMethodTest_2 ${ALGORITHMS_TESTS3}   
 itkMultiResolutionImageRegistrationMethodTest_2  )
 ADD_TEST(itkMutualInformationMetricTest ${ALGORITHMS_TESTS3} itkMutualInformationMetricTest)
-ADD_TEST(itkNarrowBandCurvesLevelSetImageFilterTest ${ALGORITHMS_TESTS4} itkNarrowBandCurvesLevelSetImageFilterTest)
+ADD_TEST(itkNarrowBandCurvesLevelSetImageFilterTest1 ${ALGORITHMS_TESTS4}
+  --compare ${BASELINE}/itkNarrowBandCurvesLevelSetImageFilterTest.png
+            ${TEMP}/itkNarrowBandCurvesLevelSetImageFilterTest.png
+  itkNarrowBandCurvesLevelSetImageFilterTest
+            ${TEMP}/itkNarrowBandCurvesLevelSetImageFilterTest.png)
 ADD_TEST(itkNarrowBandThresholdSegmentationLevelSetImageFilterTest ${ALGORITHMS_TESTS2} itkNarrowBandThresholdSegmentationLevelSetImageFilterTest)
 ADD_TEST(itkNewTest ${ALGORITHMS_TESTS3} itkNewTest)
 ADD_TEST(itkNormalizedCorrelationImageMetricTest ${ALGORITHMS_TESTS3} itkNormalizedCorrelationImageMetricTest)
@@ -337,6 +353,15 @@ ADD_EXECUTABLE(itkAlgorithmsPrintTest itkAlgorithmsPrintTest.cxx)
 TARGET_LINK_LIBRARIES(itkAlgorithmsPrintTest ITKAlgorithms ITKFEM ITKNumerics)
 ADD_EXECUTABLE(itkAlgorithmsPrintTest2 itkAlgorithmsPrintTest2.cxx)
 TARGET_LINK_LIBRARIES(itkAlgorithmsPrintTest2 ITKAlgorithms ITKFEM ITKNumerics)
+
+# Avoid bogus uninitialied warning in itkWatershedSegementTreeGenerator
+# by Sun compilers
+INCLUDE(${ITK_SOURCE_DIR}/CMake/itkCheckCXXAcceptsFlags.cmake)
+itkCHECK_CXX_ACCEPTS_FLAGS("-features=no%anachronisms" SUN_COMPILER)
+IF(SUN_COMPILER)
+  SET_SOURCE_FILES_PROPERTIES(itkAlgorithmsPrintTest3.cxx
+                        PROPERTIES COMPILE_FLAGS -w)
+ENDIF(SUN_COMPILER)
 
 ADD_EXECUTABLE(itkAlgorithmsPrintTest3 itkAlgorithmsPrintTest3.cxx)
 TARGET_LINK_LIBRARIES(itkAlgorithmsPrintTest3 ITKAlgorithms ITKFEM ITKNumerics)

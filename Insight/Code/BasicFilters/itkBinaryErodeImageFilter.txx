@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryErodeImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/25 16:09:29 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2008-01-12 20:27:49 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -244,14 +244,14 @@ BinaryErodeImageFilter< TInputImage, TOutputImage, TKernel>
         // of the connected component border
 
         // paint the structuring element
-        typename NeighborIndexContainer::const_iterator itIndex;
-        NeighborIndexContainer& indexDifferenceSet
+        typename NeighborIndexContainer::const_iterator itIdx;
+        NeighborIndexContainer& idxDifferenceSet
           = this->GetDifferenceSet( centerPixelCode );
-        for( itIndex = indexDifferenceSet.begin();
-          itIndex != indexDifferenceSet.end();
-          ++itIndex )
+        for( itIdx = idxDifferenceSet.begin();
+          itIdx != idxDifferenceSet.end();
+          ++itIdx )
           {
-          IndexType idx = tmpRegIndexIt.GetIndex() + *itIndex;
+          IndexType idx = tmpRegIndexIt.GetIndex() + *itIdx;
           if( outputRegion.IsInside( idx ) )
             { output->SetPixel( idx, backgroundValue ); }
           }

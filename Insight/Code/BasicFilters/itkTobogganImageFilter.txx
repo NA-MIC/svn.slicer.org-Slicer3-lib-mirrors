@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTobogganImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/09/03 11:54:54 $
+  Date:      $Date: 2005-09-03 11:54:54 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

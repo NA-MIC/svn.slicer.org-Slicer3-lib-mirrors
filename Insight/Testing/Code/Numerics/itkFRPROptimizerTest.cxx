@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFRPROptimizerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/25 13:42:34 $
+  Date:      $Date: 2006-05-25 13:42:34 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

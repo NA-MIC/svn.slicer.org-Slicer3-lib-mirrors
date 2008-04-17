@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVertexCell.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/18 16:53:48 $
+  Date:      $Date: 2007-05-18 16:53:48 $
   Version:   $Revision: 1.55 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegularSphereMeshSourceTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/04/19 11:15:18 $
+  Date:      $Date: 2004-04-19 11:15:18 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

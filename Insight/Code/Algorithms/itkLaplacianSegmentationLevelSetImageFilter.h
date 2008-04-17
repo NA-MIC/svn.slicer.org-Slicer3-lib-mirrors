@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLaplacianSegmentationLevelSetImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/08/29 15:55:10 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007-09-27 11:36:39 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -119,7 +119,7 @@ public:
                                                 FeatureImageType> LaplacianFunctionType;
   
   /** Run-time type information (and related methods). */
-  itkTypeMacro(LaplacianSegmenationLevelSetImageFilter, SegmentationLevelSetImageFilter);
+  itkTypeMacro(LaplacianSegmentationLevelSetImageFilter, SegmentationLevelSetImageFilter);
 
   /** Method for creation through the object factory */
   itkNewMacro(Self);

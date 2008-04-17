@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshZipMeshFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/05 18:23:01 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-02-07 15:07:58 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -36,8 +36,8 @@ class ITK_EXPORT QuadEdgeMeshZipMeshFunction :
 public:
   /** Standard class typedefs. */
   typedef QuadEdgeMeshZipMeshFunction     Self;
-  typedef itk::SmartPointer< Self >       Pointer;
-  typedef itk::SmartPointer< const Self > ConstPointer;
+  typedef SmartPointer< Self >            Pointer;
+  typedef SmartPointer< const Self >      ConstPointer;
 
   typedef QuadEdgeMeshFunctionBase< TMesh,
                             typename TQEType::OriginRefType >  Superclass;

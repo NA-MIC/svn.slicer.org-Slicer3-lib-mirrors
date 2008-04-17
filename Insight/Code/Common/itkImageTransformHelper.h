@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageTransformHelper.h,v $
   Language:  C++
-  Date:      $Date: 2007/06/13 00:37:51 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008-01-27 04:40:13 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -51,7 +51,7 @@ public:
         TransformIndexToPhysicalPointRow(
           matrix, origin,
           index, point,
-          Concept::Detail::UniqueType_bool<(R==0)>());
+          Concept::Detail::UniqueType_bool<(R+1==0)>());
     }
 
   inline static void TransformIndexToPhysicalPointRow(
@@ -66,7 +66,7 @@ public:
         ::TransformIndexToPhysicalPointCol(
           matrix,
           index,point,
-          Concept::Detail::UniqueType_bool<(C==0)>());
+          Concept::Detail::UniqueType_bool<(C+1==0)>());
       // Do Next Row
       ImageTransformHelper<NImageDimension,R-1,C>
         ::TransformIndexToPhysicalPointRow(
@@ -117,7 +117,7 @@ public:
         TransformPhysicalPointToIndexRow(
           matrix, origin,
           point, rindex, index,
-          Concept::Detail::UniqueType_bool<(R==0)>());
+          Concept::Detail::UniqueType_bool<(R+1==0)>());
     }
 
   inline static void TransformPhysicalPointToIndexRow(
@@ -131,7 +131,7 @@ public:
         ::TransformPhysicalPointToIndexCol(
           matrix,origin,
           point,rindex,index,
-          Concept::Detail::UniqueType_bool<(C==0)>());
+          Concept::Detail::UniqueType_bool<(C+1==0)>());
       // Do next row
       ImageTransformHelper<NImageDimension,R-1,C>
         ::TransformPhysicalPointToIndexRow(

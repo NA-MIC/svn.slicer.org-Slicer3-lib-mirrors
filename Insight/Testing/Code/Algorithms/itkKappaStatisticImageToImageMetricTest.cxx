@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkKappaStatisticImageToImageMetricTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/06/28 20:47:56 $
+  Date:      $Date: 2006-06-28 20:47:56 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanReciprocalSquareDifferencePointSetToImageMetric.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:54 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -66,9 +66,9 @@ MeanReciprocalSquareDifferencePointSetToImageMetric<TFixedPointSet,TMovingImage>
 
   while( pointItr != pointEnd && pointDataItr != pointDataEnd )
     {
-    typename Superclass::InputPointType  inputPoint;
+    InputPointType  inputPoint;
     inputPoint.CastFrom( pointItr.Value() );
-    typename Superclass::OutputPointType transformedPoint = 
+    OutputPointType transformedPoint = 
       this->m_Transform->TransformPoint( inputPoint );
 
     if( this->m_Interpolator->IsInsideBuffer( transformedPoint ) )
@@ -141,9 +141,9 @@ MeanReciprocalSquareDifferencePointSetToImageMetric<TFixedPointSet,TMovingImage>
 
   while( pointItr != pointEnd && pointDataItr != pointDataEnd )
     {
-    typename Superclass::InputPointType  inputPoint;
+    InputPointType  inputPoint;
     inputPoint.CastFrom( pointItr.Value() );
-    typename Superclass::OutputPointType transformedPoint = 
+    OutputPointType transformedPoint = 
       this->m_Transform->TransformPoint( inputPoint );
 
     if( this->m_Interpolator->IsInsideBuffer( transformedPoint ) )
@@ -161,7 +161,6 @@ MeanReciprocalSquareDifferencePointSetToImageMetric<TFixedPointSet,TMovingImage>
 
       // Get the gradient by NearestNeighboorInterpolation: 
       // which is equivalent to round up the point components.
-      typedef typename Superclass::OutputPointType OutputPointType;
       typedef typename OutputPointType::CoordRepType CoordRepType;
       typedef ContinuousIndex<CoordRepType,MovingImageType::ImageDimension>
         MovingImageContinuousIndexType;
@@ -170,11 +169,8 @@ MeanReciprocalSquareDifferencePointSetToImageMetric<TFixedPointSet,TMovingImage>
       this->m_MovingImage->TransformPhysicalPointToContinuousIndex( transformedPoint, tempIndex );
 
       typename MovingImageType::IndexType mappedIndex; 
-      for( unsigned int j = 0; j < MovingImageType::ImageDimension; j++ )
-        {
-        mappedIndex[j] = static_cast<long>( vnl_math_rnd( tempIndex[j] ) );
-        }
-
+      mappedIndex.CopyWithRound( tempIndex );
+      
       const GradientPixelType gradient = 
         this->GetGradientImage()->GetPixel( mappedIndex );
 
@@ -251,9 +247,9 @@ MeanReciprocalSquareDifferencePointSetToImageMetric<TFixedPointSet,TMovingImage>
 
   while( pointItr != pointEnd && pointDataItr != pointDataEnd )
     {
-    typename Superclass::InputPointType  inputPoint;
+    InputPointType  inputPoint;
     inputPoint.CastFrom( pointItr.Value() );
-    typename Superclass::OutputPointType transformedPoint = 
+    OutputPointType transformedPoint = 
       this->m_Transform->TransformPoint( inputPoint );
 
     if( this->m_Interpolator->IsInsideBuffer( transformedPoint ) )
@@ -273,7 +269,6 @@ MeanReciprocalSquareDifferencePointSetToImageMetric<TFixedPointSet,TMovingImage>
 
       // Get the gradient by NearestNeighboorInterpolation: 
       // which is equivalent to round up the point components.
-      typedef typename Superclass::OutputPointType OutputPointType;
       typedef typename OutputPointType::CoordRepType CoordRepType;
       typedef ContinuousIndex<CoordRepType,MovingImageType::ImageDimension>
         MovingImageContinuousIndexType;
@@ -282,11 +277,8 @@ MeanReciprocalSquareDifferencePointSetToImageMetric<TFixedPointSet,TMovingImage>
       this->m_MovingImage->TransformPhysicalPointToContinuousIndex( transformedPoint, tempIndex );
 
       typename MovingImageType::IndexType mappedIndex; 
-      for( unsigned int j = 0; j < MovingImageType::ImageDimension; j++ )
-        {
-        mappedIndex[j] = static_cast<long>( vnl_math_rnd( tempIndex[j] ) );
-        }
-
+      mappedIndex.CopyWithRound( tempIndex );
+      
       const GradientPixelType gradient = 
         this->GetGradientImage()->GetPixel( mappedIndex );
 

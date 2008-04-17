@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGEAdwImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:50 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2008-01-23 15:30:00 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -70,16 +70,19 @@ bool GEAdwImageIO::CanReadFile( const char* FileNameToRead )
   // that this operation will fail somewhere along the line.
   if(this->GetShortAt(f,GE_ADW_IM_IMATRIX_X,&matrixX,false) != 0)
     {
+    f.close();
     return false;
     }
 
   if(this->GetShortAt(f,GE_ADW_IM_IMATRIX_Y,&matrixY,false) != 0)
     {
+    f.close();
     return false;
     }
 
   if(this->GetIntAt(f,GE_ADW_VARIABLE_HDR_LENGTH,&varHdrSize,false) != 0)
     {
+    f.close();
     return false;
     }
 
@@ -87,12 +90,14 @@ bool GEAdwImageIO::CanReadFile( const char* FileNameToRead )
 
   if ( imageSize != itksys::SystemTools::FileLength(FileNameToRead) )
     {
+    f.close();
     return false;
     }
+  f.close();
   return true;
 }
 
-struct GEImageHeader *GEAdwImageIO::ReadHeader(const char *FileNameToRead)
+GEImageHeader *GEAdwImageIO::ReadHeader(const char *FileNameToRead)
 {
   char tmpbuf[1024];
 
@@ -100,7 +105,7 @@ struct GEImageHeader *GEAdwImageIO::ReadHeader(const char *FileNameToRead)
     {
     RAISE_EXCEPTION();
     }
-  GEImageHeader *hdr = new struct GEImageHeader;
+  GEImageHeader *hdr = new GEImageHeader;
   if(hdr == 0)
     {
     RAISE_EXCEPTION();
@@ -144,7 +149,7 @@ struct GEImageHeader *GEAdwImageIO::ReadHeader(const char *FileNameToRead)
   this->GetShortAt(f,GE_ADW_IM_CPHASENUM,&(hdr->turboFactor));
 
   this->GetFloatAt(f,GE_ADW_IM_SLTHICK,&(hdr->sliceThickness));
-  hdr->sliceGap = 0.0;
+  hdr->sliceGap = 0.0f;
 
   this->GetShortAt(f,GE_ADW_IM_IMATRIX_X,&(hdr->imageXsize));
 
@@ -190,13 +195,13 @@ struct GEImageHeader *GEAdwImageIO::ReadHeader(const char *FileNameToRead)
 
   int tmpInt;
   this->GetIntAt(f,GE_ADW_IM_TR,&tmpInt);
-  hdr->TR = (float) tmpInt / 1000.0;
+  hdr->TR = (float) tmpInt / 1000.0f;
 
   this->GetIntAt(f,GE_ADW_IM_TI,&tmpInt);
-  hdr->TI = (float) tmpInt / 1000.0;
+  hdr->TI = (float) tmpInt / 1000.0f;
 
   this->GetIntAt(f,GE_ADW_IM_TE,&tmpInt);
-  hdr->TE = (float) tmpInt / 1000.0;
+  hdr->TE = (float) tmpInt / 1000.0f;
 
   this->GetShortAt(f, GE_ADW_IM_NUMECHO,&(hdr->numberOfEchoes));
 

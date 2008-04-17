@@ -24,7 +24,7 @@ cat > ${CURRFILE} << FILE_EOF
   Program:   Insight Segmentation & Registration Toolkit
   Module:    \$RCSfile: MakeConsistentWrappedClasses.sh,v ${WRAP_OBJECT2_TARGET}.cxx,v \$
   Language:  C++
-  Date:      \$Date: 2005/11/02 21:45:13 $
+  Date:      \$Date: 2005-11-02 21:45:13 $
   Version:   \$Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
@@ -85,7 +85,7 @@ cat > ${CURRFILE} << FILE_EOF
   Program:   Insight Segmentation & Registration Toolkit
   Module:    \$RCSfile: MakeConsistentWrappedClasses.sh,v ${WRAP_OBJECT2_TARGET}.cxx,v \$
   Language:  C++
-  Date:      \$Date: 2005/11/02 21:45:13 $
+  Date:      \$Date: 2005-11-02 21:45:13 $
   Version:   \$Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

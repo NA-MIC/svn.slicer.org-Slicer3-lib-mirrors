@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: MaximumRatioDecisionRule.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/07/26 19:51:21 $
+  Date:      $Date: 2005-07-26 19:51:21 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

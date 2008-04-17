@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRGBGibbsPriorFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/08/10 18:13:43 $
-  Version:   $Revision: 1.46 $
+  Date:      $Date: 2008-01-27 18:29:24 $
+  Version:   $Revision: 1.47 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -308,25 +308,25 @@ RGBGibbsPriorFilter<TInputImage, TClassifiedImage>
 
   bool changeflag = (k > 3);
 
-  for(unsigned int j = 0; j < 2; j++) 
+  for(unsigned int jj = 0; jj < 2; jj++) 
     {
-    energy[j] = 0;
-    energy[j] += GibbsEnergy(i,           0, j);
-    energy[j] += GibbsEnergy(i+rowsize+1, 1, j);
-    energy[j] += GibbsEnergy(i+rowsize,   2, j);
-    energy[j] += GibbsEnergy(i+rowsize-1, 3, j);
-    energy[j] += GibbsEnergy(i-1,         4, j);
-    energy[j] += GibbsEnergy(i-rowsize-1, 5, j);
-    energy[j] += GibbsEnergy(i-rowsize,   6, j);
-    energy[j] += GibbsEnergy(i-rowsize+1, 7, j);
-    energy[j] += GibbsEnergy(i+1,         8, j);
-    if ( m_LabelStatus[i] == j ) 
+    energy[jj] = 0;
+    energy[jj] += GibbsEnergy(i,           0, jj);
+    energy[jj] += GibbsEnergy(i+rowsize+1, 1, jj);
+    energy[jj] += GibbsEnergy(i+rowsize,   2, jj);
+    energy[jj] += GibbsEnergy(i+rowsize-1, 3, jj);
+    energy[jj] += GibbsEnergy(i-1,         4, jj);
+    energy[jj] += GibbsEnergy(i-rowsize-1, 5, jj);
+    energy[jj] += GibbsEnergy(i-rowsize,   6, jj);
+    energy[jj] += GibbsEnergy(i-rowsize+1, 7, jj);
+    energy[jj] += GibbsEnergy(i+1,         8, jj);
+    if ( m_LabelStatus[i] == jj ) 
       {
-      energy[j] += -3;
+      energy[jj] += -3;
       }
     else 
       {
-      energy[j] += 3;  
+      energy[jj] += 3;  
       }
     }
 
@@ -642,11 +642,11 @@ RGBGibbsPriorFilter<TInputImage, TClassifiedImage>
       ChangedPixelVec = inputImageIt.Get();
       }
 
-    const std::vector<double> & dist =
+    const std::vector<double> & distValue =
       m_ClassifierPtr->GetPixelMembershipValue( ChangedPixelVec );
 
     LabelType pixLabel;
-    if (dist[1] > m_ObjectThreshold) pixLabel = 0;
+    if (distValue[1] > m_ObjectThreshold) pixLabel = 0;
     else pixLabel = 1;
     labelledImageIt.Set( pixLabel );
     

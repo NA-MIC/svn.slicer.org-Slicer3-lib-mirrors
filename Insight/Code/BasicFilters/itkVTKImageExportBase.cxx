@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKImageExportBase.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/17 15:01:09 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007-10-05 10:29:52 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -133,6 +133,12 @@ void VTKImageExportBase::UpdateInformationCallback()
 int VTKImageExportBase::PipelineModifiedCallback()
 {
   DataObjectPointer input = this->GetInput(0);
+  if( !input )
+    {
+    itkExceptionMacro(<< "Need to set an input");
+    return -1;
+    }
+
   unsigned long pipelineMTime = input->GetPipelineMTime();
 
   if( this->GetMTime() > pipelineMTime)
@@ -160,7 +166,12 @@ void VTKImageExportBase::UpdateDataCallback()
 {
   // Get the input.
   DataObjectPointer input = this->GetInput(0);
-  
+  if( !input )
+    {
+    itkExceptionMacro(<< "Need to set an input");
+    return;
+    }
+ 
   // Notify start event observers
   this->InvokeEvent( StartEvent() );
 

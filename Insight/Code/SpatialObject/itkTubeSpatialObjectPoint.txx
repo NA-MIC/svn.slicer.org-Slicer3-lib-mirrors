@@ -3,7 +3,7 @@
 Program: Insight Segmentation & Registration Toolkit
 Module:$RCSfile: itkTubeSpatialObjectPoint.txx,v $
 Language:C++
-Date:$Date: 2004/12/14 00:31:22 $
+Date:$Date: 2004-12-14 00:31:22 $
 Version: $Revision: 1.10 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.

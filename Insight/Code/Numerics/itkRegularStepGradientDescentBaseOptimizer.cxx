@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegularStepGradientDescentBaseOptimizer.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/10 16:22:23 $
+  Date:      $Date: 2007-09-10 16:22:23 $
   Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

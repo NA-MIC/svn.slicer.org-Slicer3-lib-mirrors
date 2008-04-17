@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: DeformableRegistration1.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:41 $
+  Date:      $Date: 2007-09-07 14:17:41 $
   Version:   $Revision: 1.33 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

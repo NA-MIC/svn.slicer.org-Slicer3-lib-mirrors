@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLabelToRGBFunctor.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/26 15:46:54 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-10-23 14:10:23 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -48,6 +48,8 @@ public:
     {
     
     TRGBPixel rgbPixel;
+    typedef typename TRGBPixel::ValueType ValueType;
+
     // the following colors are from "R", and named:
     // "red"             "green3"          "blue"            "cyan"
     //"magenta"         "darkorange1"     "darkgreen"       "blueviolet"
@@ -93,7 +95,7 @@ public:
 
     // provide some default value for external use (outside LabelToRGBImageFilter)
     // Inside LabelToRGBImageFilter, the values are always initialized
-    m_UseBackground = false;
+    m_BackgroundColor.Fill( NumericTraits<ValueType>::Zero );
     m_BackgroundValue = NumericTraits<TLabel>::Zero;
     }
 
@@ -101,11 +103,9 @@ public:
     {
     // value is background
     // return a gray pixel with the same intensity than the label pixel
-    if( m_UseBackground && p == m_BackgroundValue )
+    if( p == m_BackgroundValue )
       {
-      TRGBPixel rgbPixel;
-      rgbPixel.Set( p, p, p );
-      return rgbPixel;
+      return m_BackgroundColor;
       }
 
     // else, return a colored pixel from the color table
@@ -127,7 +127,7 @@ public:
 
   bool operator != (const Self &l) const
     { 
-    const bool areDifferent = m_UseBackground != l.m_UseBackground || 
+    const bool areDifferent = m_BackgroundColor != l.m_BackgroundColor || 
                             m_BackgroundValue != l.m_BackgroundValue; 
     return areDifferent;
     }
@@ -142,16 +142,16 @@ public:
     m_BackgroundValue = v; 
     }
 
-  void SetUseBackground( bool b ) 
+  void SetBackgroundColor( TRGBPixel rgb ) 
     {
-    m_UseBackground = b; 
+    m_BackgroundColor = rgb; 
     }
 
   ~LabelToRGBFunctor() {}
 
   std::vector< TRGBPixel > m_Colors;
 
-  bool m_UseBackground;
+  TRGBPixel m_BackgroundColor;
 
   TLabel m_BackgroundValue;
 

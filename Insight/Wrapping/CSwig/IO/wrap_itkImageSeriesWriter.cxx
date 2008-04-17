@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_itkImageSeriesWriter.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/10/30 21:20:57 $
+  Date:      $Date: 2003-10-30 21:20:57 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

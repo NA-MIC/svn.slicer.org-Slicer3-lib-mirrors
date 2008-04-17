@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSobelEdgeDetectionImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/01/11 19:43:32 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007-09-23 21:25:01 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -88,6 +88,13 @@ void
 SobelEdgeDetectionImageFilter< TInputImage, TOutputImage >
 ::GenerateData()
 {
+  // Test whether the output pixel type (or its components) are not of type
+  // float or double:
+  if( NumericTraits< OutputPixelType >::is_integer )
+    {
+    itkWarningMacro("Output pixel type MUST be float or double to prevent computational errors"); 
+    }
+
   // Define the filter types used.
   typedef NeighborhoodOperatorImageFilter<InputImageType,
     OutputImageType> OpFilter;

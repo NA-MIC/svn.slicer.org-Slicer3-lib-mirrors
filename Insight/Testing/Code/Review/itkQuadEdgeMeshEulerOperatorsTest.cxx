@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshEulerOperatorsTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/05 18:46:45 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008-03-10 22:48:45 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -48,7 +48,7 @@ bool AssertTopologicalInvariants( TMesh *mesh,
                                   IdentifierType Genus)
 {
   typedef itk::QuadEdgeMeshTopologyChecker< TMesh > CheckerType;
-  CheckerType *check = new CheckerType;
+  typename CheckerType::Pointer check = CheckerType::New();
   check->SetMesh( mesh );
   check->SetExpectedNumberOfPoints( NumVertices );
   check->SetExpectedNumberOfEdges( NumFaces );
@@ -190,7 +190,7 @@ int itkQuadEdgeMeshEulerOperatorsTest(int argc, char * argv[])
   // TEST TOPOLOGYCHECKER
     {
     typedef itk::QuadEdgeMeshTopologyChecker< MeshType > CheckerType;
-    CheckerType *check = new CheckerType;
+    CheckerType::Pointer check = CheckerType::New();
     
     // test no input
     if( check->ValidateEulerCharacteristic( ) )
@@ -202,6 +202,7 @@ int itkQuadEdgeMeshEulerOperatorsTest(int argc, char * argv[])
     
     // test with an isolated edge
     MeshPointer testmesh = MeshType::New( );  // empty mesh
+
     PointType dummyPoint1;
     PointType dummyPoint2;
     for( unsigned char i = 0; i < 3; i++ )
@@ -211,12 +212,14 @@ int itkQuadEdgeMeshEulerOperatorsTest(int argc, char * argv[])
       } 
     testmesh->SetPoint( 0, dummyPoint1 );     // add points to mesh
     testmesh->SetPoint( 1, dummyPoint2 );
+
     LineCellType * Line = new LineCellType;   // create an Isolated Edge
     CellType::CellAutoPointer cellpointer;    // create the corresponding AutoPointer
     cellpointer.TakeOwnership( Line );
     cellpointer->SetPointId( 0, 0 );
     cellpointer->SetPointId( 1, 1 );
     testmesh->SetCell( 0, cellpointer );      // add the cell to the mesh
+
     check->SetMesh( testmesh );
     if( check->ValidateEulerCharacteristic( ) )
       {
@@ -227,6 +230,7 @@ int itkQuadEdgeMeshEulerOperatorsTest(int argc, char * argv[])
     }
 
   // EULER OPERATOR TESTS
+  QEType * dummy;
   MeshPointer  mesh = MeshType::New();
   PopulateMesh<MeshType>( mesh );
 
@@ -277,11 +281,13 @@ int itkQuadEdgeMeshEulerOperatorsTest(int argc, char * argv[])
   joinFacet->SetInput( mesh );
   
   std::cout << "     " << "Test QE Input not internal";
-  if( joinFacet->Evaluate( new QEType ) )
+  dummy = new QEType;
+  if( joinFacet->Evaluate( dummy ) )
     {
     std::cout << "FAILED." << std::endl;
     return 1;
     }
+  delete dummy;
   std::cout << "OK" << std::endl;
   
   std::cout << "     " << "Test No QE Input";
@@ -499,11 +505,13 @@ int itkQuadEdgeMeshEulerOperatorsTest(int argc, char * argv[])
   flipEdge->SetInput( mesh );
   
   std::cout << "     " << "Test QE Input not internal";
-  if( flipEdge->Evaluate( new QEType ) )
+  dummy = new QEType;
+  if( flipEdge->Evaluate( dummy ) )
     {
     std::cout << "FAILED." << std::endl;
     return 1;
     }
+  delete dummy;
   std::cout << "OK" << std::endl;
 
   std::cout << "     " << "Test No QE Input";
@@ -623,7 +631,7 @@ int itkQuadEdgeMeshEulerOperatorsTest(int argc, char * argv[])
   PopulateMesh<MeshType>( mesh );
  
   JoinVertex::Pointer joinVertex = JoinVertex::New( );
-  std::cout << "     " << "Test No Mesh Input";
+  std::cout << "     " << "Test No Mesh Input.";
   if( joinVertex->Evaluate( (QEType*)1 ) )
     {
     std::cout << "FAILED." << std::endl;
@@ -635,7 +643,7 @@ int itkQuadEdgeMeshEulerOperatorsTest(int argc, char * argv[])
 
   joinVertex->SetInput( mesh );
   
-  std::cout << "     " << "Test QE Input and Sym isolated";
+  std::cout << "     " << "Test QE Input and Sym isolated.";
   LineCellType* IsolatedLineCell = new LineCellType;
   if( joinVertex->Evaluate( IsolatedLineCell->GetQEGeom( ) ) )
     {
@@ -644,13 +652,59 @@ int itkQuadEdgeMeshEulerOperatorsTest(int argc, char * argv[])
     }
   std::cout << "OK" << std::endl;
 
-  std::cout << "     " << "Test No QE Input";
+  std::cout << "     " << "Test No QE Input.";
   if( joinVertex->Evaluate( (QEType*)0 ) )
     {
     std::cout << "FAILED." << std::endl;
     return 1;
     }
   std::cout << "OK" << std::endl;
+
+  std::cout << "     " << "Test Topological Changes";
+  MeshType::Pointer topotest = MeshType::New( );
+  MeshType::PointType pts[4];
+  pts[ 0][0] = 0.0;  pts[ 0][1] = 0.0;  pts[ 0][2] = 0.0;
+  pts[ 1][0] = 1.0;  pts[ 1][1] = 0.0;  pts[ 1][2] = 0.0;
+  pts[ 2][0] = 0.0;  pts[ 2][1] = 1.0;  pts[ 2][2] = 0.0;
+  pts[ 3][0] = 0.0;  pts[ 3][1] = 0.0;  pts[ 3][2] = 1.0;
+  for(int ii=0; ii<4; ii++)
+    {
+    topotest->SetPoint( ii, pts[ii] );
+    }
+  MeshType::PointIdList topotestpoints;
+
+  topotestpoints.push_back( 3 );
+  topotestpoints.push_back( 0 );
+  topotestpoints.push_back( 1 );
+  topotest->AddFace( topotestpoints );
+  topotestpoints.clear( );
+
+  topotestpoints.push_back( 3 );
+  topotestpoints.push_back( 2 );
+  topotestpoints.push_back( 0 );
+  topotest->AddFace( topotestpoints );
+  topotestpoints.clear( );
+
+  topotestpoints.push_back( 3 );
+  topotestpoints.push_back( 1 );
+  topotestpoints.push_back( 2 );
+  topotest->AddFace( topotestpoints );
+  topotestpoints.clear( );
+
+  topotestpoints.push_back( 0 );
+  topotestpoints.push_back( 2 );
+  topotestpoints.push_back( 1 );
+  topotest->AddFace( topotestpoints );
+  topotestpoints.clear( );
+
+  joinVertex->SetInput( topotest );
+  if( joinVertex->Evaluate( mesh->FindEdge( 0, 1 ) ) )
+    {
+    std::cout << "FAILED." << std::endl;
+    return 1;
+    }
+  std::cout << "OK" << std::endl;
+  joinVertex->SetInput( mesh );
 
   // First test the case were the argument is an internal edge (here
   // we consider [12, 11]) whose adjacent faces are both internal (i.e.
@@ -1309,11 +1363,13 @@ int itkQuadEdgeMeshEulerOperatorsTest(int argc, char * argv[])
 
   createCenterVertex->SetInput( mesh );
   std::cout << "     " << "Test QE Input with no left face";
-  if( createCenterVertex->Evaluate( new QEType) ) 
+  dummy = new QEType;
+  if( createCenterVertex->Evaluate( dummy ) ) 
     {
     std::cout << "FAILED." << std::endl;
     return 1;
     }
+  delete dummy;
   std::cout << "OK" << std::endl;
 
   std::cout << "     " << "Test No QE Input";

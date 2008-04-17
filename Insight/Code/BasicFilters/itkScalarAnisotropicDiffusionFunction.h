@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkScalarAnisotropicDiffusionFunction.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:55 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-01-18 20:07:32 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -51,11 +51,12 @@ public:
                       Superclass::ImageDimension );
 
   /** Inherit some parameters from the superclass type. */
-  typedef typename Superclass::ImageType ImageType;
-  typedef typename Superclass::PixelType PixelType;
-  typedef typename Superclass::RadiusType RadiusType;
+  typedef typename Superclass::ImageType        ImageType;
+  typedef typename Superclass::PixelType        PixelType;
+  typedef typename Superclass::PixelRealType    PixelRealType;
+  typedef typename Superclass::RadiusType       RadiusType;
   typedef typename Superclass::NeighborhoodType NeighborhoodType;
-  typedef typename Superclass::TimeStepType TimeStepType;
+  typedef typename Superclass::TimeStepType     TimeStepType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ScalarAnisotropicDiffusionFunction,

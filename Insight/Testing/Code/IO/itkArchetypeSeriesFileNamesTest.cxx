@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkArchetypeSeriesFileNamesTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/10/20 19:26:34 $
+  Date:      $Date: 2004-10-20 19:26:34 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

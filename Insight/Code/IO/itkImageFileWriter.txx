@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageFileWriter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:51 $
-  Version:   $Revision: 1.53 $
+  Date:      $Date: 2008-04-15 14:25:17 $
+  Version:   $Revision: 1.55 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -152,6 +152,7 @@ ImageFileWriter<TInputImage>
     msg << " Could not create IO object for file "
         << m_FileName.c_str() << std::endl;
     msg << "  Tried to create one of the following:" << std::endl;
+    {
     std::list<LightObject::Pointer> allobjects = 
       ObjectFactoryBase::CreateAllInstance("itkImageIOBase");
     for(std::list<LightObject::Pointer>::iterator i = allobjects.begin();
@@ -160,6 +161,7 @@ ImageFileWriter<TInputImage>
       ImageIOBase* io = dynamic_cast<ImageIOBase*>(i->GetPointer());
       msg << "    " << io->GetNameOfClass() << std::endl; 
       }
+    }
     msg << "  You probably failed to set a file suffix, or" << std::endl;
     msg << "    set the suffix to an unsupported type." << std::endl;
     e.SetDescription(msg.str().c_str());
@@ -217,6 +219,11 @@ ImageFileWriter<TInputImage>
       axisDirection[j] = direction[j][i];
       }
     m_ImageIO->SetDirection( i, axisDirection );
+    }
+    
+  if(m_UserSpecifiedIORegion)
+    {
+    m_ImageIO->SetUseStreamedWriting(true);
     }
 
   m_ImageIO->SetUseCompression(m_UseCompression);

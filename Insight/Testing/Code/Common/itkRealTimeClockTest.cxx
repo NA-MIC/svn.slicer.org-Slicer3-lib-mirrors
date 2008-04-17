@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRealTimeClockTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/02/06 21:21:34 $
+  Date:      $Date: 2006-02-06 21:21:34 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

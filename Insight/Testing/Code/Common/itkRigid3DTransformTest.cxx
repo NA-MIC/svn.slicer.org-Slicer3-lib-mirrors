@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRigid3DTransformTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/10/16 01:34:11 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2008-01-18 18:53:14 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -290,15 +290,15 @@ int itkRigid3DTransformTest(int ,char * [] )
     }
 
     // Verify the Matrix content
-    TransformType::MatrixType matrix = rotation->GetRotationMatrix();
+    TransformType::MatrixType matrix0 = rotation->GetRotationMatrix();
     std::cout << "Rotation matrix:  " << std::endl;
-    std::cout << matrix << std::endl;
+    std::cout << matrix0 << std::endl;
 
     for(unsigned int i=0; i<N; i++)
     {
       for(unsigned int j=0; j<N; j++)
       {
-        if( fabs( matrix[i][j]- mrotation[i][j] ) > epsilon )
+        if( fabs( matrix0[i][j]- mrotation[i][j] ) > epsilon )
         {
           Ok = false;
           break;    

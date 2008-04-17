@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkProcessObject.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/27 12:47:59 $
-  Version:   $Revision: 1.73 $
+  Date:      $Date: 2007-12-23 17:59:29 $
+  Version:   $Revision: 1.74 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -39,7 +39,7 @@ ProcessObject
   m_NumberOfRequiredOutputs = 0;
 
   m_AbortGenerateData = false;
-  m_Progress = 0.0;
+  m_Progress = 0.0f;
   m_Updating = false;
   
   m_Threader = MultiThreader::New();
@@ -972,7 +972,7 @@ ProcessObject
    * before we start to execute is 0.0.
    */
   m_AbortGenerateData = false;
-  m_Progress = 0.0;
+  m_Progress = 0.0f;
 
   /**
    * Count the number of required inputs which have been assigned 
@@ -1012,7 +1012,7 @@ ProcessObject
    */
   if ( m_AbortGenerateData )
     {
-    this->UpdateProgress(1.0);
+    this->UpdateProgress(1.0f);
     }
 
   /**

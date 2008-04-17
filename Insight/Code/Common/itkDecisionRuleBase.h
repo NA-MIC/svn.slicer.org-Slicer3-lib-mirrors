@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDecisionRuleBase.h,v $
   Language:  C++
-  Date:      $Date: 2005/10/07 23:10:10 $
+  Date:      $Date: 2005-10-07 23:10:10 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

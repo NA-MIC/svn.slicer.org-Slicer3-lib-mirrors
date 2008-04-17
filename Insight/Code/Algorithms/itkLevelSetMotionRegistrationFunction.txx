@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLevelSetMotionRegistrationFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2005/04/29 15:58:31 $
+  Date:      $Date: 2005-04-29 15:58:31 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

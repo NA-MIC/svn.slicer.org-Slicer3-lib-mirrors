@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBloxCoreAtomImage.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 16:30:14 $
+  Date:      $Date: 2006-03-19 16:30:14 $
   Version:   $Revision: 1.41 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

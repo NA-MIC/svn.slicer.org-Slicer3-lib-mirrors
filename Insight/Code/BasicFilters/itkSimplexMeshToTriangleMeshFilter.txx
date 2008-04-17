@@ -3,7 +3,7 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkSimplexMeshToTriangleMeshFilter.txx,v $
 Language:  C++
-Date:      $Date: 2004/11/08 13:33:19 $
+Date:      $Date: 2004-11-08 13:33:19 $
 Version:   $Revision: 1.5 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.

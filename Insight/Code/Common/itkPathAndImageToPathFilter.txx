@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPathAndImageToPathFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/05/03 16:58:49 $
+  Date:      $Date: 2004-05-03 16:58:49 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

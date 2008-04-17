@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegularSphereMeshSource.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/28 15:53:46 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008-01-19 01:13:03 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -124,7 +124,8 @@ RegularSphereMeshSource<TOutputMesh>
   // followed by a repositioning of the point on the sphere
   // for each resolution.
   // it's an IN-PLACE process.
-  for (unsigned int i = 0; i < m_Resolution; i++) 
+  unsigned int i;
+  for (i = 0; i < m_Resolution; i++) 
     {
     typename OutputMeshType::CellsContainerPointer myCells = outputMesh->GetCells();
     typename OutputMeshType::CellsContainer::Iterator cells = myCells->Begin();
@@ -173,25 +174,25 @@ RegularSphereMeshSource<TOutputMesh>
         tp = cells.Value()->GetPointIds();
 
         // for each point of the input triangle, create a copy in the output mesh
-        for( unsigned int i = 0; i < 3; i++ )
+        for( unsigned int ii = 0; ii < 3; ii++ )
           {
           // get the point's geometry from previous mesh      
-          outputMesh->GetPoint(tp[i],v_pt[i]);
+          outputMesh->GetPoint(tp[ii],v_pt[ii]);
 
           // This is a QE specific case
           // if the point already is in the output mesh
           // we should not overwrite it as it would
           // reset the link to the Quad Edge Ring
-          if( !result->GetPoints()->IndexExists( tp[i] ) )
+          if( !result->GetPoints()->IndexExists( tp[ii] ) )
             {
             // this is needed when the PointType is a QuadEdgeMeshPoint 
             PointType localPt;
-            localPt[0] = v[i][0];
-            localPt[1] = v[i][1];
-            localPt[2] = v[i][2];
+            localPt[0] = v[ii][0];
+            localPt[1] = v[ii][1];
+            localPt[2] = v[ii][2];
 
             // copy the point in the output mesh
-            result->SetPoint(tp[i], localPt);
+            result->SetPoint(tp[ii], localPt);
             }
           }
 

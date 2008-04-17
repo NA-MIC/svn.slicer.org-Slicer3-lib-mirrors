@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryDilateImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/12 09:20:29 $
+  Date:      $Date: 2007-09-12 09:20:29 $
   Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

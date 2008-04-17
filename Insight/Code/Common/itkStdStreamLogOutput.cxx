@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkStdStreamLogOutput.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/05/28 12:50:24 $
+  Date:      $Date: 2005-05-28 12:50:24 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBioCellTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/10/04 17:43:02 $
+  Date:      $Date: 2004-10-04 17:43:02 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

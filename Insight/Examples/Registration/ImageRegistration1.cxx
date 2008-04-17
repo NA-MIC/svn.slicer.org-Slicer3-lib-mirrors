@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageRegistration1.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:42 $
-  Version:   $Revision: 1.52 $
+  Date:      $Date: 2007-11-22 00:30:16 $
+  Version:   $Revision: 1.53 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -596,6 +596,7 @@ int main( int argc, char *argv[] )
   resampler->SetSize( fixedImage->GetLargestPossibleRegion().GetSize() );
   resampler->SetOutputOrigin(  fixedImage->GetOrigin() );
   resampler->SetOutputSpacing( fixedImage->GetSpacing() );
+  resampler->SetOutputDirection( fixedImage->GetDirection() );
   resampler->SetDefaultPixelValue( 100 );
   // Software Guide : EndCodeSnippet
 

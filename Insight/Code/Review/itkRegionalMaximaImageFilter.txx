@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegionalMaximaImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/20 20:05:58 $
+  Date:      $Date: 2007-01-20 20:05:58 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

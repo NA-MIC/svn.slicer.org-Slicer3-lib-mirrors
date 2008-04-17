@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: SceneSpatialObject.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/23 20:46:40 $
+  Date:      $Date: 2005-03-23 20:46:40 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

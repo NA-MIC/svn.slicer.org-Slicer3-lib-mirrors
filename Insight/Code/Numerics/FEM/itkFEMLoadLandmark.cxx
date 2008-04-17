@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMLoadLandmark.cxx,v $
   Language:  C++
-  Date: $Date: 2004/12/04 13:17:09 $
+  Date: $Date: 2004-12-04 13:17:09 $
   Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

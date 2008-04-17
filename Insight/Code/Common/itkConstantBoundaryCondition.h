@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConstantBoundaryCondition.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/20 16:59:33 $
+  Date:      $Date: 2006-04-20 16:59:33 $
   Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

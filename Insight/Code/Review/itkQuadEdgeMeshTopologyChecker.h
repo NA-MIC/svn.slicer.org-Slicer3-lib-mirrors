@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshTopologyChecker.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/26 06:30:28 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-02-07 15:58:06 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -34,7 +34,7 @@ namespace itk
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * http://hdl.handle.net/1926/306
+ * http://insight-journal.org/midas/handle.php?handle=1926/306
  *
  */
 template< class TMesh >
@@ -52,7 +52,7 @@ public:
   typedef typename MeshType::EdgeCellType      EdgeCellType;
   typedef typename MeshType::CellsContainerConstIterator
                                                CellsContainerConstIterator; 
-  typedef typename itk::QuadEdgeMeshBoundaryEdgesMeshFunction< MeshType >
+  typedef QuadEdgeMeshBoundaryEdgesMeshFunction< MeshType >
                                                BoundaryEdges;
 
 public:
@@ -72,7 +72,10 @@ public:
 
   bool ValidateEulerCharacteristic() const;
 
+
+protected:
   QuadEdgeMeshTopologyChecker();
+  ~QuadEdgeMeshTopologyChecker(){};
   void PrintSelf(std::ostream& os, Indent indent) const;
 
 private:

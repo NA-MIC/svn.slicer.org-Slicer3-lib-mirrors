@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegularExpressionSeriesFileNamesTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/10/20 19:25:07 $
+  Date:      $Date: 2004-10-20 19:25:07 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

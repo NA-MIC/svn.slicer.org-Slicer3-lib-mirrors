@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGDCMSeriesReadImageWrite.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/02/02 19:35:57 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-01-02 16:17:22 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -18,15 +18,12 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-//  Software Guide : BeginLatex
 //
 //  This example illustrates how to read a DICOM series into a volume
 //  and then save this volume into another DICOM series using the 
 //  exact same name.
 //  It makes use of the GDCM library
 //
-//  Software Guide : EndLatex 
-
 
 #include "itkImageSeriesReader.h"
 #include "itkImageFileWriter.h"

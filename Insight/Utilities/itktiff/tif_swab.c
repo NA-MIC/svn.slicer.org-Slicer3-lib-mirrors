@@ -1,4 +1,4 @@
-/* $Id: tif_swab.c,v 1.1 2006/09/28 15:30:39 king Exp $ */
+/* $Id: tif_swab.c,v 1.1 2006-09-28 15:30:39 king Exp $ */
 
 /*
  * Copyright (c) 1988-1997 Sam Leffler

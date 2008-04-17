@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkMRIBiasFieldCorrectionFilter.txx,v $
 Language:  C++
-Date:      $Date: 2006/03/19 04:36:54 $
-Version:   $Revision: 1.34 $
+Date:      $Date: 2008-02-03 04:05:28 $
+Version:   $Revision: 1.35 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -929,7 +929,7 @@ MRIBiasFieldCorrectionFilter<TInputImage, TOutputImage, TMaskImage>
         m_BiasFieldCoefficients.push_back( lastBiasCoef[i] ) ;
         }
 
-      BiasFieldType bias = 
+      bias = 
         this->EstimateBiasField(*iter, m_BiasFieldDegree, 
                                 m_VolumeCorrectionMaximumIteration) ;
 

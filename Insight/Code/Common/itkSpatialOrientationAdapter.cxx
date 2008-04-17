@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSpatialOrientationAdapter.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/03 13:41:57 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007-12-24 16:46:28 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -28,7 +28,7 @@ SpatialOrientationAdapter
 ::FromDirectionCosines(const DirectionType &Dir)
 {
   int axes[9] = {0,0,0,0,0,0,0,0,0};
-  int dominant_axis;
+  unsigned dominant_axis;
 
   dominant_axis = Function::Max3(Dir[0][0],Dir[1][0],Dir[2][0]);
   axes[dominant_axis] = Function::Sign(Dir[dominant_axis][0]);

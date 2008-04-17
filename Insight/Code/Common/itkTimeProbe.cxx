@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTimeProbe.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/29 14:51:11 $
+  Date:      $Date: 2005-11-29 14:51:11 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

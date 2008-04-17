@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEuler2DTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2005/08/11 16:44:08 $
+  Date:      $Date: 2005-08-11 16:44:08 $
   Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

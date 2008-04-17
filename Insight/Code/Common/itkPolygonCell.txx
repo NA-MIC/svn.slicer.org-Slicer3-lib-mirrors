@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPolygonCell.txx,v $
   Language:  C++
-  Date:      $Date: 2007/05/22 05:33:21 $
-  Version:   $Revision: 1.34 $
+  Date:      $Date: 2008-01-17 15:30:17 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -284,9 +284,10 @@ void
 PolygonCell< TCellInterface >
 ::SetPointId(int localId, PointIdentifier ptId)
 {
-  if(m_PointIds.size() < (unsigned int)(localId + 1)) {
-  m_PointIds.resize( localId + 1 );
-  }
+  if(m_PointIds.size() < (unsigned int)(localId + 1))
+    {
+    m_PointIds.resize( localId + 1 );
+    }
   m_PointIds[localId] = ptId;
 }
 

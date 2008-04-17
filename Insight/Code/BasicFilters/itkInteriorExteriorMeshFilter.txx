@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkInteriorExteriorMeshFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/01/11 19:43:31 $
+  Date:      $Date: 2006-01-11 19:43:31 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

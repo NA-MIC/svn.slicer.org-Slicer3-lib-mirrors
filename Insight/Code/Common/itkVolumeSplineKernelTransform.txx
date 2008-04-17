@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVolumeSplineKernelTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/18 18:06:38 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007-10-25 03:55:09 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,21 +21,35 @@
 namespace itk
 {
 
+/**
+ * This method has been deprecated as of ITK 3.6.
+ * Please use the method: void ComputeG(vector,gmatrix) instead.
+ */
+#if !defined(ITK_LEGACY_REMOVE)
 template <class TScalarType, unsigned int NDimensions>
-const typename VolumeSplineKernelTransform<TScalarType, 
-                                           NDimensions>::GMatrixType &
+const typename VolumeSplineKernelTransform<TScalarType, NDimensions>::GMatrixType &
 VolumeSplineKernelTransform<TScalarType, NDimensions>::
-ComputeG(const InputVectorType & x) const
+ComputeG( const InputVectorType & ) const
+{
+  itkLegacyReplaceBodyMacro(itkVolumeSplineKernelTransform::ComputeG_vector, 
+    3.6,itkVolumeSplineKernelTransform::ComputeG_vector_gmatrix);
+  return this->m_GMatrix;
+}
+#endif
+
+template <class TScalarType, unsigned int NDimensions>
+void
+VolumeSplineKernelTransform<TScalarType, NDimensions>::
+ComputeG(const InputVectorType & x, GMatrixType & gmatrix) const
 {
 
   const TScalarType r = x.GetNorm();
-  this->m_GMatrix.fill( NumericTraits< TScalarType >::Zero );
+  gmatrix.fill( NumericTraits< TScalarType >::Zero );
   const TScalarType r3 = r * r * r;
   for(unsigned int i=0; i<NDimensions; i++)
     {
-    this->m_GMatrix[i][i] = r3;
+    gmatrix[i][i] = r3;
     }
-  return this->m_GMatrix;
 }
 
 

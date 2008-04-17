@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHexahedronCell.txx,v $
   Language:  C++
-  Date:      $Date: 2007/05/17 21:00:07 $
+  Date:      $Date: 2007-05-17 21:00:07 $
   Version:   $Revision: 1.37 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

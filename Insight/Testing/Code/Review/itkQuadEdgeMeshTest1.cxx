@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshTest1.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/06 21:28:19 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-01-15 13:43:14 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -164,8 +164,8 @@ int itkQuadEdgeMeshTest1( int , char* [] )
     // LightWeightDeleteEdge
     QELineCellType * qeLineCell = new QELineCellType;
     mesh->LightWeightDeleteEdge( (QEType *)NULL );
-    mesh->LightWeightDeleteEdge( qeLineCell );
     mesh->LightWeightDeleteEdge( qeLineCell->GetQEGeom( ) );
+    mesh->LightWeightDeleteEdge( qeLineCell );
     }
 
   // test delete face failsafe

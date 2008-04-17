@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVersorRigid3DTransform.h,v $
   Language:  C++
-  Date:      $Date: 2006/08/09 04:35:32 $
+  Date:      $Date: 2006-08-09 04:35:32 $
   Version:   $Revision: 1.27 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

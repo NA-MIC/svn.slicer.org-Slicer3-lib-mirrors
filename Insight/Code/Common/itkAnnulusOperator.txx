@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAnnulusOperator.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:58 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-01-07 13:33:59 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -87,7 +87,6 @@ AnnulusOperator<TPixel, TDimension, TAllocator>
     }
 
   // Compute the size of the kernel in pixels
-  typedef typename SizeType::SizeValueType SizeValueType;
   SizeType r;
   unsigned int i, j;
   double outerRadius = m_InnerRadius + m_Thickness;

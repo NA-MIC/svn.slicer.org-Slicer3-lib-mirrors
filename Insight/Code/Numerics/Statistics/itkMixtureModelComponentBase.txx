@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMixtureModelComponentBase.txx,v $
   Language:  C++
-  Date:      $Date: 2003/12/15 01:00:46 $
+  Date:      $Date: 2003-12-15 01:00:46 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

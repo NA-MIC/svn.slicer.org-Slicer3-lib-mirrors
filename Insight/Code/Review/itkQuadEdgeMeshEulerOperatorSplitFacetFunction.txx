@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshEulerOperatorSplitFacetFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/09 09:38:35 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-02-07 05:12:00 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,8 @@
 =========================================================================*/
 #ifndef __itkQuadEdgeMeshEulerOperatorSplitFacetFunction_txx
 #define __itkQuadEdgeMeshEulerOperatorSplitFacetFunction_txx
+
+#include "itkQuadEdgeMeshEulerOperatorSplitFacetFunction.h"
 
 namespace itk
 {
@@ -73,7 +75,6 @@ Evaluate( QEType* h, QEType* g )
     }   
    
   typedef typename MeshType::VertexRefType   VertexRefType;
-  typedef typename MeshType::EdgeCellType    EdgeCellType;
 
   this->m_Mesh->DeleteFace( h->GetLeft( ) );
   VertexRefType orgPid  = h->GetDestination( );

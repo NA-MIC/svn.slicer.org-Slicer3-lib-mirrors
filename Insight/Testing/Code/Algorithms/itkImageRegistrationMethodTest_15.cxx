@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageRegistrationMethodTest_15.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/10/03 15:18:45 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008-02-03 04:05:34 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -266,10 +266,10 @@ int itkImageRegistrationMethodTest_15(int, char* [] )
 
   metric->SetNumberOfHistogramBins( 50 );
 
-  for( unsigned int j = 0; j < dimension; j++ )
+  for( unsigned int jj = 0; jj < dimension; jj++ )
     {
-    size[j] -= 4;
-    index[j] += 2;
+    size[jj] -= 4;
+    index[jj] += 2;
     }
   region.SetSize( size );
   region.SetIndex( index );

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCenteredEuler3DTransformTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/09 16:46:14 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008-01-18 17:25:49 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -222,10 +222,10 @@ int itkCenteredEuler3DTransformTest(int,char *[] )
 
   eulerTransform->Print( std::cout );
 
-  for( unsigned int p = 0; p < 2; p++ )
+  for( unsigned int pp = 0; pp < 2; pp++ )
     {
     std::cout << "Testing Jacobian when ComputeZYX is ";
-    if ( p == 0 )
+    if ( pp == 0 )
       {
       std::cout << "true" << std::endl;
       eulerTransform->SetComputeZYX( true );

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkValuedRegionalExtremaImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 14:03:55 $
+  Date:      $Date: 2007-01-30 14:03:55 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

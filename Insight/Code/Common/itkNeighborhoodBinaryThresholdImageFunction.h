@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNeighborhoodBinaryThresholdImageFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/07 13:58:42 $
+  Date:      $Date: 2007-02-07 13:58:42 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

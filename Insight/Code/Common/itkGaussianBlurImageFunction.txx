@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianBlurImageFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/02/06 22:01:55 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-01-07 13:33:59 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -325,7 +325,7 @@ GaussianBlurImageFunction<TInputImage,TOutput>
     m_OperatorImageFunction->SetInputImage(m_InternalImage);
     m_OperatorImageFunction->SetOperator(m_OperatorArray[direction]);
 
-    itk::ImageLinearIteratorWithIndex<InternalImageType> it(m_InternalImage,region);
+    itk::ImageLinearIteratorWithIndex<InternalImageType> itr(m_InternalImage,region);
       
     unsigned int dir = direction +1;
     if(dir == itkGetStaticConstMacro(ImageDimension))
@@ -333,16 +333,16 @@ GaussianBlurImageFunction<TInputImage,TOutput>
       dir = itkGetStaticConstMacro(ImageDimension)-1;
       }
 
-    it.SetDirection(dir);
-    it.GoToBeginOfLine();
-    while(!it.IsAtEnd())
+    itr.SetDirection(dir);
+    itr.GoToBeginOfLine();
+    while(!itr.IsAtEnd())
       {
-      while(!it.IsAtEndOfLine())
+      while(!itr.IsAtEndOfLine())
         {
-        it.Set(m_OperatorImageFunction->EvaluateAtIndex(it.GetIndex()));
-        ++it;
+        itr.Set(m_OperatorImageFunction->EvaluateAtIndex(itr.GetIndex()));
+        ++itr;
         }
-      it.NextLine();
+      itr.NextLine();
       }
     }
 
@@ -515,7 +515,7 @@ GaussianBlurImageFunction<TInputImage,TOutput>
     m_OperatorImageFunction->SetInputImage(m_InternalImage);
     m_OperatorImageFunction->SetOperator(m_ContinuousOperatorArray[direction]);
 
-    itk::ImageLinearIteratorWithIndex<InternalImageType> it(m_InternalImage,region);
+    itk::ImageLinearIteratorWithIndex<InternalImageType> itr(m_InternalImage,region);
       
     unsigned int dir = direction +1;
     if(dir == itkGetStaticConstMacro(ImageDimension))
@@ -523,16 +523,16 @@ GaussianBlurImageFunction<TInputImage,TOutput>
       dir = itkGetStaticConstMacro(ImageDimension)-1;
       }
 
-    it.SetDirection(dir);
-    it.GoToBeginOfLine();
-    while(!it.IsAtEnd())
+    itr.SetDirection(dir);
+    itr.GoToBeginOfLine();
+    while(!itr.IsAtEnd())
       {
-      while(!it.IsAtEndOfLine())
+      while(!itr.IsAtEndOfLine())
         {
-        it.Set(m_OperatorImageFunction->EvaluateAtIndex(it.GetIndex()));
-        ++it;
+        itr.Set(m_OperatorImageFunction->EvaluateAtIndex(itr.GetIndex()));
+        ++itr;
         }
-      it.NextLine();
+      itr.NextLine();
       }
     }
 

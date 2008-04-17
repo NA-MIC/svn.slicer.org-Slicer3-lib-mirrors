@@ -1,5 +1,9 @@
 # This is the root ITK CMakeLists file.
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+IF(COMMAND CMAKE_POLICY)
+  CMAKE_POLICY(SET CMP0003 NEW)
+ENDIF(COMMAND CMAKE_POLICY)
+
 
 PROJECT(ITK)
 INCLUDE_REGULAR_EXPRESSION("^([Nn]rrd|itk|vtk|vnl|vcl|vxl|v3p|f2c|netlib|ce|itpack|DICOM|meta|png|dbh|tif|jpeg|zlib|gdcm).*$")
@@ -43,7 +47,7 @@ ENDIF("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" MATCHES "^2\\.4$")
 #-----------------------------------------------------------------------------
 # ITK version number.  An even minor number corresponds to releases.
 SET(ITK_VERSION_MAJOR "3")
-SET(ITK_VERSION_MINOR "4")
+SET(ITK_VERSION_MINOR "7")
 SET(ITK_VERSION_PATCH "0")
 
 # Version string should not include patch level.  The major.minor is
@@ -66,6 +70,10 @@ INCLUDE(${CMAKE_ROOT}/Modules/Dart.cmake)
 MARK_AS_ADVANCED(TCL_TCLSH DART_ROOT)
 ENABLE_TESTING()
 IF(BUILD_TESTING)
+  CONFIGURE_FILE(${ITK_SOURCE_DIR}/CMake/RemoveTemporaryFiles.cmake.in
+    ${ITK_BINARY_DIR}/CMake/RemoveTemporaryFiles.cmake @ONLY IMMEDIATE)
+  CONFIGURE_FILE(${ITK_SOURCE_DIR}/CMake/itkSampleBuildTest.cmake.in
+    ${ITK_BINARY_DIR}/CMake/itkSampleBuildTest.cmake @ONLY)
   CONFIGURE_FILE(${ITK_SOURCE_DIR}/CMake/CTestCustom.ctest.in
     ${ITK_BINARY_DIR}/CMake/CTestCustom.ctest @ONLY)
   CONFIGURE_FILE(${ITK_SOURCE_DIR}/CMake/CTestCustom.ctest.in
@@ -89,6 +97,7 @@ IF(NOT EXECUTABLE_OUTPUT_PATH)
   SET (EXECUTABLE_OUTPUT_PATH ${ITK_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all executables.")
 ENDIF(NOT EXECUTABLE_OUTPUT_PATH)
 MARK_AS_ADVANCED(LIBRARY_OUTPUT_PATH EXECUTABLE_OUTPUT_PATH)
+
 SET(ITK_LIBRARY_PATH "${LIBRARY_OUTPUT_PATH}")
 SET(ITK_EXECUTABLE_PATH "${EXECUTABLE_OUTPUT_PATH}")
 SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
@@ -137,6 +146,12 @@ IF(NOT ITK_NO_LIBRARY_VERSION)
       SOVERSION "${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}"
      )
 ENDIF(NOT ITK_NO_LIBRARY_VERSION)
+
+#-----------------------------------------------------------------------------
+# Provide compatibility options.
+OPTION(ITK_LEGACY_REMOVE "Remove all legacy code completely." OFF)
+OPTION(ITK_LEGACY_SILENT "Silence all legacy code messages." OFF)
+MARK_AS_ADVANCED(ITK_LEGACY_REMOVE ITK_LEGACY_SILENT)
 
 #-----------------------------------------------------------------------------
 # ITK build patented algorithms
@@ -203,6 +218,17 @@ IF(ITK_USE_OPTIMIZED_REGISTRATION_METHODS)
   IF(NOT ITK_USE_REVIEW)
     MESSAGE(FATAL_ERROR "ITK_USE_REVIEW is currently OFF but it should be ON if you want to use the experimental optimized registration methods.")
   ENDIF(NOT ITK_USE_REVIEW)
+  # Warn the user about the implications of turning optimized registration methods ON
+  SET(msg "Warning: You have chosen to enable the use of Optimizer Registration Methods.")
+  SET(msg "${msg} These methods add multi-threading capabilities to several image metrics")
+  SET(msg "${msg} as well as some Transforms and Interpolators. In order to take full advantage")
+  SET(msg "${msg} of these new features you will have to also add some new calls to these components.")
+  SET(msg "${msg} Please look at the files in the Examples/Review directory for further details.")
+
+# display the message during the setup
+MESSAGE("${msg}")
+
+
 ENDIF(ITK_USE_OPTIMIZED_REGISTRATION_METHODS)
 
 #-----------------------------------------------------------------------------
@@ -215,6 +241,18 @@ IF(ITK_USE_TRANSFORM_IO_FACTORIES)
   ENDIF(NOT ITK_USE_REVIEW)
 ENDIF(ITK_USE_TRANSFORM_IO_FACTORIES)
 
+#-----------------------------------------------------------------------------
+# ITK turn on the correct usage of oriented images in gradient computations and image registration.
+OPTION(ITK_USE_ORIENTED_IMAGE_DIRECTION "Turn on correct use of oriented images direction in gradient computation and image registration." ON)
+MARK_AS_ADVANCED(ITK_USE_ORIENTED_IMAGE_DIRECTION)
+
+#-----------------------------------------------------------------------------
+# ITK turn on the use of Template Meta Programming techniques for unrolling loops of array-like operations
+OPTION(ITK_USE_TEMPLATE_META_PROGRAMMING_LOOP_UNROLLING "Turn on the use of Template Meta-Programming techniques for unrolling for-loops at compile time." OFF)
+MARK_AS_ADVANCED(ITK_USE_TEMPLATE_META_PROGRAMMING_LOOP_UNROLLING)
+
+OPTION(ITK_USE_DEPRECATED_LEVELSET_INTERPOLATION "Turn on the use of a sparse field level set surface interpolation method that has been deprecated since ITK 3.6. Turn this flag ON to exactly replicate the behavior of ITK<=3.4." OFF)
+MARK_AS_ADVANCED(ITK_USE_DEPRECATED_LEVELSET_INTERPOLATION)
 
 #-----------------------------------------------------------------------------
 # Installation vars.
@@ -287,6 +325,23 @@ STRING(REGEX REPLACE "^/" "" ITK_INSTALL_JAVA_DIR_CM24 "${ITK_INSTALL_JAVA_DIR}"
 SET(ITK_DIR "${CMAKE_BINARY_DIR}" CACHE INTERNAL "ITK dir to be used by subprojects")
 
 #-----------------------------------------------------------------------------
+# Set up CPack support, to be able to distribute ITK binary packages. It will
+# be particulary useful to distributed prebuilt ITK witk extended languages
+# support enable
+#
+INCLUDE(InstallRequiredSystemLibraries)
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Insight Toolkit")
+SET(CPACK_PACKAGE_VENDOR "ISC")
+SET(CPACK_PACKAGE_VERSION_MAJOR "${ITK_VERSION_MAJOR}")
+SET(CPACK_PACKAGE_VERSION_MINOR "${ITK_VERSION_MINOR}")
+SET(CPACK_PACKAGE_VERSION_PATCH "${ITK_VERSION_PATCH}")
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "InsightToolkit-${ITK_VERSION_MAJOR}.${ITK_VERSION_MINOR}")
+# SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
+SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright/ITKCopyright.txt")
+INCLUDE(CPack)
+
+
+#-----------------------------------------------------------------------------
 # Perform a setup of ITK Wrapping. This will provide CMake options for
 # individual wrapping as well as determine if CableSwig is required. If it is,
 # ITK_NEED_CableSwig will be set. This file also tries to locate CableSwig by
@@ -328,6 +383,10 @@ ITK_THIRD_PARTY_OPTION(ZLIB zlib)
 ITK_THIRD_PARTY_OPTION(PNG  png)
 ITK_THIRD_PARTY_OPTION(TIFF tiff)
 
+OPTION(ITK_USE_LIBXML2 "Use LIBXML2." OFF)
+MARK_AS_ADVANCED(ITK_USE_LIBXML2)
+ITK_THIRD_PARTY_OPTION(LIBXML2 libxml2)
+
 #-----------------------------------------------------------------------------
 # Dispatch the build into the proper subdirectories.
 SUBDIRS(Utilities Code)
@@ -348,9 +407,25 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(ITK_REQUIRED_C_FLAGS "${ITK_REQUIRED_C_FLAGS} -w")
   SET(ITK_REQUIRED_CXX_FLAGS "${ITK_REQUIRED_CXX_FLAGS} -ftemplate-depth-50")
   IF(APPLE)
-    SET(ITK_REQUIRED_C_FLAGS "${ITK_REQUIRED_C_FLAGS} -no-cpp-precomp")
-    SET(ITK_REQUIRED_CXX_FLAGS "${ITK_REQUIRED_CXX_FLAGS} -no-cpp-precomp")
-    SET(ITK_REQUIRED_CXX_FLAGS "${ITK_REQUIRED_CXX_FLAGS} -Wno-long-double")
+    # -no-cpp-precomp and -Wno-long-double were compiler flags present
+    # only in Apple's gcc and not in the FSF gcc. The flags are obsolete
+    # and totally removed in gcc 4.2 and later. I believe they are only
+    # needed with gcc 3.3 and earlier.
+    INCLUDE(${ITK_SOURCE_DIR}/CMake/itkCheckCXXAcceptsFlags.cmake)
+    itkCHECK_CXX_ACCEPTS_FLAGS("-no-cpp-precomp" CXX_HAS_CPP_PRECOMP_FLAG)
+    IF(CXX_HAS_CPP_PRECOMP_FLAG)    
+      SET(ITK_REQUIRED_C_FLAGS "${ITK_REQUIRED_C_FLAGS} -no-cpp-precomp")
+      SET(ITK_REQUIRED_CXX_FLAGS "${ITK_REQUIRED_CXX_FLAGS} -no-cpp-precomp")
+    ENDIF(CXX_HAS_CPP_PRECOMP_FLAG)    
+    itkCHECK_CXX_ACCEPTS_FLAGS("-Wno-long-double" CXX_HAS_LONGDOUBLE_FLAG)
+    IF(CXX_HAS_LONGDOUBLE_FLAG)    
+      SET(ITK_REQUIRED_C_FLAGS "${ITK_REQUIRED_C_FLAGS} -Wno-long-double")
+      SET(ITK_REQUIRED_CXX_FLAGS "${ITK_REQUIRED_CXX_FLAGS} -Wno-long-double")
+    ENDIF(CXX_HAS_LONGDOUBLE_FLAG)    
+
+    OPTION(ITK_USE_64BITS_APPLE_TRUNCATION_WARNING "Turn on warnings on 64bits to 32bits truncations." OFF)
+    MARK_AS_ADVANCED(ITK_USE_64BITS_APPLE_TRUNCATION_WARNING)
+
   ENDIF(APPLE)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
@@ -473,7 +548,7 @@ IF(ITK_SIZEOF___INT64)
     ELSE(ITK_TYPE_SAME_LONG_AND___INT64)
       MESSAGE(STATUS "Checking whether long and __int64 are the same type -- no")
       SET(ITK_TYPE_SAME_LONG_AND___INT64 0 CACHE INTERNAL "Whether long and __int64 are the same type")
-      WRITE_FILE(${CMAKE_BINARY_DIR}/CMakeError.log
+      WRITE_FILE(${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
         "Determining whether long and __int64 are the same type "
         "failed with the following output:\n"
         "${OUTPUT}\n" APPEND)
@@ -497,7 +572,7 @@ IF(ITK_SIZEOF_LONG_LONG)
     ELSE(ITK_OSTREAM_SUPPORTS_LONG_LONG)
       MESSAGE(STATUS "Checking if ostream supports long long -- no")
       SET(ITK_OSTREAM_SUPPORTS_LONG_LONG 0 CACHE INTERNAL "Whether ostream supports long long")
-      WRITE_FILE(${CMAKE_BINARY_DIR}/CMakeError.log
+      WRITE_FILE(${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
         "Determining if ostream supports long long "
         "failed with the following output:\n"
         "${OUTPUT}\n" APPEND)
@@ -516,7 +591,7 @@ IF(ITK_SIZEOF_LONG_LONG)
     ELSE(ITK_ISTREAM_SUPPORTS_LONG_LONG)
       MESSAGE(STATUS "Checking if istream supports long long -- no")
       SET(ITK_ISTREAM_SUPPORTS_LONG_LONG 0 CACHE INTERNAL "Whether istream supports long long")
-      WRITE_FILE(${CMAKE_BINARY_DIR}/CMakeError.log
+      WRITE_FILE(${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
         "Determining if istream supports long long "
         "failed with the following output:\n"
         "${OUTPUT}\n" APPEND)
@@ -535,6 +610,26 @@ CHECK_CPP_DIRECTIVE_EXISTS(__FUNCTION__ ITK_CPP_FUNCTION)
 FIND_PATH(ITK_DATA_ROOT ITKData.readme ${ITK_SOURCE_DIR}/Testing/Data $ENV{ITK_DATA_ROOT})
 MARK_AS_ADVANCED(ITK_DATA_ROOT)
 
+#-----------------------------------------------------------------------------
+# Configure the default ITK_BRAINWEB_DATA_ROOT for the location of ITK Data.
+# When this data is available, additional 3D tests are enabled.
+FIND_PATH(ITK_BRAINWEB_DATA_ROOT brainweb165a10f17.mha 
+  DOC "Directory with data taken from http://public.kitware.com/pub/itk/Data/BrainWeb/")
+MARK_AS_ADVANCED(ITK_BRAINWEB_DATA_ROOT)
+
+#-----------------------------------------------------------------------------
+# Configure the default ITK_MRI_UNC_DATABASE_DATA_ROOT for the location of the
+# database of healthy volunteers MRI brain images.
+# When this data is available, additional 3D tests are enabled.
+FIND_PATH(ITK_MRI_UNC_DATABASE_DATA_ROOT LICENSE.txt
+  DOC "Directory with data taken from http://public.kitware.com/pub/itk/Data/HealthyVolunteersMRIDatabase/")
+MARK_AS_ADVANCED(ITK_MRI_UNC_DATABASE_DATA_ROOT)
+
+#-----------------------------------------------------------------------------
+# This flag is used in particular, to enable some tests that require large memory to run.
+# This probably can be discovered at configuration time by CMake. (Check with CMake developers).
+SET(ITK_COMPUTER_MEMORY_SIZE 1 CACHE STRING "Provide here the size of your RAM Memory in GigaBytes") 
+MARK_AS_ADVANCED(ITK_COMPUTER_MEMORY_SIZE)
 
 #-----------------------------------------------------------------------------
 # Configure files with settings for use by the build.
@@ -643,7 +738,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
   SET(ALL_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS} ${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_MODULE_LINKER_FLAGS}" )
   SEPARATE_ARGUMENTS(ALL_FLAGS)
   FOREACH(COMP_OPTION ${ALL_FLAGS})
-    #  MESSAGE("${COMP_OPTION} being checked.")
     IF("${COMP_OPTION}" STREQUAL "-frename-registers")
       MESSAGE(FATAL_ERROR "-frename-registers causes runtime bugs.  It must be removed from your compilation options.")
     ENDIF("${COMP_OPTION}" STREQUAL "-frename-registers")
@@ -652,5 +746,3 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
     ENDIF("${COMP_OPTION}" STREQUAL "-ffloat-store")
   ENDFOREACH(COMP_OPTION)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-
-

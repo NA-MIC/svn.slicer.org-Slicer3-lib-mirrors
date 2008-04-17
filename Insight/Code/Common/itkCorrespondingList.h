@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCorrespondingList.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:05 $
+  Date:      $Date: 2003-09-10 14:29:05 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

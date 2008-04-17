@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToParametricSpaceFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/06/04 19:33:30 $
+  Date:      $Date: 2005-06-04 19:33:30 $
   Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

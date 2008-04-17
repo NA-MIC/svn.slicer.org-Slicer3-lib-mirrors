@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMElementTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/07 23:23:16 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2008-01-04 19:07:51 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -65,7 +65,7 @@ int itkFEMElementTest(int ac, char* av[] )
   {
     std::cout << "Loading menu..." << std::endl;
     
-    f.open(listloc);
+    f.open(listloc,std::ios::binary);
     if (!f) {
       std::cout << "ERROR: null file handle - couldn't read input file list" << std::endl;
       std::cout << "Test FAILED" << std::endl;
@@ -117,7 +117,7 @@ int itkFEMElementTest(int ac, char* av[] )
   }
     
   // Open a file handle & associate it with the input file
-  f.open(fname);
+  f.open(fname,std::ios::binary);
   if (!f)
   {
     std::cout << "ERROR: null file handle...terminating." << std::endl;

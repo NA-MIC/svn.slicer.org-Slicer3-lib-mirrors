@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransformMeshFilter.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:58 $
+  Date:      $Date: 2003-09-10 14:28:58 $
   Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPolylineMaskImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/08/30 23:57:42 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008-01-20 18:00:40 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -184,7 +184,6 @@ PolylineMaskImageFilter<TInputImage,TPolyline,TVector,TOutputImage>
   ::GenerateData(void)
   {
 
-  typedef typename TInputImage::Pointer                               InputImagePointer;
   typedef typename TInputImage::SizeType                              InputImageSizeType;
   typedef typename TInputImage::PointType                             InputImagePointType;
   typedef typename TInputImage::SpacingType                           InputImageSpacingType;
@@ -235,14 +234,14 @@ PolylineMaskImageFilter<TInputImage,TPolyline,TVector,TOutputImage>
   typedef NearestNeighborInterpolateImageFunction< TInputImage, double> InterpolatorType;
   typedef typename InterpolatorType::OutputType OutputType;
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
-  typedef typename InterpolatorType::PointType    PointType;
+  typedef typename InterpolatorType::PointType    InterpolatorPointType;
 
 
   /* Generate the transformation matrix */
   this->GenerateRotationMatrix();
  
   // Generate input and output point 
-  PointType inputPoint;
+  InterpolatorPointType inputPoint;
   ProjPlanePointType outputPoint;
    
   // Generate a 2D image with the viewing polygon as a mask 

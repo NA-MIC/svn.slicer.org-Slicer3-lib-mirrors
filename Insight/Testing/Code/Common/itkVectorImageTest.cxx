@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorImageTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/26 23:43:03 $
+  Date:      $Date: 2007-01-26 23:43:03 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

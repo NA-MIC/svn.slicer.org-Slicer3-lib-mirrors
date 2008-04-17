@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkNeuralNetworkFileReader.h,v $
 Language:  C++
-Date:      $Date: 2007/09/04 18:25:28 $
-Version:   $Revision: 1.14 $
+Date:      $Date: 2008-02-07 15:58:06 $
+Version:   $Revision: 1.16 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -48,7 +48,7 @@ namespace itk
  *
  * This class was contributed to the Insight Journal by  Raghu Venkatram.
  * The original paper can be found at
- *   http://hdl.handle.net/1926/203
+ *  http://insight-journal.org/midas/handle.php?handle=1926/203
  *
  * \author Raghu Venkatram
  *
@@ -78,7 +78,7 @@ public:
 
   typedef typename TNetwork::MeasurementVectorType     MeasurementVectorType;
   typedef typename TNetwork::TargetVectorType          TargetVectorType;
-  typedef typename Statistics::BackPropagationLayer<
+  typedef Statistics::BackPropagationLayer<
     MeasurementVectorType, TargetVectorType>           BackPropagationLayerType;
   typedef typename BackPropagationLayerType::Pointer   BackPropagationLayerPointer;
   typedef typename MeasurementVectorType::ValueType    MeasurementVectorValueType;

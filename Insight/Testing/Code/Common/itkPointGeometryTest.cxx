@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPointGeometryTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/01/14 20:37:49 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008-01-18 18:53:14 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,13 +30,6 @@
 #include <vnl/vnl_vector_ref.h>
 #include <iostream>
 
-  // Dimension & Type
-  const     unsigned int    N = 3;
-  typedef   double          ValueType;
-
-  //  Vector & Point Classes
-  typedef    itk::Vector< ValueType, N >    VectorType;
-  typedef    itk::Point<  ValueType, N >    PointType;
 
 
 
@@ -47,6 +40,14 @@
 //-------------------------
 int itkPointGeometryTest(int, char* [] ) 
 {
+
+// Dimension & Type
+  const     unsigned int    N = 3;
+  typedef   double          ValueType;
+
+//  Vector & Point Classes
+  typedef    itk::Vector< ValueType, N >    VectorType;
+  typedef    itk::Point<  ValueType, N >    PointType;
 
   VectorType va;
   
@@ -119,9 +120,6 @@ int itkPointGeometryTest(int, char* [] )
   std::cout << "Test for CastFrom() method... ";
 
   const float tolerance = 1e-7;
-
-  // Dimension & Type
-  const     unsigned int    N = 3;
 
   //  Point Classes
   typedef    itk::Point<  double, N >    DoublePointType;

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryThinningImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/11/12 06:01:26 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -90,7 +90,6 @@ BinaryThinningImageFilter<TInputImage,TOutputImage>
  
   // Copy the input to the output, changing all foreground pixels to
   // have value 1 in the process.
-  typedef typename OutputImageType::PixelType OutputImagePixelType;
   while( !ot.IsAtEnd() )
       {
       if ( it.Get() )
@@ -316,23 +315,6 @@ BinaryThinningImageFilter<TInputImage,TOutputImage>
  
 
 } // end GenerateData()
-
-/**
- *  Print Self
- */
-template <class TInputImage,class TOutputImage>
-void 
-BinaryThinningImageFilter<TInputImage,TOutputImage>
-::PrintSelf(std::ostream& os, Indent indent) const
-{
-  Superclass::PrintSelf(os,indent);
-  
-  os << indent << "Thinning image: " << std::endl;
-
-}
-
-
-
 } // end namespace itk
 
 #endif

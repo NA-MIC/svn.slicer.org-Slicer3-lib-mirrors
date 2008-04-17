@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMaximumRatioDecisionRule.h,v $
   Language:  C++
-  Date:      $Date: 2005/07/15 21:51:01 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007-12-23 17:59:28 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -58,6 +58,7 @@ public:
   
   typedef float APrioriValueType ;
   typedef std::vector< APrioriValueType > APrioriVectorType ;
+  typedef APrioriVectorType::size_type APrioriVectorSizeType ;
 
 
   /** Types for the arguments that are acceptable in the Evaluate() method */
@@ -87,7 +88,7 @@ protected:
   
 private:
   /** Number of classes */
-  unsigned int m_NumberOfClasses ;
+  APrioriVectorSizeType m_NumberOfClasses ;
 
   /** a priori probability ratio matrix: internal use */
   vnl_matrix< double > m_APrioriRatioMatrix ;

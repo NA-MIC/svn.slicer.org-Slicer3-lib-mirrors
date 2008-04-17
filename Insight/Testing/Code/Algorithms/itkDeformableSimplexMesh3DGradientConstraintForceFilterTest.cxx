@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDeformableSimplexMesh3DGradientConstraintForceFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/08 20:04:59 $
+  Date:      $Date: 2005-08-08 20:04:59 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

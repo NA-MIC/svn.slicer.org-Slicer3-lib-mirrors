@@ -18,6 +18,10 @@ ELSE(ITK_BINARY_DIR)
   SET(EXECUTABLE_OUTPUT_PATH ${ITKTesting_BINARY_DIR}/bin CACHE PATH "Single output directory for building all executables.")
   MARK_AS_ADVANCED(LIBRARY_OUTPUT_PATH EXECUTABLE_OUTPUT_PATH)
   SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
+  GET_FILENAME_COMPONENT(ITK_SOURCE_DIR "${ITKTesting_SOURCE_DIR}" PATH)
+
+  SET(ITK_COMPUTER_MEMORY_SIZE 1 CACHE STRING "Provide here the size of your RAM Memory in GigaBytes") 
+  MARK_AS_ADVANCED(ITK_COMPUTER_MEMORY_SIZE)
 
   # Configure Dart testing support.
   INCLUDE(${CMAKE_ROOT}/Modules/Dart.cmake)
@@ -34,6 +38,11 @@ ELSE(ITK_BINARY_DIR)
   FIND_PACKAGE(ITK)
   IF(ITK_FOUND)
     INCLUDE(${ITK_USE_FILE})
+    #-----------------------------------------------------------------------------
+    # Test for some required system information.
+    INCLUDE (${CMAKE_ROOT}/Modules/CMakeBackwardCompatibilityC.cmake)
+    INCLUDE (${CMAKE_ROOT}/Modules/CMakeBackwardCompatibilityCXX.cmake)
+    #-----------------------------------------------------------------------------
     SUBDIRS(Code)
     IF(ITK_CSWIG_TCL)
       FIND_PROGRAM(ITKWISH_EXECUTABLE itkwish ${ITK_DIR}/bin ${ITK_DIR})

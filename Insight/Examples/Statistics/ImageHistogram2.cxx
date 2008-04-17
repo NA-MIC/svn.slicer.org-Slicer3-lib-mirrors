@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageHistogram2.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/03/14 22:38:40 $
+  Date:      $Date: 2006-03-14 22:38:40 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

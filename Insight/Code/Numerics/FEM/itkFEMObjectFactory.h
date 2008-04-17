@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMObjectFactory.h,v $
   Language:  C++
-  Date:      $Date: 2005/11/17 19:27:40 $
+  Date:      $Date: 2005-11-17 19:27:40 $
   Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

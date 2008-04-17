@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCompareHistogramImageToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:26 $
+  Date:      $Date: 2004-12-21 22:47:26 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

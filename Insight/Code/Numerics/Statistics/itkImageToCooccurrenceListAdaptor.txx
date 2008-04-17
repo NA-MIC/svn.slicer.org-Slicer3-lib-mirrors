@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToCooccurrenceListAdaptor.txx,v $
   Language:  C++
-  Date:      $Date: 2005/07/26 15:54:57 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-01-16 19:08:02 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -56,8 +56,6 @@ ImageToCooccurrenceListAdaptor< TImage >
   typename FaceCalculatorType::FaceListType::iterator fit;
 
   typedef typename ShapedNeighborhoodIteratorType::ConstIterator ShapeNeighborhoodIterator;    
-
-  typedef typename ImageType::PixelType PixelType;
 
   typedef typename OffsetTable::iterator OffsetIterator;
 

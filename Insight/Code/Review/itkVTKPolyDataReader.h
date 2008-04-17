@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKPolyDataReader.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/26 06:30:29 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-01-15 19:10:40 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -55,11 +55,14 @@ public:
   typedef typename MeshTraits::PixelType       PixelType;
 
   /** Some convenient typedefs. */
-  typedef typename OutputMeshType::Pointer     OutputMeshPointer;
-  typedef typename OutputMeshType::CellTraits  CellTraits;
-  typedef typename CellTraits::CellIdentifier  CellIdentifier;
-  typedef typename CellTraits::PointIdentifier PointIdentifier;
-  typedef typename CellTraits::PointIdIterator PointIdIterator;
+  typedef typename OutputMeshType::Pointer         OutputMeshPointer;
+  typedef typename OutputMeshType::CellTraits      CellTraits;
+  typedef typename OutputMeshType::CellIdentifier  CellIdentifier;
+  typedef typename OutputMeshType::CellType        CellType;
+  typedef typename OutputMeshType::CellAutoPointer CellAutoPointer;
+  typedef typename OutputMeshType::PointIdentifier PointIdentifier;
+  typedef typename CellTraits::PointIdIterator     PointIdIterator;
+
   typedef typename OutputMeshType::PointsContainerPointer
     PointsContainerPointer;
   
@@ -67,13 +70,10 @@ public:
     PointsContainer;
 
   /** Define the triangular cell types which form the surface  */
-  typedef CellInterface<PixelType, CellTraits> CellInterfaceType;
-  typedef TriangleCell<CellInterfaceType>      TriangleCellType;
+  typedef TriangleCell<CellType>      TriangleCellType;
 
   typedef typename TriangleCellType::SelfAutoPointer
     TriangleCellAutoPointer;
-  typedef typename TriangleCellType::CellAutoPointer
-    CellAutoPointer;
 
   typedef std::pair<unsigned long,unsigned long>     IndexPairType;
   typedef MapContainer<IndexPairType, unsigned long> PointMapType;

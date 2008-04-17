@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSimpleFuzzyConnectednessImageFilterBase.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/28 18:22:41 $
+  Date:      $Date: 2004-12-28 18:22:41 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

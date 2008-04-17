@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianDerivativeSpatialFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 23:54:43 $
+  Date:      $Date: 2007-01-30 23:54:43 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

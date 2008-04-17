@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdge.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/02 23:38:12 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008-02-07 15:58:06 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -213,7 +213,7 @@ namespace itk
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * http://hdl.handle.net/1926/306
+ * http://insight-journal.org/midas/handle.php?handle=1926/306
  *
  * \sa \ref DoxyWalkingLocalShort "Accessing adjacent edges."
  *

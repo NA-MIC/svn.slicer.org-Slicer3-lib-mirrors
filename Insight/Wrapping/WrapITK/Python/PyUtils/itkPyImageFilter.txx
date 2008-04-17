@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPyImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/09/06 20:58:42 $
+  Date:      $Date: 2006-09-06 20:58:42 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

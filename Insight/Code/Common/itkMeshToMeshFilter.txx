@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeshToMeshFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:16 $
+  Date:      $Date: 2003-09-10 14:29:16 $
   Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaDTITubeConverter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 18:07:38 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-01-10 05:47:59 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -44,9 +44,9 @@ MetaDTITubeConverter<NDimensions>
   double spacing[NDimensions];
 
   unsigned int ndims = tube->NDims();
-  for(unsigned int i=0;i<ndims;i++)
+  for(unsigned int ii=0;ii<ndims;ii++)
     {
-    spacing[i]=tube->ElementSpacing()[i];
+    spacing[ii]=tube->ElementSpacing()[ii];
     }
 
   tub->GetIndexToObjectTransform()->SetScaleComponent(spacing);
@@ -66,7 +66,9 @@ MetaDTITubeConverter<NDimensions>
   ListType::iterator it2 = tube->GetPoints().begin();
     
   itk::CovariantVector<double,NDimensions> v; 
+  v.Fill(0.0);
   itk::Vector<double,NDimensions> t;
+  t.Fill(0.0);
   
   for(unsigned int identifier=0;identifier< tube->GetPoints().size();identifier++)
     {
@@ -75,9 +77,9 @@ MetaDTITubeConverter<NDimensions>
     typedef typename DTITubeSpatialObjectType::PointType PointType;
     PointType point;
 
-    for(unsigned int i=0;i<ndims;i++)
+    for(unsigned int ii=0;ii<ndims;ii++)
       {
-      point[i]=(*it2)->m_X[i];
+      point[ii]=(*it2)->m_X[ii];
       }
 
     // Get the fields from the metaIO
@@ -112,9 +114,9 @@ MetaDTITubeConverter<NDimensions>
 
     float* tensor = new float[6];
 
-    for(unsigned int i=0;i<6;i++)
+    for(unsigned int ii=0;ii<6;ii++)
       {
-      tensor[i]=(*it2)->m_TensorMatrix[i];
+      tensor[ii]=(*it2)->m_TensorMatrix[ii];
       }
     pnt.SetTensorMatrix(tensor);
 
@@ -344,9 +346,9 @@ MetaDTITubeConverter<NDimensions>
   tube->PointDim("x y z tensor1 tensor2 tensor3 tensor4 tensor5 tensor6");
 
   float color[4];
-  for(unsigned int i=0;i<4;i++)
+  for(unsigned int ii=0;ii<4;ii++)
     {
-    color[i]=spatialObject->GetProperty()->GetColor()[i];
+    color[ii]=spatialObject->GetProperty()->GetColor()[ii];
     }
 
   tube->Color(color);
@@ -359,10 +361,10 @@ MetaDTITubeConverter<NDimensions>
   tube->ParentPoint(spatialObject->GetParentPoint());
   tube->NPoints(tube->GetPoints().size());
 
-  for(unsigned int i=0;i<NDimensions;i++)
+  for(unsigned int ii=0;ii<NDimensions;ii++)
     {
-    tube->ElementSpacing(i, spatialObject->GetIndexToObjectTransform()
-                                         ->GetScaleComponent()[i]);
+    tube->ElementSpacing(ii, spatialObject->GetIndexToObjectTransform()
+                                         ->GetScaleComponent()[ii]);
     }
   return tube;
 }

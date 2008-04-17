@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAnnulusOperatorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/04/23 12:40:21 $
+  Date:      $Date: 2005-04-23 12:40:21 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

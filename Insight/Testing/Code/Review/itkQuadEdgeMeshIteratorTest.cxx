@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshIteratorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/05 18:46:45 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-01-16 13:36:56 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -69,10 +69,9 @@ int itkQuadEdgeMeshIteratorTest( int , char* [] )
     pids[ i ] = mesh->AddPoint( pnts[ i ] );
     }
 
-  MeshType::QEPrimal* edges[ NumEdges ];
   for( int i = 0; i < NumPoints; i++ )
     {
-    edges[ i ] = mesh->AddEdge( pids[ i ], pids[ (i + 1 ) % NumPoints ] );
+    mesh->AddEdge( pids[ i ], pids[ (i + 1 ) % NumPoints ] );
     }
    
   MeshType::QEPrimal* foundEdges[ NumEdges ];

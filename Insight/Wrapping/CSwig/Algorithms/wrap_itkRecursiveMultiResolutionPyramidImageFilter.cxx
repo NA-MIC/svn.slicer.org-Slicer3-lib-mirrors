@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_itkRecursiveMultiResolutionPyramidImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/11/06 22:24:13 $
+  Date:      $Date: 2003-11-06 22:24:13 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

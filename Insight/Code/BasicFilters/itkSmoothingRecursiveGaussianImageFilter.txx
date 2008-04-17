@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSmoothingRecursiveGaussianImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/14 19:30:08 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007-09-27 13:55:36 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -193,6 +193,9 @@ SmoothingRecursiveGaussianImageFilter<TInputImage,TOutputImage >
 
   progress->RegisterInternalFilter(m_FirstSmoothingFilter,1.0 / (ImageDimension));
   m_FirstSmoothingFilter->SetInput( inputImage );
+  // graft our output to the internal filter to force the proper regions
+  // to be generated
+  m_CastingFilter->GraftOutput( this->GetOutput() );
   m_CastingFilter->Update();
   this->GraftOutput(m_CastingFilter->GetOutput());
 

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: LaplacianSegmentationLevelSetImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/31 14:58:37 $
+  Date:      $Date: 2005-08-31 14:58:37 $
   Version:   $Revision: 1.27 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFastMarchingUpwindGradientImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/20 11:52:27 $
+  Date:      $Date: 2007-04-20 11:52:27 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

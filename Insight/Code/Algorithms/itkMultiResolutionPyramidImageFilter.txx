@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMultiResolutionPyramidImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:55 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2008-02-01 13:10:27 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -393,7 +393,7 @@ MultiResolutionPyramidImageFilter<TInputImage, TOutputImage>
   for( ilevel = 0; ilevel < m_NumberOfLevels; ilevel++ )
     {
 
-    OutputImagePointer outputPtr = this->GetOutput( ilevel );
+    outputPtr = this->GetOutput( ilevel );
     if( !outputPtr ) { continue; }
 
     for( idim = 0; idim < OutputImageType::ImageDimension; idim++ )

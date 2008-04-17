@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPolygonCell.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/19 12:50:04 $
+  Date:      $Date: 2007-05-19 12:50:04 $
   Version:   $Revision: 1.34 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMahalanobisDistanceMembershipFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2005/11/21 02:40:48 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008-01-15 12:37:56 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -221,12 +221,7 @@ MahalanobisDistanceMembershipFunction< TVector >
   m_TempMat= m_TempVec * m_InverseCovariance;
 
   // Compute |y - mean | * inverse(cov) * |y - mean|^T 
-  //tmp = (m_TmpMat * (m_TmpVec.transpose()))[0][0];
-  temp = dot_product( vnl_vector_ref<double>( m_TempMat.size(), m_TempMat.begin()),
-                      vnl_vector_ref<double>( m_TempVec.size(), m_TempVec.begin()));
-  // should be this, but to remain comatible with the old vnl for
-  // some time, the above is used
-//  temp = dot_product( m_TempMat.as_ref(), m_TempVec.as_ref() ); 
+  temp = dot_product( m_TempMat.as_ref(), m_TempVec.as_ref() ); 
   
   return temp ;
 }

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkErodeObjectMorphologyImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/27 17:01:08 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-02-08 14:19:06 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -73,6 +73,18 @@ public:
   typedef typename Superclass::DefaultBoundaryConditionType 
                                              DefaultBoundaryConditionType;
 
+
+  /** Set the object's value. Added for API consistency with itkBinaryErode filter */
+  void SetErodeValue( PixelType objectValue )
+    {
+    this->SetObjectValue( objectValue );
+    }
+
+  /** Set the object's value. Added for API consistency with itkBinaryErode filter */
+  PixelType GetErodeValue( void )
+    {
+    return this->GetObjectValue();
+    }
 
   /** Set the value to be assigned to eroded pixels */
   itkSetMacro(BackgroundValue, PixelType);

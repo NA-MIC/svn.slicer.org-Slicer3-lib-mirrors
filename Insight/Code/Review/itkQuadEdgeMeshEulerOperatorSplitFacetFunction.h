@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshEulerOperatorSplitFacetFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/02 23:38:12 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-02-07 15:07:58 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -39,8 +39,8 @@ public:
   /** Standard class typedefs. */
   typedef QuadEdgeMeshEulerOperatorSplitFacetFunction      Self;
   typedef QuadEdgeMeshFunctionBase< TMesh, TQEType* >      Superclass;
-  typedef itk::SmartPointer< Self >                        Pointer;
-  typedef itk::SmartPointer< const Self >                  ConstPointer;
+  typedef SmartPointer< Self >                             Pointer;
+  typedef SmartPointer< const Self >                       ConstPointer;
   
   itkNewMacro( Self );
   /** Run-time type information (and related methods). */
@@ -49,8 +49,9 @@ public:
   /** Type of QuadEdge with which to apply slicing. */
   typedef TQEType QEType;
 
-  typedef typename Superclass::MeshType   MeshType;
-  typedef typename Superclass::OutputType OutputType;
+  typedef typename Superclass::MeshType     MeshType;
+  typedef typename Superclass::OutputType   OutputType;
+  typedef typename Superclass::EdgeCellType EdgeCellType;
 
   /** Evaluate at the specified input position */
   virtual OutputType Evaluate( QEType* h, QEType* g );

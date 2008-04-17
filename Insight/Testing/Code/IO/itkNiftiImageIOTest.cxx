@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkNiftiImageIOTest.cxx,v $
 Language:  C++
-Date:      $Date: 2007/09/22 22:19:25 $
-Version:   $Revision: 1.12 $
+Date:      $Date: 2008-02-05 14:07:40 $
+Version:   $Revision: 1.19 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -19,7 +19,6 @@ PURPOSE.  See the above copyright notices for more information.
 #endif
 
 #include <fstream>
-#include <complex>
 #include <string.h>
 #include "itkImageFileReader.h"
 #include "itkImage.h"
@@ -131,7 +130,7 @@ static int TestByteSwap(void)
     std::cout << "Printing Dictionary" << std::endl;
     big->GetMetaDataDictionary().Print(std::cout);
   }
-  catch (itk::ExceptionObject e)
+  catch (itk::ExceptionObject &e)
     {
       e.Print(std::cerr) ;
       RemoveByteSwapTestFiles();
@@ -277,7 +276,7 @@ template <typename T> int MakeNiftiImage(void)
       imageReader->Update() ;
       input = imageReader->GetOutput() ;
     }
-  catch (itk::ExceptionObject e)
+  catch (itk::ExceptionObject &e)
     {
       e.Print(std::cerr) ;
       Remove(filename);
@@ -291,6 +290,8 @@ template <typename T> int MakeNiftiImage(void)
 
 int itkNiftiImageIOTest(int ac, char* av[])
 {
+  itk::ObjectFactoryBase::UnRegisterAllFactories();
+  itk::NiftiImageIOFactory::RegisterOneFactory();
   int rval = 0;
   //
   // first argument is passing in the writable directory to do all testing
@@ -320,10 +321,10 @@ int itkNiftiImageIOTest(int ac, char* av[])
               imageReader->Update() ;
               input=imageReader->GetOutput() ;
             }
-          catch (itk::ExceptionObject e)
+          catch (itk::ExceptionObject &e)
             {
               e.Print(std::cerr) ;
-              rval = 0;
+              rval = 1;
             }
         }
     }
@@ -334,54 +335,36 @@ int itkNiftiImageIOTest(int ac, char* av[])
       if(cur_return != 0)
         {
           std::cerr << "Error writing Nifti file type char" << std::endl;
-        }
-      else
-        {
           rval += cur_return;
         }
       cur_return = MakeNiftiImage<unsigned char>();
       if(cur_return != 0)
         {
           std::cerr << "Error writing Nifti file type unsigned char" << std::endl;
-        }
-      else
-        {
           rval += cur_return;
         }
       cur_return = MakeNiftiImage<short>();
       if(cur_return != 0)
         {
           std::cerr << "Error writing Nifti file type short" << std::endl;
-        }
-      else
-        {
           rval += cur_return;
         }
       cur_return = MakeNiftiImage<unsigned short>();
       if(cur_return != 0)
         {
           std::cerr << "Error writing Nifti file type unsigned short" << std::endl;
-        }
-      else
-        {
           rval += cur_return;
         }
       cur_return = MakeNiftiImage<int>();
       if(cur_return != 0)
         {
           std::cerr << "Error writing Nifti file type int" << std::endl;
-        }
-      else
-        {
           rval += cur_return;
         }
       cur_return = MakeNiftiImage<float>();
       if(cur_return != 0)
         {
           std::cerr << "Error writing Nifti file type float" << std::endl;
-        }
-      else
-        {
           rval += cur_return;
         }
       // awaiting a double precision byte swapper
@@ -389,9 +372,6 @@ int itkNiftiImageIOTest(int ac, char* av[])
       if(cur_return != 0)
         {
           std::cerr << "Error writing Nifti file type double" << std::endl;
-        }
-      else
-        {
           rval += cur_return;
         }
       rval += TestByteSwap();
@@ -439,7 +419,7 @@ int itkNiftiImageIOTest2(int ac, char* av[])
       imageReader->Update();
       input = imageReader->GetOutput();
     }
-  catch (itk::ExceptionObject e)
+  catch (itk::ExceptionObject &)
     {
       test_success = 1;
     }
@@ -542,11 +522,11 @@ TestVectorImage()
               for(int k = 0; k < dims[0]; k++)
                 {
                 _index[0] = k;
-                FieldPixelType p;
+                FieldPixelType pixel;
                 float lowrange(100.00),highrange(200.00);
                 for(unsigned int q = 0; q < VecLength; q++)
                   {
-                  p[q] = randgen.drand32(lowrange,highrange);
+                  pixel[q] = randgen.drand32(lowrange,highrange);
                   lowrange += 100.0;
                   highrange += 100.0;
                   }
@@ -554,8 +534,8 @@ TestVectorImage()
                   {
                   index[q] = _index[q];
                   }
-                vi->SetPixel(index,p);
-                std::cout << p << std::endl;
+                vi->SetPixel(index,pixel);
+                std::cout << pixel << std::endl;
                 }
               }
             }
@@ -624,13 +604,13 @@ TestVectorImage()
               for(int k = 0; k < dims[0]; k++)
                 {
                 _index[0] = k;
-                FieldPixelType p;
+                FieldPixelType pixel;
                 for(unsigned int q = 0; q < Dimension; q++)
                   {
                   index[q] = _index[q];
                   }
-                p = readback->GetPixel(index);
-                std::cout << p << std::endl;
+                pixel = readback->GetPixel(index);
+                std::cout << pixel << std::endl;
                 }
               }
             }
@@ -747,7 +727,7 @@ bool Equal(double a, double b)
     {
     avg = - avg;
     }
-  if(diff > avg/10000.0)
+  if(diff > avg/1000.0)
     {
     return false;
     }
@@ -794,12 +774,13 @@ int itkNiftiImageIOTest4(int ac, char* av[])
   test4Image->SetSpacing(spacing);
   test4Image->SetOrigin(origin);
   test4Image->Allocate();
+  test4Image->FillBuffer(0);
   Test4ImageType::DirectionType dir;
   dir.SetIdentity();
 #if 1
   // arbitrarily rotate the unit vectors to pick random direction
   // cosines;
-  vnl_random randgen;
+  vnl_random randgen(8775070);
   typedef itk::AffineTransform<double,3>  TransformType;
   typedef itk::Vector<double,3> AxisType;
   TransformType::Pointer transform = TransformType::New();

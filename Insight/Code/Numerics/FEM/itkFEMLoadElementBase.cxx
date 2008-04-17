@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMLoadElementBase.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/12/04 13:17:09 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007-12-31 18:35:16 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -51,12 +51,12 @@ void LoadElement::Read( std::istream& f, void* info )
   /** first we read number of pointers in a list */
   this->SkipWhiteSpace(f); f>>n; if(!f) goto out;
   if (n<=0)
-  {
+    {
     /** if this is <= 0, the load applies on all elements in a system */
     el.clear();
-  }
+    }
   else 
-  {
+    {
     /**
      * otherwise we read all the element numbers.
      * there should be n of them
@@ -66,16 +66,16 @@ void LoadElement::Read( std::istream& f, void* info )
       this->SkipWhiteSpace(f); f>>m; if(!f) goto out;
       Element::ConstPointer e;
       try
-      {
+        {
         e=elements->Find(m);
-      }
-      catch ( FEMExceptionObjectNotFound e )
-      {
-        throw FEMExceptionObjectNotFound(__FILE__,__LINE__,"LoadElementBase::Read()",e.m_baseClassName,e.m_GN);
-      }
+        }
+      catch ( FEMExceptionObjectNotFound exc )
+        {
+        throw FEMExceptionObjectNotFound(__FILE__,__LINE__,"LoadElementBase::Read()",exc.m_baseClassName,exc.m_GN);
+        }
 
       el.push_back(e);
-
+      
     }
 
   }

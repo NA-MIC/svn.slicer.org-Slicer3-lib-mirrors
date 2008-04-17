@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkThreadDefsTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 13:00:21 $
+  Date:      $Date: 2007-08-20 13:00:21 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

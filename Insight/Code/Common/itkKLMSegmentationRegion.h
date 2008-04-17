@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkKLMSegmentationRegion.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/17 21:02:00 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2007-12-23 17:59:28 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -107,6 +107,7 @@ public:
   /** Type definition for vector container that stores the borders
    * associated with a current region. */
   typedef std::vector< KLMSegmentationBorder * > RegionBorderVectorType;
+  typedef RegionBorderVectorType::size_type RegionBorderVectorSizeType;
 
   /** Type definition for the region border vector iterators to be used. */
   typedef RegionBorderVectorType::iterator RegionBorderVectorIterator;
@@ -129,7 +130,7 @@ public:
 
   /** Get the number of borders in the vector container storing the borders
    * associated with a region. */
-  int GetRegionBorderSize() const;
+  RegionBorderVectorSizeType GetRegionBorderSize() const;
 
   /** Set/Get the mean pixel intensity in the region. */
   itkSetMacro(MeanRegionIntensity, MeanRegionIntensityType)

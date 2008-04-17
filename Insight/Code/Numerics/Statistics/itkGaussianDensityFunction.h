@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianDensityFunction.h,v $
   Language:  C++
-  Date:      $Date: 2005/07/26 15:54:55 $
+  Date:      $Date: 2005-07-26 15:54:55 $
   Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

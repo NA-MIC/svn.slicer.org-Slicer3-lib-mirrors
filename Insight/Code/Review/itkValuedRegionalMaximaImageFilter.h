@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkValuedRegionalMaximaImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/25 14:52:51 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008-02-07 15:58:06 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -35,7 +35,7 @@ namespace itk {
  * This code was contributed to the Insight Journal by 
  * \author Richard Beare. Department of Medicine, Monash University,
  * Melbourne, Australia.
- *    http://hdl.handle.net/1926/153
+ *    http://insight-journal.org/midas/handle.php?handle=1926/153
  *
  * \sa ValuedRegionalMinimaImageFilter
  * \sa ValuedRegionalExtremaImageFilter
@@ -68,6 +68,10 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
+
+  /** Runtime information support. */
+  itkTypeMacro(ValuedRegionalMaximaImageFilter, 
+               ValuedRegionalExtremaImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */

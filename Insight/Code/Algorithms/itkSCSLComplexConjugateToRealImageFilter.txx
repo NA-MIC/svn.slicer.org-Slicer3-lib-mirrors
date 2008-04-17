@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSCSLComplexConjugateToRealImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/11/04 15:32:53 $
+  Date:      $Date: 2005-11-04 15:32:53 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

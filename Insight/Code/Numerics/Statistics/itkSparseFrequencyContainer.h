@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSparseFrequencyContainer.h,v $
   Language:  C++
-  Date:      $Date: 2005/09/30 14:14:19 $
+  Date:      $Date: 2005-09-30 14:14:19 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

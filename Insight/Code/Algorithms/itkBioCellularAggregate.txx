@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBioCellularAggregate.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/20 13:36:35 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-02-01 13:10:27 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -52,7 +52,6 @@ template<unsigned int NSpaceDimension>
 CellularAggregate<NSpaceDimension>
 ::~CellularAggregate()
 {
-  m_Mesh->DebugOn();
   this->KillAll();
 }
 
@@ -116,10 +115,13 @@ CellularAggregate<NSpaceDimension>
 
     if( !realRegion )
       {
-      std::cerr << "CellularAggregate::Remove() couldn't dynamic_cast region " << std::endl;
+      itkExceptionMacro("CellularAggregate::Remove() couldn't dynamic_cast region ");
       }
     else
       {
+      //
+      // Notify all the neighbors that this cell is going away
+      //
       typename VoronoiRegionType::PointIdIterator neighbor = realRegion->PointIdsBegin();
       typename VoronoiRegionType::PointIdIterator end      = realRegion->PointIdsEnd();
       while( neighbor != end )
@@ -129,27 +131,36 @@ CellularAggregate<NSpaceDimension>
         bool neighborVoronoiExist = m_Mesh->GetCell( neighborId, cellPointer );
         if( neighborVoronoiExist ) 
           {
-          VoronoiRegionType * region =
+          VoronoiRegionType * vregion =
              dynamic_cast < VoronoiRegionType * >( cellPointer.GetPointer() );
-          if( !region )
+          if( !vregion )
             {
             std::cerr << "CellularAggregate::Add() Failed to find a region"  << std::endl;
             }
           else
             {
-            region->RemovePointId( id );
+            vregion->RemovePointId( id );
             }
           }
         neighbor++;
         }
+
+      // We can now remove the entry from the list of cells in the Mesh
+      m_Mesh->GetCells()->DeleteIndex( id );
+
+      // and then release the memory used by the VoronoiRegion
+      delete realRegion; 
       }
-    // update voronoi connections
+    }
+  else
+    {
+    itkExceptionMacro(" Region " << id << " doesn't exist ");
     }
  
-  m_Mesh->GetCells()->DeleteIndex( id );
   m_Mesh->GetPoints()->DeleteIndex( id );
   m_Mesh->GetPointData()->DeleteIndex( id );
- 
+
+  // Finally we can delete the BioCell;
   delete cell;
 }
 
@@ -439,9 +450,9 @@ CellularAggregate<NSpaceDimension>
     this->GetVoronoi( cell1Id, voronoiRegion );
               
     typename VoronoiRegionType::PointIdIterator neighbor = voronoiRegion->PointIdsBegin();
-    typename VoronoiRegionType::PointIdIterator end      = voronoiRegion->PointIdsEnd();
+    typename VoronoiRegionType::PointIdIterator vend      = voronoiRegion->PointIdsEnd();
 
-    while( neighbor != end )
+    while( neighbor != vend )
       {
 
       const IdentifierType cell2Id = (*neighbor);  

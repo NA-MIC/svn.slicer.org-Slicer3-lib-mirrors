@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkIterativeSupervisedTrainingFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/23 20:02:20 $
+  Date:      $Date: 2007-08-23 20:02:20 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

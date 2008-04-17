@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWrapPadImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/23 15:24:22 $
+  Date:      $Date: 2006-03-23 15:24:22 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

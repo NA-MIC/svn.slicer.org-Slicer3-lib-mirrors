@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMinMaxCurvatureFlowImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/30 00:29:27 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008-02-03 04:05:34 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -214,7 +214,7 @@ int testMinMaxCurvatureFlow(
 
   typename ImageType::Pointer swapPointer = circleImage;
 
-  for ( int j = 0; j < numberOfRuns; j++ )
+  for ( j = 0; j < numberOfRuns; j++ )
     {
 
     denoiser->SetInput( swapPointer );

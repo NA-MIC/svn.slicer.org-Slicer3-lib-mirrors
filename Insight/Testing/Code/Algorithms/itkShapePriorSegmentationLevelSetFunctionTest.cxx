@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkShapePriorSegmentationLevelSetFunctionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:04 $
+  Date:      $Date: 2003-09-10 14:30:04 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

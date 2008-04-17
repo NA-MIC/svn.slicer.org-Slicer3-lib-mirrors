@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: LineSpatialObject.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/23 20:46:39 $
+  Date:      $Date: 2005-03-23 20:46:39 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

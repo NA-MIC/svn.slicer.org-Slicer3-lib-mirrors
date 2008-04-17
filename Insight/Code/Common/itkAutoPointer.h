@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAutoPointer.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/18 18:06:14 $
+  Date:      $Date: 2006-03-18 18:06:14 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

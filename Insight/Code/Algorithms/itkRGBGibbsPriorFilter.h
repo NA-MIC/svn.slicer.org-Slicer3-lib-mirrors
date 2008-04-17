@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRGBGibbsPriorFilter.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:37 $
+  Date:      $Date: 2003-09-10 14:28:37 $
   Version:   $Revision: 1.29 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

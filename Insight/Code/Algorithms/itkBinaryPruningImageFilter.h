@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryPruningImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/23 04:12:03 $
+  Date:      $Date: 2006-04-23 04:12:03 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

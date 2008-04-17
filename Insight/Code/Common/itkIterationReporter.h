@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkIterationReporter.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/06 22:01:56 $
+  Date:      $Date: 2006-02-06 22:01:56 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

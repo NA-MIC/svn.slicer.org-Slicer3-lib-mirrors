@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineDecompositionImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/16 13:35:01 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-01-04 12:55:24 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -91,7 +91,7 @@ public:
                       TOutputImage::ImageDimension);
 
   /** Iterator typedef support */
-  typedef itk::ImageLinearIteratorWithIndex<TOutputImage> OutputLinearIterator;
+  typedef ImageLinearIteratorWithIndex<TOutputImage> OutputLinearIterator;
 
   /** Get/Sets the Spline Order, supports 0th - 5th order splines. The default
    *  is a 3rd order spline. */

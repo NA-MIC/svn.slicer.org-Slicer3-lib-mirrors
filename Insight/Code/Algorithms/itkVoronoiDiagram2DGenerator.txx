@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVoronoiDiagram2DGenerator.txx,v $
   Language:  C++
-  Date:      $Date: 2006/09/03 15:02:28 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008-01-16 04:25:32 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -1073,6 +1073,7 @@ GenerateVDFortune(void)
   FortuneSite *currentSite = &(m_SeedSites[1]);
 
   PointType currentCircle;
+  currentCircle.Fill(0.0);
   FortuneHalfEdge *leftHalfEdge;
   FortuneHalfEdge *rightHalfEdge;
   FortuneHalfEdge *left2HalfEdge;

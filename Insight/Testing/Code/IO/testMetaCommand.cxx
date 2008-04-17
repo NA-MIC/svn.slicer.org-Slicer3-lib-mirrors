@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: testMetaCommand.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/15 16:51:37 $
+  Date:      $Date: 2007-02-15 16:51:37 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

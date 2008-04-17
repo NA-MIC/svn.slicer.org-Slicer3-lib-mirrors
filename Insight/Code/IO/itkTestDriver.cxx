@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTestDriver.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:53 $
+  Date:      $Date: 2007-03-22 14:28:53 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageIORegion.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/04/02 21:15:42 $
+  Date:      $Date: 2004-04-02 21:15:42 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

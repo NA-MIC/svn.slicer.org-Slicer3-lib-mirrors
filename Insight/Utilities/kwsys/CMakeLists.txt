@@ -111,6 +111,12 @@ IF(NOT KWSYS_NAMESPACE)
   SET(KWSYS_NAMESPACE "kwsys")
   SET(KWSYS_STANDALONE 1)
 ENDIF(NOT KWSYS_NAMESPACE)
+IF(KWSYS_STANDALONE)
+  CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+  IF(COMMAND CMAKE_POLICY)
+    CMAKE_POLICY(SET CMP0003 NEW)
+  ENDIF(COMMAND CMAKE_POLICY)
+ENDIF(KWSYS_STANDALONE)
 
 #-----------------------------------------------------------------------------
 # The project name is that of the specified namespace.
@@ -135,8 +141,12 @@ IF(KWSYS_STANDALONE OR CMake_SOURCE_DIR)
   SET(KWSYS_USE_FundamentalType 1)
   SET(KWSYS_USE_Terminal 1)
   SET(KWSYS_USE_IOStream 1)
+  SET(KWSYS_USE_DateStamp 1)
+  SET(KWSYS_USE_String 1)
+  SET(KWSYS_USE_SystemInformation 1)
+  SET(KWSYS_USE_CPU 1)
 ENDIF(KWSYS_STANDALONE OR CMake_SOURCE_DIR)
-
+  
 # Setup the large file support default.
 IF(KWSYS_LFS_DISABLE)
   SET(KWSYS_LFS_REQUESTED 0)
@@ -576,6 +586,15 @@ ENDFOREACH(header)
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/kwsys_cstddef.hxx.in
                ${KWSYS_HEADER_DIR}/cstddef
                @ONLY IMMEDIATE)
+IF(KWSYS_INSTALL_INCLUDE_DIR)
+  INSTALL(FILES ${KWSYS_HEADER_DIR}/cstddef
+    DESTINATION ${KWSYS_INSTALL_INCLUDE_DIR}/${KWSYS_NAMESPACE}
+    ${KWSYS_INSTALL_INCLUDE_OPTIONS})
+  IF(KWSYS_HEADER_INSTALL_DIR)
+    INSTALL_FILES(${KWSYS_HEADER_INSTALL_DIR}/${KWSYS_NAMESPACE}
+      FILES ${KWSYS_HEADER_DIR}/cstddef)
+  ENDIF(KWSYS_HEADER_INSTALL_DIR)
+ENDIF(KWSYS_INSTALL_INCLUDE_DIR)
 
 #-----------------------------------------------------------------------------
 # Create streams header wrappers to give standard names by which they
@@ -624,18 +643,32 @@ ENDIF(KWSYS_USE_Process)
 # Add selected C++ classes.
 SET(cppclasses
   Directory DynamicLoader Glob RegularExpression SystemTools
-  CommandLineArguments Registry IOStream
+  CommandLineArguments Registry IOStream SystemInformation
   )
 FOREACH(cpp ${cppclasses})
   IF(KWSYS_USE_${cpp})
+    # Use the corresponding class.
     SET(KWSYS_CLASSES ${KWSYS_CLASSES} ${cpp})
+
+    # Load component-specific CMake code.
+    IF(EXISTS ${PROJECT_SOURCE_DIR}/kwsys${cpp}.cmake)
+      INCLUDE(${PROJECT_SOURCE_DIR}/kwsys${cpp}.cmake)
+    ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/kwsys${cpp}.cmake)
   ENDIF(KWSYS_USE_${cpp})
 ENDFOREACH(cpp)
 
 # Add selected C components.
-FOREACH(c Process Base64 FundamentalType MD5 Terminal System)
+FOREACH(c
+    Process Base64 FundamentalType MD5 Terminal System DateStamp String CPU
+    )
   IF(KWSYS_USE_${c})
+    # Use the corresponding header file.
     SET(KWSYS_H_FILES ${KWSYS_H_FILES} ${c})
+
+    # Load component-specific CMake code.
+    IF(EXISTS ${PROJECT_SOURCE_DIR}/kwsys${c}.cmake)
+      INCLUDE(${PROJECT_SOURCE_DIR}/kwsys${c}.cmake)
+    ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/kwsys${c}.cmake)
   ENDIF(KWSYS_USE_${c})
 ENDFOREACH(c)
 
@@ -670,7 +703,7 @@ IF(KWSYS_USE_Process)
 ENDIF(KWSYS_USE_Process)
 
 # Add selected C sources.
-FOREACH(c Base64 MD5 Terminal System)
+FOREACH(c Base64 MD5 Terminal System String)
   IF(KWSYS_USE_${c})
     SET(KWSYS_C_SRCS ${KWSYS_C_SRCS} ${c}.c)
   ENDIF(KWSYS_USE_${c})
@@ -743,6 +776,10 @@ IF(KWSYS_C_SRCS OR KWSYS_CXX_SRCS)
       TARGET_LINK_LIBRARIES(${KWSYS_NAMESPACE} ${CMAKE_DL_LIBS})
     ENDIF(UNIX)
   ENDIF(KWSYS_USE_DynamicLoader)
+  
+  IF(KWSYS_USE_SystemInformation AND WIN32)
+    TARGET_LINK_LIBRARIES(${KWSYS_NAMESPACE} ws2_32)
+  ENDIF(KWSYS_USE_SystemInformation AND WIN32)
 
   # Apply user-defined target properties to the library.
   IF(KWSYS_PROPERTIES_CXX)
@@ -876,6 +913,9 @@ IF(KWSYS_STANDALONE OR CMake_SOURCE_DIR)
       testCommandLineArguments
       testCommandLineArguments1
       )
+    IF(KWSYS_USE_SystemInformation)
+      SET(KWSYS_CXX_TESTS ${KWSYS_CXX_TESTS} testSystemInformation)
+    ENDIF(KWSYS_USE_SystemInformation)
     IF(KWSYS_USE_DynamicLoader)
       SET(KWSYS_CXX_TESTS ${KWSYS_CXX_TESTS} testDynamicLoader)
       # If kwsys contains the DynamicLoader, need extra library
@@ -887,7 +927,6 @@ IF(KWSYS_STANDALONE OR CMake_SOURCE_DIR)
       )
     ADD_EXECUTABLE(${KWSYS_NAMESPACE}TestsCxx ${KWSYS_CXX_TEST_SRCS})
     TARGET_LINK_LIBRARIES(${KWSYS_NAMESPACE}TestsCxx ${KWSYS_NAMESPACE})
-
     SET(TEST_SYSTEMTOOLS_BIN_FILE
       "${CMAKE_CURRENT_SOURCE_DIR}/testSystemTools.bin")
     SET(TEST_SYSTEMTOOLS_SRC_FILE

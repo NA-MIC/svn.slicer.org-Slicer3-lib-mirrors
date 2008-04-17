@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaTubeConverter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 18:09:33 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-01-09 07:12:48 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -124,40 +124,40 @@ MetaTubeConverter<NDimensions>
   MetaTube* tube = new MetaTube(NDimensions);
 
   // fill in the tube information  
-  typename SpatialObjectType::PointListType::const_iterator i;
-  for(i = dynamic_cast<SpatialObjectType*>(spatialObject)->GetPoints().begin(); 
-      i != dynamic_cast<SpatialObjectType*>(spatialObject)->GetPoints().end();
-      i++)
+  typename SpatialObjectType::PointListType::const_iterator it;
+  for(it = dynamic_cast<SpatialObjectType*>(spatialObject)->GetPoints().begin(); 
+      it != dynamic_cast<SpatialObjectType*>(spatialObject)->GetPoints().end();
+      it++)
     {
     TubePnt* pnt = new TubePnt(NDimensions);
 
     for(unsigned int d=0;d<NDimensions;d++)
       {
-      pnt->m_X[d] = (*i).GetPosition()[d];
+      pnt->m_X[d] = (*it).GetPosition()[d];
       }
       
-    pnt->m_ID = (*i).GetID();
-    pnt->m_R=(*i).GetRadius();
+    pnt->m_ID = (*it).GetID();
+    pnt->m_R=(*it).GetRadius();
 
     for(unsigned int d=0;d<NDimensions;d++)
       {
-      pnt->m_V1[d]=(*i).GetNormal1()[d];
+      pnt->m_V1[d]=(*it).GetNormal1()[d];
       }
 
     for(unsigned int d=0;d<NDimensions;d++)
       {
-      pnt->m_V2[d]=(*i).GetNormal2()[d];
+      pnt->m_V2[d]=(*it).GetNormal2()[d];
       }
 
     for(unsigned int d=0;d<NDimensions;d++)
       {
-      pnt->m_T[d]=(*i).GetTangent()[d];
+      pnt->m_T[d]=(*it).GetTangent()[d];
       }
               
-    pnt->m_Color[0] = (*i).GetRed();
-    pnt->m_Color[1] = (*i).GetGreen();
-    pnt->m_Color[2] = (*i).GetBlue();
-    pnt->m_Color[3] = (*i).GetAlpha();
+    pnt->m_Color[0] = (*it).GetRed();
+    pnt->m_Color[1] = (*it).GetGreen();
+    pnt->m_Color[2] = (*it).GetBlue();
+    pnt->m_Color[3] = (*it).GetAlpha();
 
     tube->GetPoints().push_back(pnt); 
     }

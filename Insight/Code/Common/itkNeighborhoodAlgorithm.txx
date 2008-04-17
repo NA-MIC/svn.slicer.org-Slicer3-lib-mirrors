@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNeighborhoodAlgorithm.txx,v $
   Language:  C++
-  Date:      $Date: 2004/09/08 14:50:03 $
+  Date:      $Date: 2004-09-08 14:50:03 $
   Version:   $Revision: 1.34 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

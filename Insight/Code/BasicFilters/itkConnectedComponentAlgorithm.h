@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConnectedComponentAlgorithm.h,v $
   Language:  C++
-  Date:      $Date: 2006/12/14 10:27:37 $
+  Date:      $Date: 2006-12-14 10:27:37 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

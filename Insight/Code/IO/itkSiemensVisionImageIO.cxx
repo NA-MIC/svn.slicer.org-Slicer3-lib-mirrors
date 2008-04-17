@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSiemensVisionImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 18:39:28 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008-01-23 15:30:00 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -73,7 +73,7 @@ bool SiemensVisionImageIO::CanReadFile( const char* FileNameToRead )
   return true;
 }
 
-struct GEImageHeader *SiemensVisionImageIO::ReadHeader(const char *FileNameToRead)
+GEImageHeader *SiemensVisionImageIO::ReadHeader(const char *FileNameToRead)
 {
   if(!this->CanReadFile(FileNameToRead))
     {
@@ -93,7 +93,7 @@ struct GEImageHeader *SiemensVisionImageIO::ReadHeader(const char *FileNameToRea
 #define TEMPLEN 2048
   char tmpStr[TEMPLEN], tmpStr2[TEMPLEN],
     tmpStr3[TEMPLEN], tmpStr4[TEMPLEN];
-  GEImageHeader *hdr = new struct GEImageHeader;
+  GEImageHeader *hdr = new GEImageHeader;
   if(hdr == 0)
     RAISE_EXCEPTION();
 #if defined(DEBUGHEADER)
@@ -159,7 +159,7 @@ struct GEImageHeader *SiemensVisionImageIO::ReadHeader(const char *FileNameToRea
   this->GetStringAt(f, TEXT_SLICE_THCK,tmpStr, TEXT_SLICE_THCK_LEN);
   tmpStr[TEXT_SLICE_THCK_LEN] = '\0';
   hdr->sliceThickness = atoi(tmpStr);
-  hdr->sliceGap = 0.0;
+  hdr->sliceGap = 0.0f;
 
   DB(hdr->sliceThickness );
   
@@ -282,15 +282,15 @@ struct GEImageHeader *SiemensVisionImageIO::ReadHeader(const char *FileNameToRea
 
   /* fprintf(stderr, "Slice Location %f\n", hdr->sliceLocation); */
   this->GetDoubleAt(f, HDR_TR,&tmpDble, sizeof (double));
-  hdr->TR = (float) tmpDble / 1000.0;
+  hdr->TR = (float) tmpDble / 1000.0f;
   DB(hdr->TR );
 
   this->GetDoubleAt(f,  HDR_TE+8,&tmpDble, sizeof (double));
-  hdr->TI = (float) tmpDble / 1000.0;
+  hdr->TI = (float) tmpDble / 1000.0f;
   DB(hdr->TI );
 
   this->GetDoubleAt(f,  HDR_TE,&tmpDble, sizeof (double));
-  hdr->TE = (float) tmpDble / 1000.0;
+  hdr->TE = (float) tmpDble / 1000.0f;
   DB(hdr->TE );
 
   this->GetStringAt(f, TEXT_ECHO_NUM,tmpStr, TEXT_ECHO_NUM_LEN);

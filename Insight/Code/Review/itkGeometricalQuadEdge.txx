@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGeometricalQuadEdge.txx,v $
   Language:  C++
-  Date:      $Date: 2007/09/05 23:09:18 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2008-02-07 05:12:00 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,7 +17,7 @@
 
 #ifndef __itkGeometricalQuadEdge_txx
 #define __itkGeometricalQuadEdge_txx
-
+#include "itkGeometricalQuadEdge.h"
 #include <vcl_limits.h>
 #include <iostream>
 
@@ -146,23 +146,15 @@ bool
 GeometricalQuadEdge< TVRef, TFRef, TPrimalData, TDualData, PrimalDual >
 ::IsOriginInternal() const
 {
-  bool internal = true;
   ConstIteratorGeom it = this->BeginGeomOnext();
   while( it != this->EndGeomOnext() )
     {
     typedef typename ConstIteratorGeom::QuadEdgeType  QuadEdgeType;
     const QuadEdgeType * value = it.Value();
-    if( value )
-      {
-      internal &= ( value->IsInternal() );
-      }
-    else
-      {
-      // FIXME: What to do if value is NULL ??
-      }
+    if(!value->IsInternal()) return false;
     ++it;
     }
-  return  internal;
+  return true;
 }
 
 /**

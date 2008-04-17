@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDistanceToCentroidMembershipFunction.h,v $
   Language:  C++
-  Date:      $Date: 2005/11/21 02:40:48 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007-09-27 15:47:12 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -31,11 +31,12 @@ namespace itk{
   namespace Statistics{
 
 /** \class DistanceToCentroidMembershipFunction
- * \brief DistanceToCentroidMembershipFunction class represents DistanceToCentroid Density Function.
+ * \brief class represents DistanceToCentroid Density Function.
  *
  * This class keeps parameter to define DistanceToCentroid Density Function  and has
  * method to return the probability density 
- * of an instance.  MeasurementVectorSize is the dimension of measurement space.
+ * of an instance.  MeasurementVectorSize is the dimension of measurement
+ * space.
  * double is type of measurement. 
  */
 template< class TVector >
@@ -50,14 +51,16 @@ public:
   typedef SmartPointer<const Self> ConstPointer;
 
   /** Strandard macros */
-  itkTypeMacro(DistanceToCentroidMembershipFunction, MembershipFunctionBase);
+  itkTypeMacro(DistanceToCentroidMembershipFunction,
+               MembershipFunctionBase);
   itkNewMacro(Self);
   
   /** Typedef alias for the measurement vectors */
   typedef TVector MeasurementVectorType ;
 
   /** Typedef to represent the length of measurement vectors */
-  typedef typename Superclass::MeasurementVectorSizeType MeasurementVectorSizeType;
+  typedef typename Superclass::MeasurementVectorSizeType 
+                                                  MeasurementVectorSizeType;
 
   /**  Set the length of each measurement vector. */
   virtual void SetMeasurementVectorSize( const MeasurementVectorSizeType );

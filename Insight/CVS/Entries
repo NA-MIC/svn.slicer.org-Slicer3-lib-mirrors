@@ -9,14 +9,15 @@ D/Testing////
 D/Utilities////
 D/Validation////
 D/Wrapping////
-/CMakeLists.txt/1.268/Fri Mar 14 14:58:00 2008//TITK-3-4
-/Copyright.txt/1.4/Fri Mar 14 14:58:00 2008//TITK-3-4
-/DartConfig.cmake/1.25/Fri Mar 14 14:58:00 2008//TITK-3-4
-/GettingStarted.txt/1.8/Fri Mar 14 14:58:00 2008//TITK-3-4
-/ITKConfig.cmake.in/1.20.2.1/Fri Mar 14 14:58:00 2008//TITK-3-4
-/InsightLogo.gif/1.1/Fri Mar 14 14:58:00 2008/-kb/TITK-3-4
-/README.html/1.17/Fri Mar 14 14:58:00 2008//TITK-3-4
-/UseITK.cmake.in/1.10/Fri Mar 14 14:58:00 2008//TITK-3-4
-/itkConfigure.h.in/1.19/Fri Mar 14 14:58:00 2008//TITK-3-4
-/itkGenerateITKConfig.cmake/1.7/Fri Mar 14 14:58:00 2008//TITK-3-4
-/itkIncludeDirectories.cmake/1.46/Fri Mar 14 14:58:00 2008//TITK-3-4
+/CMakeLists.txt/1.298/Mon Apr 14 18:11:53 2008//
+/CTestConfig.cmake/1.3/Wed Nov 28 19:36:11 2007//
+/Copyright.txt/1.5/Thu Mar 20 04:35:36 2008//
+/DartConfig.cmake/1.25/Fri Aug  3 16:38:44 2007//
+/GettingStarted.txt/1.9/Tue Jan 22 00:00:13 2008//
+/ITKConfig.cmake.in/1.27/Wed Apr  9 00:26:34 2008//
+/InsightLogo.gif/1.1/Fri Jun 29 21:09:23 2001/-kb/
+/README.html/1.17/Fri Sep 12 20:22:08 2003//
+/UseITK.cmake.in/1.10/Fri May 26 20:18:42 2006//
+/itkConfigure.h.in/1.26/Tue Apr  8 19:58:50 2008//
+/itkGenerateITKConfig.cmake/1.9/Mon Apr  7 22:55:10 2008//
+/itkIncludeDirectories.cmake/1.52/Sat Mar 29 20:43:54 2008//

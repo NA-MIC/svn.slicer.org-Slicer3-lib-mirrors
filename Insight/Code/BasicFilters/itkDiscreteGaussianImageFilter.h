@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDiscreteGaussianImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/27 17:01:06 $
+  Date:      $Date: 2006-03-27 17:01:06 $
   Version:   $Revision: 1.39 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRecursiveGaussianImageFiltersOnTensorsTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/03/09 03:37:16 $
+  Date:      $Date: 2006-03-09 03:37:16 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

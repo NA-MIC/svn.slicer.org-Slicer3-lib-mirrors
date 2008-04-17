@@ -1,14 +1,14 @@
 D/CMake////
 D/Dicts////
 D/src////
-/gdcmConfigure.h.in/1.11/Thu Nov 15 15:55:50 2007//TITK-3-4
-/.cvsignore/1.1/Fri Mar 14 14:57:22 2008//TITK-3-4
-/AUTHORS/1.3/Fri Mar 14 14:57:22 2008//TITK-3-4
-/CMakeLists.txt/1.18/Fri Mar 14 14:57:22 2008//TITK-3-4
-/ChangeLog/1.5/Fri Mar 14 14:57:22 2008//TITK-3-4
-/DEVELOPPER/1.1/Fri Mar 14 14:57:22 2008//TITK-3-4
-/INSTALL/1.1/Fri Mar 14 14:57:22 2008//TITK-3-4
-/PACKAGER/1.1/Fri Mar 14 14:57:22 2008//TITK-3-4
-/README/1.3/Fri Mar 14 14:57:22 2008//TITK-3-4
-/README.ITK.txt/1.2/Fri Mar 14 14:57:22 2008//TITK-3-4
-/gdcm.spec.in/1.1/Fri Mar 14 14:57:22 2008//TITK-3-4
+/.cvsignore/1.1/Thu Feb 24 19:01:08 2005//
+/AUTHORS/1.3/Thu Feb  2 18:26:18 2006//
+/CMakeLists.txt/1.20/Mon Apr  7 19:45:44 2008//
+/ChangeLog/1.5/Mon Aug 20 07:46:05 2007//
+/DEVELOPPER/1.1/Mon Nov  8 17:51:50 2004//
+/INSTALL/1.1/Mon Nov  8 17:51:50 2004//
+/PACKAGER/1.1/Mon Nov  8 17:51:50 2004//
+/README/1.3/Mon Aug 20 07:46:05 2007//
+/README.ITK.txt/1.2/Wed Nov 23 19:44:59 2005//
+/gdcm.spec.in/1.1/Mon Nov  8 17:51:50 2004//
+/gdcmConfigure.h.in/1.13/Fri Dec 21 15:35:06 2007//

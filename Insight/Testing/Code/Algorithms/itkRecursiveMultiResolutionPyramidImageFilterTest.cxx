@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRecursiveMultiResolutionPyramidImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/25 22:52:14 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008-02-03 04:05:34 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -274,9 +274,9 @@ int itkRecursiveMultiResolutionPyramidImageFilterTest(int, char* [] )
       {
       break;
       }
-    unsigned int size = inputSize[j] / schedule[testLevel][j];
-    if( size == 0 ) size = 1;
-    if( outputSize[j] != size )
+    unsigned int sz = inputSize[j] / schedule[testLevel][j];
+    if( sz == 0 ) sz = 1;
+    if( outputSize[j] != sz )
       {
       break;
       }

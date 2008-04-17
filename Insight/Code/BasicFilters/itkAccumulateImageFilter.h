@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAccumulateImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/27 17:01:04 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007-10-05 10:31:58 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -45,6 +45,8 @@ namespace itk
  * \author Emiliano Beronich
  *
  * This filter was contributed by Emiliano Beronich
+ *
+ * \sa GetAverageSliceImageFilter
  *
  * \ingroup   IntensityImageFilters     Singlethreaded
  */

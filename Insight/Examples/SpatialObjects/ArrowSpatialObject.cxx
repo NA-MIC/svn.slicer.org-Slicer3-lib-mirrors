@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ArrowSpatialObject.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/07/10 12:52:52 $
+  Date:      $Date: 2005-07-10 12:52:52 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

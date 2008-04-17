@@ -43,6 +43,7 @@ itkAnalyzeImageIOTest.cxx
 itkNiftiImageIOTest.cxx
 itkArchetypeSeriesFileNamesTest.cxx
 itkBMPImageIOTest.cxx
+itkBMPImageIOTest2.cxx
 itkBioRadImageIOTest.cxx
 itkLSMImageIOTest.cxx
 itkBrains2MaskImageIOTest.cxx
@@ -56,11 +57,17 @@ itkGEImageIOTest.cxx
 itkGiplImageIOTest.cxx
 itkIOPrintTest.cxx
 itkImageFileWriterTest.cxx
+itkImageIODirection2DTest.cxx
+itkImageIODirection3DTest.cxx
+itkImageReadDICOMSeriesWriteTest.cxx
 itkImageSeriesWriterTest.cxx
 itkJPEGImageIOTest.cxx
+itkLargeImageWriteReadTest.cxx
+itkMatrixImageWriteReadTest.cxx
 itkMeshSpatialObjectIOTest.cxx
 itkMetaImageIOTest.cxx
 itkMetaImageStreamingIOTest.cxx
+itkMetaImageStreamingWriterIOTest.cxx
 itkNrrdImageIOTest.cxx
 itkNrrdImageReadWriteTest.cxx
 itkNrrdRGBImageReadWriteTest.cxx
@@ -84,6 +91,7 @@ itkRawImageIOTest4.cxx
 itkRawImageIOTest5.cxx
 itkReadWriteSpatialObjectTest.cxx
 itkRegularExpressionSeriesFileNamesTest.cxx
+itkSymmetricSecondRankTensorImageReadTest.cxx
 itkStimulateImageIOTest.cxx
 itkStimulateImageIOTest2.cxx
 itkTIFFImageIOTest.cxx
@@ -143,6 +151,11 @@ ADD_TEST(itkReadWriteSpatialObjectTest ${IO_TESTS} itkReadWriteSpatialObjectTest
 ADD_TEST(itkReadWriteSpatialObjectTest1 ${IO_TESTS} itkReadWriteSpatialObjectTest binary)
 ADD_TEST(itkReadWriteSpatialObjectTest2 ${IO_TESTS} itkReadWriteSpatialObjectTest 
                                                     ${ITK_DATA_ROOT}/Input/SpatialObjects.meta)
+
+ADD_TEST(itkMatrixImageWriteReadTest ${IO_TESTS} 
+         itkMatrixImageWriteReadTest
+         ${TEMP}/testMatrix1.mha)
+
 ADD_TEST(itkMeshSpatialObjectIOTest ${IO_TESTS} itkMeshSpatialObjectIOTest)
 ADD_TEST(itkMeshSpatialObjectIOTest1 ${IO_TESTS} itkMeshSpatialObjectIOTest binary)
 ADD_TEST(itkMeshSpatialObjectIOTest2 ${IO_TESTS} itkMeshSpatialObjectIOTest 
@@ -176,6 +189,12 @@ ADD_TEST(itkVectorImageReadWriteTest2 ${IO_TESTS} itkVectorImageReadWriteTest
 
 ADD_TEST(itkStimulateImageIOTest ${IO_TESTS} itkStimulateImageIOTest
                            ${TEMP}/test1.spr ${TEMP}/test2.spr)
+
+ADD_TEST(itkSymmetricSecondRankTensorImageReadTest ${IO_TESTS} 
+         itkSymmetricSecondRankTensorImageReadTest
+         ${TEMP}/testSymmetricTensor1.nrrd 
+         ${TEMP}/testSymmetricTensor2.nrrd)
+
 ADD_TEST(itkIOHeaderTest ${IO_HEADER_TEST})
 ADD_TEST(itkPolygonGroupSpatialObjectXMLFileTest ${IO_TESTS} itkPolygonGroupSpatialObjectXMLFileTest ${TEMP})
 ADD_TEST(itkImageFileWriterTest ${IO_TESTS} itkImageFileWriterTest ${TEMP}/test.png)
@@ -190,6 +209,20 @@ IF(ITK_OBJCXX_COMPILER_WORKS)
   ADD_EXECUTABLE(itkIOHeaderObjCxxTest itkIOHeaderObjCxxTest.mm)
   TARGET_LINK_LIBRARIES(itkIOHeaderObjCxxTest ITKIO ITKEXPAT ITKSpatialObject ITKAlgorithms)
 ENDIF(ITK_OBJCXX_COMPILER_WORKS)
+
+
+IF( ${ITK_COMPUTER_MEMORY_SIZE} GREATER 5 )
+
+  # Just below 2 Gigabytes
+  ADD_TEST(itkLargeImageWriteReadTest1 ${IO_TESTS} itkLargeImageWriteReadTest
+           ${ITK_TEST_OUTPUT_DIR}/LargeImage01.mhd  30000L )
+
+  # Just above 2 Gigabytes
+  ADD_TEST(itkLargeImageWriteReadTest2 ${IO_TESTS} itkLargeImageWriteReadTest
+           ${ITK_TEST_OUTPUT_DIR}/LargeImage02.mhd  40000L )
+
+ENDIF( ${ITK_COMPUTER_MEMORY_SIZE} GREATER 5 )
+
 
 
 IF(ITK_DATA_ROOT)
@@ -210,15 +243,21 @@ ADD_TEST(itkMetaImageIOShouldFailTest ${IO_TESTS}
 ADD_TEST(itkMetaImageStreamingIOTest ${IO_TESTS} 
   --compare ${ITK_DATA_ROOT}/Baseline/IO/HeadMRVolume.mhd
             ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeStreamed.mhd
-  itkMetaImageIOTest
+  itkMetaImageStreamingIOTest
             ${ITK_DATA_ROOT}/Input/HeadMRVolume.mhd
             ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeStreamed.mhd)
 ADD_TEST(itkMetaImageCompressedStreamingIOTest ${IO_TESTS} 
   --compare ${ITK_DATA_ROOT}/Baseline/IO/HeadMRVolume.mhd
             ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeCompressedStreamed.mha
-  itkMetaImageIOTest
+  itkMetaImageStreamingIOTest
             ${ITK_DATA_ROOT}/Input/HeadMRVolumeCompressed.mha
             ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeCompressedStreamed.mha)
+ADD_TEST(itkMetaImageStreamingWriterIOTest ${IO_TESTS} 
+  --compare ${ITK_DATA_ROOT}/Baseline/IO/HeadMRVolume.mhd
+            ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeWriteStreamed.mha
+  itkMetaImageStreamingWriterIOTest
+            ${ITK_DATA_ROOT}/Input/HeadMRVolume.mhd
+            ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeWriteStreamed.mha)
 ADD_TEST(itkGiplImageIOTest ${IO_TESTS} 
   --compare ${ITK_DATA_ROOT}/Baseline/IO/ramp.mhd
             ${ITK_TEST_OUTPUT_DIR}/ramp.mhd
@@ -255,6 +294,30 @@ ADD_TEST(itkBMPImageIOTest2 ${IO_TESTS}
   itkBMPImageIOTest 
             ${ITK_DATA_ROOT}/Input/cthead254x254.bmp
             ${ITK_TEST_OUTPUT_DIR}/cthead254x254.bmp)
+ADD_TEST(itkBMPImageIOTest3 ${IO_TESTS} 
+  --compare ${ITK_DATA_ROOT}/Baseline/IO/image_grayscale.bmp
+            ${ITK_TEST_OUTPUT_DIR}/image_grayscale.bmp
+  itkBMPImageIOTest 
+            ${ITK_DATA_ROOT}/Input/image_grayscale.bmp
+            ${ITK_TEST_OUTPUT_DIR}/image_grayscale.bmp)
+ADD_TEST(itkBMPImageIOTest4 ${IO_TESTS} 
+  --compare ${ITK_DATA_ROOT}/Baseline/IO/image_color.bmp
+            ${ITK_TEST_OUTPUT_DIR}/image_color.bmp
+  itkBMPImageIOTest 
+            ${ITK_DATA_ROOT}/Input/image_color.bmp
+            ${ITK_TEST_OUTPUT_DIR}/image_color.bmp)
+ADD_TEST(itkBMPImageIOTest5 ${IO_TESTS} 
+  --compare ${ITK_DATA_ROOT}/Baseline/IO/smallRGBA.mha
+            ${ITK_TEST_OUTPUT_DIR}/smallRGBA.mha
+  itkBMPImageIOTest2 
+            ${ITK_DATA_ROOT}/Input/smallRGBA.bmp
+            ${ITK_TEST_OUTPUT_DIR}/smallRGBA.mha)
+ADD_TEST(itkBMPImageIOTest6 ${IO_TESTS} 
+  --compare ${ITK_DATA_ROOT}/Baseline/IO/smallRGBA.mha
+            ${ITK_TEST_OUTPUT_DIR}/smallRGBA.bmp
+  itkBMPImageIOTest2 
+            ${ITK_DATA_ROOT}/Input/smallRGBA.bmp
+            ${ITK_TEST_OUTPUT_DIR}/smallRGBA.bmp)
 ADD_TEST(itkJPEGImageIOTest ${IO_TESTS} 
   --compare ${ITK_DATA_ROOT}/Baseline/IO/cthead1.png
             ${ITK_TEST_OUTPUT_DIR}/cthead1.png
@@ -361,11 +424,20 @@ ADD_TEST(itkTIFFImageIOTest10 ${IO_TESTS}
             ${ITK_TEST_OUTPUT_DIR}/RGBTestImageZIP.tif)
 
 ADD_TEST(itkTIFFImageIOTest11 ${IO_TESTS}   
-   --compare ${ITK_DATA_ROOT}/Baseline/IO/ShortTestImage.mha
+   --compare ${ITK_DATA_ROOT}/Baseline/IO/ShortTestImage.tiff
              ${ITK_TEST_OUTPUT_DIR}/ShortTestImage.tiff
   itkTIFFImageIOTest 
             ${ITK_DATA_ROOT}/Input/ShortTestImage.tiff
             ${ITK_TEST_OUTPUT_DIR}/ShortTestImage.tiff
+            1
+            2)
+
+ADD_TEST(itkTIFFImageIOTest12 ${IO_TESTS}   
+   --compare ${ITK_DATA_ROOT}/Baseline/IO/48BitTestImage.tif
+             ${ITK_TEST_OUTPUT_DIR}/48BitTestImage.tif
+  itkTIFFImageIOTest 
+            ${ITK_DATA_ROOT}/Input/48BitTestImage.tif
+            ${ITK_TEST_OUTPUT_DIR}/48BitTestImage.tif
             2
             2)
 
@@ -381,6 +453,7 @@ ADD_TEST(itkTIFFImageIOMultiPagesTest ${IO_TESTS}
 ADD_TEST(itkDICOMImageSeriesTest ${IO_TESTS} 
   itkDICOMImageSeriesTest
             ${ITK_DATA_ROOT}/Input/DicomSeries 0)
+
 ADD_TEST(itkDICOMSeriesFileNamesTest ${IO_TESTS} 
   itkDICOMSeriesFileNamesTest
             ${ITK_DATA_ROOT}/Input/DicomSeries)
@@ -394,13 +467,22 @@ ADD_TEST(itkImageSeriesWriterTest ${IO_TESTS}
 ADD_TEST(itkNumericSeriesFileNamesTest ${IO_TESTS} 
   itkNumericSeriesFileNamesTest)
 
-  ADD_TEST(itkDicomDifficultFile ${IO_TESTS} itkDicomImageIOTest
-           ${ITK_DATA_ROOT}/Input/012345.002.050
-           ${ITK_TEST_OUTPUT_DIR}/itkDicomDifficultFile.png)
-  ADD_TEST(itkPNGImageIOTest1 ${IO_TESTS} itkPNGImageIOTest
-           ${ITK_DATA_ROOT}/Input/cthead1.png)
-  ADD_TEST(itkPNGImageIOTest2 ${IO_TESTS} itkPNGImageIOTest
-           ${ITK_DATA_ROOT}/Input/VisibleWomanEyeSlice.png)
+ADD_TEST(itkDicomDifficultFile ${IO_TESTS} itkDicomImageIOTest
+         ${ITK_DATA_ROOT}/Input/012345.002.050
+         ${ITK_TEST_OUTPUT_DIR}/itkDicomDifficultFile.png)
+
+ADD_TEST(itkPNGImageIOTest1 ${IO_TESTS} itkPNGImageIOTest
+         ${ITK_DATA_ROOT}/Input/cthead1.png)
+
+ADD_TEST(itkPNGImageIOTest2 ${IO_TESTS} itkPNGImageIOTest
+         ${ITK_DATA_ROOT}/Input/VisibleWomanEyeSlice.png)
+
+ADD_TEST(itkImageReadDICOMSeriesWriteTest ${IO_TESTS} 
+  itkImageReadDICOMSeriesWriteTest
+  ${ITK_DATA_ROOT}/Input/HeadMRVolumeCompressed.mha
+  ${ITK_TEST_OUTPUT_DIR}/DICOMSeriesOutputHeadMRVolume)
+
+
 ##Analyze Test Suite
   ADD_TEST(itkAnalyzeImageIOTest ${IO_TESTS}
     itkAnalyzeImageIOTest ${ITK_TEST_OUTPUT_DIR})
@@ -708,8 +790,142 @@ ADD_TEST(itkNrrdCovariantVectorImageReadWriteTest ${IO_TESTS}
             ${ITK_DATA_ROOT}/Input/mini-covector-slow.nrrd
             ${ITK_TEST_OUTPUT_DIR}/mini-covector.nrrd)
 
+# Note: Directions are transposed here with respect to the MetaImage header
+ADD_TEST(itkImageIODirection3DTest01 ${IO_TESTS} itkImageIODirection3DTest
+   ${ITK_DATA_ROOT}/Input/HeadMRVolumeWithDirectionIdentity.mhd
+   1.0    0.0   0.0 
+   0.0    1.0   0.0 
+   0.0    0.0   1.0
+   ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeWithDirectionIdentity.mhd)
+
+ADD_TEST(itkImageIODirection3DTest02 ${IO_TESTS} itkImageIODirection3DTest
+   ${ITK_DATA_ROOT}/Input/HeadMRVolumeWithDirection.mhd  
+   0.8660254    0.5         0.0  
+  -0.5          0.8660254   0.0 
+   0.0          0.0         1.0
+   ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeWithDirection.mhd)
+
+ADD_TEST(itkImageIODirection3DTest03 ${IO_TESTS} itkImageIODirection3DTest
+   ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeWithDirectionIdentity.mhd
+   1.0    0.0   0.0 
+   0.0    1.0   0.0 
+   0.0    0.0   1.0
+   ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeWithDirectionIdentity.nhdr)
+
+ADD_TEST(itkImageIODirection3DTest04 ${IO_TESTS} itkImageIODirection3DTest
+   ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeWithDirection.mhd
+   0.8660254    0.5         0.0  
+  -0.5          0.8660254   0.0 
+   0.0          0.0         1.0
+   ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeWithDirection.nhdr)
+
+ADD_TEST(itkImageIODirection3DTest05 ${IO_TESTS} itkImageIODirection3DTest
+   ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeWithDirectionIdentity.nhdr
+   1.0    0.0   0.0 
+   0.0    1.0   0.0 
+   0.0    0.0   1.0)
+
+ADD_TEST(itkImageIODirection3DTest06 ${IO_TESTS} itkImageIODirection3DTest
+   ${ITK_TEST_OUTPUT_DIR}/HeadMRVolumeWithDirection.nhdr
+   0.8660254    0.5         0.0  
+  -0.5          0.8660254   0.0 
+   0.0          0.0         1.0)
+
+
 ENDIF(ITK_DATA_ROOT)
 
+
+# Test for reading direction cosines
+# Note: Directions are transposed here with respect to the MetaImage header
+SET(EXAMPLES_DATA_ROOT "${ITK_SOURCE_DIR}/Examples/Data")
+ADD_TEST(itkImageIODirection2DTest01 ${IO_TESTS} itkImageIODirection2DTest
+   ${EXAMPLES_DATA_ROOT}/BrainProtonDensitySliceBorder20.png  
+   1.0   0.0 
+   0.0   1.0
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceBorder20.mhd)
+
+ADD_TEST(itkImageIODirection2DTest02 ${IO_TESTS} itkImageIODirection2DTest
+   ${EXAMPLES_DATA_ROOT}/BrainProtonDensitySliceShifted13x17y.png  
+   1.0   0.0 
+   0.0   1.0
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceShifted13x17y.mhd)  
+
+ADD_TEST(itkImageIODirection2DTest03 ${IO_TESTS} itkImageIODirection2DTest
+   ${EXAMPLES_DATA_ROOT}/BrainProtonDensitySliceBorder20DirectionPlus30.mhd
+   0.8660254   -0.5  
+   0.5   0.8660254
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceBorder20DirectionPlus30.mhd)
+
+ADD_TEST(itkImageIODirection2DTest04 ${IO_TESTS} itkImageIODirection2DTest
+   ${EXAMPLES_DATA_ROOT}/BrainProtonDensitySliceShifted13x17yDirectionPlus30.mhd
+   0.8660254   -0.5  
+   0.5   0.8660254
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceShifted13x17yDirectionPlus30.mhd)
+
+ADD_TEST(itkImageIODirection2DTest05 ${IO_TESTS} itkImageIODirection2DTest
+   ${EXAMPLES_DATA_ROOT}/BrainT1SliceBorder20DirectionPlus30.mhd
+   0.8660254   -0.5  
+   0.5   0.8660254
+   ${ITK_TEST_OUTPUT_DIR}/BrainT1SliceBorder20DirectionPlus30.mhd)
+
+# Now verify that we can read those MetaImage files, and find the same Directions
+# then write them as Nifti files.
+ADD_TEST(itkImageIODirection2DTest06 ${IO_TESTS} itkImageIODirection2DTest
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceBorder20.mhd
+   1.0   0.0 
+   0.0   1.0
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceBorder20.nhdr)
+
+ADD_TEST(itkImageIODirection2DTest07 ${IO_TESTS} itkImageIODirection2DTest
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceShifted13x17y.mhd
+   1.0   0.0 
+   0.0   1.0
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceShifted13x17y.nhdr)  
+
+ADD_TEST(itkImageIODirection2DTest08 ${IO_TESTS} itkImageIODirection2DTest
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceBorder20DirectionPlus30.mhd
+   0.8660254   -0.5  
+   0.5   0.8660254
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceBorder20DirectionPlus30.nhdr)
+
+ADD_TEST(itkImageIODirection2DTest09 ${IO_TESTS} itkImageIODirection2DTest
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceShifted13x17yDirectionPlus30.mhd
+   0.8660254   -0.5  
+   0.5   0.8660254
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceShifted13x17yDirectionPlus30.nhdr)
+
+ADD_TEST(itkImageIODirection2DTest10 ${IO_TESTS} itkImageIODirection2DTest
+   ${ITK_TEST_OUTPUT_DIR}/BrainT1SliceBorder20DirectionPlus30.mhd
+   0.8660254   -0.5  
+   0.5   0.8660254
+   ${ITK_TEST_OUTPUT_DIR}/BrainT1SliceBorder20DirectionPlus30.nhdr)
+
+# Now verify that we can read those Nifti files, and find the same Directions
+# then write them as Nifti files.
+ADD_TEST(itkImageIODirection2DTest11 ${IO_TESTS} itkImageIODirection2DTest
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceBorder20.nhdr
+   1.0   0.0 
+   0.0   1.0)
+
+ADD_TEST(itkImageIODirection2DTest12 ${IO_TESTS} itkImageIODirection2DTest
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceShifted13x17y.nhdr
+   1.0   0.0 
+   0.0   1.0)
+
+ADD_TEST(itkImageIODirection2DTest13 ${IO_TESTS} itkImageIODirection2DTest
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceBorder20DirectionPlus30.nhdr
+   0.8660254   -0.5  
+   0.5   0.8660254)
+
+ADD_TEST(itkImageIODirection2DTest14 ${IO_TESTS} itkImageIODirection2DTest
+   ${ITK_TEST_OUTPUT_DIR}/BrainProtonDensitySliceShifted13x17yDirectionPlus30.nhdr
+   0.8660254   -0.5  
+   0.5   0.8660254)
+
+ADD_TEST(itkImageIODirection2DTest15 ${IO_TESTS} itkImageIODirection2DTest
+   ${ITK_TEST_OUTPUT_DIR}/BrainT1SliceBorder20DirectionPlus30.nhdr
+   0.8660254   -0.5  
+   0.5   0.8660254)
 
 
 IF(ITK_BINARY_DIR)

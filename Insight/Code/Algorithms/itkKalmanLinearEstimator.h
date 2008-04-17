@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkKalmanLinearEstimator.h,v $
   Language:  C++
-  Date:      $Date: 2005/05/06 18:53:39 $
+  Date:      $Date: 2005-05-06 18:53:39 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

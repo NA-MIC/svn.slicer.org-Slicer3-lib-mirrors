@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVoronoiSegmentationImageFilterBase.txx,v $
   Language:  C++
-  Date:      $Date: 2006/07/31 12:26:48 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2008-02-14 05:02:22 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -1122,7 +1122,10 @@ VoronoiSegmentationImageFilterBase <TInputImage,TOutputImage,TBinaryPriorImage>
   {
   InputImagePointer input =
     const_cast< InputImageType * >( this->GetInput() );
-  input->SetRequestedRegion( this->GetInput()->GetLargestPossibleRegion() );
+  if (input)
+    {
+    input->SetRequestedRegion( this->GetInput()->GetLargestPossibleRegion() );
+    }
   }
 }
 

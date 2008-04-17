@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLandmarkSpatialObject.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:38 $
+  Date:      $Date: 2007-01-28 19:24:38 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

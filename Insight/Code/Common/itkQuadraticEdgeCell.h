@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadraticEdgeCell.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/18 14:31:12 $
+  Date:      $Date: 2007-05-18 14:31:12 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

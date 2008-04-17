@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFiniteDifferenceFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:07 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-03-03 13:58:49 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -77,8 +77,8 @@ public:
 
   /** Extract some parameters from the image type */
   typedef TImageType ImageType;
-  typedef typename ImageType::PixelType       PixelType;
-  typedef double PixelRealType;
+  typedef typename ImageType::PixelType  PixelType;
+  typedef double                         PixelRealType;  
   
   /** Save image dimension. */
   itkStaticConstMacro(ImageDimension, unsigned int, ImageType::ImageDimension);
@@ -97,6 +97,10 @@ public:
   /** The type of data structure that is passed to this function object
    * to evaluate at a pixel that does not lie on a data set boundary. */
   typedef ConstNeighborhoodIterator<TImageType, DefaultBoundaryConditionType> NeighborhoodType;
+
+  /** The type of data structure that holds the scales with which the
+   * neighborhood is weighted to properly account for spacing and neighborhood radius. */
+  typedef Vector<PixelRealType,itkGetStaticConstMacro(ImageDimension)> NeighborhoodScalesType;
 
   /** A floating point offset from an image grid location. Used for
    * interpolation among grid values in a neighborhood. */
@@ -152,6 +156,11 @@ public:
         m_ScaleCoefficients[i] = vals[i];
         }
     }
+
+  /** Compute the scales that weight the neighborhood during difference operations
+   * to properly account for spacing and neighborhood radius
+   */
+  const NeighborhoodScalesType ComputeNeighborhoodScales() const;
 
   /** Computes the time step for an update given a global data structure.
    * The data used in the computation may take different forms depending on

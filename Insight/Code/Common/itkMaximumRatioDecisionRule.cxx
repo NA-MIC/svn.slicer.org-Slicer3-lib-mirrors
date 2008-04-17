@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMaximumRatioDecisionRule.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/07/15 21:51:01 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007-12-23 17:59:28 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -27,7 +27,7 @@ void MaximumRatioDecisionRule::SetAPriori(APrioriVectorType& values)
 {
   m_NumberOfClasses = values.size() ;
   m_APrioriRatioMatrix.set_size(values.size(), values.size()) ;
-  unsigned int i, j ;
+  APrioriVectorSizeType i, j ;
   double APrioriRatio ;
   for (i = 0 ; i < m_NumberOfClasses ; i++)
     {

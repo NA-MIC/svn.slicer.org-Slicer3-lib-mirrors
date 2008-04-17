@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDifferenceImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/09/18 17:35:58 $
+  Date:      $Date: 2006-09-18 17:35:58 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

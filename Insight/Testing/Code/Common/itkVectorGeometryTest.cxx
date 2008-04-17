@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorGeometryTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/01/14 20:37:49 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2008-01-27 21:39:38 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -200,9 +200,6 @@ int itkVectorGeometryTest(int, char* [] )
   std::cout << "Test for CastFrom() method... ";
 
   const float tolerance = 1e-7;
-
-  // Dimension & Type
-  const     unsigned int    N = 3;
 
   //  Vector Classes
   typedef    itk::Vector<  double, N >    DoubleVectorType;

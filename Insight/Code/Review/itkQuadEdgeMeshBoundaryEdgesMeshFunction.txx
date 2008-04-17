@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshBoundaryEdgesMeshFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2007/06/27 19:06:04 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008-02-07 05:12:00 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -32,6 +32,7 @@
 #ifndef __itkQuadEdgeMeshBoundaryEdgesMeshFunction_txx
 #define __itkQuadEdgeMeshBoundaryEdgesMeshFunction_txx
 
+#include "itkQuadEdgeMeshBoundaryEdgesMeshFunction.h"
 #include "itkQuadEdgeMesh.h"  // Just to mark the dependance towards this class.
 
 namespace itk

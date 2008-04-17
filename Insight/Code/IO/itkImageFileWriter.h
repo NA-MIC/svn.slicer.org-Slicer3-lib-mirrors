@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageFileWriter.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/17 21:02:11 $
+  Date:      $Date: 2007-03-17 21:02:11 $
   Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

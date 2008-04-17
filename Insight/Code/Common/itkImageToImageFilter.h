@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 12:51:36 $
-  Version:   $Revision: 1.47 $
+  Date:      $Date: 2008-02-03 04:05:29 $
+  Version:   $Revision: 1.48 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -76,6 +76,7 @@ public:
 
   /** Superclass typedefs. */
   typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
+  typedef typename Superclass::OutputImagePixelType  OutputImagePixelType;
 
   /** Some convenient typedefs. */
   typedef TInputImage InputImageType;

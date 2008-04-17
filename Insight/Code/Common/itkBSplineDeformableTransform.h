@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineDeformableTransform.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/24 22:39:12 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2008-04-11 16:28:11 $
+  Version:   $Revision: 1.38 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -193,6 +193,7 @@ public:
    * This function has the effect of make the following calls:
    *       transform->SetGridSpacing( spacing );
    *       transform->SetGridOrigin( origin );
+   *       transform->SetGridDirection( direction );
    *       transform->SetGridRegion( bsplineRegion );
    *
    * This function was added to allow the transform to work with the 
@@ -267,6 +268,7 @@ public:
   typedef typename RegionType::IndexType  IndexType;
   typedef typename RegionType::SizeType   SizeType;
   typedef typename ImageType::SpacingType SpacingType;
+  typedef typename ImageType::DirectionType DirectionType;
   typedef typename ImageType::PointType   OriginType;
 
   /** This method specifies the region over which the grid resides. */
@@ -278,6 +280,11 @@ public:
   virtual void SetGridSpacing( const SpacingType& spacing );
   itkGetMacro( GridSpacing, SpacingType );
   itkGetConstMacro( GridSpacing, SpacingType );
+
+  /** This method specifies the grid directions . */
+  virtual void SetGridDirection( const DirectionType & spacing );
+  itkGetMacro( GridDirection, DirectionType );
+  itkGetConstMacro( GridDirection, DirectionType );
 
   /** This method specifies the grid origin. */
   virtual void SetGridOrigin( const OriginType& origin );
@@ -321,6 +328,12 @@ public:
                        WeightsType & weights,
                        ParameterIndexArrayType & indices, 
                        bool & inside ) const;
+
+  virtual void GetJacobian( const InputPointType & inputPoint,
+                       WeightsType & weights,
+                       ParameterIndexArrayType & indices
+                       ) const;
+
 
   /** Get number of weights. */
   unsigned long GetNumberOfWeights() const
@@ -370,6 +383,8 @@ public:
    */
   virtual bool IsLinear() const { return false; }
 
+  unsigned int GetNumberOfAffectedWeights() const;
+
 protected:
   /** Print contents of an BSplineDeformableTransform. */
   void PrintSelf(std::ostream &os, Indent indent) const;
@@ -385,6 +400,10 @@ protected:
   /** Wrap flat array into images of coefficients. */
   void WrapAsImages();
 
+  /** Convert an input point to a continuous index inside the BSpline grid */
+  void TransformPointToContinuousIndex( 
+   const InputPointType & point, ContinuousIndexType & index ) const;
+
 private:
   BSplineDeformableTransform(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
@@ -395,7 +414,11 @@ private:
   /** Variables defining the coefficient grid extend. */
   RegionType    m_GridRegion;
   SpacingType   m_GridSpacing;
+  DirectionType m_GridDirection;
   OriginType    m_GridOrigin;
+
+  DirectionType m_PointToIndex;
+  DirectionType m_IndexToPoint;
   
   RegionType    m_ValidRegion;
 

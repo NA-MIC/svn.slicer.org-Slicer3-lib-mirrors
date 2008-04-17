@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMahalanobisDistanceThresholdImageFunctionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/08/08 13:39:21 $
+  Date:      $Date: 2004-08-08 13:39:21 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

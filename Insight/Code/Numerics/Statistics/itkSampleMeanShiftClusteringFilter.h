@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSampleMeanShiftClusteringFilter.h,v $
   Language:  C++
-  Date:      $Date: 2003/12/09 16:53:08 $
+  Date:      $Date: 2003-12-09 16:53:08 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

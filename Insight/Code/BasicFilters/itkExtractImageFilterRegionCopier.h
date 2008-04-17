@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkExtractImageFilterRegionCopier.h,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:30 $
+  Date:      $Date: 2004-12-21 22:47:30 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

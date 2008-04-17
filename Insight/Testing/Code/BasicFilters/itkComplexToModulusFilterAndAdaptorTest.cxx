@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkComplexToModulusFilterAndAdaptorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/10 14:34:01 $
+  Date:      $Date: 2007-08-10 14:34:01 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

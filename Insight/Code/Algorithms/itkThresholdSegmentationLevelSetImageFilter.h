@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkThresholdSegmentationLevelSetImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2004/06/01 18:33:45 $
+  Date:      $Date: 2004-06-01 18:33:45 $
   Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

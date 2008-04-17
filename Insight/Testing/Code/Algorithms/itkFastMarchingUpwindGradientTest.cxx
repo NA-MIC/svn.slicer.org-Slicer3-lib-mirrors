@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFastMarchingUpwindGradientTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/10/16 01:34:11 $
+  Date:      $Date: 2006-10-16 01:34:11 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

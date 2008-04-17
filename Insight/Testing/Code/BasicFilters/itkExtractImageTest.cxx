@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkExtractImageTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/24 15:45:34 $
+  Date:      $Date: 2005-08-24 15:45:34 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

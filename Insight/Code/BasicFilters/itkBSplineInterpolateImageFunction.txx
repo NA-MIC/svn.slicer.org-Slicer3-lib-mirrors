@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineInterpolateImageFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:55 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008-02-04 12:34:11 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -19,6 +19,17 @@
 =========================================================================*/
 #ifndef _itkBSplineInterpolateImageFunction_txx
 #define _itkBSplineInterpolateImageFunction_txx
+
+// First, make sure that we include the configuration file.
+// This line may be removed once the ThreadSafeTransform gets
+// integrated into ITK.
+#include "itkConfigure.h"
+
+// Second, redirect to the optimized version if necessary
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+#include "itkOptBSplineInterpolateImageFunction.txx"
+#else
+
 #include "itkBSplineInterpolateImageFunction.h"
 #include "itkImageLinearIteratorWithIndex.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
@@ -44,6 +55,7 @@ BSplineInterpolateImageFunction<TImageType,TCoordRep,TCoefficientType>
   // ***TODO: Should we store coefficients in a variable or retrieve from filter?
   m_Coefficients = CoefficientImageType::New();
   this->SetSplineOrder(SplineOrder);
+  this->m_UseImageDirection = false;
 }
 
 /**
@@ -58,6 +70,8 @@ BSplineInterpolateImageFunction<TImageType,TCoordRep,TCoefficientType>
 {
   Superclass::PrintSelf( os, indent );
   os << indent << "Spline Order: " << m_SplineOrder << std::endl;
+  os << indent << "UseImageDirection = " 
+     << (this->m_UseImageDirection ? "On" : "Off") << std::endl;
 
 }
 
@@ -200,6 +214,9 @@ BSplineInterpolateImageFunction<TImageType,TCoordRep,TCoefficientType>
   // Modify EvaluateIndex at the boundaries using mirror boundary conditions
   this->ApplyMirrorBoundaryConditions(EvaluateIndex, m_SplineOrder);
   
+  const InputImageType * inputImage = this->GetInputImage();
+  const typename InputImageType::SpacingType & spacing = inputImage->GetSpacing();
+
   // Calculate derivative
   CovariantVectorType derivativeValue;
   double tempValue;
@@ -227,11 +244,19 @@ BSplineInterpolateImageFunction<TImageType,TCoordRep,TCoefficientType>
         }
       derivativeValue[n] += m_Coefficients->GetPixel(coefficientIndex) * tempValue ;
       }
-     derivativeValue[n] /= this->GetInputImage()->GetSpacing()[n];   // take spacing into account
+     derivativeValue[n] /= spacing[n];   // take spacing into account
     }
 
+#ifdef ITK_USE_ORIENTED_IMAGE_DIRECTION
+  if( this->m_UseImageDirection )
+    {
+    CovariantVectorType orientedDerivative;
+    inputImage->TransformLocalVectorToPhysicalVector( derivativeValue, orientedDerivative );
+    return orientedDerivative;
+    }
+#endif
+
   return(derivativeValue);
-    
 }
 
 
@@ -534,12 +559,12 @@ BSplineInterpolateImageFunction<TImageType,TCoordRep,TCoefficientType>
           evaluateIndex[n][k] = dataLength2 - evaluateIndex[n][k];
           }
         }
-
       }
-  
     }
 }
 
 } // namespace itk
+
+#endif
 
 #endif

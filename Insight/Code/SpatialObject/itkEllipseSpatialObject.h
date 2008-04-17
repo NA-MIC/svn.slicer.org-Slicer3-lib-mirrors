@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEllipseSpatialObject.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:21 $
+  Date:      $Date: 2007-01-28 19:24:21 $
   Version:   $Revision: 1.26 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

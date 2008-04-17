@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToListGenerator.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/25 22:25:16 $
+  Date:      $Date: 2007-04-25 22:25:16 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

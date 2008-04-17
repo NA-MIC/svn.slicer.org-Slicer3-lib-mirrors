@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanSquaresHistogramImageToImageMetricTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/12/10 23:17:16 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007-12-27 21:28:05 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -106,7 +106,7 @@ int itkMeanSquaresHistogramImageToImageMetricTest(int , char* [])
     
     // Set up an interpolator.
     typedef itk::LinearInterpolateImageFunction<MovingImageType,
-      double> InterpolatorType;
+      CoordinateRepresentationType> InterpolatorType;
     
     InterpolatorType::Pointer interpolator = InterpolatorType::New();
     interpolator->SetInputImage(movingImage.GetPointer());

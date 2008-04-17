@@ -1,17 +1,17 @@
 /*=========================================================================
 
-Program:   Insight Segmentation & Registration Toolkit
-Module:    $RCSfile: itkGE4ImageIOFactory.cxx,v $
-Language:  C++
-Date:      $Date: 2007/03/22 14:28:49 $
-Version:   $Revision: 1.5 $
+  Program:   Insight Segmentation & Registration Toolkit
+  Module:    $RCSfile: itkGE4ImageIOFactory.cxx,v $
+  Language:  C++
+  Date:      $Date: 2007-12-03 13:13:08 $
+  Version:   $Revision: 1.6 $
 
-Copyright (c) Insight Software Consortium. All rights reserved.
-See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+  Copyright (c) Insight Software Consortium. All rights reserved.
+  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+     PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 #include "itkGE4ImageIOFactory.h"

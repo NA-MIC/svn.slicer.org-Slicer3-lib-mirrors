@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSimpleDataObjectDecorator.txx,v $
   Language:  C++
-  Date:      $Date: 2004/03/18 19:24:08 $
+  Date:      $Date: 2004-03-18 19:24:08 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

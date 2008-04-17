@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGetAverageSliceImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2005/12/03 17:12:13 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-10-05 10:30:47 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -39,6 +39,8 @@ namespace itk
  * This class is parameterized over the type of the input image and
  * the type of the output image.
  * 
+ * \sa AccumulateImageFilter
+ *
  * \ingroup   IntensityImageFilters     Singlethreaded
  */
 template <class TInputImage, class TOutputImage>

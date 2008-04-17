@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNumericTraitsTensorPixel.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/19 22:32:46 $
+  Date:      $Date: 2007-09-19 22:32:46 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

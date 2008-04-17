@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMRIBiasFieldCorrectionFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:54 $
+  Date:      $Date: 2006-03-19 04:36:54 $
   Version:   $Revision: 1.36 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

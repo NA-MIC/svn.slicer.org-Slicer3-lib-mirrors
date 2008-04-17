@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFastMarchingImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/01/11 19:43:30 $
-  Version:   $Revision: 1.49 $
+  Date:      $Date: 2008-01-18 20:07:32 $
+  Version:   $Revision: 1.50 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -58,7 +58,6 @@ FastMarchingImageFilter<TLevelSet,TSpeedImage>
   m_InverseSpeed = -1.0;
   m_LabelImage = LabelImageType::New();
 
-  typedef typename LevelSetImageType::PixelType PixelType;
   m_LargeValue    = static_cast<PixelType>( NumericTraits<PixelType>::max() / 2.0 );
   m_StoppingValue = static_cast<double>( m_LargeValue );
   m_CollectPoints = false;

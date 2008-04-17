@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: PointSetToAdaptor.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/21 19:50:19 $
+  Date:      $Date: 2005-11-21 19:50:19 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

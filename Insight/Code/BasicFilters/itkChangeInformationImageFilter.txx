@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkChangeInformationImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/08/01 19:16:17 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007-11-21 14:06:50 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -19,6 +19,7 @@
 
 #include "itkChangeInformationImageFilter.h"
 #include "itkImageRegionIterator.h"
+#include "itkContinuousIndex.h"
 #include "itkObjectFactory.h"
 
 namespace itk
@@ -134,11 +135,22 @@ ChangeInformationImageFilter<TInputImage>
     }
 
   // Center the image by changing its origin
+  // The center of the image is computed using the index to point
+  // transformation. This ensures that the computation will work for
+  // both images and oriented images.
   if (m_CenterImage)  
     {
+    typename TInputImage::PointType centerPoint;
+    ContinuousIndex<double,ImageDimension> centerIndex;
+
     for (i = 0; i < ImageDimension; i++)
       {
-      origin[i] = -output->GetSpacing()[i] * static_cast<double>(outputSize[i] - 1) / 2.0;
+      centerIndex[i] = static_cast<double>((outputSize[i]-1)/2.0);
+      }    
+    output->TransformContinuousIndexToPhysicalPoint(centerIndex, centerPoint);
+    for (i = 0; i < ImageDimension; i++)
+      {
+      origin[i] = output->GetOrigin()[i] - centerPoint[i];
       }
     output->SetOrigin(origin);
     }

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkIndex.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/27 12:47:59 $
-  Version:   $Revision: 1.53 $
+  Date:      $Date: 2008-03-27 18:05:54 $
+  Version:   $Revision: 1.58 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -20,6 +20,7 @@
 #include "itkMacro.h"
 #include "itkOffset.h"
 #include "itkSize.h"
+#include "itkFixedArray.h"
 
 #include <memory>
 
@@ -259,6 +260,52 @@ public:
    *    Index<3> index = {5, 2, 7}; */
   IndexValueType m_Index[VIndexDimension];
   
+// The Windows implementaton of vnl_math_rnd() does not round the
+// same way as other versions. It has an assembly "fast" implementation
+// but with the drawback of rounding to the closest even number.
+// See: http://www.musicdsp.org/showone.php?id=170
+// For example 0.5 is rounded down to 0.0.
+// This conditional code replaces the standard vnl implementation that uses
+// assembler code. The code below will be slower for windows but will
+// produce consistent results. This can be removed once vnl_math_rnd is
+// fixed in VXL.
+#if (defined (VCL_VC) && !defined(__GCCXML__)) || (defined(_MSC_VER) && (_MSC_VER <= 1310))
+#define vnl_math_rnd(x) ((x>=0.0)?(int)(x + 0.5):(int)(x - 0.5))
+#endif
+  /** Copy values from a FixedArray by rounding each one of the components */
+  template <class TCoordRep>
+  inline void CopyWithRound( const FixedArray<TCoordRep,VIndexDimension> & point )
+    {
+#ifdef ITK_USE_TEMPLATE_META_PROGRAMMING_LOOP_UNROLLING
+    itkFoorLoopRoundingAndAssignmentMacro(IndexType,ContinuousIndexType,IndexValueType,m_Index,point,VIndexDimension);
+#else
+    for(unsigned int i=0;i < VIndexDimension; ++i)
+      {
+      m_Index[i] = static_cast< IndexValueType>( vnl_math_rnd( point[i] ) );
+      }
+#endif
+    }
+#if (defined (VCL_VC) && !defined(__GCCXML__)) || (defined(_MSC_VER) && (_MSC_VER <= 1310))
+#undef vnl_math_rnd
+#endif
+
+  /** Copy values from a FixedArray by casting each one of the components */
+  template <class TCoordRep>
+  inline void CopyWithCast( const FixedArray<TCoordRep,VIndexDimension> & point )
+    {
+    for(unsigned int i=0;i < VIndexDimension; ++i)
+      {
+      m_Index[i] = static_cast< IndexValueType>( point[i] );
+      }
+    }
+
+// force gccxml to find the constructors found before the internal upgrade to gcc 4.2
+#if defined(CABLE_CONFIGURATION)
+  Index(); //purposely not implemented
+  Index(const Self&); //purposely not implemented
+  void operator=(const Self&); //purposely not implemented
+#endif
+
 };
 
 namespace Functor

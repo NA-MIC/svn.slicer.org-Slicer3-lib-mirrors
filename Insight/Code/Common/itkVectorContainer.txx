@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorContainer.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 18:01:41 $
-  Version:   $Revision: 1.42 $
+  Date:      $Date: 2008-01-07 13:33:59 $
+  Version:   $Revision: 1.43 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -286,9 +286,9 @@ VectorContainer< TElementIdentifier , TElement >
 template <typename TElementIdentifier, typename TElement>
 void
 VectorContainer< TElementIdentifier , TElement >
-::Reserve(ElementIdentifier size)
+::Reserve(ElementIdentifier sz)
 {
-  this->CreateIndex(size-1);
+  this->CreateIndex(sz-1);
 }
 
 

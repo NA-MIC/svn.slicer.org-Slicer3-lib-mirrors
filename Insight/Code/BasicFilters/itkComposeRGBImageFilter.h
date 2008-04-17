@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkComposeRGBImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/01/23 17:55:47 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007-09-27 11:36:40 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -88,6 +88,10 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
   
+  /** Runtime information support. */
+  itkTypeMacro(ComposeRGBImageFilter, 
+               TernaryFunctorImageFilter);
+
 protected:
   ComposeRGBImageFilter() {}
   virtual ~ComposeRGBImageFilter() {}

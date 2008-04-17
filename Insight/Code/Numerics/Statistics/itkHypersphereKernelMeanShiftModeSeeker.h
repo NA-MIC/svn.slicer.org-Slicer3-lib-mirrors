@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHypersphereKernelMeanShiftModeSeeker.h,v $
   Language:  C++
-  Date:      $Date: 2005/07/26 15:54:57 $
+  Date:      $Date: 2005-07-26 15:54:57 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

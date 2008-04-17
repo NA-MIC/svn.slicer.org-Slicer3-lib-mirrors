@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   ModUle:    $RCSfile: itkSparseFieldLayer.txx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:56 $
+  Date:      $Date: 2003-09-10 14:28:56 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

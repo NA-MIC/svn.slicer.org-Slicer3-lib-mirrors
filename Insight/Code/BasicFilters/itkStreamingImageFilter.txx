@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkStreamingImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:31 $
+  Date:      $Date: 2004-12-21 22:47:31 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

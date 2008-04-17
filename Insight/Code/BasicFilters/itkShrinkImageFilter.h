@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkShrinkImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/22 16:26:45 $
+  Date:      $Date: 2006-03-22 16:26:45 $
   Version:   $Revision: 1.42 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

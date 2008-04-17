@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSparseFieldLevelSetImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/23 04:40:31 $
-  Version:   $Revision: 1.24 $
+  Date:      $Date: 2008-03-03 13:58:48 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -235,6 +235,8 @@ public:
 
   /**Typedefs from the superclass */
   typedef typename Superclass::TimeStepType TimeStepType;
+  typedef typename Superclass::RadiusType RadiusType;
+  typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
   
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -415,7 +417,7 @@ protected:
   
   /** The constant gradient to maintain between isosurfaces in the
       sparse-field of the level-set image.  This value defaults to 1.0 */
-  static double m_ConstantGradientValue;
+  double m_ConstantGradientValue;
 
   /** Multiplicative identity of the ValueType. */
   static ValueType m_ValueOne;

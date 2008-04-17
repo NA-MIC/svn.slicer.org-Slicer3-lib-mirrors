@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLabelToRGBImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/02/25 14:28:08 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2007-10-22 12:54:03 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -31,7 +31,7 @@ LabelToRGBImageFilter<TLabelImage, TOutputImage>
 ::LabelToRGBImageFilter()
 {
   m_BackgroundValue = NumericTraits<LabelPixelType>::Zero;
-  m_UseBackground = false;
+  m_BackgroundColor.Fill( NumericTraits<OutputPixelValueType>::Zero );
 }
 
 template <class TLabelImage, class TOutputImage>
@@ -40,7 +40,7 @@ LabelToRGBImageFilter<TLabelImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   this->GetFunctor().SetBackgroundValue(m_BackgroundValue);
-  this->GetFunctor().SetUseBackground(m_UseBackground);
+  this->GetFunctor().SetBackgroundColor(m_BackgroundColor);
 }
 
 /**
@@ -56,8 +56,8 @@ LabelToRGBImageFilter<TLabelImage, TOutputImage>
   os << indent << "BackgroundValue: "
      << static_cast<typename NumericTraits<LabelPixelType>::PrintType>(m_BackgroundValue)
      << std::endl
-     << indent << "UseBackground: "
-     << static_cast<typename NumericTraits<bool>::PrintType>(m_UseBackground)
+     << indent << "ColorBackground: "
+     << static_cast<typename NumericTraits<OutputPixelType>::PrintType>(m_BackgroundColor)
      << std::endl;
 }
 

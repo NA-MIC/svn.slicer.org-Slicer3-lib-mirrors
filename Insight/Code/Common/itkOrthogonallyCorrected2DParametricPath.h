@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOrthogonallyCorrected2DParametricPath.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:19 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007-12-23 17:59:29 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -74,6 +74,7 @@ public:
   typedef VectorContainer<unsigned, double>     OrthogonalCorrectionTableType;
   typedef OrthogonalCorrectionTableType::Pointer OrthogonalCorrectionTablePointer;
 
+  typedef OrthogonalCorrectionTableType::VectorContainerSizeType OrthogonalCorrectionTableSizeType;
 
   /** Return the location of the parametric path at the specified location. */
   virtual OutputType Evaluate( const InputType & input ) const;

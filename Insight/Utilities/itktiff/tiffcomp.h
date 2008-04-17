@@ -1,4 +1,4 @@
-/* $Header: /cvsroot/Insight/Insight/Utilities/itktiff/tiffcomp.h,v 1.1 2006/09/28 15:30:39 king Exp $ */
+/* $Header: /cvsroot/Insight/Insight/Utilities/itktiff/tiffcomp.h,v 1.1 2006-09-28 15:30:39 king Exp $ */
 
 /*
  * Copyright (c) 1990-1997 Sam Leffler

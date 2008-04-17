@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImportImageContainer.txx,v $
   Language:  C++
-  Date:      $Date: 2006/04/13 17:57:25 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2007-12-12 15:49:13 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -70,6 +70,11 @@ ImportImageContainer< TElementIdentifier , TElement >
       m_ImportPointer = temp;
       m_ContainerManageMemory = true;
       m_Capacity = size;
+      m_Size = size;
+      this->Modified();
+      }
+    else
+      {
       m_Size = size;
       this->Modified();
       }
@@ -199,7 +204,7 @@ ImportImageContainer< TElementIdentifier , TElement >
 {
   Superclass::PrintSelf(os,indent);
 
-  os << indent << "Pointer: " << &m_ImportPointer << std::endl;
+  os << indent << "Pointer: " << static_cast<void *>(m_ImportPointer) << std::endl;
   os << indent << "Container manages memory: "
      << (m_ContainerManageMemory ? "true" : "false") << std::endl;
   os << indent << "Size: " << m_Size << std::endl;

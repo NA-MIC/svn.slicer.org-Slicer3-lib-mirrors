@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLineIterator.txx,v $
   Language:  C++
-  Date:      $Date: 2005/06/06 14:53:24 $
+  Date:      $Date: 2005-06-06 14:53:24 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

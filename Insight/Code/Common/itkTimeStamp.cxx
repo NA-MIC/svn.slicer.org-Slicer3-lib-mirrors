@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTimeStamp.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/02 16:26:37 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007-11-21 20:36:52 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -19,6 +19,18 @@
 =========================================================================*/
 #include "itkTimeStamp.h"
 #include "itkFastMutexLock.h"
+
+// OSAtomic.h optimizations only used in 10.5 and later
+#if defined(__APPLE__)
+  #include <AvailabilityMacros.h>
+  #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050
+    #include <libkern/OSAtomic.h>
+  #endif
+#endif
+
+#if defined(_WIN32)
+#include "itkWindows.h"
+#endif
 
 namespace itk
 {
@@ -41,6 +53,27 @@ void
 TimeStamp
 ::Modified()
 {
+// Windows optimization
+#if defined(WIN32) || defined(_WIN32)
+  static LONG itkTimeStampTime = 0;
+  m_ModifiedTime = (unsigned long)InterlockedIncrement(&itkTimeStampTime);
+
+// Mac optimization
+#elif defined(__APPLE__) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1050)
+ #if __LP64__
+  // "m_ModifiedTime" is "unsigned long", a type that changess sizes
+  // depending on architecture.  The atomic increment is safe, since it
+  // operates on a variable of the exact type needed.  The cast does not
+  // change the size, but does change signedness, which is not ideal.
+  static volatile int64_t itkTimeStampTime = 0;
+  m_ModifiedTime = (unsigned long)OSAtomicIncrement64Barrier(&itkTimeStampTime);
+ #else
+  static volatile int32_t itkTimeStampTime = 0;
+  m_ModifiedTime = (unsigned long)OSAtomicIncrement32Barrier(&itkTimeStampTime);
+ #endif
+
+// General case
+#else
   /**
    * Initialize static member
    */
@@ -52,6 +85,9 @@ TimeStamp
   TimeStampMutex.Lock();
   m_ModifiedTime = ++itkTimeStampTime;
   TimeStampMutex.Unlock();
+#endif
+
+
 }
 
 } // end namespace itk

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDiffusionTensor3D.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:58 $
+  Date:      $Date: 2006-03-19 04:36:58 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

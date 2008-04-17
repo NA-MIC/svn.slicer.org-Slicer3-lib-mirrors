@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMElement2DStrainTest.cxx,v $
   Language:  C++
-  Date: $Date: 2003/12/12 14:58:00 $
+  Date: $Date: 2003-12-12 14:58:00 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

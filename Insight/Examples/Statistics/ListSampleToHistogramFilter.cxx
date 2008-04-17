@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ListSampleToHistogramFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/07/26 15:55:10 $
+  Date:      $Date: 2005-07-26 15:55:10 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

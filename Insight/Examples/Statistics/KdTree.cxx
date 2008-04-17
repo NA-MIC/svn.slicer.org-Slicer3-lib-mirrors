@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: KdTree.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/19 16:31:51 $
+  Date:      $Date: 2005-11-19 16:31:51 $
   Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

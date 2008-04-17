@@ -3,8 +3,8 @@
   Program:   MetaIO
   Module:    $RCSfile: metaCommand.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/30 19:49:24 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2008-04-09 01:44:28 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -41,7 +41,7 @@ class METAIO_EXPORT MetaCommand
 public:
 
   typedef enum {DATA_NONE,DATA_IN,DATA_OUT} DataEnumType;
-  typedef enum {INT,FLOAT,CHAR,STRING,LIST,FLAG,BOOL} TypeEnumType;
+  typedef enum {INT,FLOAT,CHAR,STRING,LIST,FLAG,BOOL,IMAGE,FILE} TypeEnumType;
 
   struct Field{
     METAIO_STL::string  name;
@@ -60,6 +60,7 @@ public:
     METAIO_STL::string        description;
     METAIO_STL::string        tag;
     METAIO_STL::string        longtag;
+    METAIO_STL::string        label;
     METAIO_STL::vector<Field> fields;
     bool                      required;
     bool                      userDefined;
@@ -126,6 +127,10 @@ public:
   bool SetOptionLongTag(METAIO_STL::string optionName,
                         METAIO_STL::string longTag);
 
+  /** Set the label for the option */
+  bool SetOptionLabel(METAIO_STL::string optionName,
+                      METAIO_STL::string label);
+
   /** Set the group for a field or an option
    *  If the group doesn't exist it is automatically created. */
   bool SetParameterGroup(METAIO_STL::string optionName,
@@ -169,7 +174,7 @@ public:
   void ListOptions();
   void ListOptionsXML();
   void ListOptionsSlicerXML();
-  void ListOptionsSimplified();
+  void ListOptionsSimplified(bool extended=true);
 
   Option * GetOptionByMinusTag(METAIO_STL::string minusTag);
   Option * GetOptionByTag(METAIO_STL::string minusTag);
@@ -266,6 +271,13 @@ public:
 
   /** Disable the deprecated warnings */
   void DisableDeprecatedWarnings();
+  
+  /** Load arguments from XML file. 
+   *  The second argument when set to true allows
+   *  external classes to use this function to parse XML
+   *  arguments. */
+  bool LoadArgumentsFromXML(const char* filename,
+                            bool createMissingArguments=false);
 
 protected:
 
@@ -288,6 +300,14 @@ protected:
 private:
 
   void         (* m_HelpCallBack)(void);
+
+  /** Set the value of an option or a field
+   *  This is used when importing command line arguments
+   *  from XML */
+  bool SetOptionValue(const char* optionName,
+                      const char* name, 
+                      const char* value,
+                      bool createMissingArgument=false);
 
   OptionVector m_OptionVector;
   OptionVector m_ParsedOptionVector; // We store the parsed option in

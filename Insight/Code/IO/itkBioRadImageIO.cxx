@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBioRadImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/27 13:46:29 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-01-24 21:02:07 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -204,7 +204,7 @@ void BioRadImageIO::Read(void* buffer)
     {
     ByteSwapper<unsigned short>::SwapRangeFromSystemToLittleEndian(
       reinterpret_cast<unsigned short *>(buffer),
-      this->GetImageSizeInComponents() );
+      static_cast<unsigned long>( this->GetImageSizeInComponents() ) );
     }
 
   //closing file:
@@ -388,7 +388,7 @@ void BioRadImageIO::Write(const void* buffer)
   ByteSwapper<unsigned short>::SwapRangeFromSystemToLittleEndian(
     reinterpret_cast<unsigned short*>(p), BIORAD_HEADER_LENGTH/2);
   // To be able to deduce pixel spacing:
-  float mag_factor = m_Spacing[0];
+  float mag_factor = static_cast<float>( m_Spacing[0] );
   ByteSwapper<float>::SwapFromSystemToLittleEndian(&mag_factor);
   memcpy(&header.mag_factor, (char*)(&mag_factor), 4);
   // Set the filename
@@ -405,8 +405,8 @@ void BioRadImageIO::Write(const void* buffer)
   file.write((char*)p, BIORAD_HEADER_LENGTH);
 
   //preparation for writing buffer:
-  const unsigned long numberOfBytes      = this->GetImageSizeInBytes();
-  const unsigned long numberOfComponents = this->GetImageSizeInComponents();
+  const unsigned long numberOfBytes      = static_cast< unsigned long >( this->GetImageSizeInBytes() );
+  const unsigned long numberOfComponents = static_cast< unsigned long >( this->GetImageSizeInComponents() );
 
   char *tempmemory = new char[numberOfBytes];
   memcpy(tempmemory,buffer,numberOfBytes);

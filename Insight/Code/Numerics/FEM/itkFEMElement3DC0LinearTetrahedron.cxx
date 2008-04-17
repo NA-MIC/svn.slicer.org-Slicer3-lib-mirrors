@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMElement3DC0LinearTetrahedron.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:37:20 $
+  Date:      $Date: 2006-03-19 04:37:20 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

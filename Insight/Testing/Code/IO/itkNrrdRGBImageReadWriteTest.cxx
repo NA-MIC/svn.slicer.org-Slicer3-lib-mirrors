@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNrrdRGBImageReadWriteTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/05 23:19:37 $
+  Date:      $Date: 2005-08-05 23:19:37 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

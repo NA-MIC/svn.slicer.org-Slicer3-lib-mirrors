@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMutualInformationImageToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2006/08/02 11:56:03 $
-  Version:   $Revision: 1.40 $
+  Date:      $Date: 2007-12-20 22:17:30 $
+  Version:   $Revision: 1.43 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -224,8 +224,12 @@ private:
   typename KernelFunction::Pointer    m_KernelFunction;
   double                              m_MinProbability;
 
-  /** Uniformly select samples from the fixed image buffer. */
-  void SampleFixedImageDomain( SpatialSampleContainer& samples ) const;
+  /** Uniformly select samples from the fixed image buffer.
+   * \warning Note that this method has a different signature than the one in
+   * the base OptImageToImageMetric and therefore they are not intended to
+   * provide polymorphism. That is, this function is not overriding the one in
+   * the base class. */
+  virtual void SampleFixedImageDomain( SpatialSampleContainer& samples ) const;
 
   /**
    * Calculate the intensity derivatives at a point
@@ -252,4 +256,5 @@ private:
 #endif
 
 #endif
+
 

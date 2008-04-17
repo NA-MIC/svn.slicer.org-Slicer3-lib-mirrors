@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTIFFImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/04 15:19:07 $
-  Version:   $Revision: 1.53 $
+  Date:      $Date: 2008-03-27 20:31:12 $
+  Version:   $Revision: 1.60 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,6 +21,7 @@
 #include "itkTIFFImageIO.h"
 #include "itkRGBPixel.h"
 #include "itkRGBAPixel.h"
+#include <itksys/SystemTools.hxx>
 #include <stdio.h>
 
 #include <sys/stat.h>
@@ -51,7 +52,7 @@ public:
   bool              m_HasValidPhotometricInterpretation;
   unsigned short    m_PlanarConfig;
   unsigned short    m_Orientation;
-  unsigned long int m_TileDepth;
+  uint32            m_TileDepth;
   unsigned int      m_TileRows;
   unsigned int      m_TileColumns;
   unsigned int      m_TileWidth;
@@ -195,7 +196,7 @@ int TIFFReaderInternal::Initialize()
 
       for(unsigned int page = 0;page<this->m_NumberOfPages;page++)
         {
-        long subfiletype = 6;
+        int32 subfiletype = 6;
         if(TIFFGetField(this->m_Image, TIFFTAG_SUBFILETYPE, &subfiletype))
           {
           if(subfiletype == 0)
@@ -329,8 +330,8 @@ void TIFFImageIO::ReadTwoSamplesPerPixelImage( void *out,
       }
     else if(m_InternalImage->m_PlanarConfig == PLANARCONFIG_SEPARATE)
       {
-      unsigned long s;
-      unsigned long nsamples = 0;
+      uint32 s;
+      uint32 nsamples = 0;
       TIFFGetField(m_InternalImage->m_Image, TIFFTAG_SAMPLESPERPIXEL, &nsamples);
       for (s = 0; s < nsamples; s++)
         {
@@ -401,7 +402,7 @@ void TIFFImageIO::ReadTwoSamplesPerPixelImage( void *out,
       }
     else if(m_InternalImage->m_PlanarConfig == PLANARCONFIG_SEPARATE)
       {
-      unsigned long s, nsamples;
+      uint32 s, nsamples;
       TIFFGetField(m_InternalImage->m_Image, TIFFTAG_SAMPLESPERPIXEL, &nsamples);
       for (s = 0; s < nsamples; s++)
         {
@@ -504,8 +505,8 @@ void TIFFImageIO::ReadGenericImage( void *out,
       }
     else if(m_InternalImage->m_PlanarConfig == PLANARCONFIG_SEPARATE)
       {
-      unsigned long s;
-      unsigned long nsamples;
+      uint32 s;
+      uint32 nsamples;
       TIFFGetField(m_InternalImage->m_Image, TIFFTAG_SAMPLESPERPIXEL, &nsamples);
       for (s = 0; s < nsamples; s++)
         {
@@ -573,8 +574,8 @@ void TIFFImageIO::ReadGenericImage( void *out,
       }
     else if(m_InternalImage->m_PlanarConfig == PLANARCONFIG_SEPARATE)
       {
-      unsigned long s;
-      unsigned long nsamples;
+      uint32 s;
+      uint32 nsamples;
       TIFFGetField(m_InternalImage->m_Image, TIFFTAG_SAMPLESPERPIXEL, &nsamples);
       for (s = 0; s < nsamples; s++)
         {
@@ -643,7 +644,7 @@ void TIFFImageIO::ReadGenericImage( void *out,
       }
     else if(m_InternalImage->m_PlanarConfig == PLANARCONFIG_SEPARATE)
       {
-      unsigned long s, nsamples;
+      uint32 s, nsamples;
       TIFFGetField(m_InternalImage->m_Image, TIFFTAG_SAMPLESPERPIXEL, &nsamples);
       for (s = 0; s < nsamples; s++)
         {
@@ -711,7 +712,7 @@ void TIFFImageIO::ReadGenericImage( void *out,
       }
     else if(m_InternalImage->m_PlanarConfig == PLANARCONFIG_SEPARATE)
       {
-      unsigned long s, nsamples;
+      uint32 s, nsamples;
       TIFFGetField(m_InternalImage->m_Image, TIFFTAG_SAMPLESPERPIXEL, &nsamples);
       for (s = 0; s < nsamples; s++)
         {
@@ -795,16 +796,36 @@ int TIFFImageIO::EvaluateImageAt( void* out, void* in )
       increment = 1;
       break;
     case TIFFImageIO::RGB_:
-      red   = *(source);
-      green = *(source+1);
-      blue  = *(source+2);
-      *(image)   = red;
-      *(image+1) = green;
-      *(image+2) = blue;
-      if ( m_InternalImage->m_SamplesPerPixel == 4 )
+      if(m_ComponentType == USHORT)
         {
-        alpha = *(source+3);
-        *(image+3) = 255-alpha;
+        unsigned short *image_us = (unsigned short*)out;
+        unsigned short *source_us = (unsigned short*)in;
+
+        red   = *(source_us);
+        green = *(source_us+1);
+        blue  = *(source_us+2);
+        *(image_us)   = red;
+        *(image_us+1) = green;
+        *(image_us+2) = blue;
+        if ( m_InternalImage->m_SamplesPerPixel == 4 )
+          {
+          alpha = *(source_us+3);
+          *(image_us+3) = 65535-alpha;
+          }
+        }
+      else
+        {
+        red   = *(source);
+        green = *(source+1);
+        blue  = *(source+2);
+        *(image)   = red;
+        *(image+1) = green;
+        *(image+2) = blue;
+        if ( m_InternalImage->m_SamplesPerPixel == 4 )
+          {
+          alpha = *(source+3);
+          *(image+3) = 255-alpha;
+          }
         }
       increment = m_InternalImage->m_SamplesPerPixel;
       break;
@@ -896,7 +917,7 @@ void TIFFImageIO::GetColor( int index, unsigned short *red,
     case 8: case 16:
         break;
     default:
-      itkExceptionMacro( <<  "Sorry, can not image with "
+      itkExceptionMacro( <<  "Sorry, can not handle image with "
                      << m_InternalImage->m_BitsPerSample
                      << "-bit samples" );
         return;
@@ -1012,7 +1033,7 @@ void TIFFImageIO::ReadVolume(void* buffer)
     {
     if(m_InternalImage->m_SubFiles>0)
       {
-      long subfiletype = 6;
+      int32 subfiletype = 6;
       if(TIFFGetField(m_InternalImage->m_Image, TIFFTAG_SUBFILETYPE, &subfiletype))
         {
         if(subfiletype != 0)
@@ -1257,12 +1278,14 @@ void TIFFImageIO::Read(void* buffer)
   if(m_InternalImage->m_NumberOfPages>0 && this->GetIORegion().GetImageDimension()>2)
     {
     this->ReadVolume(buffer);
+    m_InternalImage->Clean();
     return;
     }
 
   if(m_InternalImage->m_NumberOfTiles>0 && this->GetIORegion().GetImageDimension()>2)
     {
     this->ReadTiles(buffer);
+    m_InternalImage->Clean();
     return;
     }
 
@@ -1285,6 +1308,7 @@ void TIFFImageIO::Read(void* buffer)
         delete [] tempImage;
         }
 
+      m_InternalImage->Clean();
       return;
       }
     int xx, yy;
@@ -1315,6 +1339,7 @@ void TIFFImageIO::Read(void* buffer)
       {
       delete [] tempImage;
       }
+    m_InternalImage->Clean();
     return;
     }
 
@@ -1331,6 +1356,7 @@ void TIFFImageIO::Read(void* buffer)
     default:
       return;
     }
+  m_InternalImage->Clean();
 }
 
 
@@ -1609,9 +1635,6 @@ public:
     return out->tellp();
     }
 
-  // File will be closed by the superclass
-  static int TIFFClose(thandle_t) { return 1; }
-
   static toff_t TIFFSize(thandle_t fd)
     {
     std::ostream *out = reinterpret_cast<std::ostream *>(fd);
@@ -1664,8 +1687,11 @@ void TIFFImageIO::InternalWrite(const void* buffer)
   TIFF *tif = TIFFOpen(m_FileName.c_str(), "w");
   if ( !tif )
     {
-    itkDebugMacro( << "Returning" );
-    return;
+    itkExceptionMacro("Error while trying to open file for writing: "
+                      <<this->GetFileName()
+                      << std::endl
+                      << "Reason: "
+                      << itksys::SystemTools::GetLastSystemError());
     }
 
   if(this->GetComponentType() == SHORT

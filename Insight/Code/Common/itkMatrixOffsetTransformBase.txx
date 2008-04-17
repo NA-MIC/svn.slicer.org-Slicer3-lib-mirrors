@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMatrixOffsetTransformBase.txx,v $
   Language:  C++
-  Date:      $Date: 2007/02/05 12:53:46 $
+  Date:      $Date: 2007-02-05 12:53:46 $
   Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
 #   Program:   Insight Segmentation & Registration Toolkit
 #   Module:    $RCSfile: BuildHeaderTest.tcl,v $
 #   Language:  Tcl
-#   Date:      $Date: 2006/09/25 21:12:48 $
+#   Date:      $Date: 2006-09-25 21:12:48 $
 #   Version:   $Revision: 1.8 $
 # 
 

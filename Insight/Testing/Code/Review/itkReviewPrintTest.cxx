@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkReviewPrintTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 13:10:57 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2008-02-08 04:46:00 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -19,18 +19,10 @@
 #endif
 
 #include "itkContourExtractor2DImageFilter.h"
+#include "itkLabelToRGBImageFilter.h"
 #include "itkLabelOverlayImageFilter.h"
 #include "itkRGBPixel.h"
 #include "itkQuadEdgeMesh.h"
-
-#include "itkMinimumProjectionImageFilter.h"
-#include "itkBinaryProjectionImageFilter.h"
-#include "itkBinaryThresholdProjectionImageFilter.h"
-#include "itkMedianProjectionImageFilter.h"
-#include "itkSumProjectionImageFilter.h"
-#include "itkStandardDeviationProjectionImageFilter.h"
-#include "itkMeanProjectionImageFilter.h"
-#include "itkMaximumProjectionImageFilter.h"
 
 #include "itkValuedRegionalMinimaImageFilter.h"
 #include "itkValuedRegionalMaximaImageFilter.h"
@@ -73,6 +65,12 @@ int main(int , char* [])
   std:: cout << "-------------ContourExtractor2DImageFilter "
              << ContourExtractor2DImageFilterObj;
 
+  itk::LabelToRGBImageFilter<CharType,RGBImageType>::Pointer
+    LabelToRGBImageFilterObj =
+    itk::LabelToRGBImageFilter<CharType,RGBImageType>::New();
+  std:: cout << "-------------LabelToRGBImageFilter "
+             << LabelToRGBImageFilterObj;
+
   itk::LabelOverlayImageFilter<InputType,CharType,RGBImageType>::Pointer
     LabelOverlayImageFilterObj =
     itk::LabelOverlayImageFilter<InputType,CharType,RGBImageType>::New();
@@ -82,54 +80,6 @@ int main(int , char* [])
   QuadEdgeMeshType::Pointer QuadEdgeMeshObj = QuadEdgeMeshType::New();
   std:: cout << "-------------QuadEdgeMesh "
              << QuadEdgeMeshObj;
-
-  itk::MinimumProjectionImageFilter<InputType,InputType>::Pointer
-    MinimumProjectionImageFilterObj =
-    itk::MinimumProjectionImageFilter<InputType,InputType>::New();
-  std:: cout << "-------------MinimumProjectionImageFilterObj "
-             << MinimumProjectionImageFilterObj;
-
-  itk::MaximumProjectionImageFilter<InputType,InputType>::Pointer
-    MaximumProjectionImageFilterObj =
-    itk::MaximumProjectionImageFilter<InputType,InputType>::New();
-  std:: cout << "-------------MaximumProjectionImageFilterObj "
-             << MaximumProjectionImageFilterObj;
-
-  itk::MeanProjectionImageFilter<InputType,InputType>::Pointer
-    MeanProjectionImageFilterObj =
-    itk::MeanProjectionImageFilter<InputType,InputType>::New();
-  std:: cout << "-------------MeanProjectionImageFilterObj "
-             << MeanProjectionImageFilterObj;
-
-  itk::MedianProjectionImageFilter<InputType,InputType>::Pointer
-    MedianProjectionImageFilterObj =
-    itk::MedianProjectionImageFilter<InputType,InputType>::New();
-  std:: cout << "-------------MedianProjectionImageFilterObj "
-             << MedianProjectionImageFilterObj;
-
-  itk::SumProjectionImageFilter<InputType,InputType>::Pointer
-    SumProjectionImageFilterObj =
-    itk::SumProjectionImageFilter<InputType,InputType>::New();
-  std:: cout << "-------------SumProjectionImageFilterObj "
-             << SumProjectionImageFilterObj;
-
-  itk::StandardDeviationProjectionImageFilter<InputType,InputType>::Pointer
-    StandardDeviationProjectionImageFilterObj =
-    itk::StandardDeviationProjectionImageFilter<InputType,InputType>::New();
-  std:: cout << "-------------StandardDeviationProjectionImageFilterObj "
-             << StandardDeviationProjectionImageFilterObj;
-
-  itk::BinaryProjectionImageFilter<InputType,InputType>::Pointer
-    BinaryProjectionImageFilterObj =
-    itk::BinaryProjectionImageFilter<InputType,InputType>::New();
-  std:: cout << "-------------BinaryProjectionImageFilterObj "
-             << BinaryProjectionImageFilterObj;
-
-  itk::BinaryThresholdProjectionImageFilter<InputType,InputType>::Pointer
-    BinaryThresholdProjectionImageFilterObj =
-    itk::BinaryThresholdProjectionImageFilter<InputType,InputType>::New();
-  std:: cout << "-------------BinaryThresholdProjectionImageFilterObj "
-             << BinaryThresholdProjectionImageFilterObj;
 
   itk::ValuedRegionalMaximaImageFilter<InputType,InputType>::Pointer
     ValuedRegionalMaximaImageFilterObj =

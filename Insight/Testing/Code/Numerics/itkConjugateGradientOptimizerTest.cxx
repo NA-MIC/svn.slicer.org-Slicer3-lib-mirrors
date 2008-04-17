@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConjugateGradientOptimizerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/10 15:22:47 $
+  Date:      $Date: 2007-09-10 15:22:47 $
   Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

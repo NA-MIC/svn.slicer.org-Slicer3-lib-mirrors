@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanSquaresImageToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 08:37:41 $
-  Version:   $Revision: 1.29 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.31 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,15 @@
 =========================================================================*/
 #ifndef __itkMeanSquaresImageToImageMetric_h
 #define __itkMeanSquaresImageToImageMetric_h
+
+// First make sure that the configuration is available.
+// This line can be removed once the optimized versions
+// gets integrated into the main directories.
+#include "itkConfigure.h"
+
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+#include "itkOptMeanSquaresImageToImageMetric.h"
+#else
 
 #include "itkImageToImageMetric.h"
 #include "itkCovariantVector.h"
@@ -66,6 +75,9 @@ public:
   typedef typename Superclass::TransformParametersType  TransformParametersType;
   typedef typename Superclass::TransformJacobianType    TransformJacobianType;
   typedef typename Superclass::GradientPixelType        GradientPixelType;
+  typedef typename Superclass::GradientImageType        GradientImageType;
+  typedef typename Superclass::InputPointType           InputPointType;
+  typedef typename Superclass::OutputPointType          OutputPointType;
 
   typedef typename Superclass::MeasureType              MeasureType;
   typedef typename Superclass::DerivativeType           DerivativeType;
@@ -118,5 +130,6 @@ private:
 
 #endif
 
+#endif
 
 

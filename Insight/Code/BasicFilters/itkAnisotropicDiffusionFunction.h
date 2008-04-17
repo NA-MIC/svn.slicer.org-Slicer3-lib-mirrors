@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAnisotropicDiffusionFunction.h,v $
   Language:  C++
-  Date:      $Date: 2004/02/20 22:51:00 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-01-18 20:07:32 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -146,12 +146,13 @@ public:
   itkTypeMacro( AnisotropicDiffusionFunction, FiniteDifferenceFunction );
   
   /** Inherit some parameters from the superclass type */
-  typedef typename Superclass::ImageType ImageType;
-  typedef typename Superclass::PixelType PixelType;
-  typedef typename Superclass::RadiusType RadiusType;
+  typedef typename Superclass::ImageType        ImageType;
+  typedef typename Superclass::PixelType        PixelType;
+  typedef typename Superclass::PixelRealType    PixelrealType;
+  typedef typename Superclass::RadiusType       RadiusType;
   typedef typename Superclass::NeighborhoodType NeighborhoodType;
-  typedef typename Superclass::TimeStepType TimeStepType;
-  typedef typename Superclass::FloatOffsetType FloatOffsetType;
+  typedef typename Superclass::TimeStepType     TimeStepType;
+  typedef typename Superclass::FloatOffsetType  FloatOffsetType;
 
   /** Inherit some parameters from the superclass type */
   itkStaticConstMacro(ImageDimension, unsigned int,Superclass::ImageDimension);

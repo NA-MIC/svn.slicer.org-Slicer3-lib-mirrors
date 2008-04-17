@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorInterpolateImageFunctionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 13:00:21 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2008-01-17 15:26:39 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -35,9 +35,6 @@ typedef InterpolatorType::PointType  PointType;
 typedef InterpolatorType::ContinuousIndexType ContinuousIndexType;
 typedef InterpolatorType::OutputType OutputType;
 
-ImageType::SizeType size = { { 20, 40, 80 } };
-double origin [3] = { 0.5,   0.5,   0.5};
-double spacing[3] = { 0.1,   0.05 , 0.025};
 
 
 /**
@@ -164,6 +161,10 @@ int itkVectorInterpolateImageFunctionTest(int, char* [] )
   int flag = 0;
 
   std::cout << "Testing vector image interpolation: " << std::endl;
+
+  ImageType::SizeType size = { { 20, 40, 80 } };
+  double origin [3] = { 0.5,   0.5,   0.5};
+  double spacing[3] = { 0.1,   0.05 , 0.025};
 
   // Create a test image
   ImageType::Pointer image = ImageType::New();

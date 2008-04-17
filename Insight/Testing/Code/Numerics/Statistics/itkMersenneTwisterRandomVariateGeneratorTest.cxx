@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMersenneTwisterRandomVariateGeneratorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/10/06 19:35:15 $
+  Date:      $Date: 2005-10-06 19:35:15 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

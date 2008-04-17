@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCovarianceImageFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/02/06 22:01:55 $
+  Date:      $Date: 2006-02-06 22:01:55 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

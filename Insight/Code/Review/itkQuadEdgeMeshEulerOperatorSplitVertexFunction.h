@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshEulerOperatorSplitVertexFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/02 23:38:12 $
+  Date:      $Date: 2007-08-02 23:38:12 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

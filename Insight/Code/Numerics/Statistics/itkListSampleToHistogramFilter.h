@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkListSampleToHistogramFilter.h,v $
   Language:  C++
-  Date:      $Date: 2003/12/15 01:00:46 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007-09-27 15:45:40 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -27,9 +27,9 @@ namespace itk{
 /** \class ListSampleToHistogramFilter
  *  \brief Imports data from ListSample object to Histogram object
  *
- * Before beginning import process, users should prepare the Histogram object
- * by calling histogram object's Initialize(Size), SetBinMin(dimension, n), 
- * and SetBinMax(dimension, n) methods.
+ * Before beginning import process, users should prepare the Histogram
+ * object by calling histogram object's Initialize(Size),
+ * SetBinMin(dimension, n), and SetBinMax(dimension, n) methods.
  *
  * To do: selective importing for subset of feature vector dimensions
  */

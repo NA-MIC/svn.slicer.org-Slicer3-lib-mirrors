@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLinearInterpolateImageFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:09 $
-  Version:   $Revision: 1.31 $
+  Date:      $Date: 2008-01-06 23:12:49 $
+  Version:   $Revision: 1.33 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,15 @@
 =========================================================================*/
 #ifndef __itkLinearInterpolateImageFunction_h
 #define __itkLinearInterpolateImageFunction_h
+
+// First make sure that the configuration is available.
+// This line can be removed once the optimized versions
+// gets integrated into the main directories.
+#include "itkConfigure.h"
+
+#if defined( ITK_USE_OPTIMIZED_REGISTRATION_METHODS ) && defined( LINEAR_INTERPOLATOR_FIXED )
+#include "itkOptLinearInterpolateImageFunction.h"
+#else
 
 #include "itkInterpolateImageFunction.h"
 
@@ -114,6 +123,8 @@ private:
 
 #if ITK_TEMPLATE_TXX
 # include "itkLinearInterpolateImageFunction.txx"
+#endif
+
 #endif
 
 #endif

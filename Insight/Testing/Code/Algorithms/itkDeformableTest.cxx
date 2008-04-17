@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDeformableTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/08/05 23:55:05 $
+  Date:      $Date: 2006-08-05 23:55:05 $
   Version:   $Revision: 1.55 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

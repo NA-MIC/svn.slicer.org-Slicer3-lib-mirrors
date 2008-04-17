@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDecoratorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/04/26 12:14:52 $
+  Date:      $Date: 2007-04-26 12:14:52 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

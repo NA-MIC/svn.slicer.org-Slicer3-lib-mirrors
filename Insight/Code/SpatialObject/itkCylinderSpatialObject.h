@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCylinderSpatialObject.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:21 $
+  Date:      $Date: 2007-01-28 19:24:21 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

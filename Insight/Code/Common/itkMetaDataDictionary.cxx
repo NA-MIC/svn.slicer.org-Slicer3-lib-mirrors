@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaDataDictionary.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/04/04 18:25:20 $
+  Date:      $Date: 2006-04-04 18:25:20 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

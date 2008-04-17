@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itk_hash_map.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/16 01:31:23 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007-11-01 19:25:09 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -102,6 +102,17 @@ namespace itk
     typedef typename super::const_reverse_iterator  const_reverse_iterator;      \
     typedef typename super::reverse_iterator reverse_iterator;
 
+template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
+class hash_map;
+template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
+class hash_multimap;
+
+template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
+bool operator==(const hash_map<Key, T, HashFcn, EqualKey, Alloc>&,
+                const hash_map<Key, T, HashFcn, EqualKey, Alloc>&);
+template <class Key, class T, class HashFcn, class EqualKey, class Alloc>
+bool operator==(const hash_multimap<Key, T, HashFcn, EqualKey, Alloc>&,
+                const hash_multimap<Key, T, HashFcn, EqualKey, Alloc>&);
 
 /** \brief Replacement for STL hash map because some systems do not support it,
  * or support it incorrectly.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSpatialOrientation.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/29 16:30:20 $
+  Date:      $Date: 2007-04-29 16:30:20 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

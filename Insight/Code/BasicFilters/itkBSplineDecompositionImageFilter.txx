@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineDecompositionImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/08/01 19:16:16 $
+  Date:      $Date: 2006-08-01 19:16:16 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

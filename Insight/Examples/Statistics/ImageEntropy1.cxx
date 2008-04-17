@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageEntropy1.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/01/24 16:03:48 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-03-25 17:13:07 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -80,7 +80,7 @@ int main( int argc, char * argv [] )
 
 // Software Guide : BeginCodeSnippet
   typedef unsigned char       PixelType;
-  const   unsigned int        Dimension = 2;
+  const   unsigned int        Dimension = 3;
 
   typedef itk::Image< PixelType, Dimension > ImageType;
 // Software Guide : EndCodeSnippet

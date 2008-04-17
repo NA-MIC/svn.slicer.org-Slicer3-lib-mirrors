@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGE4ImageIO.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 18:39:27 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2007-12-03 13:13:08 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -35,10 +35,6 @@
 #define __itkGE4ImageIO_h
 
 #include "itkIPLCommonImageIO.h"
-#include "itkImageIOBase.h"
-#include "itkGEImageHeader.h"
-
-#include <fstream>
 
 namespace itk
 {
@@ -116,7 +112,7 @@ protected:
   ~GE4ImageIO();
   // Implemented in Superclass
   // void PrintSelf(std::ostream& os, Indent indent) const;
-  virtual struct GEImageHeader *ReadHeader(const char *FileNameToRead);
+  virtual GEImageHeader *ReadHeader(const char *FileNameToRead);
 private:
   GE4ImageIO(const Self&); //purposely not implemented
   float MvtSunf (int numb);

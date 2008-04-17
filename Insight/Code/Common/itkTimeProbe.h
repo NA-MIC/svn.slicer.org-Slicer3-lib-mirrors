@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTimeProbe.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/05 20:57:46 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-04-03 16:21:58 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,7 +17,11 @@
 #ifndef __itkTimeProbe_h
 #define __itkTimeProbe_h
 
+#include "itkConfigure.h"
 
+#ifdef ITK_USE_REVIEW
+#include "../Review/itkTimeProbe.h"
+#else
 #include "itkRealTimeClock.h"
 
 
@@ -85,5 +89,7 @@ private:
 
 
 }
+
+#endif // ITK_USE_REVIEW
 
 #endif

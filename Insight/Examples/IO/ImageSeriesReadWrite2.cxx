@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageSeriesReadWrite2.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/06/24 12:12:59 $
+  Date:      $Date: 2007-06-24 12:12:59 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

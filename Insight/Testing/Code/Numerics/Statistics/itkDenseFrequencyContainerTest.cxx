@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDenseFrequencyContainerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/24 15:16:12 $
+  Date:      $Date: 2005-08-24 15:16:12 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

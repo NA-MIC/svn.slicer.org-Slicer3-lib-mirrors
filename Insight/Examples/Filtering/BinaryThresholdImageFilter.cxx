@@ -2,7 +2,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: BinaryThresholdImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/21 13:05:15 $
+  Date:      $Date: 2006-05-21 13:05:15 $
   Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

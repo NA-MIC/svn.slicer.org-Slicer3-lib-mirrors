@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTranslationTransformTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/08/30 18:35:12 $
+  Date:      $Date: 2004-08-30 18:35:12 $
   Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

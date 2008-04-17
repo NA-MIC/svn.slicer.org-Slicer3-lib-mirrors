@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHessian3DToVesselnessMeasureImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/09/26 11:59:28 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-01-19 19:50:01 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -56,17 +56,17 @@ Hessian3DToVesselnessMeasureImageFilter< TPixel >
   typename OutputImageType::Pointer output = this->GetOutput();
 
   typedef typename EigenAnalysisFilterType::OutputImageType
-                                                    EigenValueImageType;
+    EigenValueOutputImageType;
 
   m_SymmetricEigenValueFilter->Update();
   
-  const typename EigenValueImageType::ConstPointer eigenImage = 
+  const typename EigenValueOutputImageType::ConstPointer eigenImage = 
                     m_SymmetricEigenValueFilter->GetOutput();
   
   // walk the region of eigen values and get the vesselness measure
   EigenValueArrayType eigenValue;
-  ImageRegionConstIterator<EigenValueImageType> it;
-  it = ImageRegionConstIterator<EigenValueImageType>(
+  ImageRegionConstIterator<EigenValueOutputImageType> it;
+  it = ImageRegionConstIterator<EigenValueOutputImageType>(
       eigenImage, eigenImage->GetRequestedRegion());
   ImageRegionIterator<OutputImageType> oit;
   this->AllocateOutputs();

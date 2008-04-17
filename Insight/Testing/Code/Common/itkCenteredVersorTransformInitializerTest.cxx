@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCenteredVersorTransformInitializerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/04/26 15:50:27 $
+  Date:      $Date: 2004-04-26 15:50:27 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

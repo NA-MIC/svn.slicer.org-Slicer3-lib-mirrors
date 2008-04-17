@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageCompare.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 12:21:34 $
+  Date:      $Date: 2007-08-20 12:21:34 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

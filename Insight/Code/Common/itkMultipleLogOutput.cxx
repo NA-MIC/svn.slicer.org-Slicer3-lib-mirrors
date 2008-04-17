@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMultipleLogOutput.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/05/26 01:53:44 $
+  Date:      $Date: 2005-05-26 01:53:44 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

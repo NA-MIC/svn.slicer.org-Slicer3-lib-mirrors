@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadraticTriangleCell.txx,v $
   Language:  C++
-  Date:      $Date: 2007/05/17 21:00:08 $
+  Date:      $Date: 2007-05-17 21:00:08 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

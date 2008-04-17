@@ -1,17 +1,17 @@
 /*=========================================================================
 
-Program:   Insight Segmentation & Registration Toolkit
-Module:    $RCSfile: itkSiemensVisionImageIOFactory.h,v $
-Language:  C++
-Date:      $Date: 2007/03/22 14:28:52 $
-Version:   $Revision: 1.6 $
+  Program:   Insight Segmentation & Registration Toolkit
+  Module:    $RCSfile: itkSiemensVisionImageIOFactory.h,v $
+  Language:  C++
+  Date:      $Date: 2007-12-03 13:13:12 $
+  Version:   $Revision: 1.7 $
 
-Copyright (c) Insight Software Consortium. All rights reserved.
-See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+  Copyright (c) Insight Software Consortium. All rights reserved.
+  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+     This software is distributed WITHOUT ANY WARRANTY; without even 
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 #ifndef __itkSiemensVisionImageIOFactory_h

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFastSymmetricForcesDemonsRegistrationFunction.h,v $
   Language:  C++
-  Date:      $Date: 2005/05/03 23:05:49 $
+  Date:      $Date: 2005-05-03 23:05:49 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

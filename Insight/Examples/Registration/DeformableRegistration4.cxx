@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: DeformableRegistration4.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:42 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-04-11 16:01:02 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -45,6 +45,23 @@
 #include "itkImage.h"
 
 #include "itkTimeProbesCollectorBase.h"
+
+#ifdef ITK_USE_REVIEW
+#include "itkMemoryProbesCollectorBase.h"
+#define itkProbesCreate()  \
+  itk::TimeProbesCollectorBase chronometer; \
+  itk::MemoryProbesCollectorBase memorymeter
+#define itkProbesStart( text ) memorymeter.Start( text ); chronometer.Start( text )
+#define itkProbesStop( text )  chronometer.Stop( text ); memorymeter.Stop( text  )
+#define itkProbesReport( stream )  chronometer.Report( stream ); memorymeter.Report( stream  )
+#else
+#define itkProbesCreate()  \
+  itk::TimeProbesCollectorBase chronometer
+#define itkProbesStart( text ) chronometer.Start( text )
+#define itkProbesStop( text )  chronometer.Stop( text )
+#define itkProbesReport( stream )  chronometer.Report( stream )
+#endif
+
 
 //  Software Guide : BeginLatex
 //  
@@ -222,14 +239,15 @@ int main( int argc, char *argv[] )
 
   for(unsigned int r=0; r<ImageDimension; r++)
     {
-    spacing[r] *= floor( static_cast<double>(fixedImageSize[r] - 1)  / 
-                  static_cast<double>(gridSizeOnImage[r] - 1) );
+    spacing[r] *= static_cast<double>(fixedImageSize[r] - 1)  / 
+                  static_cast<double>(gridSizeOnImage[r] - 1);
     origin[r]  -=  spacing[r]; 
     }
 
   transform->SetGridSpacing( spacing );
   transform->SetGridOrigin( origin );
   transform->SetGridRegion( bsplineRegion );
+  transform->SetGridDirection( fixedImage->GetDirection() );
   
 
   typedef TransformType::ParametersType     ParametersType;
@@ -276,16 +294,16 @@ int main( int argc, char *argv[] )
 
 
 
-  // Add a time probe
-  itk::TimeProbesCollectorBase collector;
+  // Add time and memory probes
+  itkProbesCreate();
 
   std::cout << std::endl << "Starting Registration" << std::endl;
 
   try 
     { 
-    collector.Start( "Registration" );
+    itkProbesStart( "Registration" );
     registration->StartRegistration(); 
-    collector.Stop( "Registration" );
+    itkProbesStop( "Registration" );
     } 
   catch( itk::ExceptionObject & err ) 
     { 
@@ -301,8 +319,8 @@ int main( int argc, char *argv[] )
   std::cout << finalParameters << std::endl;
 
 
-  // Report the time taken by the registration
-  collector.Report();
+  // Report the time and memory taken by the registration
+  itkProbesReport( std::cout );
 
   //  Software Guide : BeginLatex
   //  
@@ -333,6 +351,7 @@ int main( int argc, char *argv[] )
   resample->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
   resample->SetOutputOrigin(  fixedImage->GetOrigin() );
   resample->SetOutputSpacing( fixedImage->GetSpacing() );
+  resample->SetOutputDirection( fixedImage->GetDirection() );
   resample->SetDefaultPixelValue( 100 );
   
   typedef  unsigned char  OutputPixelType;
@@ -480,4 +499,9 @@ int main( int argc, char *argv[] )
 
   return EXIT_SUCCESS;
 }
+
+#undef itkProbesCreate
+#undef itkProbesStart
+#undef itkProbesStop
+#undef itkProbesReport
 

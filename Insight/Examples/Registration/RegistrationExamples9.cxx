@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: RegistrationExamples9.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/14 12:16:23 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-11-12 04:57:42 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -37,7 +37,6 @@ void RegisterTests()
   REGISTER_TEST(ImageRegistration5Test);
   REGISTER_TEST(ImageRegistration6Test);
   REGISTER_TEST(ImageRegistration7Test);
-  REGISTER_TEST(ModelToImageRegistration2Test);
 }
 
 #undef main
@@ -57,14 +56,3 @@ void RegisterTests()
 #undef CommandIterationUpdate
 #define CommandIterationUpdate CommandIterationUpdate9
 #include "ImageRegistration7.cxx"
-
-
-
-#undef main
-#define main  ModelToImageRegistration2Test
-#undef CommandIterationUpdate
-#define CommandIterationUpdate CommandIterationUpdate10
-#include "ModelToImageRegistration2.cxx"
-
-
-

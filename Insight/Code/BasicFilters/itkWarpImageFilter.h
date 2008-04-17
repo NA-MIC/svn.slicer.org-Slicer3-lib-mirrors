@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWarpImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/04 13:13:51 $
+  Date:      $Date: 2006-04-04 13:13:51 $
   Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

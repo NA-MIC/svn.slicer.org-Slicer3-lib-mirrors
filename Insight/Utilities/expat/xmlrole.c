@@ -4,7 +4,7 @@ See the file COPYING for copying permission.
 */
 
 static char RCSId[]
-  = "$Header: /cvsroot/Insight/Insight/Utilities/expat/xmlrole.c,v 1.3 2006/02/02 23:05:33 malaterre Exp $";
+  = "$Header: /cvsroot/Insight/Insight/Utilities/expat/xmlrole.c,v 1.3 2006-02-02 23:05:33 malaterre Exp $";
 const char* GetVTKEXpatXMLRole_RCSId(void)
 {
   return RCSId;

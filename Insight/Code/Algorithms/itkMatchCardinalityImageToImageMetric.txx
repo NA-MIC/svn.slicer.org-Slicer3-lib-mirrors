@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMatchCardinalityImageToImageMetric.txx,v $
   Language:  C++
-  Date:      $Date: 2005/03/14 13:20:31 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,16 @@
 =========================================================================*/
 #ifndef _itkMatchCardinalityImageToImageMetric_txx
 #define _itkMatchCardinalityImageToImageMetric_txx
+
+// First make sure that the configuration is available.
+// This line can be removed once the optimized versions
+// gets integrated into the main directories.
+#include "itkConfigure.h"
+
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+#include "itkOptMatchCardinalityImageToImageMetric.txx"
+#else
+
 
 #include "itkMatchCardinalityImageToImageMetric.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
@@ -150,7 +160,7 @@ MatchCardinalityImageToImageMetric<TFixedImage,TMovingImage>
     {
     index = ti.GetIndex();
     
-    typename Superclass::InputPointType inputPoint;
+    InputPointType inputPoint;
     fixedImage->TransformIndexToPhysicalPoint( index, inputPoint );
 
     if( this->GetFixedImageMask() && !this->GetFixedImageMask()->IsInside( inputPoint ) )
@@ -159,7 +169,7 @@ MatchCardinalityImageToImageMetric<TFixedImage,TMovingImage>
       continue;
       }
 
-    typename Superclass::OutputPointType
+    OutputPointType
       transformedPoint = this->GetTransform()->TransformPoint( inputPoint );
 
     if( this->GetMovingImageMask() && !this->GetMovingImageMask()->IsInside( transformedPoint ) )
@@ -304,3 +314,6 @@ MatchCardinalityImageToImageMetric<TFixedImage,TMovingImage>
 
 
 #endif
+
+#endif
+

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ResampleImageFilter9.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/02/26 03:23:28 $
+  Date:      $Date: 2006-02-26 03:23:28 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

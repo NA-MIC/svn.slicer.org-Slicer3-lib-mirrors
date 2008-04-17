@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: MultiResImageRegistration2.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/12 22:08:29 $
-  Version:   $Revision: 1.44 $
+  Date:      $Date: 2008-04-11 21:53:58 $
+  Version:   $Revision: 1.49 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -56,6 +56,7 @@
 // Software Guide : EndCodeSnippet
 
 
+#include "itkCenteredTransformInitializer.h"
 #include "itkMultiResolutionImageRegistrationMethod.h"
 #include "itkMattesMutualInformationImageToImageMetric.h"
 #include "itkLinearInterpolateImageFunction.h"
@@ -141,17 +142,20 @@ public:
     OptimizerPointer optimizer = dynamic_cast< OptimizerPointer >( 
                        registration->GetOptimizer() );
 
+    std::cout << "-------------------------------------" << std::endl;
+    std::cout << "MultiResolution Level : "
+              << registration->GetCurrentLevel()  << std::endl;
+    std::cout << std::endl;
+
     if ( registration->GetCurrentLevel() == 0 )
       {
       optimizer->SetMaximumStepLength( 16.00 );  
-      optimizer->SetMinimumStepLength(  2.50 );
+      optimizer->SetMinimumStepLength(  0.01 );
       }
     else
       {
-      optimizer->SetMaximumStepLength( 
-                optimizer->GetCurrentStepLength() );
-      optimizer->SetMinimumStepLength(
-                optimizer->GetMinimumStepLength() / 10.0 );
+      optimizer->SetMaximumStepLength( optimizer->GetMaximumStepLength() / 4.0 );
+      optimizer->SetMinimumStepLength( optimizer->GetMinimumStepLength() / 10.0 );
       }
   }
   void Execute(const itk::Object * , const itk::EventObject & )
@@ -168,7 +172,9 @@ int main( int argc, char *argv[] )
     std::cerr << "Usage: " << argv[0];
     std::cerr << " fixedImageFile  movingImageFile ";
     std::cerr << " outputImagefile [backgroundGrayLevel]";
-    std::cerr << " [checkerboardbefore] [CheckerBoardAfter]" << std::endl;
+    std::cerr << " [checkerboardbefore] [CheckerBoardAfter]";
+    std::cerr << " [useExplicitPDFderivatives ] " << std::endl;
+    std::cerr << " [numberOfBins] [numberOfSamples ] " << std::endl;
     return EXIT_FAILURE;
     }
   
@@ -283,19 +289,29 @@ int main( int argc, char *argv[] )
   //  Software Guide : BeginLatex
   //  
   //  One of the easiest ways of preparing a consistent set of parameters for
-  //  the transform is to use the transform itself.  We can simplify the task
-  //  of initialization by taking advantage of the additional convenience
-  //  methods that most transforms have. In this case, we simply force the
-  //  transform to be initialized as an identity transform. The method
-  //  \code{SetIdentity()} is used to that end. Once the transform is
-  //  initialized, we can invoke its \code{GetParameters()} method to extract
-  //  the array of parameters. Finally the array is passed to the registration
-  //  method using its \code{SetInitialTransformParameters()} method.
+  //  the transform is to use the \doxygen{CenteredTransformInitializer}. Once
+  //  the transform is initialized, we can invoke its \code{GetParameters()}
+  //  method to extract the array of parameters. Finally the array is passed to
+  //  the registration method using its \code{SetInitialTransformParameters()}
+  //  method.
   //
   //  Software Guide : EndLatex 
 
   // Software Guide : BeginCodeSnippet
-  transform->SetIdentity();
+  typedef itk::CenteredTransformInitializer< 
+                                    TransformType, 
+                                    FixedImageType, 
+                                    MovingImageType >  TransformInitializerType;
+
+  TransformInitializerType::Pointer initializer = TransformInitializerType::New();
+
+  initializer->SetTransform(   transform );
+  initializer->SetFixedImage(  fixedImageReader->GetOutput() );
+  initializer->SetMovingImage( movingImageReader->GetOutput() );
+
+  initializer->MomentsOn();
+  initializer->InitializeTransform();
+
   registration->SetInitialTransformParameters( transform->GetParameters() );
   // Software Guide : EndCodeSnippet
 
@@ -329,8 +345,8 @@ int main( int argc, char *argv[] )
   optimizerScales[2] = 1.0; // scale for M21
   optimizerScales[3] = 1.0; // scale for M22
 
-  optimizerScales[4] = 1.0 / 1000000.0; // scale for translation on X
-  optimizerScales[5] = 1.0 / 1000000.0; // scale for translation on Y
+  optimizerScales[4] = 1.0 / 1e7; // scale for translation on X
+  optimizerScales[5] = 1.0 / 1e7; // scale for translation on Y
   // Software Guide : EndCodeSnippet
 
 
@@ -379,9 +395,22 @@ int main( int argc, char *argv[] )
   optimizer->SetScales( optimizerScales );
   // Software Guide : EndCodeSnippet
 
+  metric->SetNumberOfHistogramBins( 128 );
+  metric->SetNumberOfSpatialSamples( 50000 );
 
-  metric->SetNumberOfHistogramBins( 20 );
-  metric->SetNumberOfSpatialSamples( 10000 );
+
+  if( argc > 8 )
+    {
+    // optionally, override the values with numbers taken from the command line arguments.
+    metric->SetNumberOfHistogramBins( atoi( argv[8] ) );
+    }
+
+  if( argc > 9 )
+    {
+    // optionally, override the values with numbers taken from the command line arguments.
+    metric->SetNumberOfSpatialSamples( atoi( argv[9] ) );
+    }
+
 
  //  Software Guide : BeginLatex
   //  
@@ -397,6 +426,16 @@ int main( int argc, char *argv[] )
   metric->ReinitializeSeed( 76926294 );
   // Software Guide : EndCodeSnippet
  
+  if( argc > 7 )
+    {
+    // Define whether to calculate the metric derivative by explicitly
+    // computing the derivatives of the joint PDF with respect to the Transform
+    // parameters, or doing it by progressively accumulating contributions from
+    // each bin in the joint PDF.
+    metric->SetUseExplicitPDFDerivatives( atoi( argv[7] ) );
+    }
+
+
   //  Software Guide : BeginLatex
   //  
   //  The step length has to be proportional to the expected values of the
@@ -413,7 +452,8 @@ int main( int argc, char *argv[] )
   //
   //  Software Guide : EndLatex 
 
-  optimizer->SetNumberOfIterations(    50   );
+  optimizer->SetNumberOfIterations(  200  );
+  optimizer->SetRelaxationFactor( 0.8 );
 
 
   // Create the Command observer and register it with the optimizer.
@@ -439,6 +479,9 @@ int main( int argc, char *argv[] )
     std::cout << err << std::endl; 
     return EXIT_FAILURE;
     } 
+
+  std::cout << "Optimizer Stopping Condition = " 
+            << optimizer->GetStopCondition() << std::endl;
 
   typedef RegistrationType::ParametersType ParametersType;
   ParametersType finalParameters = registration->GetLastTransformParameters();
@@ -528,6 +571,7 @@ int main( int argc, char *argv[] )
   resample->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
   resample->SetOutputOrigin(  fixedImage->GetOrigin() );
   resample->SetOutputSpacing( fixedImage->GetSpacing() );
+  resample->SetOutputDirection( fixedImage->GetDirection() );
   resample->SetDefaultPixelValue( backgroundGrayLevel );
 
 
@@ -600,6 +644,8 @@ int main( int argc, char *argv[] )
   caster->SetInput( checker->GetOutput() );
   writer->SetInput( caster->GetOutput()   );
   
+  resample->SetDefaultPixelValue( 0 );
+
   // Write out checkerboard outputs
   // Before registration
   TransformType::Pointer identityTransform = TransformType::New();

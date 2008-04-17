@@ -3,7 +3,7 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmValidator.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/18 12:36:39 $
+  Date:      $Date: 2006-02-18 12:36:39 $
   Version:   $Revision: 1.2 $
  
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de

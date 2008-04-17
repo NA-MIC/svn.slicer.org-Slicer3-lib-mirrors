@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRandomImageSource.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/24 12:45:32 $
-  Version:   $Revision: 1.53 $
+  Date:      $Date: 2008-01-04 20:22:11 $
+  Version:   $Revision: 1.55 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,8 +17,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkRandomImageSource_txx
-#define _itkRandomImageSource_txx
+#ifndef __itkRandomImageSource_txx
+#define __itkRandomImageSource_txx
 
 #include "itkRandomImageSource.h"
 #include "itkImageRegionIterator.h"
@@ -139,16 +139,15 @@ RandomImageSource<TOutputImage>
   ImageRegionIterator<TOutputImage> it(image, outputRegionForThread);
 
   // Random number seed
-  unsigned long sample_seed = 12345 + threadId;
+  unsigned int sample_seed = 12345 + threadId;
   double u;
   double rnd;
 
   double dMin = static_cast<double>(m_Min);
   double dMax = static_cast<double>(m_Max);
 
-  for ( ; !it.IsAtEnd(); ++it)
+  for (; !it.IsAtEnd(); ++it)
     {
-
     sample_seed = (sample_seed*16807)%2147483647L;
     u = static_cast<double>(sample_seed)/2147483711UL;
     rnd = (1.0 - u)*dMin + u*dMax;

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFFTWCommon.h,v $
   Language:  C++
-  Date:      $Date: 2006/09/26 14:02:52 $
+  Date:      $Date: 2006-09-26 14:02:52 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) 2006 Insight Consortium. All rights reserved.

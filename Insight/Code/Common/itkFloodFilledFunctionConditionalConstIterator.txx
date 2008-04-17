@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFloodFilledFunctionConditionalConstIterator.txx,v $
   Language:  C++
-  Date:      $Date: 2006/05/20 14:15:23 $
+  Date:      $Date: 2006-05-20 14:15:23 $
   Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

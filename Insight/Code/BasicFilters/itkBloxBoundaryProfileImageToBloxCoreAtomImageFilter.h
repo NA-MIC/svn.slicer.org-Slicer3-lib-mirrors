@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBloxBoundaryProfileImageToBloxCoreAtomImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/06 21:57:17 $
+  Date:      $Date: 2006-03-06 21:57:17 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDiffusionTensor3DReconstructionImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/03/09 03:37:16 $
+  Date:      $Date: 2006-03-09 03:37:16 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

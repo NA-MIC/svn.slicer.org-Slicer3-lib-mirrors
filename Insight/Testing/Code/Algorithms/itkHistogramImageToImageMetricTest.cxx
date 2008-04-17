@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHistogramImageToImageMetricTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/24 11:10:07 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-02-03 04:05:34 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -229,12 +229,12 @@ int itkHistogramImageToImageMetricTest(int , char*[] )
   // Force an exception
   try
     {
-    ParametersType parameters( 2 ); 
-    DerivativeType derivatives( 2 );
+    ParametersType parameters2( 2 ); 
+    DerivativeType derivatives2( 2 );
     ScalesType badScales( 1 );
     metric->SetDerivativeStepLengthScales(badScales);
     metric->Initialize();
-    metric->GetDerivative (parameters, derivatives);
+    metric->GetDerivative (parameters2, derivatives2);
     }
   catch (itk::ExceptionObject &ex)
     {

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: DicomSeriesReadImageWrite.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/10 20:27:17 $
+  Date:      $Date: 2006-05-10 20:27:17 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

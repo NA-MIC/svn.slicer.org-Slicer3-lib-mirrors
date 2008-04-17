@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSegmentationLevelSetImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/21 20:05:09 $
-  Version:   $Revision: 1.33 $
+  Date:      $Date: 2008-03-03 13:58:42 $
+  Version:   $Revision: 1.34 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -68,11 +68,6 @@ namespace itk {
  * because, for simplicity, the filter will shift your input image so that the
  * active front has zero values. 
  *
- * \par A NOTE ON DATA SPACING
- * Input data with anisotropic spacing should be resampled to isotropic voxels
- * for use in this filter.  Interpolation has not been built into the
- * underlying p.d.e. solver.
- * 
  * \par
  * Depending on the particular application and filter that you are using, the
  * feature image should be preprocessed with some type of noise reduction

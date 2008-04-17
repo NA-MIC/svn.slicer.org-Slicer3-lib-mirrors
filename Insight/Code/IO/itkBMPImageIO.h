@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBMPImageIO.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:47 $
+  Date:      $Date: 2008-03-02 14:27:29 $
   Version:   $1.0$
 
   Copyright (c) Insight Software Consortium. All rights reserved.
@@ -86,6 +86,10 @@ private:
   void operator=(const Self&); //purposely not implemented
 
   void SwapBytesIfNecessary(void* buffer, unsigned long numberOfPixels);
+
+  /** This methods ensures that the endianess is respected */
+  void Write32BitsInteger(unsigned int   value);
+  void Write16BitsInteger(unsigned short value);
  
   std::ifstream             m_Ifstream;
   std::ofstream             m_Ofstream;

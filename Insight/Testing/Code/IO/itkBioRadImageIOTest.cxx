@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBioRadImageIOTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/21 15:28:03 $
+  Date:      $Date: 2005-11-21 15:28:03 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

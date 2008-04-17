@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeshTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/28 19:20:13 $
-  Version:   $Revision: 1.48 $
+  Date:      $Date: 2008-01-18 18:53:14 $
+  Version:   $Revision: 1.49 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -236,7 +236,7 @@ int itkMeshTest(int, char* [] )
     return EXIT_FAILURE;
     }
 
-  CellAutoPointer cellPointer;
+  CellAutoPointer cellPointer0;
   /**
    * Try getting one of the hexahedron's faces.
    */
@@ -244,16 +244,16 @@ int itkMeshTest(int, char* [] )
                 2,    // Topological dimension of boundary.
                 1,    // CellIdentifier.
                 0,    // CellFeatureIdentifier
-                cellPointer ); // CellPointer to return the result
+                cellPointer0 ); // CellPointer to return the result
 
-  std::cout << typeid( cellPointer ).name() << std::endl;
-  std::cout << typeid( cellPointer.GetPointer() ).name() << std::endl;
-  std::cout << "GetCellBoundaryFeature() return AutoPointer owner = " << cellPointer.IsOwner() << std::endl;
+  std::cout << typeid( cellPointer0 ).name() << std::endl;
+  std::cout << typeid( cellPointer0.GetPointer() ).name() << std::endl;
+  std::cout << "GetCellBoundaryFeature() return AutoPointer owner = " << cellPointer0.IsOwner() << std::endl;
   
   HexaCellType::FaceType * quad;
   try
     {
-    quad = dynamic_cast<HexaCellType::FaceType *>(  cellPointer.GetPointer() );
+    quad = dynamic_cast<HexaCellType::FaceType *>(  cellPointer0.GetPointer() );
     std::cout << "Quad face recovered " << std::endl;
     std::cout << quad->GetNameOfClass() << std::endl;
     }
@@ -269,8 +269,8 @@ int itkMeshTest(int, char* [] )
 
   if( faceExists ) 
     {
-    std::cout << cellPointer->GetNumberOfPoints() << std::endl;
-    std::cout << cellPointer->GetNameOfClass() << std::endl;
+    std::cout << cellPointer0->GetNumberOfPoints() << std::endl;
+    std::cout << cellPointer0->GetNameOfClass() << std::endl;
     }
   else 
     {

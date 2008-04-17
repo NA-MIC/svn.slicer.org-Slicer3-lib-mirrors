@@ -3,7 +3,7 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkGradientDifferenceImageToImageMetric.txx,v $
 Language:  C++
-Date:      $Date: 2007/04/14 11:54:33 $
+Date:      $Date: 2007-04-14 11:54:33 $
 Version:   $Revision: 1.17 $
 
 Copyright (c) 2002 Insight Consortium. All rights reserved.

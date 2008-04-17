@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSignedMaurerDistanceMapImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/05/24 12:44:48 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2007-09-27 11:36:41 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -87,6 +87,10 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
+
+  /** Runtime information support. */
+  itkTypeMacro(SignedMaurerDistanceMapImageFilter, 
+               ImageToImageFilter);
 
   /** Image typedef support. */
   typedef typename InputImageType::PixelType   InputPixelType;

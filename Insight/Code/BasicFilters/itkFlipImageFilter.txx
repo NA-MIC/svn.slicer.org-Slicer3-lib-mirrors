@@ -3,13 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFlipImageFilter.txx,v $
   Language:  C++
-<<<<<<< itkFlipImageFilter.txx
-  Date:      $Date: 2006/08/01 19:16:17 $
-  Version:   $Revision: 1.15 $
-=======
-  Date:      $Date: 2007-11-21 20:16:53 $
-  Version:   $Revision: 1.15.6.2 $
->>>>>>> 1.15.6.2
+  Date:      $Date: 2007-11-21 20:12:14 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRemoveBoundaryObjectsTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/10 14:34:02 $
+  Date:      $Date: 2007-08-10 14:34:02 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

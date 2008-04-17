@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: DeformableRegistration8.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:42 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008-04-11 16:01:02 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -42,6 +42,23 @@
 
 #include "itkTimeProbesCollectorBase.h"
 
+#ifdef ITK_USE_REVIEW
+#include "itkMemoryProbesCollectorBase.h"
+#define itkProbesCreate()  \
+  itk::TimeProbesCollectorBase chronometer; \
+  itk::MemoryProbesCollectorBase memorymeter
+#define itkProbesStart( text ) memorymeter.Start( text ); chronometer.Start( text )
+#define itkProbesStop( text )  chronometer.Stop( text ); memorymeter.Stop( text  )
+#define itkProbesReport( stream )  chronometer.Report( stream ); memorymeter.Report( stream  )
+#else
+#define itkProbesCreate()  \
+  itk::TimeProbesCollectorBase chronometer
+#define itkProbesStart( text ) chronometer.Start( text )
+#define itkProbesStop( text )  chronometer.Stop( text )
+#define itkProbesReport( stream )  chronometer.Report( stream )
+#endif
+
+
 //  Software Guide : BeginLatex
 //  
 //  The following are the most relevant headers to this example.
@@ -59,7 +76,7 @@
 //  Software Guide : BeginLatex
 //  
 //  The parameter space of the \code{BSplineDeformableTransform} is composed by
-//  the set of all the deformations associated with the nodes of the B-spline
+//  the set of all the deformations associated with the nodes of the BSpline
 //  grid.  This large number of parameters makes possible to represent a wide
 //  variety of deformations, but it also has the price of requiring a
 //  significant amount of computation time.
@@ -75,6 +92,8 @@
 #include "itkCastImageFilter.h"
 #include "itkSquaredDifferenceImageFilter.h"
 
+
+#include "itkTransformFileReader.h"
 
 //  The following section of code implements a Command observer
 //  used to monitor the evolution of the registration process.
@@ -107,7 +126,7 @@ public:
         return;
         }
       std::cout << optimizer->GetCurrentIteration() << "   ";
-      std::cout << optimizer->GetValue() << "   ";
+      std::cout << optimizer->GetCachedValue() << "   ";
       std::cout << optimizer->GetInfinityNormOfProjectedGradient() << std::endl;
     }
 };
@@ -122,6 +141,9 @@ int main( int argc, char *argv[] )
     std::cerr << " fixedImageFile  movingImageFile outputImagefile  ";
     std::cerr << " [differenceOutputfile] [differenceBeforeRegistration] ";
     std::cerr << " [deformationField] ";
+    std::cerr << " [useExplicitPDFderivatives ] [useCachingBSplineWeights ] ";
+    std::cerr << " [filenameForFinalTransformParameters] ";
+    std::cerr << std::endl;
     return EXIT_FAILURE;
     }
   
@@ -136,7 +158,7 @@ int main( int argc, char *argv[] )
   //
   //  We instantiate now the type of the \code{BSplineDeformableTransform} using
   //  as template parameters the type for coordinates representation, the
-  //  dimension of the space, and the order of the B-spline. 
+  //  dimension of the space, and the order of the BSpline. 
   // 
   //  \index{BSplineDeformableTransform!New}
   //  \index{BSplineDeformableTransform!Instantiation}
@@ -194,6 +216,50 @@ int main( int argc, char *argv[] )
   registration->SetTransform( transform );
   // Software Guide : EndCodeSnippet
 
+
+  //
+  //   In general, you must first solve an Affine registration between
+  //   the images before attempting to solve a deformable registration.
+  //   If you have solve an affine transform, it can be loaded into the
+  //   BSplineDeformableTransform as a "bulk" transform that will be
+  //   pre-composed with the deformation computed by the BSpline.
+  //   The following code loads one of such initial transforms if they
+  //   are available.
+  //   
+  typedef itk::TransformFileReader        TransformReaderType;
+  typedef itk::AffineTransform<double, 3> AffineTransformType;
+
+  TransformReaderType::Pointer transformReader = TransformReaderType::New();
+
+  if( argc > 11 )
+    {
+    std::cout << "Loading Transform: " << argv[11] << std::endl;
+    transformReader->SetFileName( argv[11] );
+    transformReader->Update();
+    
+    typedef TransformReaderType::TransformListType * TransformListType;
+    TransformListType transforms = transformReader->GetTransformList();
+    TransformReaderType::TransformListType::const_iterator tit = transforms->begin();
+    if( !strcmp((*tit)->GetNameOfClass(),"AffineTransform") )
+      {
+      AffineTransformType::Pointer affine_read = 
+                  static_cast<AffineTransformType*>((*tit).GetPointer());
+      AffineTransformType::Pointer affine_transform = 
+                  dynamic_cast< AffineTransformType * >( affine_read.GetPointer() );
+    
+      if( affine_transform )
+        {
+        transform->SetBulkTransform( affine_transform );
+        }
+      } 
+    else
+      {
+      std::cerr << "Bulk transform wasn't an affine transform." << std::endl;
+      return EXIT_FAILURE;
+      }
+    }
+
+
   typedef itk::ImageFileReader< FixedImageType  > FixedImageReaderType;
   typedef itk::ImageFileReader< MovingImageType > MovingImageReaderType;
 
@@ -218,7 +284,7 @@ int main( int argc, char *argv[] )
   //
   //  Here we define the parameters of the BSplineDeformableTransform grid.  We
   //  arbitrarily decide to use a grid with $5 \times 5$ nodes within the image. 
-  //  The reader should note that the B-spline computation requires a
+  //  The reader should note that the BSpline computation requires a
   //  finite support region ( 1 grid node at the lower borders and 2
   //  grid nodes at upper borders). Therefore in this example, we set
   //  the grid size to be $8 \times 8$ and place the grid origin such that
@@ -228,6 +294,12 @@ int main( int argc, char *argv[] )
   //
   //  Software Guide : EndLatex 
 
+  unsigned int numberOfGridNodesInOneDimension = 5;
+
+  if( argc > 10 )
+    {
+    numberOfGridNodesInOneDimension = atoi( argv[10] );
+    }
 
   // Software Guide : BeginCodeSnippet
   typedef TransformType::RegionType RegionType;
@@ -236,12 +308,15 @@ int main( int argc, char *argv[] )
   RegionType::SizeType   gridBorderSize;
   RegionType::SizeType   totalGridSize;
 
-  gridSizeOnImage.Fill( 12 );
-  gridBorderSize.Fill( 3 );    // Border for spline order = 3 ( 1 lower, 2 upper )
+  gridSizeOnImage.Fill( numberOfGridNodesInOneDimension );
+  gridBorderSize.Fill( SplineOrder );    // Border for spline order = 3 ( 1 lower, 2 upper )
   totalGridSize = gridSizeOnImage + gridBorderSize;
 
   bsplineRegion.SetSize( totalGridSize );
+  //  Software Guide : EndCodeSnippet
 
+
+  // Software Guide : BeginCodeSnippet
   typedef TransformType::SpacingType SpacingType;
   SpacingType spacing = fixedImage->GetSpacing();
 
@@ -252,14 +327,15 @@ int main( int argc, char *argv[] )
 
   for(unsigned int r=0; r<ImageDimension; r++)
     {
-    spacing[r] *= floor( static_cast<double>(fixedImageSize[r] - 1)  / 
-                  static_cast<double>(gridSizeOnImage[r] - 1) );
+    spacing[r] *= static_cast<double>(fixedImageSize[r] - 1)  / 
+                  static_cast<double>(gridSizeOnImage[r] - 1);
     origin[r]  -=  spacing[r]; 
     }
 
   transform->SetGridSpacing( spacing );
   transform->SetGridOrigin( origin );
   transform->SetGridRegion( bsplineRegion );
+  transform->SetGridDirection( fixedImage->GetDirection() );
   
 
   typedef TransformType::ParametersType     ParametersType;
@@ -287,8 +363,6 @@ int main( int argc, char *argv[] )
   registration->SetInitialTransformParameters( transform->GetParameters() );
   // Software Guide : EndCodeSnippet
 
- // std::cout << "Intial Parameters = " << std::endl;
-  //  std::cout << transform->GetParameters() << std::endl;
 
   //  Software Guide : BeginLatex
   //  
@@ -310,11 +384,11 @@ int main( int argc, char *argv[] )
   optimizer->SetUpperBound( upperBound );
   optimizer->SetLowerBound( lowerBound );
 
-  optimizer->SetCostFunctionConvergenceFactor( 1e+7 );
-  optimizer->SetProjectedGradientTolerance( 1e-4 );
-  optimizer->SetMaximumNumberOfIterations( 500 );
-  optimizer->SetMaximumNumberOfEvaluations( 500 );
-  optimizer->SetMaximumNumberOfCorrections( 12 );
+  optimizer->SetCostFunctionConvergenceFactor( 1.e7 );
+  optimizer->SetProjectedGradientTolerance( 1e-6 );
+  optimizer->SetMaximumNumberOfIterations( 200 );
+  optimizer->SetMaximumNumberOfEvaluations( 30 );
+  optimizer->SetMaximumNumberOfCorrections( 5 );
   // Software Guide : EndCodeSnippet
 
   // Create the Command observer and register it with the optimizer.
@@ -332,7 +406,8 @@ int main( int argc, char *argv[] )
   // Software Guide : BeginCodeSnippet
   metric->SetNumberOfHistogramBins( 50 );
   
-  const unsigned int numberOfSamples = fixedRegion.GetNumberOfPixels() / 10;
+  const unsigned int numberOfSamples = 
+    static_cast<unsigned int>( fixedRegion.GetNumberOfPixels() * 20.0 / 100.0 );
 
   metric->SetNumberOfSpatialSamples( numberOfSamples );
   // Software Guide : EndCodeSnippet
@@ -352,17 +427,36 @@ int main( int argc, char *argv[] )
   metric->ReinitializeSeed( 76926294 );
   // Software Guide : EndCodeSnippet
 
+  if( argc > 7 )
+    {
+    // Define whether to calculate the metric derivative by explicitly
+    // computing the derivatives of the joint PDF with respect to the Transform
+    // parameters, or doing it by progressively accumulating contributions from
+    // each bin in the joint PDF.
+    metric->SetUseExplicitPDFDerivatives( atoi( argv[7] ) );
+    }
 
-  // Add a time probe
-  itk::TimeProbesCollectorBase collector;
+  if( argc > 8 )
+    {
+    // Define whether to cache the BSpline weights and indexes corresponding to
+    // each one of the samples used to compute the metric. Enabling caching will
+    // make the algorithm run faster but it will have a cost on the amount of memory
+    // that needs to be allocated. This option is only relevant when using the 
+    // BSplineDeformableTransform.
+    metric->SetUseCachingOfBSplineWeights( atoi( argv[8] ) );
+    }
+
+
+  // Add time and memory probes
+  itkProbesCreate();
 
   std::cout << std::endl << "Starting Registration" << std::endl;
 
   try 
     { 
-    collector.Start( "Registration" );
+    itkProbesStart( "Registration" );
     registration->StartRegistration(); 
-    collector.Stop( "Registration" );
+    itkProbesStop( "Registration" );
     } 
   catch( itk::ExceptionObject & err ) 
     { 
@@ -374,12 +468,9 @@ int main( int argc, char *argv[] )
   OptimizerType::ParametersType finalParameters = 
                     registration->GetLastTransformParameters();
 
-//  std::cout << "Last Transform Parameters" << std::endl;
-//  std::cout << finalParameters << std::endl;
 
-
-  // Report the time taken by the registration
-  collector.Report();
+  // Report the time and memory taken by the registration
+  itkProbesReport( std::cout );
 
   // Software Guide : BeginCodeSnippet
   transform->SetParameters( finalParameters );
@@ -398,7 +489,13 @@ int main( int argc, char *argv[] )
   resample->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
   resample->SetOutputOrigin(  fixedImage->GetOrigin() );
   resample->SetOutputSpacing( fixedImage->GetSpacing() );
-  resample->SetDefaultPixelValue( 100 );
+  resample->SetOutputDirection( fixedImage->GetDirection() );
+
+  // This value is set to zero in order to make easier to perform
+  // regression testing in this example. However, for didactic 
+  // exercise it will be better to set it to a medium gray value
+  // such as 100 or 128.
+  resample->SetDefaultPixelValue( 0 );
   
   typedef  signed short  OutputPixelType;
 
@@ -448,7 +545,7 @@ int main( int argc, char *argv[] )
 
   // Compute the difference image between the 
   // fixed and resampled moving image.
-  if( argc >= 5 )
+  if( argc > 4 )
     {
     difference->SetInput1( fixedImageReader->GetOutput() );
     difference->SetInput2( resample->GetOutput() );
@@ -468,7 +565,7 @@ int main( int argc, char *argv[] )
 
   // Compute the difference image between the 
   // fixed and moving image before registration.
-  if( argc >= 6 )
+  if( argc > 5 )
     {
     writer2->SetFileName( argv[5] );
     difference->SetInput1( fixedImageReader->GetOutput() );
@@ -489,7 +586,7 @@ int main( int argc, char *argv[] )
 
   // Generate the explicit deformation field resulting from 
   // the registration.
-  if( argc >= 7 )
+  if( argc > 6 )
     {
 
     typedef itk::Vector< float, ImageDimension >  VectorType;
@@ -517,10 +614,7 @@ int main( int argc, char *argv[] )
       index = fi.GetIndex();
       field->TransformIndexToPhysicalPoint( index, fixedPoint );
       movingPoint = transform->TransformPoint( fixedPoint );
-      for(unsigned int r=0; r<ImageDimension; r++)
-        {
-        displacement[r] = movingPoint[r] - fixedPoint[r];
-        }
+      displacement = movingPoint - fixedPoint;
       fi.Set( displacement );
       ++fi;
       }
@@ -543,6 +637,20 @@ int main( int argc, char *argv[] )
       }
     }
 
+  // Optionally, save the transform parameters in a file
+  if( argc > 9 )
+    {
+    std::ofstream parametersFile;
+    parametersFile.open( argv[9] );
+    parametersFile << finalParameters << std::endl;
+    parametersFile.close();
+    }
+
   return EXIT_SUCCESS;
 }
+
+#undef itkProbesCreate
+#undef itkProbesStart
+#undef itkProbesStop
+#undef itkProbesReport
 

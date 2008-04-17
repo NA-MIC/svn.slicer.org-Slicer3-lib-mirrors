@@ -3,8 +3,8 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmConfigure.h.in,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 07:46:05 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2007-12-21 15:35:06 $
+  Version:   $Revision: 1.13 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de
   l'Image). All rights reserved. See Doc/License.txt or
@@ -25,7 +25,17 @@
 /* Platform Features                                                        */
 
 /* Byte order.  */
-#cmakedefine GDCM_WORDS_BIGENDIAN
+/* All compilers that support Mac OS X define either __BIG_ENDIAN__ or
+   __LITTLE_ENDIAN__ to match the endianness of the architecture being
+   compiled for. This is not necessarily the same as the architecture of
+   the machine doing the building. In order to support Universal Binaries on
+   Mac OS X, we prefer those defines to decide the endianness.
+   On other platform, we use the result of the TRY_RUN. */
+#if !defined(__APPLE__)
+  #cmakedefine GDCM_WORDS_BIGENDIAN
+#elif defined(__BIG_ENDIAN__)
+  #define GDCM_WORDS_BIGENDIAN
+#endif
 
 /* Allow access to UINT32_MAX , cf gdcmCommon.h */
 #define __STDC_LIMIT_MACROS
@@ -58,7 +68,7 @@
 /* This was important as long as GDCM is LGPL */
 #cmakedefine BUILD_SHARED_LIBS
 
-/* GDCM uses __FUNCTION__ which is not ANSI C, but C99 */
+/* GDCM uses __FUNCTION__ which is not ANSI C89, but is in ANSI C99 */
 #cmakedefine GDCM_COMPILER_HAS_FUNCTION
 
 

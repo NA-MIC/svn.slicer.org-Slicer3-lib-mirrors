@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWatershedRelabeler.txx,v $
   Language:  C++
-  Date:      $Date: 2004/02/29 13:33:04 $
+  Date:      $Date: 2004-02-29 13:33:04 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

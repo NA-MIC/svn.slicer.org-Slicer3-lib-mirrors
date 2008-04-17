@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuaternionOrientationAdapter.h,v $
   Language:  C++
-  Date:      $Date: 2005/10/31 17:52:09 $
+  Date:      $Date: 2005-10-31 17:52:09 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

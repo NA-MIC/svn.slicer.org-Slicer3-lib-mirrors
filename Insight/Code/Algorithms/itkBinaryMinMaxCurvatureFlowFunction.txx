@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryMinMaxCurvatureFlowFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:26 $
+  Date:      $Date: 2004-12-21 22:47:26 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

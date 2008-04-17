@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSpatialObjectToPointSetFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/11/07 23:36:20 $
+  Date:      $Date: 2003-11-07 23:36:20 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

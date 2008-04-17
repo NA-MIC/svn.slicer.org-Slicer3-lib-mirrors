@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVoronoiSegmentationRGBImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/11/09 13:48:55 $
+  Date:      $Date: 2006-11-09 13:48:55 $
   Version:   $Revision: 1.34 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

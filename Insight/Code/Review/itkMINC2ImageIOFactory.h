@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMINC2ImageIOFactory.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/04 12:27:34 $
+  Date:      $Date: 2007-09-04 12:27:34 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

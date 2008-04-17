@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNoiseImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/30 15:36:24 $
+  Date:      $Date: 2006-03-30 15:36:24 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

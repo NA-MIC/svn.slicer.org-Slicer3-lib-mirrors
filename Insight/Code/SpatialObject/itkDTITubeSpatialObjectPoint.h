@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDTITubeSpatialObjectPoint.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:21 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007-11-16 15:54:39 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -19,6 +19,7 @@
 
 #include "itkTubeSpatialObjectPoint.h"
 #include "itkCovariantVector.h"
+#include "itkDiffusionTensor3D.h"
 #include "vnl/vnl_vector_fixed.h"
 
 namespace itk 
@@ -59,6 +60,16 @@ public:
   virtual ~DTITubeSpatialObjectPoint( void );
 
   /** Set/Get the tensor matrix */
+  void SetTensorMatrix(const DiffusionTensor3D<double> & matrix)
+    {
+    std::copy(matrix.Begin(), matrix.End(), m_TensorMatrix);
+    }
+
+  void SetTensorMatrix(const DiffusionTensor3D<float> & matrix)
+    {
+    std::copy(matrix.Begin(), matrix.End(), m_TensorMatrix);
+    }
+
   void SetTensorMatrix(const float* matrix)
     {
     for(unsigned int i=0;i<6;i++)

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: FFTDirectInverse2.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/10/13 21:13:21 $
+  Date:      $Date: 2006-10-13 21:13:21 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSingleValuedVnlCostFunctionAdaptor.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 21:39:38 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2007-12-31 18:35:16 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -126,7 +126,7 @@ SingleValuedVnlCostFunctionAdaptor
 void 
 SingleValuedVnlCostFunctionAdaptor
 ::compute( const InternalParametersType   & x,
-           InternalMeasureType      * f, 
+           InternalMeasureType      * fun, 
            InternalDerivativeType   * g   ) 
 {
   // delegate the computation to the CostFunction
@@ -149,21 +149,21 @@ SingleValuedVnlCostFunctionAdaptor
     {
     this->ConvertExternalToInternalGradient( m_CachedDerivative, *g );
     }
-  if( f ) // paranoids have longer lives...
+  if( fun ) // paranoids have longer lives...
     {
     if( !m_NegateCostFunction )
       {
-      *f = static_cast<InternalMeasureType>( measure );  
+      *fun = static_cast<InternalMeasureType>( measure );  
       }
     else
       {
-      *f = static_cast<InternalMeasureType>( - measure );  
+      *fun = static_cast<InternalMeasureType>( - measure );  
       }
     }
   // Notify observers. This is used for overcoming the limitaion of VNL
   // optimizers of not providing callbacks per iteration.
   // Note that m_CachedDerivative is already loaded in the GetDerivative() above.
-  m_CachedValue = *f;
+  m_CachedValue = *fun;
   m_CachedCurrentParameters = parameters;
   this->ReportIteration( FunctionAndGradientEvaluationIterationEvent() ); 
  

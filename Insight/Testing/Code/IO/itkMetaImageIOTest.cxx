@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaImageIOTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/10 15:00:43 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2008-01-24 14:01:22 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -47,8 +47,7 @@ int itkMetaImageIOTest(int ac, char* av[])
   catch (itk::ExceptionObject & e)
     {
     std::cerr << "exception in file reader " << std::endl;
-    std::cerr << e.GetDescription() << std::endl;
-    std::cerr << e.GetLocation() << std::endl;
+    std::cerr << e << std::endl;
     if(ac == 3) // should fail
       {
       return EXIT_SUCCESS;

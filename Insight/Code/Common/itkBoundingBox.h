@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBoundingBox.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/06 12:50:58 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2007-10-27 19:51:42 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -74,6 +74,9 @@ public:
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
     
+  /** Run-time type information (and related methods).   */
+  itkTypeMacro( BoundingBox, Object );
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 

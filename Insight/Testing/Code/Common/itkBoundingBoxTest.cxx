@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBoundingBoxTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/20 13:00:21 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2008-01-17 15:26:39 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,7 +30,6 @@ int itkBoundingBoxTest (int, char*[])
 
   BB::PointsContainerPointer Points = BB::PointsContainer::New();
 
-  int i;
   itk::Point<double, 1> P;
 
   std::cout << "Testing Bounding Box" <<std::endl;
@@ -75,7 +74,7 @@ int itkBoundingBoxTest (int, char*[])
   std::cout << "Null GetPoints test passed" <<std::endl;
 
   
-  for ( i = 0; i < 10; i++ )
+  for ( unsigned int i = 0; i < 10; i++ )
     {
     P[0] = (double)i;
     Points->InsertElement ( i, P );

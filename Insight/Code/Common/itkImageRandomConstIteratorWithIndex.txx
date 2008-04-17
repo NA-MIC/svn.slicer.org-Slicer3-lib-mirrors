@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageRandomConstIteratorWithIndex.txx,v $
   Language:  C++
-  Date:      $Date: 2005/10/04 17:22:52 $
+  Date:      $Date: 2005-10-04 17:22:52 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

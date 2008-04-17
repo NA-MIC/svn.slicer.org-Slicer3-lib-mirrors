@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMattesMutualInformationImageToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/31 20:19:16 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2008-03-14 16:26:01 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,15 @@
 =========================================================================*/
 #ifndef __itkMattesMutualInformationImageToImageMetric_h
 #define __itkMattesMutualInformationImageToImageMetric_h
+
+// First make sure that the configuration is available.
+// This line can be removed once the optimized versions
+// gets integrated into the main directories.
+#include "itkConfigure.h"
+
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+#include "itkOptMattesMutualInformationImageToImageMetric.h"
+#else
 
 #include "itkImageToImageMetric.h"
 #include "itkCovariantVector.h"
@@ -119,10 +128,10 @@ class ITK_EXPORT MattesMutualInformationImageToImageMetric :
 public:
 
   /** Standard class typedefs. */
-  typedef MattesMutualInformationImageToImageMetric  Self;
-  typedef ImageToImageMetric< TFixedImage, TMovingImage > Superclass;
-  typedef SmartPointer<Self>  Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef MattesMutualInformationImageToImageMetric           Self;
+  typedef ImageToImageMetric< TFixedImage, TMovingImage >     Superclass;
+  typedef SmartPointer<Self>                                  Pointer;
+  typedef SmartPointer<const Self>                            ConstPointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -142,6 +151,9 @@ public:
   typedef typename Superclass::MovingImageType          MovingImageType;
   typedef typename Superclass::FixedImageConstPointer   FixedImageConstPointer;
   typedef typename Superclass::MovingImageConstPointer  MovingImageCosntPointer;
+  typedef typename Superclass::InputPointType           InputPointType;
+  typedef typename Superclass::OutputPointType          OutputPointType;
+
   typedef typename Superclass::CoordinateRepresentationType
   CoordinateRepresentationType;
 
@@ -205,6 +217,53 @@ public:
   itkGetConstReferenceMacro(UseAllPixels,bool);
   itkBooleanMacro(UseAllPixels);
 
+  /** This variable selects the method to be used for computing the Metric
+   * derivatives with respect to the Transform parameters. Two modes of
+   * computation are available. The choice between one and the other is a
+   * trade-off between computation speed and memory allocations. The two modes
+   * are described in detail below: 
+   *
+   * UseExplicitPDFDerivatives = True 
+   * will compute the Metric derivative by first calculating the derivatives of
+   * each one of the Joint PDF bins with respect to each one of the Transform
+   * parameters and then accumulating these contributions in the final metric
+   * derivative array by using a bin-specific weight.  The memory required for
+   * storing the intermediate derivatives is a 3D array of doubles with size
+   * equals to the product of (number of histogram bins)^2 times number of
+   * transform parameters. This method is well suited for Transform with a small
+   * number of parameters.
+   *
+   * UseExplicitPDFDerivatives = False will compute the Metric derivative by
+   * first computing the weights for each one of the Joint PDF bins and caching
+   * them into an array. Then it will revisit each one of the PDF bins for
+   * computing its weighted contribution to the full derivative array. In this
+   * method an extra 2D array is used for storing the weights of each one of
+   * the PDF bins. This is an array of doubles with size equals to (number of
+   * histogram bins)^2. This method is well suited for Transforms with a large
+   * number of parameters, such as, BSplineDeformableTransforms. */
+  itkSetMacro(UseExplicitPDFDerivatives,bool);
+  itkGetConstReferenceMacro(UseExplicitPDFDerivatives,bool);
+  itkBooleanMacro(UseExplicitPDFDerivatives);
+
+  /** This boolean flag is only relevant when this metric is used along
+   * with a BSplineDeformableTransform. The flag enables/disables the
+   * caching of values computed when a physical point is mapped through
+   * the BSplineDeformableTransform. In particular it will cache the
+   * values of the BSpline weights for that points, and the indexes
+   * indicating what BSpline-grid nodes are relevant for that specific
+   * point. This caching is made optional due to the fact that the
+   * memory arrays used for the caching can reach large sizes even for
+   * moderate image size problems. For example, for a 3D image of
+   * 256^3, using 20% of pixels, these arrays will take about 1
+   * Gigabyte of RAM for storage. The ratio of computing time between
+   * using the cache or not using the cache can reach 1:5, meaning that
+   * using the caching can provide a five times speed up. It is
+   * therefore, interesting to enable the caching, if enough memory is
+   * available for it. The caching is enabled by default, in order to
+   * preserve backward compatibility with previous versions of ITK. */
+  itkSetMacro(UseCachingOfBSplineWeights,bool);
+  itkGetConstReferenceMacro(UseCachingOfBSplineWeights,bool);
+  itkBooleanMacro(UseCachingOfBSplineWeights);
 
 protected:
 
@@ -261,50 +320,57 @@ private:
 
 
   /** The marginal PDFs are stored as std::vector. */
-  typedef float PDFValueType;
-  typedef std::vector<PDFValueType> MarginalPDFType;
+  typedef float                       PDFValueType;
+  typedef std::vector<PDFValueType>   MarginalPDFType;
 
   /** The fixed image marginal PDF. */
-  mutable MarginalPDFType m_FixedImageMarginalPDF;
+  mutable MarginalPDFType             m_FixedImageMarginalPDF;
 
   /** The moving image marginal PDF. */
-  mutable MarginalPDFType m_MovingImageMarginalPDF;
+  mutable MarginalPDFType             m_MovingImageMarginalPDF;
+
+  /** Helper array for storing the values of the JointPDF ratios. */
+  typedef double                      PRatioType;
+  typedef Array2D< PRatioType >       PRatioArrayType;
+  mutable PRatioArrayType             m_PRatioArray;
+
+  /** Helper variable for accumulating the derivative of the metric. */
+  mutable DerivativeType              m_MetricDerivative;
 
   /** Typedef for the joint PDF and PDF derivatives are stored as ITK Images. */
-  typedef Image<PDFValueType,2> JointPDFType;
-  typedef Image<PDFValueType,3> JointPDFDerivativesType;
-  typedef JointPDFType::IndexType                JointPDFIndexType;
-  typedef JointPDFType::PixelType                JointPDFValueType;
+  typedef Image<PDFValueType,2>                 JointPDFType;
+  typedef JointPDFType::IndexType               JointPDFIndexType;
+  typedef JointPDFType::PixelType               JointPDFValueType;
   typedef JointPDFType::RegionType              JointPDFRegionType;
   typedef JointPDFType::SizeType                JointPDFSizeType;
+  typedef Image<PDFValueType,3>                 JointPDFDerivativesType;
   typedef JointPDFDerivativesType::IndexType    JointPDFDerivativesIndexType;
   typedef JointPDFDerivativesType::PixelType    JointPDFDerivativesValueType;
-  typedef JointPDFDerivativesType::RegionType    JointPDFDerivativesRegionType;
-  typedef JointPDFDerivativesType::SizeType      JointPDFDerivativesSizeType;
+  typedef JointPDFDerivativesType::RegionType   JointPDFDerivativesRegionType;
+  typedef JointPDFDerivativesType::SizeType     JointPDFDerivativesSizeType;
 
   /** The joint PDF and PDF derivatives. */
-  typename JointPDFType::Pointer m_JointPDF;
-  typename JointPDFDerivativesType::Pointer m_JointPDFDerivatives;
+  typename JointPDFType::Pointer                m_JointPDF;
+  typename JointPDFDerivativesType::Pointer     m_JointPDFDerivatives;
 
-  unsigned long m_NumberOfSpatialSamples;
-  unsigned long m_NumberOfParameters;
+  unsigned long                                 m_NumberOfSpatialSamples;
+  unsigned long                                 m_NumberOfParameters;
 
   /** Variables to define the marginal and joint histograms. */
-  unsigned long m_NumberOfHistogramBins;
-  double m_MovingImageNormalizedMin;
-  double m_FixedImageNormalizedMin;
-  double m_MovingImageTrueMin;
-  double m_MovingImageTrueMax;
-  double m_FixedImageBinSize;
-  double m_MovingImageBinSize;
+  unsigned long  m_NumberOfHistogramBins;
+  double         m_MovingImageNormalizedMin;
+  double         m_FixedImageNormalizedMin;
+  double         m_MovingImageTrueMin;
+  double         m_MovingImageTrueMax;
+  double         m_FixedImageBinSize;
+  double         m_MovingImageBinSize;
 
   /** Typedefs for BSpline kernel and derivative functions. */
-  typedef BSplineKernelFunction<3> CubicBSplineFunctionType;
-  typedef BSplineDerivativeKernelFunction<3> 
-  CubicBSplineDerivativeFunctionType;
+  typedef BSplineKernelFunction<3>           CubicBSplineFunctionType;
+  typedef BSplineDerivativeKernelFunction<3> CubicBSplineDerivativeFunctionType;
 
   /** Cubic BSpline kernel for computing Parzen histograms. */
-  typename CubicBSplineFunctionType::Pointer m_CubicBSplineKernel;
+  typename CubicBSplineFunctionType::Pointer   m_CubicBSplineKernel;
   typename CubicBSplineDerivativeFunctionType::Pointer 
   m_CubicBSplineDerivativeKernel;
 
@@ -352,7 +418,7 @@ private:
                                       int movingImageParzenWindowIndex,
                                       const ImageDerivativesType&
                                                 movingImageGradientValue,
-                                      double cubicBSplineDerivativeValue 
+                                      double cubicBSplineDerivativeValue
                                       ) const;
 
   /**
@@ -428,12 +494,23 @@ private:
   bool             m_ReseedIterator;
   int              m_RandomSeed;
   
+  // Selection of explicit or implicit computation of PDF derivatives
+  // with respect to Transform parameters.
+  bool             m_UseExplicitPDFDerivatives;
+
+  // Variables needed for optionally caching values when using a BSpline transform.
+  bool                                    m_UseCachingOfBSplineWeights;
+  mutable BSplineTransformWeightsType     m_Weights;
+  mutable BSplineTransformIndexArrayType  m_Indices;
+
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "itkMattesMutualInformationImageToImageMetric.txx"
+#endif
+
 #endif
 
 #endif

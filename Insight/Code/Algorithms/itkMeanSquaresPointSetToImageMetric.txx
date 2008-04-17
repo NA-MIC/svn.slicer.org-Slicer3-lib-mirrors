@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanSquaresPointSetToImageMetric.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:27 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-02-03 04:05:29 $
+  Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -64,9 +64,9 @@ MeanSquaresPointSetToImageMetric<TFixedPointSet,TMovingImage>
 
   while( pointItr != pointEnd && pointDataItr != pointDataEnd )
     {
-    typename Superclass::InputPointType  inputPoint;
+    InputPointType  inputPoint;
     inputPoint.CastFrom( pointItr.Value() );
-    typename Superclass::OutputPointType transformedPoint = 
+    OutputPointType transformedPoint = 
       this->m_Transform->TransformPoint( inputPoint );
 
     if( this->m_Interpolator->IsInsideBuffer( transformedPoint ) )
@@ -140,9 +140,9 @@ MeanSquaresPointSetToImageMetric<TFixedPointSet,TMovingImage>
 
   while( pointItr != pointEnd && pointDataItr != pointDataEnd )
     {
-    typename Superclass::InputPointType  inputPoint;
+    InputPointType  inputPoint;
     inputPoint.CastFrom( pointItr.Value() );
-    typename Superclass::OutputPointType transformedPoint = 
+    OutputPointType transformedPoint = 
       this->m_Transform->TransformPoint( inputPoint );
 
     if( this->m_Interpolator->IsInsideBuffer( transformedPoint ) )
@@ -160,7 +160,6 @@ MeanSquaresPointSetToImageMetric<TFixedPointSet,TMovingImage>
 
       // Get the gradient by NearestNeighboorInterpolation: 
       // which is equivalent to round up the point components.
-      typedef typename Superclass::OutputPointType OutputPointType;
       typedef typename OutputPointType::CoordRepType CoordRepType;
       typedef ContinuousIndex<CoordRepType,MovingImageType::ImageDimension>
         MovingImageContinuousIndexType;
@@ -169,11 +168,8 @@ MeanSquaresPointSetToImageMetric<TFixedPointSet,TMovingImage>
       this->m_MovingImage->TransformPhysicalPointToContinuousIndex( transformedPoint, tempIndex );
 
       typename MovingImageType::IndexType mappedIndex; 
-      for( unsigned int j = 0; j < MovingImageType::ImageDimension; j++ )
-        {
-        mappedIndex[j] = static_cast<long>( vnl_math_rnd( tempIndex[j] ) );
-        }
-
+      mappedIndex.CopyWithRound( tempIndex );
+      
       const GradientPixelType gradient = 
         this->GetGradientImage()->GetPixel( mappedIndex );
 
@@ -247,9 +243,9 @@ MeanSquaresPointSetToImageMetric<TFixedPointSet,TMovingImage>
 
   while( pointItr != pointEnd && pointDataItr != pointDataEnd )
     {
-    typename Superclass::InputPointType  inputPoint;
+    InputPointType  inputPoint;
     inputPoint.CastFrom( pointItr.Value() );
-    typename Superclass::OutputPointType transformedPoint = 
+    OutputPointType transformedPoint = 
       this->m_Transform->TransformPoint( inputPoint );
 
     if( this->m_Interpolator->IsInsideBuffer( transformedPoint ) )
@@ -269,7 +265,6 @@ MeanSquaresPointSetToImageMetric<TFixedPointSet,TMovingImage>
 
       // Get the gradient by NearestNeighboorInterpolation: 
       // which is equivalent to round up the point components.
-      typedef typename Superclass::OutputPointType OutputPointType;
       typedef typename OutputPointType::CoordRepType CoordRepType;
       typedef ContinuousIndex<CoordRepType,MovingImageType::ImageDimension>
         MovingImageContinuousIndexType;
@@ -278,10 +273,7 @@ MeanSquaresPointSetToImageMetric<TFixedPointSet,TMovingImage>
       this->m_MovingImage->TransformPhysicalPointToContinuousIndex( transformedPoint, tempIndex );
 
       typename MovingImageType::IndexType mappedIndex; 
-      for( unsigned int j = 0; j < MovingImageType::ImageDimension; j++ )
-        {
-        mappedIndex[j] = static_cast<long>( vnl_math_rnd( tempIndex[j] ) );
-        }
+      mappedIndex.CopyWithRound( tempIndex );
 
       const GradientPixelType gradient = 
         this->GetGradientImage()->GetPixel( mappedIndex );

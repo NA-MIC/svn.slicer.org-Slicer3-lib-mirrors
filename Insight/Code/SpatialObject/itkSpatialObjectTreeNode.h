@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSpatialObjectTreeNode.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/16 23:15:51 $
+  Date:      $Date: 2007-07-16 23:15:51 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

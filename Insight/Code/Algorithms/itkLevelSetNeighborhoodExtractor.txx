@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLevelSetNeighborhoodExtractor.txx,v $
   Language:  C++
-  Date:      $Date: 2004/10/18 23:02:26 $
-  Version:   $Revision: 1.29 $
+  Date:      $Date: 2008-01-18 20:07:32 $
+  Version:   $Revision: 1.30 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -40,7 +40,6 @@ LevelSetNeighborhoodExtractor<TLevelSet>
   m_OutsidePoints = 0;
   m_InputLevelSet = 0;  
 
-  typedef typename LevelSetImageType::PixelType PixelType;
   m_LargeValue = NumericTraits<PixelType>::max();
   m_NodesUsed.resize( SetDimension );
 

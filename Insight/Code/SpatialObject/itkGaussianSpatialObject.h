@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianSpatialObject.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/28 19:24:21 $
+  Date:      $Date: 2007-01-28 19:24:21 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

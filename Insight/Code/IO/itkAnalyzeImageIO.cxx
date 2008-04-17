@@ -1,17 +1,17 @@
 /*=========================================================================
 
-Program:   Insight Segmentation & Registration Toolkit
-Module:    $RCSfile: itkAnalyzeImageIO.cxx,v $
-Language:  C++
-Date:      $Date: 2007/08/09 15:39:22 $
-Version:   $Revision: 1.80 $
+  Program:   Insight Segmentation & Registration Toolkit
+  Module:    $RCSfile: itkAnalyzeImageIO.cxx,v $
+  Language:  C++
+  Date:      $Date: 2008-02-25 02:41:02 $
+  Version:   $Revision: 1.86 $
 
-Copyright (c) Insight Software Consortium. All rights reserved.
-See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+  Copyright (c) Insight Software Consortium. All rights reserved.
+  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+     PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
@@ -448,7 +448,7 @@ AnalyzeImageIO::AnalyzeImageIO()
   // strcpy(this->m_Hdr.hk.data_type,DataTypes[DT_INDEX_UNKNOWN]);
   /* Acceptable this->m_Hdr.hk.data_type values are */
   /* "UNKNOWN","BINARY","CHAR","SHORT","INT","FLOAT","COMPLEX","DOUBLE","RGB" */
-  this->m_Hdr.hk.sizeof_hdr=sizeof(struct dsr);
+  this->m_Hdr.hk.sizeof_hdr = static_cast< int >( sizeof(struct dsr) );
   this->m_Hdr.hk.db_name[0]='\0';
   this->m_Hdr.hk.extents=16384;
   this->m_Hdr.hk.session_error=0;
@@ -484,24 +484,24 @@ AnalyzeImageIO::AnalyzeImageIO()
   // A value of 0.0 for these fields implies that the value is unknown.
   // Change these values to what is appropriate for your data
   // or pass additional commathis->m_Hdr.dime.dim[0] line arguments
-  this->m_Hdr.dime.pixdim[0]=0.0;//Unused field
-  this->m_Hdr.dime.pixdim[1]=1.0;//x_dimension
-  this->m_Hdr.dime.pixdim[2]=1.0;//y_dimension
-  this->m_Hdr.dime.pixdim[3]=1.0;//z_dimension
-  this->m_Hdr.dime.pixdim[4]=1.0;//t_dimension
-  this->m_Hdr.dime.pixdim[5]=1.0;
-  this->m_Hdr.dime.pixdim[6]=1.0;
-  this->m_Hdr.dime.pixdim[7]=1.0;
+  this->m_Hdr.dime.pixdim[0]=0.0f;//Unused field
+  this->m_Hdr.dime.pixdim[1]=1.0f;//x_dimension
+  this->m_Hdr.dime.pixdim[2]=1.0f;//y_dimension
+  this->m_Hdr.dime.pixdim[3]=1.0f;//z_dimension
+  this->m_Hdr.dime.pixdim[4]=1.0f;//t_dimension
+  this->m_Hdr.dime.pixdim[5]=1.0f;
+  this->m_Hdr.dime.pixdim[6]=1.0f;
+  this->m_Hdr.dime.pixdim[7]=1.0f;
   // Assume zero offset in .img file, byte at which pixel data starts in
   // the HeaderObj file
   // byte offset in the HeaderObj file which voxels start
-  this->m_Hdr.dime.vox_offset=0.0;
+  this->m_Hdr.dime.vox_offset=0.0f;
 
-  this->m_Hdr.dime.roi_scale=0.0;
-  this->m_Hdr.dime.funused1=0.0;
-  this->m_Hdr.dime.funused2=0.0;
-  this->m_Hdr.dime.cal_max=0.0;  // specify range of calibration values
-  this->m_Hdr.dime.cal_min=0.0;  // specify range of calibration values
+  this->m_Hdr.dime.roi_scale=0.0f;
+  this->m_Hdr.dime.funused1=0.0f;
+  this->m_Hdr.dime.funused2=0.0f;
+  this->m_Hdr.dime.cal_max=0.0f;  // specify range of calibration values
+  this->m_Hdr.dime.cal_min=0.0f;  // specify range of calibration values
   this->m_Hdr.dime.compressed=0; // specify that the data file with extension
                                  // .img is not compressed 
   this->m_Hdr.dime.verified=0;
@@ -735,7 +735,7 @@ void AnalyzeImageIO::Read(void* buffer)
   // ::gzseek( file_p, total_offset, SEEK_SET );
 
   // read image in
-  ::gzread( file_p, p, this->GetImageSizeInBytes());
+  ::gzread( file_p, p, static_cast< unsigned >( this->GetImageSizeInBytes() ) );
   gzclose( file_p );
   SwapBytesIfNecessary( buffer, numberOfPixels );
 }
@@ -750,9 +750,17 @@ bool AnalyzeImageIO::CanReadFile( const char* FileNameToRead )
 
   // we check that the correction extension is given by the user
   std::string filenameext = GetExtension(filename);
-  if(filenameext != std::string("hdr") 
-     && filenameext != std::string("img.gz")
-     && filenameext != std::string("img")
+  if (filenameext == std::string("gz"))
+    {
+    const std::string::size_type it = filename.rfind( ".img.gz" );
+    if (it != (filename.length() - 7))
+      {
+      return false;
+      }
+    }
+  else if(filenameext != std::string("hdr") 
+          && filenameext != std::string("img.gz")
+          && filenameext != std::string("img")
     )
     {
     return false;
@@ -783,6 +791,7 @@ bool AnalyzeImageIO::CanReadFile( const char* FileNameToRead )
                                   (void *)&(this->m_Hdr), 
                                   sizeof(struct dsr) ) )
     {
+    local_InputStream.close();
     return false;
     }
   local_InputStream.close();
@@ -806,7 +815,8 @@ bool AnalyzeImageIO::CanReadFile( const char* FileNameToRead )
   // version of the analyze file.
   //Eventually the entire itkAnalyzeImageIO class will be
   //subsumed by the nifti reader.
-  return is_nifti_file(FileNameToRead) == 0;
+  const bool NotNiftiTaggedFile=(is_nifti_file(FileNameToRead) == 0);
+  return NotNiftiTaggedFile;
 }
 
 void AnalyzeImageIO::ReadImageInformation()
@@ -1363,7 +1373,7 @@ AnalyzeImageIO
     {
     //NOTE: Analyze pixdim[0] is ignored, and the number of dims are
     //taken from dims[0], and pixdim[1..7] are the actual pixdims.
-    this->m_Hdr.dime.pixdim[dim+1]= m_Spacing[ dim ];
+    this->m_Hdr.dime.pixdim[dim+1]= static_cast< float >( m_Spacing[ dim ] );
     }
   //The next funciton sets bitpix, and datatype, and data_type fields
   //Along with gl_min and gl_max fields.
@@ -1476,7 +1486,7 @@ AnalyzeImageIO
     else
 #endif
       {
-      ::gzwrite( file_p,p,this->GetImageSizeInBytes());
+      ::gzwrite( file_p,p, static_cast< unsigned >( this->GetImageSizeInBytes() ) );
       }
     ::gzclose( file_p );
     //RemoveFile FileNameToRead.img so that it does not get confused with
@@ -1504,7 +1514,7 @@ AnalyzeImageIO
       exception.SetLocation(ITK_LOCATION);
       throw exception;
       }
-    local_OutputStream.write((const char *)p, this->GetImageSizeInBytes() );
+    local_OutputStream.write((const char *)p, static_cast< std::streamsize >( this->GetImageSizeInBytes() ) );
     bool success = !local_OutputStream.bad();
     local_OutputStream.close();
     if( !success )

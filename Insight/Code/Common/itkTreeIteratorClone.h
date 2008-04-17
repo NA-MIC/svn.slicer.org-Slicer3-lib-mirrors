@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTreeIteratorClone.h,v $
   Language:  C++
-  Date:      $Date: 2004/07/23 20:07:14 $
+  Date:      $Date: 2004-07-23 20:07:14 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKImageExport.txx,v $
   Language:  C++
-  Date:      $Date: 2004/07/10 22:05:40 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007-10-05 10:29:52 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,7 @@
 =========================================================================*/
 #ifndef __itkVTKImageExport_txx
 #define __itkVTKImageExport_txx
+
 #include "itkVTKImageExport.h"
 
 #include "itkPixelTraits.h"
@@ -73,6 +74,10 @@ VTKImageExport<TInputImage>::VTKImageExport()
     {
     m_ScalarTypeName = "unsigned char";
     }
+  else if(typeid(ScalarType) == typeid(signed char))
+    {
+    m_ScalarTypeName = "signed char";
+    }
   else
     {
     itkExceptionMacro(<<"Type currently not supported");
@@ -119,6 +124,12 @@ template <class TInputImage>
 int* VTKImageExport<TInputImage>::WholeExtentCallback()
 {
   InputImagePointer input = this->GetInput();
+  if( !input )
+    {
+    itkExceptionMacro(<< "Need to set an input");
+    return 0;
+    }
+
   InputRegionType region = input->GetLargestPossibleRegion();
   InputSizeType size = region.GetSize();
   InputIndexType index = region.GetIndex();
@@ -148,6 +159,12 @@ template <class TInputImage>
 double* VTKImageExport<TInputImage>::SpacingCallback()
 {
   InputImagePointer input = this->GetInput();
+  if( !input )
+    {
+    itkExceptionMacro(<< "Need to set an input");
+    return 0;
+    }
+
   const typename TInputImage::SpacingType& spacing = input->GetSpacing();
 
   unsigned int i=0;
@@ -197,6 +214,12 @@ template <class TInputImage>
 double* VTKImageExport<TInputImage>::OriginCallback()
 {
   InputImagePointer input = this->GetInput();
+  if( !input )
+    {
+    itkExceptionMacro(<< "Need to set an input");
+    return 0;
+    }
+
   const typename TInputImage::PointType& origin = input->GetOrigin();
 
   unsigned int i=0;
@@ -289,6 +312,12 @@ void VTKImageExport<TInputImage>::PropagateUpdateExtentCallback(int* extent)
   region.SetIndex(index);
   
   InputImagePointer input = this->GetInput();
+  if( !input )
+    {
+    itkExceptionMacro(<< "Need to set an input");
+    return; 
+    }
+
   input->SetRequestedRegion(region);
 }
 
@@ -303,6 +332,12 @@ template <class TInputImage>
 int* VTKImageExport<TInputImage>::DataExtentCallback()
 {
   InputImagePointer input = this->GetInput();
+  if( !input )
+    {
+    itkExceptionMacro(<< "Need to set an input");
+    return 0;
+    }
+
   InputRegionType region = input->GetBufferedRegion();
   InputSizeType size = region.GetSize();
   InputIndexType index = region.GetIndex();
@@ -330,6 +365,12 @@ template <class TInputImage>
 void* VTKImageExport<TInputImage>::BufferPointerCallback()
 {
   InputImagePointer input = this->GetInput();
+  if( !input )
+    {
+    itkExceptionMacro(<< "Need to set an input");
+    return 0;
+    }
+
   return input->GetBufferPointer();
 }
 

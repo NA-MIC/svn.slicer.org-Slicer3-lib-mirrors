@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRGBToLuminanceImageAdaptor.h,v $
   Language:  C++
-  Date:      $Date: 2004/05/10 00:16:11 $
+  Date:      $Date: 2004-05-10 00:16:11 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

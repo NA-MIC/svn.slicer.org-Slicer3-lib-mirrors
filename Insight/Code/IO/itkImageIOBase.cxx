@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageIOBase.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/15 18:29:56 $
-  Version:   $Revision: 1.70 $
+  Date:      $Date: 2008-02-06 21:23:04 $
+  Version:   $Revision: 1.75 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -78,35 +78,35 @@ void ImageIOBase::Resize(const unsigned int numDimensions,
 
 void ImageIOBase::SetDimensions(unsigned int i, unsigned int dim)
 {
-  if ( i > m_Dimensions.size() ) {return;}
+  if ( i >= m_Dimensions.size() ) {return;}
   this->Modified();
   m_Dimensions[i] = dim;
 }
 
 void ImageIOBase::SetOrigin(unsigned int i, double origin)
 {
-  if ( i > m_Origin.size() ) {return;}
+  if ( i >= m_Origin.size() ) {return;}
   this->Modified();
   m_Origin[i] = origin;
 }
 
 void ImageIOBase::SetSpacing(unsigned int i, double spacing)
 {
-  if (i > m_Spacing.size() ) {return;}
+  if (i >= m_Spacing.size() ) {return;}
   this->Modified();
   m_Spacing[i] = spacing;
 }
 
 void ImageIOBase::SetDirection(unsigned int i, std::vector<double> &direction)
 {
-  if (i > m_Direction.size() ) {return;}
+  if (i >= m_Direction.size() ) {return;}
   this->Modified();
   m_Direction[i] = direction;
 }
 
 void ImageIOBase::SetDirection(unsigned int i, vnl_vector<double> &direction)
 {
-  if (i > m_Direction.size() ) {return;}
+  if (i >= m_Direction.size() ) {return;}
   this->Modified();
   std::vector<double> v;
   v.resize(m_Direction.size());
@@ -271,6 +271,20 @@ itkSetPixelType(ImageIOBase *This,
     This->SetComponentType(ntype);
     return true;
     }
+  else if ( ptype == typeid(FixedArray<T,3>) )
+    {
+    This->SetNumberOfComponents(3);
+    This->SetPixelType(ImageIOBase::FIXEDARRAY);
+    This->SetComponentType(ntype);
+    return true;
+    }
+  else if ( ptype == typeid(FixedArray<T,4>) )
+    {
+    This->SetNumberOfComponents(4);
+    This->SetPixelType(ImageIOBase::FIXEDARRAY);
+    This->SetComponentType(ntype);
+    return true;
+    }
   else if ( ptype == typeid(SymmetricSecondRankTensor<T,3>) )
     {
     This->SetNumberOfComponents(6);
@@ -304,6 +318,27 @@ itkSetPixelType(ImageIOBase *This,
     This->SetNumberOfComponents(6);
     This->SetComponentType(ntype);
     This->SetPixelType(ImageIOBase::DIFFUSIONTENSOR3D);
+    return true;
+    }
+  else if ( ptype == typeid(Matrix<T,2,2>) )
+    {
+    This->SetNumberOfComponents(4);
+    This->SetComponentType(ntype);
+    This->SetPixelType(ImageIOBase::MATRIX);
+    return true;
+    }
+  else if ( ptype == typeid(Matrix<T,3,3>) )
+    {
+    This->SetNumberOfComponents(9);
+    This->SetComponentType(ntype);
+    This->SetPixelType(ImageIOBase::MATRIX);
+    return true;
+    }
+  else if ( ptype == typeid(Matrix<T,4,4>) )
+    {
+    This->SetNumberOfComponents(16);
+    This->SetComponentType(ntype);
+    This->SetPixelType(ImageIOBase::MATRIX);
     return true;
     }
   else if ( ptype == typeid(std::complex<T>) )

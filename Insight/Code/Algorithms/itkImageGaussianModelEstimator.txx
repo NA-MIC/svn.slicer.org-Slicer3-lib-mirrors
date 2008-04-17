@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageGaussianModelEstimator.txx,v $
   Language:  C++
-  Date:      $Date: 2006/01/11 19:43:30 $
+  Date:      $Date: 2006-01-11 19:43:30 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

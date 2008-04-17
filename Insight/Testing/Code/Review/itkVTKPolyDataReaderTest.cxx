@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKPolyDataReaderTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/01 15:22:54 $
+  Date:      $Date: 2007-02-01 15:22:54 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

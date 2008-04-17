@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientVectorFlowImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/03/07 01:41:01 $
+  Date:      $Date: 2004-03-07 01:41:01 $
   Version:   $Revision: 1.19 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

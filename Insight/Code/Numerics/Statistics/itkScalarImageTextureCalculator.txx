@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkScalarImageTextureCalculator.txx,v $
   Language:  C++
-  Date:      $Date: 2005/05/10 05:33:48 $
+  Date:      $Date: 2005-05-10 05:33:48 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

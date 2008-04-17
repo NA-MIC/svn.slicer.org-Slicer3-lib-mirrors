@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFastChamferDistanceImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/24 13:39:24 $
+  Date:      $Date: 2006-03-24 13:39:24 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

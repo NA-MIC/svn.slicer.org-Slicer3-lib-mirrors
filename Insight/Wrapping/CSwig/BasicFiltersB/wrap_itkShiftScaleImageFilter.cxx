@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_itkShiftScaleImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/04/21 20:24:21 $
+  Date:      $Date: 2004-04-21 20:24:21 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

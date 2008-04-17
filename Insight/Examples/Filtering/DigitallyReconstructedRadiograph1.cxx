@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: DigitallyReconstructedRadiograph1.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/01/20 19:33:34 $
+  Date:      $Date: 2006-01-20 19:33:34 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

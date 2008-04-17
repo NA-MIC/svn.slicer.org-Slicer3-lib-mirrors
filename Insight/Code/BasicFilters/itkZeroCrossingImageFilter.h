@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkZeroCrossingImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/04 13:13:52 $
+  Date:      $Date: 2006-04-04 13:13:52 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

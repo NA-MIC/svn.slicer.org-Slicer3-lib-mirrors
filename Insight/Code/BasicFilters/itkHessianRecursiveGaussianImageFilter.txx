@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHessianRecursiveGaussianImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/26 12:49:57 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-02-13 15:59:36 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -135,7 +135,10 @@ HessianRecursiveGaussianImageFilter<TInputImage,TOutputImage>
 
   // This filter needs all of the input
   typename HessianRecursiveGaussianImageFilter<TInputImage,TOutputImage>::InputImagePointer image = const_cast<InputImageType *>( this->GetInput() );
-  image->SetRequestedRegion( this->GetInput()->GetLargestPossibleRegion() );
+  if (image)
+    {
+    image->SetRequestedRegion( this->GetInput()->GetLargestPossibleRegion() );
+    }
 }
 
 

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBayesianClassifierImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/20 13:36:35 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-01-27 18:29:23 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -285,7 +285,6 @@ BayesianClassifierImageFilter<TInputVectorImage, TLabelsType,
       // Create an auxillary image to store one component of the vector image. 
       // Smoothing filters typically can't handle multi-component images, so we
       // will extract each component and smooth it.
-      typedef itk::Image< TPosteriorsPrecisionType, Dimension > ExtractedComponentImageType;
       typename ExtractedComponentImageType::Pointer extractedComponentImage = 
         ExtractedComponentImageType::New();
       extractedComponentImage->CopyInformation( this->GetPosteriorImage());

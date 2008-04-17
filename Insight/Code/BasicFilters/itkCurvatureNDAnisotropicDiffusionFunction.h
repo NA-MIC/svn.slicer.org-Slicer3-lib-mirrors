@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCurvatureNDAnisotropicDiffusionFunction.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:46 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-01-24 19:25:07 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -60,7 +60,8 @@ namespace itk {
  *
  * \par References
  *  R. Whitaker and X. Xue. Variable-Conductance, Level-Set Curvature for 
- *  Image Processing, ICIP 2001.
+ *  Image Denoising, International Conference on Image Processing, 2001
+ *  pp. 142-145, Vol.3.
  *
  *  
  * \sa AnisotropicDiffusionFunction

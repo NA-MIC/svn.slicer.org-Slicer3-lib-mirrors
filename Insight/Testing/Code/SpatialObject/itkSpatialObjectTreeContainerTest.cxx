@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSpatialObjectTreeContainerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/24 01:12:55 $
+  Date:      $Date: 2005-03-24 01:12:55 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

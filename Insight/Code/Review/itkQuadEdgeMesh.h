@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMesh.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/01 18:33:08 $
-  Version:   $Revision: 1.23 $
+  Date:      $Date: 2008-02-07 15:58:06 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -59,16 +59,16 @@
  * loosely coupling of those operation methods with the targeted QuadEdgeMesh
  * object and heavier invocation syntax are a small price to pay in
  * exchange for optimal memory usage and end user modularity.
- * But we couldn't inherit from \ref itk::FunctionBase since its
+ * But we couldn't inherit from \ref FunctionBase since its
  * Evaluate( const InputType& input ) method promises to leave its
  * argument (the mesh we want to modify in our case) untouched.
  * Hence we created the \ref itkQE::MeshFunctionBase class whose main
- * difference with \ref itk::FunctionBase is that its Evaluate()
+ * difference with \ref FunctionBase is that its Evaluate()
  * method allows to modify the considered mesh.
  * When considering a new QuadEdgeMesh method we are left with four possible
  * "slots" to implement it:
  *   - the QuadEdgeMesh method
- *   - a derived class from itk::FunctionBase when the method leaves
+ *   - a derived class from FunctionBase when the method leaves
  *     the mesh constant.
  *   - a derived class from \ref itkQE::MeshFunctionBase when the
  *     method modifies the mesh (typically in the case of Euler operators)
@@ -82,7 +82,7 @@
  *     \ref Mesh::ComputeNumberOfPoints are left within the Mesh class.
  *   - heavier methods and less often called like
  *     \ref SanityCheckMeshFunction were implemented as derived classes of
- *     \ref itk::FunctionBase.
+ *     \ref FunctionBase.
  *   - methods with the same weight (measured e.g. in number of lines of
  *     code) but that modify the considered mesh, like
  *     \ref BoundaryEdgesMeshFunction or
@@ -92,7 +92,7 @@
  *   - more specialised methods, with a wider scope and that require a
  *     copy of the mesh should follow the classical itk Filter pattern,
  *     like \ref itkQE::MeshExtractComponentFilter, and inherit from
- *     \ref itk::MeshToMeshFilter.
+ *     \ref MeshToMeshFilter.
  */
 namespace itk
 {
@@ -104,7 +104,7 @@ namespace itk
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * http://hdl.handle.net/1926/306
+ * http://insight-journal.org/midas/handle.php?handle=1926/306
  *
  */
 template< typename TPixel, unsigned int VDimension,
@@ -132,6 +132,7 @@ public:
   typedef typename Superclass::CellPixelType    CellPixelType;
   typedef typename Superclass::CoordRepType     CoordRepType;
   typedef typename Superclass::PointIdentifier  PointIdentifier;
+  typedef typename Superclass::PointHashType    PointHashType;
   typedef typename Superclass::PointType        PointType;
   typedef typename Superclass::CellTraits       CellTraits;
 
@@ -239,7 +240,7 @@ public:
 
 public:
 
-  /** Basic itk::Object interface. */
+  /** Basic Object interface. */
   itkNewMacro( Self );
   itkTypeMacro( QuadEdgeMesh, Mesh );
 
@@ -258,7 +259,7 @@ public:
   /** another way of deleting all the cells */
   virtual void Clear();
 
-  /** Overloaded to avoid a bug in itk::Mesh that prevents proper inheritance
+  /** Overloaded to avoid a bug in Mesh that prevents proper inheritance
    * Refer to
    * http://public.kitware.com/pipermail/insight-users/2005-March/012459.html
    * and
@@ -386,6 +387,8 @@ public:
   /** */
   virtual QEPrimal* AddEdge( const PointIdentifier& orgPid,
                              const PointIdentifier& destPid );
+  virtual QEPrimal* AddEdgeWithSecurePointList( const PointIdentifier& orgPid,
+                             const PointIdentifier& destPid );
 
   /** Add a polygonal face to the Mesh, suppose QE layer ready */
   virtual void      AddFace( QEPrimal* e );
@@ -395,6 +398,7 @@ public:
    * of the new face will be on the left side of the edges 
    * formed by consecutive points in this list. */
   virtual QEPrimal* AddFace( const PointIdList& points );
+  virtual QEPrimal* AddFaceWithSecurePointList( const PointIdList& points );
 
   /** Adds a triangular face to the Mesh */
   virtual QEPrimal* AddFaceTriangle( const PointIdentifier& aPid,

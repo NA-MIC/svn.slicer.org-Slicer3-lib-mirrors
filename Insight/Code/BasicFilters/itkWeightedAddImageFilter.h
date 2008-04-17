@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWeightedAddImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/31 14:31:04 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007-09-27 11:36:41 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -119,6 +119,10 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
   
+  /** Runtime information support. */
+  itkTypeMacro(WeightedAddImageFilter, 
+               BinaryFunctorImageFilter);
+
   /** Set the weigth for the first operand of the weighted addition */
   void SetAlpha( RealType alpha ) 
     {

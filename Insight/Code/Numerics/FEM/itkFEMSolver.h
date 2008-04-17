@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMSolver.h,v $
   Language:  C++
-  Date:      $Date: 2004/11/10 19:22:13 $
+  Date:      $Date: 2004-11-10 19:22:13 $
   Version:   $Revision: 1.27 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

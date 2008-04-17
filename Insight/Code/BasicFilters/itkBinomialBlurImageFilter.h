@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinomialBlurImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/16 13:35:01 $
+  Date:      $Date: 2006-03-16 13:35:01 $
   Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

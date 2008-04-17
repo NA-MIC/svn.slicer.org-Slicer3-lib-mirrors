@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransform.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/19 18:09:48 $
-  Version:   $Revision: 1.55 $
+  Date:      $Date: 2008-01-23 22:44:36 $
+  Version:   $Revision: 1.57 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,15 +16,6 @@
 =========================================================================*/
 #ifndef __itkTransform_h
 #define __itkTransform_h
-
-// First make sure that the configuration is available.
-// This line can be removed once the optimized versions
-// gets integrated into the main directories.
-#include "itkConfigure.h"
-
-#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
-#include "itkThreadSafeTransform.h"
-#else
 
 #include "itkTransformBase.h"
 #include "itkPoint.h"
@@ -209,9 +200,13 @@ public:
   virtual unsigned int GetNumberOfParameters(void) const 
                       { return m_Parameters.Size(); }
 
-  /** Return the inverse of the transform.
-   *  The inverse is recomputed if it has been modified */
-  bool GetInverse(Self*) const {return false;}
+  /** Returns a boolean indicating whether it is possible or not to compute the
+   * inverse of this current Transform. If it is possible, then the inverse of
+   * the transform is returned in the inverseTransform variable passed by the
+   * user.  The inverse is recomputed if this current transform has been modified.
+   * This method is intended to be overriden by derived classes.
+   * */
+  bool GetInverse(Self * inverseTransform) const {return false;}
 
   /** Generate a platform independant name */
   virtual std::string GetTransformTypeAsString() const;
@@ -262,8 +257,6 @@ private:
 
 #if ITK_TEMPLATE_TXX
 # include "itkTransform.txx"
-#endif
-
 #endif
 
 #endif

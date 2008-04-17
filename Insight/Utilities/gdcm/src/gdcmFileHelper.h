@@ -3,8 +3,8 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmFileHelper.h,v $
   Language:  C++
-  Date:      $Date: 2006/07/10 20:08:21 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-12-11 11:19:48 $
+  Version:   $Revision: 1.6 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de
   l'Image). All rights reserved. See Doc/License.txt or
@@ -94,6 +94,7 @@ public:
    void SetImageData(uint8_t *data, size_t expectedSize);
 
    // User data
+   size_t ComputeExpectedImageDataSize();
    void SetUserData(uint8_t *data, size_t expectedSize);
    uint8_t *GetUserData();
    size_t GetUserDataSize();

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConicShellInteriorExteriorSpatialFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 23:22:57 $
+  Date:      $Date: 2006-03-19 23:22:57 $
   Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

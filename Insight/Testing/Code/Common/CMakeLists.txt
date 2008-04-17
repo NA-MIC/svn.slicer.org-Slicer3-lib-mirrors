@@ -23,13 +23,13 @@ SET(SYSTEM_INFORMATION_TEST ${CXX_TEST_PATH}/itkSystemInformationTest)
 SET(BASELINE ${ITK_DATA_ROOT}/Baseline/Common)
 
 SET(TEMP ${ITKTesting_BINARY_DIR}/Temporary)
+SET(EXAMPLES_DATA_ROOT "${ITK_SOURCE_DIR}/Examples/Data")
 
 ADD_TEST(itkAnnulusOperatorTest ${COMMON_TESTS} itkAnnulusOperatorTest)
 ADD_TEST(itkChainCodePath2DTest ${COMMON_TESTS} itkChainCodePath2DTest)
 ADD_TEST(itkChainCodePathTest ${COMMON_TESTS} itkChainCodePathTest)
 ADD_TEST(itkColorTableTest ${COMMON_TESTS} itkColorTableTest)
 ADD_TEST(itkCommonPrintTest ${COMMON_TESTS} itkCommonPrintTest)
-ADD_TEST(itkConditionVariableTest ${COMMON_TESTS} itkConditionVariableTest)
 ADD_TEST(itkDecoratorTest ${COMMON_TESTS} itkDecoratorTest)
 ADD_TEST(itkDirectoryTest ${COMMON_TESTS} itkDirectoryTest ${TEMP})
 ADD_TEST(itkModifiedTimeTest ${COMMON_TESTS} itkModifiedTimeTest)
@@ -42,7 +42,11 @@ ADD_TEST(itkArrayTest ${COMMON_TESTS} itkArrayTest)
 ADD_TEST(itkArray2DTest ${COMMON_TESTS} itkArray2DTest)
 ADD_TEST(itkAutoPointerTest ${COMMON_TESTS} itkAutoPointerTest)
 ADD_TEST(itkAzimuthElevationToCartesianTransformTest ${COMMON_TESTS} itkAzimuthElevationToCartesianTransformTest)
+IF(NOT MINGW)
 ADD_TEST(itkBarrierTest ${COMMON_TESTS} itkBarrierTest)
+ADD_TEST(itkConditionVariableTest ${COMMON_TESTS} itkConditionVariableTest)
+ADD_TEST(itkSemaphoreTest ${COMMON_TESTS2} itkSemaphoreTest)
+ENDIF(NOT MINGW)
 ADD_TEST(itkBinaryThresholdImageFunctionTest ${COMMON_TESTS} itkBinaryThresholdImageFunctionTest)
 ADD_TEST(itkBinaryThresholdSpatialFunctionTest ${COMMON_TESTS} itkBinaryThresholdSpatialFunctionTest)
 ADD_TEST(itkBoundingBoxTest ${COMMON_TESTS} itkBoundingBoxTest)
@@ -78,9 +82,44 @@ ADD_TEST(itkCommonHeaderTest ${COMMON_HEADER_TEST})
 ADD_TEST(itkHashTableTest ${COMMON_TESTS} itkHashTableTest)
 ADD_TEST(itkIdentityTransformTest ${COMMON_TESTS} itkIdentityTransformTest)
 ADD_TEST(itkImageAdaptorTest ${COMMON_TESTS} itkImageAdaptorTest)
+ADD_TEST(itkOrientedImageAdaptorTest ${COMMON_TESTS} itkOrientedImageAdaptorTest)
 ADD_TEST(itkImageAdaptorInterpolateImageFunctionTest ${COMMON_TESTS} itkImageAdaptorInterpolateImageFunctionTest)
 
+ADD_TEST(itkBSplineDeformableTransformTest2 ${COMMON_TESTS2} 
+  --compare ${BASELINE}/itkBSplineDeformableTransformTest2.png
+            ${TEMP}/itkBSplineDeformableTransformTest2.png
+  itkBSplineDeformableTransformTest2
+        ${ITK_SOURCE_DIR}/Examples/Data/BSplineDisplacements4.txt
+        ${ITK_SOURCE_DIR}/Examples/Data/DiagonalLines.png
+        ${ITK_SOURCE_DIR}/Examples/Data/DiagonalLines.png
+        ${TEMP}/itkBSplineDeformableTransformTest2.png
+        ${TEMP}/itkBSplineDeformableTransformTest2DeformationField.mhd 1
+  )
+
+ADD_TEST(itkBSplineDeformableTransformTest3 ${COMMON_TESTS2} 
+  --compare ${BASELINE}/itkBSplineDeformableTransformTest3.png
+            ${TEMP}/itkBSplineDeformableTransformTest3.png
+  itkBSplineDeformableTransformTest2
+        ${ITK_SOURCE_DIR}/Examples/Data/BSplineDisplacements3.txt
+        ${ITK_SOURCE_DIR}/Examples/Data/DiagonalLines.png
+        ${ITK_SOURCE_DIR}/Examples/Data/DiagonalLines.png
+        ${TEMP}/itkBSplineDeformableTransformTest3.png
+        ${TEMP}/itkBSplineDeformableTransformTest3DeformationField.mhd 2
+  )
+
+ADD_TEST(itkBSplineDeformableTransformTest4 ${COMMON_TESTS2} 
+  --compare ${BASELINE}/itkBSplineDeformableTransformTest4.png
+            ${TEMP}/itkBSplineDeformableTransformTest4.png
+  itkBSplineDeformableTransformTest2
+        ${ITK_SOURCE_DIR}/Examples/Data/BSplineDisplacements1.txt
+        ${ITK_SOURCE_DIR}/Examples/Data/DiagonalLines.png
+        ${ITK_SOURCE_DIR}/Examples/Data/DiagonalLines.png
+        ${TEMP}/itkBSplineDeformableTransformTest4.png
+        ${TEMP}/itkBSplineDeformableTransformTest4DeformationField.mhd 3
+  )
+
 ADD_TEST(itkCellInterfaceTest ${COMMON_TESTS2} itkCellInterfaceTest)
+ADD_TEST(itkImageTransformTest ${COMMON_TESTS2} itkImageTransformTest)
 ADD_TEST(itkRGBInterpolateImageFunctionTest ${COMMON_TESTS2} itkRGBInterpolateImageFunctionTest)
 ADD_TEST(itkImageDuplicatorTest ${COMMON_TESTS} itkImageDuplicatorTest)
 ADD_TEST(itkImageIteratorTest ${COMMON_TESTS} itkImageIteratorTest)
@@ -88,6 +127,8 @@ ADD_TEST(itkImageIteratorsForwardBackwardTest ${COMMON_TESTS} itkImageIteratorsF
 ADD_TEST(itkImageIteratorWithIndexTest ${COMMON_TESTS} itkImageIteratorWithIndexTest)
 ADD_TEST(itkImageLinearIteratorTest ${COMMON_TESTS} itkImageLinearIteratorTest)
 ADD_TEST(itkImageRandomIteratorTest ${COMMON_TESTS} itkImageRandomIteratorTest)
+ADD_TEST(itkImageRandomIteratorTest2 ${COMMON_TESTS} itkImageRandomIteratorTest2
+      ${TEMP}/itkImageRandomIteratorTest2Output.mha)
 ADD_TEST(itkImageRandomNonRepeatingIteratorWithIndexTest ${COMMON_TESTS} itkImageRandomNonRepeatingIteratorWithIndexTest)
 ADD_TEST(itkImageRegionTest ${COMMON_TESTS} itkImageRegionTest)
 ADD_TEST(itkImageRegionExclusionIteratorWithIndexTest ${COMMON_TESTS} itkImageRegionExclusionIteratorWithIndexTest)
@@ -97,6 +138,7 @@ ADD_TEST(itkImageTest ${COMMON_TESTS} itkImageTest)
 ADD_TEST(itkIteratorTests ${COMMON_TESTS} itkIteratorTests)
 ADD_TEST(itkLandmarkBasedTransformInitializerTest ${COMMON_TESTS} itkLandmarkBasedTransformInitializerTest)
 ADD_TEST(itkLightObjectTest ${COMMON_TESTS} itkLightObjectTest)
+ADD_TEST(itkLinearInterpolateImageFunctionTest ${COMMON_TESTS2} itkLinearInterpolateImageFunctionTest)
 ADD_TEST(itkLineIteratorTest ${COMMON_TESTS} 
   --compare ${BASELINE}/itkLineIteratorTest.png
             ${TEMP}/itkLineIteratorTest.png
@@ -125,16 +167,89 @@ IF(ITK_DATA_ROOT)
                  ${ITK_DATA_ROOT}/Input/cake_easy.png 
                  ${ITK_DATA_ROOT}/Input/cake_hard.png 
                  ${ITK_TEST_OUTPUT_DIR}/itkDifferenceImageFilterTest.png 10 1)
+
+  IF(ITK_USE_ORIENTED_IMAGE_DIRECTION)
+    # The difference between these two tests is that if the CMake flag for
+    # image orientation is ON, then the second computation of the gradient
+    # should now take direction into account. Since not all builds have this
+    # flag enabled, the builds with the option OFF will get the gradients in 
+    # the frame of the image grid.
+    ADD_TEST(itkOrientedImage2DTest01 ${COMMON_TESTS2} 
+       itkOrientedImage2DTest 
+                   ${EXAMPLES_DATA_ROOT}/BrainProtonDensitySliceBorder20DirectionPlus30.mhd
+
+                       0.000    0.000
+                     191.392  110.500
+                    -128.500  222.569
+
+                       4.000   -8.000
+                       7.4641  -4.9282
+                    )
+  ELSE(ITK_USE_ORIENTED_IMAGE_DIRECTION)
+    ADD_TEST(itkOrientedImage2DTest01 ${COMMON_TESTS2} 
+       itkOrientedImage2DTest 
+                   ${EXAMPLES_DATA_ROOT}/BrainProtonDensitySliceBorder20DirectionPlus30.mhd
+
+                       0.000    0.000
+                     191.392  110.500
+                    -128.500  222.569
+
+                       4.000   -8.000
+                       4.000   -8.000
+                    )
+  ENDIF(ITK_USE_ORIENTED_IMAGE_DIRECTION)
+
+
+  IF(ITK_USE_ORIENTED_IMAGE_DIRECTION)
+    # The difference between these two tests is that if the CMake flag for
+    # image orientation is ON, then the second computation of the gradient
+    # should now take direction into account. Since not all builds have this
+    # flag enabled, the builds with the option OFF will get the gradients in 
+    # the frame of the image grid.
+    ADD_TEST(itkOrientedImage3DTest01 ${COMMON_TESTS2} 
+       itkOrientedImage3DTest 
+                   ${ITK_DATA_ROOT}/Input/HeadMRVolumeWithDirection.mhd
+                      0.000      0.000     0.000
+                    166.277    -96.000     0.000
+                    124.000    214.774     0.000
+                      0.000      0.000   168.000
+
+                      0.125     -4.125     9.000
+                     -1.95425   -3.63485   9.000
+                   )
+  ELSE(ITK_USE_ORIENTED_IMAGE_DIRECTION)
+    ADD_TEST(itkOrientedImage3DTest01 ${COMMON_TESTS2} 
+       itkOrientedImage3DTest 
+                   ${ITK_DATA_ROOT}/Input/HeadMRVolumeWithDirection.mhd
+                      0.000      0.000     0.000
+                    166.277    -96.000     0.000
+                    124.000    214.774     0.000
+                      0.000      0.000   168.000
+
+                      0.125     -4.125     9.000
+                      0.125     -4.125     9.000
+                   )
+  ENDIF(ITK_USE_ORIENTED_IMAGE_DIRECTION)
+
+
 ENDIF(ITK_DATA_ROOT)
 
 ADD_TEST(itkMedianImageFunctionTest ${COMMON_TESTS2} itkMedianImageFunctionTest)
 ADD_TEST(itkMedialNodeCorrespondencesTest ${COMMON_TESTS2} itkMedialNodeCorrespondencesTest)
-ADD_TEST(itkMemoryLeakTest ${COMMON_TESTS2} itkMemoryLeakTest)
+
+#
+# This test should be enabled if you suspect that the memory leak detector
+# is not working
+IF(0)
+  ADD_TEST(itkMemoryLeakTest ${COMMON_TESTS2} itkMemoryLeakTest)
+ENDIF(0)
+
 ADD_TEST(itkMeshTest ${COMMON_TESTS2} itkMeshTest)
 ADD_TEST(itkMeshFstreamTest ${COMMON_TESTS2} itkMeshFstreamTest ${TEMP}/testMeshFstream.txt)
 ADD_TEST(itkMeshSourceGraftOutputTest ${COMMON_TESTS2} itkMeshSourceGraftOutputTest)
 ADD_TEST(itkMetaDataDictionaryTest ${COMMON_TESTS2} itkMetaDataDictionaryTest)
 ADD_TEST(itkMinimumDecisionRuleTest ${COMMON_TESTS2} itkMinimumDecisionRuleTest)
+ADD_TEST(itkMultiThreaderTest ${COMMON_TESTS2} itkMultiThreaderTest)
 ADD_TEST(itkNearestNeighborExtrapolateImageFunctionTest ${COMMON_TESTS2} itkNearestNeighborExtrapolateImageFunctionTest)
 ADD_TEST(itkNeighborhoodTest ${COMMON_TESTS2} itkNeighborhoodTest)
 ADD_TEST(itkNeighborhoodIteratorTest ${COMMON_TESTS2} itkNeighborhoodIteratorTest)
@@ -170,7 +285,6 @@ ADD_TEST(itkScatterMatrixImageFunctionTest ${COMMON_TESTS2} itkScatterMatrixImag
 ADD_TEST(itkScaleSkewVersor3DTransformTest ${COMMON_TESTS2} itkScaleSkewVersor3DTransformTest)
 ADD_TEST(itkScaleTransformTest ${COMMON_TESTS2} itkScaleTransformTest)
 ADD_TEST(itkScaleLogarithmicTransformTest ${COMMON_TESTS2} itkScaleLogarithmicTransformTest)
-ADD_TEST(itkSemaphoreTest ${COMMON_TESTS2} itkSemaphoreTest)
 ADD_TEST(itkShapedNeighborhoodIteratorTest ${COMMON_TESTS2} itkShapedNeighborhoodIteratorTest)
 ADD_TEST(itkSimilarity2DTransformTest ${COMMON_TESTS2} itkSimilarity2DTransformTest)
 ADD_TEST(itkSimilarity3DTransformTest ${COMMON_TESTS2} itkSimilarity3DTransformTest)
@@ -209,6 +323,8 @@ ADD_TEST(itkSymmetricSecondRankTensorTest ${COMMON_TESTS2} itkSymmetricSecondRan
 ADD_TEST(itkSymmetricEigenAnalysisTest ${COMMON_TESTS2} itkSymmetricEigenAnalysisTest)
 ADD_TEST(itkSTLThreadTest ${COMMON_TESTS2} itkSTLThreadTest)
 ADD_TEST(itkVariableLengthVectorTest ${COMMON_TESTS2} itkVariableLengthVectorTest)
+ADD_TEST(itkVariableSizeMatrixTest ${COMMON_TESTS2} itkVariableSizeMatrixTest)
+ADD_TEST(itkImportContainerTest ${COMMON_TESTS2} itkImportContainerTest)
 #ADD_TEST(itkQuaternionOrientationAdapterTest ${COMMON_TESTS2} itkQuaternionOrientationAdapterTest)
 ADD_TEST(itkZeroFluxBoundaryConditionTest ${COMMON_TESTS2} itkZeroFluxBoundaryConditionTest)
 ADD_TEST(itkSystemInformationTest ${SYSTEM_INFORMATION_TEST})
@@ -301,6 +417,7 @@ itkGaussianDerivativeImageFunctionTest.cxx
 itkHashTableTest.cxx
 itkIdentityTransformTest.cxx
 itkImageAdaptorTest.cxx
+itkOrientedImageAdaptorTest.cxx
 itkImageAdaptorInterpolateImageFunctionTest.cxx
 itkImageDuplicatorTest.cxx
 itkImageIteratorTest.cxx
@@ -308,6 +425,7 @@ itkImageIteratorsForwardBackwardTest.cxx
 itkImageIteratorWithIndexTest.cxx
 itkImageLinearIteratorTest.cxx
 itkImageRandomIteratorTest.cxx
+itkImageRandomIteratorTest2.cxx
 itkImageRandomNonRepeatingIteratorWithIndexTest.cxx
 itkImageRegionTest.cxx
 itkImageRegionExclusionIteratorWithIndexTest.cxx
@@ -330,7 +448,10 @@ itkMahalanobisDistanceThresholdImageFunctionTest.cxx
 
 #-----------------------------------------------------------------------------
 SET(BasicTests2_SRCS
+itkBSplineDeformableTransformTest2.cxx 
 itkCellInterfaceTest.cxx
+itkImageTransformTest.cxx
+itkLinearInterpolateImageFunctionTest.cxx
 itkMaximumDecisionRuleTest.cxx
 itkMaximumRatioDecisionRuleTest.cxx
 itkDifferenceImageFilterTest.cxx 
@@ -343,6 +464,7 @@ itkMeshFstreamTest.cxx
 itkMeshSourceGraftOutputTest.cxx
 itkMetaDataDictionaryTest.cxx
 itkMinimumDecisionRuleTest.cxx
+itkMultiThreaderTest.cxx
 itkNearestNeighborExtrapolateImageFunctionTest.cxx
 itkNeighborhoodTest.cxx
 itkNeighborhoodIteratorTest.cxx
@@ -354,6 +476,8 @@ itkObjectFactoryTest2.cxx
 itkObjectStoreTest.cxx
 itkOctreeTest.cxx
 itkOrthogonallyCorrected2DParametricPathTest.cxx
+itkOrientedImage2DTest.cxx
+itkOrientedImage3DTest.cxx
 itkPathFunctionsTest.cxx
 itkPathIteratorTest.cxx
 itkPCAShapeSignedDistanceFunctionTest.cxx
@@ -416,6 +540,8 @@ itkSymmetricSecondRankTensorTest.cxx
 itkSymmetricEigenAnalysisTest.cxx
 itkSTLThreadTest.cxx
 itkVariableLengthVectorTest.cxx
+itkVariableSizeMatrixTest.cxx
+itkImportContainerTest.cxx
 itkZeroFluxBoundaryConditionTest.cxx
 )
 # itkQuaternionOrientationAdapterTest.cxx

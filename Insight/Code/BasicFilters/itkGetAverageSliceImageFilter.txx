@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGetAverageSliceImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/12/03 17:12:13 $
+  Date:      $Date: 2005-12-03 17:12:13 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

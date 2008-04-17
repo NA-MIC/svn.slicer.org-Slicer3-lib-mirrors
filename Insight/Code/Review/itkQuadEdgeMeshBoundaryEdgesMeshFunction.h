@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshBoundaryEdgesMeshFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/02 21:56:53 $
+  Date:      $Date: 2007-07-02 21:56:53 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

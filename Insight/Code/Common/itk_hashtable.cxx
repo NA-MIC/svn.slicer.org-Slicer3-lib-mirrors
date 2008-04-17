@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itk_hashtable.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/21 01:51:23 $
+  Date:      $Date: 2005-03-21 01:51:23 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

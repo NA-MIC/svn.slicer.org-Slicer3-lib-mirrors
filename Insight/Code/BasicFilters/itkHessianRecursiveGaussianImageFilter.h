@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHessianRecursiveGaussianImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/07/29 13:09:13 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007-10-27 19:51:42 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -124,6 +124,9 @@ public:
   typedef TOutputImage      OutputImageType;
   typedef typename          OutputImageType::PixelType      OutputPixelType;
   typedef typename PixelTraits<OutputPixelType>::ValueType  OutputComponentType;
+
+  /** Run-time type information (and related methods).   */
+  itkTypeMacro( HessianRecursiveGaussianImageFilter, ImageToImageFilter );
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanCalculator.txx,v $
   Language:  C++
-  Date:      $Date: 2006/08/14 15:40:56 $
+  Date:      $Date: 2006-08-14 15:40:56 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

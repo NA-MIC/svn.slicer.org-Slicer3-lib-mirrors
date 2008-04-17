@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageRegistration11.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:42 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-03-13 15:50:13 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -110,7 +110,8 @@ int main( int argc, char *argv[] )
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " fixedImageFile  movingImageFile ";
-    std::cerr << "outputImagefile [differenceImage]" << std::endl;
+    std::cerr << "outputImagefile ";
+    std::cerr << "[useExplicitPDFderivatives ] " << std::endl;
     return EXIT_FAILURE;
     }
   
@@ -161,6 +162,15 @@ int main( int argc, char *argv[] )
 
   metric->SetNumberOfHistogramBins( 20 );
   metric->SetNumberOfSpatialSamples( 10000 );
+
+  if( argc > 4 )
+    {
+    // Define whether to calculate the metric derivative by explicitly
+    // computing the derivatives of the joint PDF with respect to the Transform
+    // parameters, or doing it by progressively accumulating contributions from
+    // each bin in the joint PDF.
+    metric->SetUseExplicitPDFDerivatives( atoi( argv[4] ) );
+    }
 
   typedef itk::ImageFileReader< FixedImageType  > FixedImageReaderType;
   typedef itk::ImageFileReader< MovingImageType > MovingImageReaderType;
@@ -312,6 +322,7 @@ int main( int argc, char *argv[] )
   resample->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
   resample->SetOutputOrigin(  fixedImage->GetOrigin() );
   resample->SetOutputSpacing( fixedImage->GetSpacing() );
+  resample->SetOutputDirection( fixedImage->GetDirection() );
   resample->SetDefaultPixelValue( 100 );
 
 

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorThresholdSegmentationLevelSetFunction.h,v $
   Language:  C++
-  Date:      $Date: 2003/12/23 18:33:14 $
+  Date:      $Date: 2003-12-23 18:33:14 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

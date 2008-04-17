@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVotingBinaryHoleFillingImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/16 17:24:32 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-01-02 01:32:34 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -103,7 +103,7 @@ VotingBinaryHoleFillingImageFilter< TInputImage, TOutputImage>
   
   const InputPixelType backgroundValue = this->GetBackgroundValue();
   const InputPixelType foregroundValue = this->GetForegroundValue();
-  const unsigned int   birthThreshold  = this->GetBirthThreshold();
+  const unsigned int   birthThreshold  = (unsigned int)(this->GetBirthThreshold());
 
   unsigned int numberOfPixelsChanged = 0;
 

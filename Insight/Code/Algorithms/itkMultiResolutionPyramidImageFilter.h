@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMultiResolutionPyramidImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/05 13:59:36 $
+  Date:      $Date: 2006-04-05 13:59:36 $
   Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

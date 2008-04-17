@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkShapeDetectionLevelSetImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/10/07 16:43:01 $
+  Date:      $Date: 2003-10-07 16:43:01 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkChangeInformationImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/10 14:34:01 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007-11-21 14:07:25 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -268,7 +268,7 @@ int itkChangeInformationImageFilterTest(int, char* [] )
     std::cout << "-----------ChangeSpacingOn(), UseReferenceOn(): " << std::endl;;
     PrintInformation3 (inputImage, filter->GetOutput(), referenceImage);
 
-    filter->ChangeOriginOn();
+    filter->ChangeOriginOff();
     filter->ChangeSpacingOff();
     filter->ChangeDirectionOn();
     filter->Update();

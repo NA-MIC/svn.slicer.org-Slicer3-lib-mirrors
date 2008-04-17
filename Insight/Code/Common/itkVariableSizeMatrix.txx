@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVariableSizeMatrix.txx,v $
   Language:  C++
-  Date:      $Date: 2006/10/14 19:58:32 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-11-09 13:49:16 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,8 +14,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkVariableSizeMatrix_txx
-#define _itkVariableSizeMatrix_txx
+#ifndef __itkVariableSizeMatrix_txx
+#define __itkVariableSizeMatrix_txx
 
 #include "itkVariableSizeMatrix.h" 
 #include "itkNumericTraits.h"
@@ -39,17 +39,17 @@ VariableSizeMatrix<T>
 {
   unsigned int rows = this->Rows();
   unsigned int cols = this->Cols();
-  if( vect.Size() != rows )
+  if( vect.Size() != cols )
     {
-    itkExceptionMacro( << "Matrix with " << this->Cols() << " columns cannot be "
+    itkGenericExceptionMacro( << "Matrix with " << this->Cols() << " columns cannot be "
         << "multiplied with array of length: " << vect.Size() );
     }
   
   Array<T> result(rows);
-  for( unsigned int r=0; r<this->rows; r++) 
+  for( unsigned int r=0; r<rows; r++) 
     {
     T sum = NumericTraits<T>::Zero;   
-    for( unsigned int c=0; c< this->cols; c++ ) 
+    for( unsigned int c=0; c< cols; c++ ) 
       {
       sum += m_Matrix(r,c) * vect[c];
       }
@@ -57,9 +57,6 @@ VariableSizeMatrix<T>
     }
   return result;
 }
-
-
-
  
 /**
  *  Product by a matrix
@@ -69,6 +66,14 @@ VariableSizeMatrix<T>
 VariableSizeMatrix<T>
 ::operator*( const Self & matrix ) const
 {
+  if (this->Cols() != matrix.Rows())
+    {
+    itkGenericExceptionMacro( << "Matrix with size (" 
+                              << this->Rows() << ","
+                              << this->Cols()
+                              << ") cannot be multiplied by matrix with size (" 
+                              << matrix.Rows() << "," << matrix.Cols() << ")");
+    }
   Self result;
   result = m_Matrix * matrix.m_Matrix;
   return result;
@@ -86,12 +91,12 @@ VariableSizeMatrix<T>
   if( (matrix.Rows() != this->Rows()) ||
       (matrix.Cols() != this->Cols()))
     { 
-    itkExceptionMacro( << "Matrix with size (" << matrix.Rows() << "," << 
-      matrix.Cols() << ") cannot be subtracted from matrix with size (" <<
-      this->Rows() << "," << this->Cols() );
+    itkGenericExceptionMacro( << "Matrix with size (" << matrix.Rows() << "," << 
+      matrix.Cols() << ") cannot be added to a matrix with size (" <<
+      this->Rows() << "," << this->Cols() << ")");
     }
   
-  Self result;
+  Self result(this->Rows(),this->Cols());
   for( unsigned int r=0; r< this->Rows(); r++) 
     {
     for( unsigned int c=0; c< this->Cols(); c++ ) 
@@ -115,9 +120,9 @@ VariableSizeMatrix<T>
   if( (matrix.Rows() != this->Rows()) ||
       (matrix.Cols() != this->Cols()))
     { 
-    itkExceptionMacro( << "Matrix with size (" << matrix.Rows() << "," << 
-      matrix.Cols() << ") cannot be subtracted from matrix with size (" <<
-      this->Rows() << "," << this->Cols() );
+    itkGenericExceptionMacro( << "Matrix with size (" << matrix.Rows() << "," << 
+      matrix.Cols() << ") cannot be added to a matrix with size (" <<
+      this->Rows() << "," << this->Cols() << ")");
     }
   
   for( unsigned int r=0; r<this->Rows(); r++) 
@@ -129,9 +134,6 @@ VariableSizeMatrix<T>
     }
   return *this;
 }
-
-
-
   
 /**
  *  Matrix Subtraction
@@ -144,12 +146,12 @@ VariableSizeMatrix<T>
   if( (matrix.Rows() != this->Rows()) ||
       (matrix.Cols() != this->Cols()))
     { 
-    itkExceptionMacro( << "Matrix with size (" << matrix.Rows() << "," << 
+    itkGenericExceptionMacro( << "Matrix with size (" << matrix.Rows() << "," << 
       matrix.Cols() << ") cannot be subtracted from matrix with size (" <<
-      this->Rows() << "," << this->Cols() );
+      this->Rows() << "," << this->Cols() << ")");
     }
   
-  Self result;
+  Self result(this->Rows(),this->Cols());
   for( unsigned int r=0; r<this->Rows(); r++) 
     {
     for( unsigned int c=0; c<this->Cols(); c++ ) 
@@ -159,8 +161,6 @@ VariableSizeMatrix<T>
     }
   return result;
 }
-
-
 
 /**
  *  Matrix subtraction in-place 
@@ -173,9 +173,9 @@ VariableSizeMatrix<T>
   if( (matrix.Rows() != this->Rows()) ||
       (matrix.Cols() != this->Cols()))
     { 
-    itkExceptionMacro( << "Matrix with size (" << matrix.Rows() << "," << 
+    itkGenericExceptionMacro( << "Matrix with size (" << matrix.Rows() << "," << 
       matrix.Cols() << ") cannot be subtracted from matrix with size (" <<
-      this->Rows() << "," << this->Cols() );
+      this->Rows() << "," << this->Cols() << ")");
     }
   
   for( unsigned int r=0; r<this->Rows(); r++) 
@@ -188,9 +188,20 @@ VariableSizeMatrix<T>
   return *this;
 }
 
-
-
-
+template<class T>
+VariableSizeMatrix<T> &
+VariableSizeMatrix<T>
+::operator- ()
+{
+  for( unsigned int r=0; r<this->Rows(); r++) 
+    {
+    for( unsigned int c=0; c<this->Cols(); c++ ) 
+      {
+      m_Matrix(r,c) = -m_Matrix(r,c);
+      }
+    }
+  return *this;
+}
 
 /**
  *  Product by a vnl_matrix
@@ -228,8 +239,6 @@ VariableSizeMatrix<T>
   m_Matrix *= matrix;
 }
 
-
-
 /**
  *  Product by a vnl_vector
  */
@@ -240,64 +249,6 @@ VariableSizeMatrix<T>
 {
   return m_Matrix * vc;
 }
-
-
-
-/**
- *  Assignment
- */
-// template<class T>
-// const VariableSizeMatrix<T> &
-// VariableSizeMatrix<T>
-// ::operator=( const Self  & matrix )
-// {
-//   m_Matrix = matrix.m_Matrix;
-//   return *this;
-// }
-
-// template<class T>
-// const VariableSizeMatrix<T> &
-// VariableSizeMatrix<T>
-// ::operator=( const vnl_matrix<T>  & matrix )
-// {
-//   m_Matrix = matrix;
-//   return *this;
-// }
-
-// template<class T>
-// bool
-// VariableSizeMatrix<T>
-// ::operator!=( const Self & matrix ) const
-// {
-//   return !this->operator==(matrix);
-// }
-
-
-/**
- *  Returns the inverse matrix
- */
-// template<class T>
-// vnl_matrix<T>
-// VariableSizeMatrix<T>
-// ::GetInverse( void ) const
-// {
-//   vnl_matrix<T> temp = vnl_matrix_inverse<T>( m_Matrix );
-//   return temp;
-// }
-
-
-/**
- *  Returns the transposed matrix
- */
-// template<class T>
-// vnl_matrix<T>
-// VariableSizeMatrix<T>
-// ::GetTranspose( void ) const
-// {
-//   return m_Matrix.transpose();
-// }
-
- 
 
 } // end namespace itk
 

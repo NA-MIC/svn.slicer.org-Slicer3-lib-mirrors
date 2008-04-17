@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPathConstIterator.h,v $
   Language:  C++
-  Date:      $Date: 2004/11/01 21:16:31 $
+  Date:      $Date: 2004-11-01 21:16:31 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

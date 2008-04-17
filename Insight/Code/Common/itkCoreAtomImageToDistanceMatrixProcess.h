@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCoreAtomImageToDistanceMatrixProcess.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/26 14:28:44 $
+  Date:      $Date: 2007-01-26 14:28:44 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

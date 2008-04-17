@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshFrontIterator.h,v $
   Language:  C++
-  Date:      $Date: 2007/06/27 19:06:04 $
+  Date:      $Date: 2007-06-27 19:06:04 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransformFileReaderWithFactory.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/10 15:41:28 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-04-05 15:21:56 $
+  Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -46,7 +46,7 @@ void TransformFileReader
     }
   TransformIOBase::Pointer transformIO = 
     TransformIOFactory::CreateTransformIO(m_FileName.c_str(),
-                                      TransformIOFactory::WriteMode );
+                                      TransformIOFactory::ReadMode );
   if(transformIO.IsNull())
     {
     itkExceptionMacro( "Can't Create IO object for file " <<

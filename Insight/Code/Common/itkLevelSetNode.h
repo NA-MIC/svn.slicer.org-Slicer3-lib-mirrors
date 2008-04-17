@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLevelSetNode.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/06 20:19:14 $
+  Date:      $Date: 2006-10-06 20:19:14 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

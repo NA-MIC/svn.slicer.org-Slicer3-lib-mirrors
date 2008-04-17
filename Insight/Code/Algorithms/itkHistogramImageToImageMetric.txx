@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHistogramImageToImageMetric.txx,v $
   Language:  C++
-  Date:      $Date: 2007/03/31 19:06:23 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.26 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -277,7 +277,7 @@ HistogramImageToImageMetric<TFixedImage,TMovingImage>
         (!m_UsePaddingValue ||
          (m_UsePaddingValue && ti.Get() > m_PaddingValue)))
       {
-      typename Superclass::InputPointType inputPoint;
+      InputPointType inputPoint;
       fixedImage->TransformIndexToPhysicalPoint(index, inputPoint);
           
       if( this->m_FixedImageMask && 
@@ -287,7 +287,7 @@ HistogramImageToImageMetric<TFixedImage,TMovingImage>
         continue;
         }
 
-      typename Superclass::OutputPointType transformedPoint =
+      OutputPointType transformedPoint =
         this->m_Transform->TransformPoint(inputPoint);
 
       if( this->m_MovingImageMask && 

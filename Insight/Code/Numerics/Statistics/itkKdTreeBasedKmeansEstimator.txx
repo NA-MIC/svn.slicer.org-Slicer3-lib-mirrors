@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkKdTreeBasedKmeansEstimator.txx,v $
   Language:  C++
-  Date:      $Date: 2005/09/01 23:06:00 $
+  Date:      $Date: 2005-09-01 23:06:00 $
   Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

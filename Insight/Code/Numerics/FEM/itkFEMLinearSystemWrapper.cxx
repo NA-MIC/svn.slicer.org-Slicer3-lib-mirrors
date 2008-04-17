@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMLinearSystemWrapper.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/14 18:29:53 $
+  Date:      $Date: 2007-01-14 18:29:53 $
   Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

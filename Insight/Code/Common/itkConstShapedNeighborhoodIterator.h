@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConstShapedNeighborhoodIterator.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/17 20:57:49 $
+  Date:      $Date: 2007-05-17 20:57:49 $
   Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

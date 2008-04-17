@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLSMImageIOFactory.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/22 14:28:51 $
+  Date:      $Date: 2007-03-22 14:28:51 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

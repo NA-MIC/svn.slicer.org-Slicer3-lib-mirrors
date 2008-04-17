@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMatchCardinalityImageToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2004/03/12 15:46:47 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,15 @@
 =========================================================================*/
 #ifndef __itkMatchCardinalityImageToImageMetric_h
 #define __itkMatchCardinalityImageToImageMetric_h
+
+// First make sure that the configuration is available.
+// This line can be removed once the optimized versions
+// gets integrated into the main directories.
+#include "itkConfigure.h"
+
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+#include "itkOptMatchCardinalityImageToImageMetric.h"
+#else
 
 #include "itkImageToImageMetric.h"
 #include "itkCovariantVector.h"
@@ -85,6 +94,8 @@ public:
   typedef typename Superclass::TransformParametersType  TransformParametersType;
   typedef typename Superclass::TransformJacobianType    TransformJacobianType;
   typedef typename Superclass::GradientPixelType        GradientPixelType;
+  typedef typename Superclass::InputPointType           InputPointType;
+  typedef typename Superclass::OutputPointType          OutputPointType;
 
   typedef typename Superclass::MeasureType              MeasureType;
   typedef typename Superclass::DerivativeType           DerivativeType;
@@ -182,6 +193,7 @@ private:
   int m_NumberOfThreads;
 };
 
+
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
@@ -190,5 +202,5 @@ private:
 
 #endif
 
-
+#endif
 

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImportImageContainer.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/20 14:54:10 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2007-12-10 17:11:27 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -86,6 +86,10 @@ public:
   TElement *GetBufferPointer()
     { return m_ImportPointer; };
   
+  /** Get the capacity of the container. */
+  unsigned long Capacity(void) const
+    { return (unsigned long) m_Capacity; };
+
   /** Get the number of elements currently stored in the container. */
   unsigned long Size(void) const
     { return (unsigned long) m_Size; };
@@ -135,7 +139,7 @@ protected:
    * call this method but should call Print() instead. */
   void PrintSelf(std::ostream& os, Indent indent) const;
 
-  TElement* AllocateElements(ElementIdentifier size) const;
+  virtual TElement* AllocateElements(ElementIdentifier size) const;
 private:
   ImportImageContainer(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented

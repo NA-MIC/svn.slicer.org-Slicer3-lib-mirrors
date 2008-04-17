@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanReciprocalSquareDifferencePointSetToImageMetricTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/29 16:25:26 $
+  Date:      $Date: 2005-03-29 16:25:26 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkMatlabTransformIOFactory.cxx,v $
 Language:  C++
-Date:      $Date: 2007/08/09 15:16:00 $
+Date:      $Date: 2007-08-09 15:16:00 $
 Version:   $Revision: 1.1 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.

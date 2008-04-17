@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNormalizedCorrelationPointSetToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2006/07/09 13:49:28 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008-02-03 04:05:29 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -77,6 +77,8 @@ public:
 
   typedef typename Superclass::PointIterator              PointIterator;
   typedef typename Superclass::PointDataIterator          PointDataIterator;
+  typedef typename Superclass::InputPointType             InputPointType;
+  typedef typename Superclass::OutputPointType            OutputPointType;
 
 
   /** Get the derivatives of the match measure. */

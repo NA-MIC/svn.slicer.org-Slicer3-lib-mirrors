@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMatrixOffsetTransformBase.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/30 15:50:29 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2007-11-08 22:28:20 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -65,7 +65,7 @@ namespace itk
  * transform parameters can also be set as an Array<double> of size
  * (NInputDimension + 1) * NOutputDimension using method SetParameters(). 
  * The first (NOutputDimension x NInputDimension) parameters defines the
- * matrix in column-major order (where the column index varies the fastest). 
+ * matrix in row-major order (where the column index varies the fastest). 
  * The last NOutputDimension parameters defines the translation 
  * in each dimensions.
  *

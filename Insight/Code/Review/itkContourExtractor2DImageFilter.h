@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkContourExtractor2DImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/23 19:18:51 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008-02-07 15:58:06 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -81,7 +81,7 @@ namespace itk
 * must be set at the filter level.
 *
 * This class was contributed to the Insight Journal by Zachary Pincus. 
-*       http://hdl.handle.net/1926/165 
+*       http://insight-journal.org/midas/handle.php?handle=1926/165 
 *
 * \sa Image
 * \sa Path

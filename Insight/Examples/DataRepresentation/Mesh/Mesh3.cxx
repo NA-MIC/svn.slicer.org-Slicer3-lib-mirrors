@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: Mesh3.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/02/14 17:51:20 $
+  Date:      $Date: 2007-02-14 17:51:20 $
   Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

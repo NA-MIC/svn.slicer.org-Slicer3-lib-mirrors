@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegionalMinimaImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/23 22:00:16 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-02-07 15:58:06 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -35,7 +35,7 @@ namespace itk {
  * This class was contribtued to the Insight Journal by
  * \author Gaëtan Lehmann. Biologie du Développement et de la Reproduction,
  * INRA de Jouy-en-Josas, France.
- *      http://hdl.handle.net/1926/153
+ *      http://insight-journal.org/midas/handle.php?handle=1926/153
  *
  *
  * \sa ValuedRegionalMinimaImageFilter, HConcaveImageFilter,

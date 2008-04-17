@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMesh.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/10 19:50:05 $
-  Version:   $Revision: 1.95 $
+  Date:      $Date: 2007-12-21 15:25:34 $
+  Version:   $Revision: 1.96 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -154,6 +154,7 @@ public:
   typedef typename MeshTraits::PointIdentifier         PointIdentifier;
   typedef typename MeshTraits::CellIdentifier          CellIdentifier;
   typedef typename MeshTraits::CellFeatureIdentifier   CellFeatureIdentifier;
+  typedef typename MeshTraits::PointHashType           PointHashType;
   typedef typename MeshTraits::PointType               PointType;
   typedef typename MeshTraits::PointsContainer         PointsContainer;
   typedef typename MeshTraits::CellTraits              CellTraits;

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGrayscaleGeodesicDilateImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/12/15 12:51:07 $
+  Date:      $Date: 2006-12-15 12:51:07 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkContourMeanDistanceImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/04/28 01:20:56 $
+  Date:      $Date: 2005-04-28 01:20:56 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMutualInformationImageToImageMetric.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:55 $
-  Version:   $Revision: 1.60 $
+  Date:      $Date: 2007-12-20 22:17:30 $
+  Version:   $Revision: 1.64 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -50,6 +50,10 @@ MutualInformationImageToImageMetric<TFixedImage,TMovingImage>
   // calculating image derivatives
   this->SetComputeGradient(false); // don't use the default gradient for now
   m_DerivativeCalculator = DerivativeFunctionType::New();
+
+#ifdef ITK_USE_ORIENTED_IMAGE_DIRECTION
+    m_DerivativeCalculator->UseImageDirectionOn();
+#endif
 
 }
 
@@ -98,6 +102,12 @@ MutualInformationImageToImageMetric<TFixedImage,TMovingImage>
  * Uniformly sample the fixed image domain. Each sample consists of:
  *  - the fixed image value
  *  - the corresponding moving image value
+ *
+ * \warning Note that this method has a different signature than the one in
+ * the base OptImageToImageMetric and therefore they are not intended to
+ * provide polymorphism. That is, this function is not overriding the one in
+ * the base class. 
+ *
  */
 template < class TFixedImage, class TMovingImage  >
 void
@@ -530,4 +540,3 @@ MutualInformationImageToImageMetric<TFixedImage,TMovingImage>
 
 
 #endif
-

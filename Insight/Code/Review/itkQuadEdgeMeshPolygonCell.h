@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshPolygonCell.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/28 15:53:46 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008-02-07 15:58:06 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -29,7 +29,7 @@ namespace itk
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * http://hdl.handle.net/1926/306
+ * http://insight-journal.org/midas/handle.php?handle=1926/306
  *
  */
 template< class TCellInterface >
@@ -153,50 +153,55 @@ public:
 
   virtual PointIdIterator PointIdsBegin()
     {
-    if (m_PointIds.size() >0)
+    // NOTE ALEX: should update the array on the fly to make it faster
+    MakePointIds();
+    if (m_PointIds.size() == 0)
       {
-      return &*(m_PointIds.begin());
+      return (static_cast<PointIdIterator>(0));
       }
     else
       {
-      return NULL;
+      return &*(m_PointIds.begin());
       }
     }
 
   virtual PointIdIterator PointIdsEnd()
     {
-    if (m_PointIds.size() >0)
+    // NOTE ALEX: should update the array on the fly to make it faster
+    if (m_PointIds.size() == 0)
       {
-      return &m_PointIds[m_PointIds.size()-1] + 1;
+      return (static_cast<PointIdIterator>(0));
       }
     else
       {
-      return NULL;
+      return &m_PointIds[m_PointIds.size()-1] + 1;
       }
     }
 
   virtual PointIdConstIterator PointIdsBegin() const
     {
-    if (m_PointIds.size() >0)
+    // NOTE ALEX: should update the array on the fly to make it faster
+    MakePointIds();
+    if (m_PointIds.size() == 0)
       {
-      return &*(m_PointIds.begin());
+      return (static_cast<PointIdIterator>(0));
       }
     else
       {
-      return NULL;
+      return &*(m_PointIds.begin());
       }
-
     }
 
   virtual PointIdConstIterator PointIdsEnd() const
     {
-    if (m_PointIds.size() >0)
+    // NOTE ALEX: should update the array on the fly to make it faster
+    if (m_PointIds.size() == 0)
       {
-      return &m_PointIds[m_PointIds.size()-1] + 1;
+      return (static_cast<PointIdIterator>(0));
       }
     else
       {
-      return NULL;
+      return &m_PointIds[m_PointIds.size()-1] + 1;
       }
     }
 
@@ -213,14 +218,14 @@ public:
   virtual PointIdInternalConstIterator InternalPointIdsEnd() const;
 
 protected:
-  std::vector<PointIdentifier>  m_PointIds;
-  //std::vector<EdgeInfo> m_Edges;
+  typedef std::vector<PointIdentifier>  PointIDListType;
+  mutable PointIDListType m_PointIds;
 
 private:
   QuadEdgeMeshPolygonCell( const Self& ); // Not impl.
   void operator=( const Self& ); // Not impl.
 
-  void MakePointIds()
+  void MakePointIds() const
     {
     if( !this->GetNumberOfPoints( ) )
       {
@@ -228,6 +233,8 @@ private:
       }
 
     // NOTE ALEX: very inefficient way of doing it ...
+    // you wanna support old API, you pay for it.
+    m_PointIds.clear();
     for( PointIdentifier i = 0; i < this->GetNumberOfPoints( ); i++ )
       {
       m_PointIds.push_back( GetPointId( i ) );

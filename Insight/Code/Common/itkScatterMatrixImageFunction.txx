@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkScatterMatrixImageFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/02/06 22:01:58 $
+  Date:      $Date: 2006-02-06 22:01:58 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryThresholdSpatialFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2004/04/03 06:35:06 $
+  Date:      $Date: 2004-04-03 06:35:06 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

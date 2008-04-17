@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImagePCAShapeModelEstimator.txx,v $
   Language:  C++
-  Date:      $Date: 2004/09/11 00:16:33 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -210,16 +210,16 @@ ImagePCAShapeModelEstimator<TInputImage, TOutputImage>
     //Extract one column vector at a time
     m_OneEigenVector = m_EigenVectors.get_column(kthLargestPrincipalComp-1);
 
-    typename OutputImageType::RegionType region = this->GetOutput( j )->GetRequestedRegion();
-    OutputIterator outIter( this->GetOutput( j ), region );
+    region = this->GetOutput( j )->GetRequestedRegion();
+    OutputIterator outIterJ( this->GetOutput( j ), region );
 
     unsigned int idx = 0;
-    outIter.GoToBegin();
-    while( !outIter.IsAtEnd() )
+    outIterJ.GoToBegin();
+    while( !outIterJ.IsAtEnd() )
       {
-      outIter.Set( static_cast<typename OutputImageType::PixelType>( 
+      outIterJ.Set( static_cast<typename OutputImageType::PixelType>( 
         m_OneEigenVector[ idx ] ) );
-      ++outIter;
+      ++outIterJ;
       ++idx;
       }
 
@@ -230,14 +230,14 @@ ImagePCAShapeModelEstimator<TInputImage, TOutputImage>
   // Fill extraneous outputs with zero
   for( ; j < numberOfOutputs; j++ )
     {
-    typename OutputImageType::RegionType region = this->GetOutput( j )->GetRequestedRegion();
-    OutputIterator outIter( this->GetOutput( j ), region );
+    region = this->GetOutput( j )->GetRequestedRegion();
+    OutputIterator outIterJ( this->GetOutput( j ), region );
 
-    outIter.GoToBegin();
-    while( !outIter.IsAtEnd() )
+    outIterJ.GoToBegin();
+    while( !outIterJ.IsAtEnd() )
       {
-      outIter.Set( 0 );
-      ++outIter;
+      outIterJ.Set( 0 );
+      ++outIterJ;
       }
 
     }

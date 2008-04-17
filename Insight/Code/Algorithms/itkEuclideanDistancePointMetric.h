@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEuclideanDistancePointMetric.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/16 00:13:58 $
+  Date:      $Date: 2006-10-16 00:13:58 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

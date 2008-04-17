@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkScalarImageToGreyLevelCooccurrenceMatrixGenerator.txx,v $
   Language:  C++
-  Date:      $Date: 2005/04/20 20:31:22 $
+  Date:      $Date: 2005-04-20 20:31:22 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

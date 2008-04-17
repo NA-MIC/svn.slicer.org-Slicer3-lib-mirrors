@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSampleSelectiveMeanShiftBlurringFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/09/02 12:56:09 $
+  Date:      $Date: 2006-09-02 12:56:09 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

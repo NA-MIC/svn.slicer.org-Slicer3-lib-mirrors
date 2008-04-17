@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageRegistration13.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:42 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008-03-14 16:27:17 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -95,8 +95,10 @@ int main( int argc, char *argv[] )
     std::cerr << "Missing Parameters " << std::endl;
     std::cerr << "Usage: " << argv[0];
     std::cerr << " fixedImageFile  movingImageFile ";
-    std::cerr << "outputImagefile " << std::endl;
-    return 1;
+    std::cerr << "outputImagefile ";
+    std::cerr << "[useExplicitPDFderivatives ] ";
+    std::cerr << "[useCachingBSplineWeights ] " << std::endl;
+    return EXIT_FAILURE;
     }
   
   const    unsigned int    Dimension = 2;
@@ -142,14 +144,32 @@ int main( int argc, char *argv[] )
   registration->SetInterpolator(  interpolator  );
   
 
-
   MetricType::Pointer metric = MetricType::New();
   registration->SetMetric( metric  );
 
 
-
   metric->SetNumberOfHistogramBins( 20 );
   metric->SetNumberOfSpatialSamples( 10000 );
+
+  if( argc > 4 )
+    {
+    // Define whether to calculate the metric derivative by explicitly
+    // computing the derivatives of the joint PDF with respect to the Transform
+    // parameters, or doing it by progressively accumulating contributions from
+    // each bin in the joint PDF.
+    metric->SetUseExplicitPDFDerivatives( atoi( argv[4] ) );
+    }
+
+  if( argc > 5 )
+    {
+    // Define whether to cache the BSpline weights and indexes corresponding to
+    // each one of the samples used to compute the metric. Enabling caching will
+    // make the algorithm run faster but it will have a cost on the amount of memory
+    // that needs to be allocated. This option is only relevant when using the 
+    // BSplineDeformableTransform.
+    metric->SetUseCachingOfBSplineWeights( atoi( argv[5] ) );
+    }
+
 
   typedef itk::ImageFileReader< FixedImageType  > FixedImageReaderType;
   typedef itk::ImageFileReader< MovingImageType > MovingImageReaderType;
@@ -296,6 +316,7 @@ int main( int argc, char *argv[] )
   resample->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
   resample->SetOutputOrigin(  fixedImage->GetOrigin() );
   resample->SetOutputSpacing( fixedImage->GetSpacing() );
+  resample->SetOutputDirection( fixedImage->GetDirection() );
   resample->SetDefaultPixelValue( 100 );
 
 

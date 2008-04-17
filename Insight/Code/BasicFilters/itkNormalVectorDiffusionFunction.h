@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNormalVectorDiffusionFunction.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:53 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-03-03 13:58:44 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -78,6 +78,7 @@ public:
   typedef typename Superclass::TimeStepType     TimeStepType;
   typedef typename Superclass::RadiusType       RadiusType;
   typedef typename Superclass::NeighborhoodType NeighborhoodType;
+  typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
   typedef typename Superclass::FloatOffsetType  FloatOffsetType;
   typedef typename Superclass::IndexType        IndexType;
   typedef typename Superclass::SparseImageType  SparseImageType;

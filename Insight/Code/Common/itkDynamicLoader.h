@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDynamicLoader.h,v $
   Language:  C++
-  Date:      $Date: 2006/11/29 18:19:00 $
+  Date:      $Date: 2006-11-29 18:19:00 $
   Version:   $Revision: 1.26 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

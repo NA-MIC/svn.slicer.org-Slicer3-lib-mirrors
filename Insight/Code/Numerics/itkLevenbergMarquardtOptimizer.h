@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLevenbergMarquardtOptimizer.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/16 10:50:37 $
+  Date:      $Date: 2007-04-16 10:50:37 $
   Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

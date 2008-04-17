@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLevelSetVelocityNeighborhoodExtractor.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:33 $
+  Date:      $Date: 2003-09-10 14:28:33 $
   Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

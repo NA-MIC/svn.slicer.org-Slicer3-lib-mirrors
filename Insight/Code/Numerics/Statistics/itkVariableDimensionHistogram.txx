@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVariableDimensionHistogram.txx,v $
   Language:  C++
-  Date:      $Date: 2005/09/30 14:14:19 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-01-16 19:31:11 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -677,9 +677,9 @@ VariableDimensionHistogram< TMeasurement,  TFrequencyContainer >
     while( m < size && p_n > p);
 
     binProportion = f_n / totalFrequency ;
-    double min = double( this->GetBinMin(dimension, n + 1) ) ;
-    double max = double( this->GetBinMax(dimension, n + 1) ) ;
-    double interval = max - min ;
+    min = double( this->GetBinMin(dimension, n + 1) ) ;
+    max = double( this->GetBinMax(dimension, n + 1) ) ;
+    interval = max - min ;
     return max - ((p_n_prev - p) / binProportion) * interval ;
     }
 }

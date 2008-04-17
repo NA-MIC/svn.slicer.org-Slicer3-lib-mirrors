@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: RGBPointSet.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/20 13:27:52 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-01-20 21:19:51 $
+  Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -113,7 +113,7 @@ int main(int, char *[])
   PointIterator pointEnd      = pointSet->GetPoints()->End();
   while( pointIterator != pointEnd ) 
     {
-    PointSetType::PointType point = pointIterator.Value();
+     point = pointIterator.Value();
     std::cout << point << std::endl;  
     ++pointIterator;                      
     }
@@ -146,7 +146,7 @@ int main(int, char *[])
   PointDataIterator pixelEnd      = pointSet->GetPointData()->End();
   while( pixelIterator != pixelEnd ) 
     {
-    PointSetType::PixelType pixel = pixelIterator.Value();
+    pixel = pixelIterator.Value();
     std::cout << pixel << std::endl;  
     ++pixelIterator;                      
     }

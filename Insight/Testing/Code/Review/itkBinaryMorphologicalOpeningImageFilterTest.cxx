@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryMorphologicalOpeningImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/06/07 09:05:07 $
+  Date:      $Date: 2007-06-07 09:05:07 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

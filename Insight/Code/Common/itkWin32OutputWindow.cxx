@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWin32OutputWindow.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/03/18 18:06:38 $
+  Date:      $Date: 2006-03-18 18:06:38 $
   Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

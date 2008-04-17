@@ -3,7 +3,7 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmPixelWriteConvert.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/04/28 13:13:16 $
+  Date:      $Date: 2007-04-28 13:13:16 $
   Version:   $Revision: 1.8 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de

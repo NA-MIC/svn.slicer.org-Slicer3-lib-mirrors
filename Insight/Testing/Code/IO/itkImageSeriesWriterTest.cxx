@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageSeriesWriterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/04/19 13:58:18 $xgoto-l
+  Date:      $Date: 2007-04-19 13:58:18 $xgoto-l
 
   Version:   $Revision: 1.4 $
 

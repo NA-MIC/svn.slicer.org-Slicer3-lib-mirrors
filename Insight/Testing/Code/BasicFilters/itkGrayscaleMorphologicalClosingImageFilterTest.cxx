@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGrayscaleMorphologicalClosingImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/01/09 00:28:58 $
+  Date:      $Date: 2005-01-09 00:28:58 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSymmetricEigenAnalysisImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/03 15:07:52 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007-10-27 19:51:42 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -156,6 +156,9 @@ public:
     {
     this->GetFunctor().OrderEigenValuesBy( order );
     }
+
+  /** Run-time type information (and related methods).   */
+  itkTypeMacro( SymmetricEigenAnalysisImageFilter, UnaryFunctorImageFilter );
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

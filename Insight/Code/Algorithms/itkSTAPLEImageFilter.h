@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSTAPLEImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/05 13:59:37 $
+  Date:      $Date: 2006-04-05 13:59:37 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

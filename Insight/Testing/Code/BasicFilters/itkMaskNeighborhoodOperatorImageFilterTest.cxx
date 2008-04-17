@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMaskNeighborhoodOperatorImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/10 14:34:02 $
+  Date:      $Date: 2007-08-10 14:34:02 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

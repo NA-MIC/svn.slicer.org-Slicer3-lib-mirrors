@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMElement1DStress.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/04 13:17:08 $
+  Date:      $Date: 2004-12-04 13:17:08 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

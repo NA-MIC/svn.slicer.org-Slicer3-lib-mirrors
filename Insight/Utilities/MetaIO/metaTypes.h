@@ -3,7 +3,7 @@
   Program:   MetaIO
   Module:    $RCSfile: metaTypes.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/31 13:53:13 $
+  Date:      $Date: 2007-05-31 13:53:13 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGaussianKernelFunction.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/22 18:25:13 $
+  Date:      $Date: 2005-03-22 18:25:13 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

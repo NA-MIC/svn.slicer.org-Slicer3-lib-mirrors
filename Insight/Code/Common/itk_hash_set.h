@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itk_hash_set.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/16 01:31:24 $
+  Date:      $Date: 2006-10-16 01:31:24 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

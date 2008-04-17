@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVariableLengthVector.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/26 23:19:17 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-01-21 17:47:31 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -273,7 +273,9 @@ public:
     Self result( m_NumElements );
     for( ElementIdentifier i=0; i< m_NumElements; i++ )
       {
-      result[i] = m_Data[i] / (static_cast< ValueType >( s ));
+      result[i] = static_cast< ValueType >(
+                     static_cast< RealValueType >(m_Data[i]) / 
+                     static_cast< RealValueType >( s ));
       }
     return result;
     }
@@ -369,7 +371,9 @@ public:
     {
     for( ElementIdentifier i=0; i< m_NumElements; i++ )
       {
-      m_Data[i] /= (static_cast< ValueType >( s ));
+      m_Data[i] = static_cast< ValueType >(
+                     static_cast< RealValueType >(m_Data[i]) / 
+                     static_cast< RealValueType >( s ));      
       }
     return *this;
     }
@@ -377,6 +381,9 @@ public:
   bool operator==( const Self &v) const;
   bool operator!=( const Self &v) const;
     
+  /** Returns vector's Euclidean Norm  */
+  RealValueType GetNorm() const;  
+
   /** Returns vector's Squared Euclidean Norm  */
   RealValueType GetSquaredNorm() const;
 

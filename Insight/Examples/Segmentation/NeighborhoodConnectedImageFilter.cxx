@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: NeighborhoodConnectedImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/27 01:46:17 $
+  Date:      $Date: 2005-08-27 01:46:17 $
   Version:   $Revision: 1.28 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

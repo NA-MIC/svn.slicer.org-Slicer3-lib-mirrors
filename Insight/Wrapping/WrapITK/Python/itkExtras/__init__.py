@@ -59,8 +59,9 @@ def simple_import_callback(name, p):
   This function can be used with itkConfig.ImportCallback
   """
   import sys
-  print >> sys.stderr, "Loading %s..." % name,
-  if p == 1 :
+  if p == 0:
+    print >> sys.stderr, "Loading %s..." % name,
+  elif p == 1 :
     print >> sys.stderr, "done"
 
 def simple_progress_callback(name, p):
@@ -316,7 +317,7 @@ def physical_point_to_index( imageOrFilter, p ):
   p = itk.Point[ itk.D, dim ]( p )
   
   # create the output object
-  idx = itk.ContinuousIndex[ itk.D, dim ]()
+  idx = itk.Index[ dim ]()
   for i in range( 0, dim ):
     idx.SetElement( i, int( round( ( p.GetElement(i) - o.GetElement(i) ) / s.GetElement(i) ) ) )
   return idx

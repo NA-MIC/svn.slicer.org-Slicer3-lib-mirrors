@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDemonsRegistrationFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/09/29 23:59:04 $
+  Date:      $Date: 2004-09-29 23:59:04 $
   Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLaplacianOperator.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/20 00:04:47 $
+  Date:      $Date: 2004-12-20 00:04:47 $
   Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

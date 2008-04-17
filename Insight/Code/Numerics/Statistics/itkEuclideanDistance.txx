@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEuclideanDistance.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:37:20 $
+  Date:      $Date: 2006-03-19 04:37:20 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

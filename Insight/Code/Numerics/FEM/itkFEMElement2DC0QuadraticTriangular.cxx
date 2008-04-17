@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMElement2DC0QuadraticTriangular.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/12/15 14:13:20 $
+  Date:      $Date: 2003-12-15 14:13:20 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

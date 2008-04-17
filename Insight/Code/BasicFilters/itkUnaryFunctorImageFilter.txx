@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkUnaryFunctorImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/02/08 19:37:25 $
+  Date:      $Date: 2007-02-08 19:37:25 $
   Version:   $Revision: 1.31 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

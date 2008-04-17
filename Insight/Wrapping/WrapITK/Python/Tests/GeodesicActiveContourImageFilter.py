@@ -1,6 +1,6 @@
 # GeodesicActiveContourImageFilter.py
 # Translated by Charl P. Botha <http://cpbotha.net/> from the cxx original.
-# $Id: GeodesicActiveContourImageFilter.py,v 1.2 2007/01/16 15:44:16 glehmann Exp $
+# $Id: GeodesicActiveContourImageFilter.py,v 1.2 2007-01-16 15:44:16 glehmann Exp $
 
 # example runs:
 # ------------

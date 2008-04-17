@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVersor.txx,v $
   Language:  C++
-  Date:      $Date: 2007/03/27 11:04:05 $
-  Version:   $Revision: 1.26 $
+  Date:      $Date: 2007-12-20 19:19:18 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -320,7 +320,7 @@ Versor<T>
   
   const RealType vectorNorm = vcl_sqrt(ax * ax  +  ay * ay  +  az * az  );
 
-  const ValueType angle = 2.0 * vcl_atan2(vectorNorm, m_W );
+  const ValueType angle = 2.0 * vcl_atan2(vectorNorm, static_cast<RealType>(m_W) );
   
   return angle;
 }
@@ -469,10 +469,27 @@ void
 Versor<T>
 ::Set( T x, T y, T z, T w )
 {
-  m_X = x;
-  m_Y = y;
-  m_Z = z;
-  m_W = w;
+  //
+  // We assume in this class that the W component is always non-negative.
+  // The rotation represented by a Versor remains unchanged if all its 
+  // four components are negated simultaneously. Therefore, if we are 
+  // requested to initialize a Versor with a negative W, we negate the
+  // signs of all the components.
+  //
+  if( w < 0.0 )
+    {
+    m_X = -x;
+    m_Y = -y;
+    m_Z = -z;
+    m_W = -w;
+    }
+  else
+    {
+    m_X = x;
+    m_Y = y;
+    m_Z = z;
+    m_W = w;
+    }
   this->Normalize();
 }
 

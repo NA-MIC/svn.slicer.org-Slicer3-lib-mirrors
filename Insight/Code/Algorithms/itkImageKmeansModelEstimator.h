@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageKmeansModelEstimator.h,v $
   Language:  C++
-  Date:      $Date: 2004/11/12 00:54:30 $
+  Date:      $Date: 2004-11-12 00:54:30 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

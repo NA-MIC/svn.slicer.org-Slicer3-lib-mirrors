@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLabelOverlayImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/30 16:50:00 $
-  Version:   $Revision: 1.11 $
+  Date:      $Date: 2008-02-07 15:58:06 $
+  Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,96 +17,12 @@
 #ifndef __itkLabelOverlayImageFilter_h
 #define __itkLabelOverlayImageFilter_h
 
-#include "itkLabelToRGBFunctor.h"
+#include "itkLabelOverlayFunctor.h"
 #include "itkBinaryFunctorImageFilter.h"
 #include "itkConceptChecking.h"
 
 namespace itk
 {
-
-namespace Functor {  
- 
-/**  
- * \class LabelOverlay
- * \brief A functor class used internally by LabelOverlayImageFilter 
- */
-template< class TInputPixel, class TLabel, class TRGBPixel >
-class LabelOverlay
-{
-public:
-  LabelOverlay() 
-    {
-    // provide some default value for external use (outside 
-    // LabelOverlayImageFilter) Inside LabelOverlayImageFilter, 
-    // the values are always initialized
-    m_UseBackground = false;
-    m_BackgroundValue = NumericTraits<TLabel>::Zero;
-    }
-
-  inline TRGBPixel operator()(  const TInputPixel & p1, const TLabel & p2)
-    {
-    TRGBPixel rgbPixel;
-    if( m_UseBackground && p2 == m_BackgroundValue )
-      {
-      // value is background
-      // return a gray pixel with the same intensity than the input pixel
-      typename TRGBPixel::ValueType p = 
-                        static_cast< typename TRGBPixel::ValueType >( p1 );
-      rgbPixel[0] = p;
-      rgbPixel[1] = p;
-      rgbPixel[2] = p;
-      return rgbPixel;
-      }
-
-    // taint the input pixel with the colored one returned by 
-    // the color functor.
-    TRGBPixel opaque = m_RGBFunctor(p2);
-    for( unsigned int i = 0; i<3; i++ )
-      {
-      rgbPixel[i] = static_cast< typename TRGBPixel::ValueType >( 
-                          opaque[i] * m_Opacity + p1 * ( 1.0 - m_Opacity ) );
-      }
-    return rgbPixel;
-    }
-
-  bool operator != (const LabelOverlay &l) const
-    {
-    bool value = l.m_Opacity != m_Opacity || 
-                 m_UseBackground != l.m_UseBackground || 
-                 m_BackgroundValue != l.m_BackgroundValue; 
-
-    return value;
-    }
-
-  ~LabelOverlay() {}
-
-  void SetOpacity( double opacity ) 
-    { 
-    m_Opacity = opacity; 
-    }
-
-  void SetBackgroundValue( TLabel v ) 
-    { 
-    m_BackgroundValue = v; 
-    }
-
-  void SetUseBackground( bool b ) 
-    {
-    m_UseBackground = b; 
-    }
-
-protected:
-
-private: 
-  double          m_Opacity;
-  bool            m_UseBackground;
-  TLabel          m_BackgroundValue;
-
-  typename Functor::LabelToRGBFunctor<TLabel, TRGBPixel> m_RGBFunctor;
-};
-}  // end namespace functor
-
-
 /** \class LabelOverlayImageFilter
  * \brief Apply a colormap to a label image and put it on top of the 
  *  input image
@@ -122,7 +38,7 @@ private:
  * INRA de Jouy-en-Josas, France.
  *
  * This class was contributed to the Insight Journal 
- *     http://hdl.handle.net/1926/172
+ *     http://insight-journal.org/midas/handle.php?handle=1926/172
  *
  *
  * \sa ScalarToRGBPixelFunctor LabelToRGBImageFilter
@@ -133,7 +49,7 @@ template <typename  TInputImage, class TLabelImage, typename  TOutputImage>
 class ITK_EXPORT LabelOverlayImageFilter :
     public
      BinaryFunctorImageFilter<TInputImage, TLabelImage, TOutputImage, 
-       Functor::LabelOverlay< 
+       Functor::LabelOverlayFunctor< 
           typename TInputImage::PixelType, 
           typename TLabelImage::PixelType, 
           typename TOutputImage::PixelType>   >
@@ -143,7 +59,7 @@ public:
   typedef LabelOverlayImageFilter  Self;
 
   typedef BinaryFunctorImageFilter<TInputImage, TLabelImage, TOutputImage, 
-                        Functor::LabelOverlay< 
+                        Functor::LabelOverlayFunctor< 
                             typename TInputImage::PixelType, 
                             typename TLabelImage::PixelType, 
                             typename TOutputImage::PixelType>   >  Superclass;
@@ -181,11 +97,6 @@ public:
   itkSetMacro( BackgroundValue, LabelPixelType );
   itkGetConstReferenceMacro( BackgroundValue, LabelPixelType );
 
-  /** Set/Get if one of the labels must be considered as background */
-  itkSetMacro( UseBackground, bool );
-  itkGetConstReferenceMacro( UseBackground, bool );
-  itkBooleanMacro(UseBackground);
-
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   itkConceptMacro(OutputHasPixelTraitsCheck,
@@ -215,7 +126,6 @@ private:
   void operator=(const Self&); //purposely not implemented
 
   double                        m_Opacity;
-  bool                          m_UseBackground;
   LabelPixelType                m_BackgroundValue;
 
 };

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPhasedArray3DSpecialCoordinatesImage.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:09 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-02-04 12:34:11 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -139,7 +139,8 @@ public:
   typedef ImportImageContainer<unsigned long, PixelType> PixelContainer;
 
   /** Index typedef support. An index is used to access pixel values. */
-  typedef typename Superclass::IndexType  IndexType;
+  typedef typename Superclass::IndexType      IndexType;
+  typedef typename Superclass::IndexValueType IndexValueType;
 
   /** Offset typedef support. An offset is used to access pixel values. */
   typedef typename Superclass::OffsetType OffsetType;
@@ -213,8 +214,6 @@ public:
             const Point<TCoordRep, 3>& point,
             IndexType & index                                ) const
     {
-    typedef typename IndexType::IndexValueType IndexValueType;
-    
     RegionType region = this->GetLargestPossibleRegion();
     double maxAzimuth =    region.GetSize(0) - 1;
     double maxElevation =  region.GetSize(1) - 1;
@@ -322,6 +321,14 @@ public:
   /**  Set the distance to add to the radius. */
   itkSetMacro(FirstSampleDistance, double);
   
+#ifdef ITK_USE_ORIENTED_IMAGE_DIRECTION
+  template<class TCoordRep>
+  void TransformLocalVectorToPhysicalVector(
+    const FixedArray<TCoordRep, 3> & inputGradient,
+          FixedArray<TCoordRep, 3> & outputGradient ) const
+    {
+    }
+#endif
 protected:
   PhasedArray3DSpecialCoordinatesImage()
     {

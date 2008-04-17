@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRegionGrowImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2005/11/30 23:19:29 $
+  Date:      $Date: 2005-11-30 23:19:29 $
   Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

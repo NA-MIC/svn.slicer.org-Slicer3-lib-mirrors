@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTreeContainerTest2.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/24 01:12:24 $
+  Date:      $Date: 2005-03-24 01:12:24 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanShiftModeCacheMethod.h,v $
   Language:  C++
-  Date:      $Date: 2005/07/26 15:55:00 $
+  Date:      $Date: 2005-07-26 15:55:00 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

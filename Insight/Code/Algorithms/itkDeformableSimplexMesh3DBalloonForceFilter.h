@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDeformableSimplexMesh3DBalloonForceFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/05 20:57:46 $
+  Date:      $Date: 2006-02-05 20:57:46 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

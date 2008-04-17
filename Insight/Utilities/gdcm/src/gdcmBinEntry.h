@@ -3,7 +3,7 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmBinEntry.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/21 16:22:57 $
+  Date:      $Date: 2006-03-21 16:22:57 $
   Version:   $Revision: 1.5 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de

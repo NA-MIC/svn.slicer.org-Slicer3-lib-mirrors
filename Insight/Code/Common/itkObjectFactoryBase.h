@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkObjectFactoryBase.h,v $
   Language:  C++
-  Date:      $Date: 2006/05/10 20:27:16 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2007-11-08 16:50:05 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -51,10 +51,10 @@ class ITKCommon_EXPORT ObjectFactoryBase : public Object
 {
 public:  
   /** Standard class typedefs. */
-  typedef ObjectFactoryBase   Self;
-  typedef Object  Superclass;
-  typedef SmartPointer<Self>  Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef ObjectFactoryBase        Self;
+  typedef Object                   Superclass;
+  typedef SmartPointer<Self>       Pointer;
+  typedef SmartPointer<const Self> ConstPointer;
   
   /** Run-time type information (and related methods). */
   itkTypeMacro(ObjectFactoryBase, Object);
@@ -131,12 +131,12 @@ public:
   /** \class OverrideInformation
    * \brief Internal implementation class for ObjectFactorBase. */
   struct OverrideInformation
-  {
+    {
     std::string m_Description;
     std::string m_OverrideWithName;
     bool m_EnabledFlag;
     CreateObjectFunctionBase::Pointer m_CreateObject;
-  };
+    };
 
 protected:
   virtual void PrintSelf(std::ostream& os, Indent indent) const;
@@ -180,9 +180,9 @@ private:
   
   /** Member variables for a factory set by the base class
    * at load or register time */
-  void* m_LibraryHandle;
+  void*         m_LibraryHandle;
   unsigned long m_LibraryDate;
-  std::string m_LibraryPath;
+  std::string   m_LibraryPath;
 };
 
 } // end namespace itk

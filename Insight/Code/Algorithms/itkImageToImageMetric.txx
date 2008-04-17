@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageToImageMetric.txx,v $
   Language:  C++
-  Date:      $Date: 2007/03/31 19:38:14 $
-  Version:   $Revision: 1.27 $
+  Date:      $Date: 2007-11-12 20:00:37 $
+  Version:   $Revision: 1.30 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,9 +14,18 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkImageToImageMetric_txx
-#define _itkImageToImageMetric_txx
+#ifndef __itkImageToImageMetric_txx
+#define __itkImageToImageMetric_txx
 
+// First, make sure that we include the configuration file.
+// This line may be removed once the ThreadSafeTransform gets
+// integrated into ITK.
+#include "itkConfigure.h"
+
+// Second, redirect to the optimized version if necessary
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+#include "itkOptImageToImageMetric.txx"
+#else
 
 #include "itkImageToImageMetric.h"
 
@@ -24,7 +33,7 @@
 namespace itk
 {
 
-/*
+/**
  * Constructor
  */
 template <class TFixedImage, class TMovingImage> 
@@ -41,8 +50,18 @@ ImageToImageMetric<TFixedImage,TMovingImage>
   m_GradientImage = NULL; // computed at initialization
 }
 
+/**
+ * Destructor
+ */
+template <class TFixedImage, class TMovingImage> 
+ImageToImageMetric<TFixedImage,TMovingImage>
+::~ImageToImageMetric()
+{
 
-/*
+}
+
+
+/**
  * Set the parameters that define a unique transform
  */
 template <class TFixedImage, class TMovingImage> 
@@ -58,8 +77,7 @@ ImageToImageMetric<TFixedImage,TMovingImage>
 }
 
 
-
-/*
+/**
  * Initialize
  */
 template <class TFixedImage, class TMovingImage> 
@@ -150,6 +168,10 @@ ImageToImageMetric<TFixedImage,TMovingImage>
     }
   gradientFilter->SetSigma( maximumSpacing );
   gradientFilter->SetNormalizeAcrossScale( true );
+
+#ifdef ITK_USE_ORIENTED_IMAGE_DIRECTION
+  gradientFilter->SetUseImageDirection( true );
+#endif
   
   gradientFilter->Update();
   
@@ -157,7 +179,7 @@ ImageToImageMetric<TFixedImage,TMovingImage>
 }
 
 
-/*
+/**
  * PrintSelf
  */
 template <class TFixedImage, class TMovingImage> 
@@ -187,5 +209,7 @@ ImageToImageMetric<TFixedImage,TMovingImage>
 
 
 } // end namespace itk
+
+#endif
 
 #endif

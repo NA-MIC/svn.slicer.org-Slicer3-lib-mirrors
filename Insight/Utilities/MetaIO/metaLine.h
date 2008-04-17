@@ -3,8 +3,8 @@
   Program:   MetaIO
   Module:    $RCSfile: metaLine.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/31 13:53:13 $
-  Version:   $Revision: 1.13 $
+  Date:      $Date: 2008-04-09 01:44:28 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -132,7 +132,7 @@ class METAIO_EXPORT MetaLine : public MetaObject
 
     bool  M_Write(void);
 
-    int m_NPoints;      // "NPoints = "         0
+    int   m_NPoints;      // "NPoints = "         0
 
     char m_PointDim[255]; // "PointDim = "       "x y z r"
 

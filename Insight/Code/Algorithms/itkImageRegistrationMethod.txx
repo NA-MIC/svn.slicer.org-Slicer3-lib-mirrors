@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageRegistrationMethod.txx,v $
   Language:  C++
-  Date:      $Date: 2006/06/08 20:30:45 $
-  Version:   $Revision: 1.25 $
+  Date:      $Date: 2007-12-17 16:34:08 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -55,6 +55,13 @@ ImageRegistrationMethod<TFixedImage,TMovingImage>
                                   this->MakeOutput(0).GetPointer() );
 
   this->ProcessObject::SetNthOutput( 0, transformDecorator.GetPointer() );
+
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+  this->SetNumberOfThreads( this->GetMultiThreader()->GetNumberOfThreads() );
+#else
+  this->SetNumberOfThreads( 1 );
+  this->GetMultiThreader()->SetNumberOfThreads( this->GetNumberOfThreads() );
+#endif
 }
 
 
@@ -190,6 +197,10 @@ ImageRegistrationMethod<TFixedImage,TMovingImage>
     }
 
   // Setup the metric
+#ifdef ITK_USE_OPTIMIZED_REGISTRATION_METHODS
+  this->GetMultiThreader()->SetNumberOfThreads( this->GetNumberOfThreads() );
+  this->m_Metric->SetNumberOfThreads( this->GetNumberOfThreads() );
+#endif
   m_Metric->SetMovingImage( m_MovingImage );
   m_Metric->SetFixedImage( m_FixedImage );
   m_Metric->SetTransform( m_Transform );
@@ -275,6 +286,7 @@ void
 ImageRegistrationMethod<TFixedImage,TMovingImage>
 ::StartOptimization( void )
 { 
+
   try
     {
     // do the optimization

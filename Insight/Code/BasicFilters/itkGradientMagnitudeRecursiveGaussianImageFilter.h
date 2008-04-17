@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientMagnitudeRecursiveGaussianImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/27 17:01:11 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007-09-27 11:36:40 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -104,6 +104,10 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
+
+  /** Runtime information support. */
+  itkTypeMacro(GradientMagnitudeRecursiveGaussianImageFilter, 
+               InPlaceImageFilter);
 
   /** Set Sigma value. Sigma is measured in the units of image spacing.  */
   void SetSigma( RealType sigma );

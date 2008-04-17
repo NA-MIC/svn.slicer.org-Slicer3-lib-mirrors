@@ -3,14 +3,14 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNumericTraitsVariableLengthVectorPixel.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/19 22:32:47 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007-12-10 14:03:14 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -20,190 +20,139 @@
 #include "itkNumericTraits.h"
 #include "itkVariableLengthVector.h"
 
-// This file is defines numeric traits for VariableLengthVector< T > as pixel type
-// Note that the Zero and the One methods here take references to a pixel as input.
-// This is due to the fact that the length of the VariableLengthVector is not
-// known until run-time. Since the most common use of Zero and One is for 
-// comparison purposes or initialization of sums etc, this might just as easily
-// be re-written with a pixel passed in as a reference and the length is inferred
-// from this pixel.
-// 
-// This work is part of the National Alliance for Medical Image Computing 
+// This file defines numeric traits for VariableLengthVector< T > as pixel type
+// Note that the Zero(), One(), min() and max() methods here take references to
+// a pixel as input.  This is due to the fact that the length of the
+// VariableLengthVector is not known until run-time. Since the most common use
+// of Zero and One is for comparison purposes or initialization of sums etc,
+// this might just as easily be re-written with a pixel passed in as a
+// reference and the length is inferred from this pixel.
+//
+// This work is part of the National Alliance for Medical Image Computing
 // (NAMIC), funded by the National Institutes of Health through the NIH Roadmap
 // for Medical Research, Grant U54 EB005149.
- 
+
+
 namespace itk
 {
-template <> class NumericTraits<VariableLengthVector<unsigned char > > {
-public:
-  typedef unsigned char ValueType;
-  typedef VariableLengthVector<unsigned char> PrintType;
-  typedef VariableLengthVector<unsigned char> AbsType;
-  typedef VariableLengthVector<unsigned short> AccumulateType;
-  typedef VariableLengthVector<double> RealType;
-  typedef double ScalarRealType;
-  typedef VariableLengthVector<float> FloatType;
-  static const VariableLengthVector<unsigned char> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< unsigned char > & );
-  static const VariableLengthVector<unsigned char> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< unsigned char >&);
+
+//
+// First we define a macro that can be customized to be used for a sequence of
+// specializations or for a generic template instantiation. This Macro covers
+// the implementation for good compilers and for Visual Studio 6.0.
+//
+#define itkNumericTraitsVariableLengthVectorPixelMacro(T) \
+template < _TEMPLATE_ARGUMENT_ >  \
+class NumericTraits<VariableLengthVector< T > >  \
+{ \
+public: \
+  typedef T ValueType; \
+ \
+  typedef _TYPENAME_ NumericTraits<T>::AbsType        ElementAbsType; \
+  typedef _TYPENAME_ NumericTraits<T>::AccumulateType ElementAccumulateType; \
+  typedef _TYPENAME_ NumericTraits<T>::FloatType      ElementFloatType; \
+  typedef _TYPENAME_ NumericTraits<T>::PrintType      ElementPrintType; \
+  typedef _TYPENAME_ NumericTraits<T>::RealType       ElementRealType; \
+ \
+  typedef VariableLengthVector<T>                   Self; \
+ \
+  typedef VariableLengthVector<ElementAbsType>          AbsType; \
+  typedef VariableLengthVector<ElementAccumulateType>   AccumulateType; \
+  typedef VariableLengthVector<ElementFloatType>        FloatType; \
+  typedef VariableLengthVector<ElementPrintType>        PrintType; \
+  typedef VariableLengthVector<ElementRealType>         RealType; \
+ \
+  typedef ElementRealType ScalarRealType; \
+ \
+  static const RealType max( const Self & a ) \
+    {  \
+      RealType b(a.Size());  \
+      b.Fill( NumericTraits< T >::max() ); \
+      return b; \
+    } \
+  static const RealType min( const Self & a ) \
+    {  \
+      RealType b(a.Size());  \
+      b.Fill( NumericTraits< T >::min() ); \
+      return b; \
+    } \
+  static const Self Zero( const Self  & a ) \
+  {  \
+    Self b(a.Size());  \
+    b.Fill( NumericTraits< T >::Zero ); \
+    return b; \
+  } \
+  static const Self One( const Self & a ) \
+  {  \
+    Self b(a.Size());  \
+    b.Fill( NumericTraits< T >::One ); \
+    return b; \
+  } \
 };
-template <> class NumericTraits<VariableLengthVector<signed char> > {
-public:
-  typedef signed char ValueType;
-  typedef VariableLengthVector<signed char> PrintType;
-  typedef VariableLengthVector<unsigned char> AbsType;
-  typedef VariableLengthVector<short> AccumulateType;
-  typedef VariableLengthVector<double> RealType;
-  typedef double ScalarRealType;
-  typedef VariableLengthVector<float> FloatType;
-  static const VariableLengthVector<signed char> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< signed char > & );
-  static const VariableLengthVector<signed char> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< signed char >&);
-};
-template <> class NumericTraits<VariableLengthVector<char> > {
-public:
-  typedef char ValueType;
-  typedef VariableLengthVector<char> PrintType;
-  typedef VariableLengthVector<unsigned char> AbsType;
-  typedef VariableLengthVector<short> AccumulateType;
-  typedef VariableLengthVector<double> RealType;
-  typedef double ScalarRealType;
-  typedef VariableLengthVector<float> FloatType;
-  static const VariableLengthVector<char> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< char > & );
-  static const VariableLengthVector<char> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< char >&);
-};
-template <> class NumericTraits<VariableLengthVector<short> > {
-public:
-  typedef short ValueType;
-  typedef VariableLengthVector<short> PrintType;
-  typedef VariableLengthVector<unsigned short> AbsType;
-  typedef VariableLengthVector<int> AccumulateType;
-  typedef VariableLengthVector<double> RealType;
-  typedef double ScalarRealType;
-  typedef VariableLengthVector<float> FloatType;
-  static const VariableLengthVector<short> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< short > & );
-  static const VariableLengthVector<short> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< short >&);
-};
-template <> class NumericTraits<VariableLengthVector<unsigned short> > {
-public:
-  typedef unsigned short ValueType;
-  typedef VariableLengthVector<unsigned short> PrintType;
-  typedef VariableLengthVector<unsigned short> AbsType;
-  typedef VariableLengthVector<unsigned int> AccumulateType;
-  typedef VariableLengthVector<double> RealType;
-  typedef double ScalarRealType;
-  typedef VariableLengthVector<float> FloatType;
-  static const VariableLengthVector<unsigned short> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< unsigned short > & );
-  static const VariableLengthVector<unsigned short> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< unsigned short >&);
-};
-template <> class NumericTraits<VariableLengthVector<int> > {
-public:
-  typedef int ValueType;
-  typedef VariableLengthVector<int> PrintType;
-  typedef VariableLengthVector<unsigned int> AbsType;
-  typedef VariableLengthVector<long> AccumulateType;
-  typedef VariableLengthVector<double> RealType;
-  typedef double ScalarRealType;
-  typedef VariableLengthVector<float> FloatType;
-  static const VariableLengthVector<int> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< int > & );
-  static const VariableLengthVector<int> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< int >&);
-};
-template <> class NumericTraits<VariableLengthVector<unsigned int> > {
-public:
-  typedef unsigned int ValueType;
-  typedef VariableLengthVector<unsigned int> PrintType;
-  typedef VariableLengthVector<unsigned int> AbsType;
-  typedef VariableLengthVector<unsigned long> AccumulateType;
-  typedef VariableLengthVector<double> RealType;
-  typedef double ScalarRealType;
-  typedef VariableLengthVector<float> FloatType;
-  static const VariableLengthVector<unsigned int> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< unsigned int > & );
-  static const VariableLengthVector<unsigned int> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< unsigned int >&);
-};
-template <> class NumericTraits<VariableLengthVector<long> > {
-public:
-  typedef long ValueType;
-  typedef VariableLengthVector<long> PrintType;
-  typedef VariableLengthVector<unsigned long> AbsType;
-  typedef VariableLengthVector<long> AccumulateType;
-  typedef VariableLengthVector<double> RealType;
-  typedef double ScalarRealType;
-  typedef VariableLengthVector<float> FloatType;
-  static const VariableLengthVector<long> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< long > & );
-  static const VariableLengthVector<long> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< long >&);
-};
-template <> class NumericTraits<VariableLengthVector<unsigned long> > {
-public:
-  typedef unsigned long ValueType;
-  typedef VariableLengthVector<unsigned long> PrlongType;
-  typedef VariableLengthVector<unsigned long> AbsType;
-  typedef VariableLengthVector<unsigned long> AccumulateType;
-  typedef VariableLengthVector<double> RealType;
-  typedef double ScalarRealType;
-  typedef VariableLengthVector<float> FloatType;
-  static const VariableLengthVector<unsigned long> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< unsigned long > & );
-  static const VariableLengthVector<unsigned long> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< unsigned long >&);
-};
-template <> class NumericTraits<VariableLengthVector<float> > {
-public:
-  typedef float ValueType;
-  typedef VariableLengthVector<float> PrintType;
-  typedef VariableLengthVector<float> AbsType;
-  typedef VariableLengthVector<double> AccumulateType;
-  typedef VariableLengthVector<double> RealType;
-  typedef double ScalarRealType;
-  typedef VariableLengthVector<float> FloatType;
-  static const VariableLengthVector<float> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< float > & );
-  static const VariableLengthVector<float> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< float >&);
-};
-template <> class NumericTraits<VariableLengthVector<double> > {
-public:
-  typedef double ValueType;
-  typedef VariableLengthVector<double> PrintType;
-  typedef VariableLengthVector<double> AbsType;
-  typedef VariableLengthVector<long double> AccumulateType;
-  typedef VariableLengthVector<double> RealType;
-  typedef VariableLengthVector<float> FloatType;
-  typedef double ScalarRealType;
-  static const VariableLengthVector<double> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< double > & );
-  static const VariableLengthVector<double> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< double >&);
-};
-template <> class NumericTraits<VariableLengthVector<long double> > {
-public:
-  typedef long double ValueType;
-  typedef VariableLengthVector<long double> PrintType;
-  typedef VariableLengthVector<long double> AbsType;
-  typedef VariableLengthVector<long double> AccumulateType;
-  typedef VariableLengthVector<long double> RealType;
-  typedef long double ScalarRealType;
-  typedef VariableLengthVector<float> FloatType;
-  static const VariableLengthVector<long double> ITKCommon_EXPORT 
-                        Zero( const VariableLengthVector< long double > & );
-  static const VariableLengthVector<long double> ITKCommon_EXPORT 
-                        One(const VariableLengthVector< long double >&);
-};
+
+
+//
+// Visual Studio 6.0 is not capable of managing the template implementation
+// defined at the end of this file. Therefore we provide an alternative
+// primitive implementation based on macros that define explicit
+// instantiations.
+//
+#if defined( _MSC_VER ) && ( _MSC_VER < 1310 )
+
+// These two symbols below are defined empty on purpose
+#define _TYPENAME_
+#define _TEMPLATE_ARGUMENT_
+
+//
+// List here the specializations of the Traits:
+//
+itkNumericTraitsVariableLengthVectorPixelMacro( char );
+itkNumericTraitsVariableLengthVectorPixelMacro( unsigned char );
+itkNumericTraitsVariableLengthVectorPixelMacro( short );
+itkNumericTraitsVariableLengthVectorPixelMacro( unsigned short );
+itkNumericTraitsVariableLengthVectorPixelMacro( int );
+itkNumericTraitsVariableLengthVectorPixelMacro( unsigned int );
+itkNumericTraitsVariableLengthVectorPixelMacro( long );
+itkNumericTraitsVariableLengthVectorPixelMacro( unsigned long );
+itkNumericTraitsVariableLengthVectorPixelMacro( float );
+itkNumericTraitsVariableLengthVectorPixelMacro( double );
+
+#else
+
+// For all the other good compilers, we provide here a generic implementation
+// based on creating types of VariableLengthVectors whose components are the
+// types of the NumericTraits from the original VariableLengthVectors
+// components. This implementation doesn't require specializations, since it
+// is based on the concept that 
+//
+//    NumericTraits< VariableLengthVector< T > >  is defined piecewise by
+//    VariableLengthVector< NumericTraits< T > >
+//
+//
+// By defining the following symbols, the Macro above gets customized to become
+// a generic template implementation of the traits
+//
+#define _TYPENAME_            typename
+#define _TEMPLATE_ARGUMENT_   class T
+
+//
+// Then we simply call the macro once with the generic template argument T.
+//
+itkNumericTraitsVariableLengthVectorPixelMacro( T );
+
+#endif
+
+
+
+//
+// Finally, to avoid contamination of other files with the symbols defined
+// here, we undefine the helper macros
+//
+#undef _TYPENAME_
+#undef _TEMPLATE_ARGUMENT_
+
 
 } // end namespace itk
 
-#endif // __itkNumericTraitsVariableLengthVector_h  
+#endif // __itkNumericTraitsVariableLengthVector_h
 

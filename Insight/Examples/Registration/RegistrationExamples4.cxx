@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: RegistrationExamples4.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/14 12:16:23 $
+  Date:      $Date: 2006-05-14 12:16:23 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

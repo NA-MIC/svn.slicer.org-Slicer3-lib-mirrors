@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkParallelSparseFieldLevelSetImageFilter.h,v $
 Language:  C++
-Date:      $Date: 2006/03/30 15:36:25 $
-Version:   $Revision: 1.15 $
+Date:      $Date: 2008-03-03 13:58:45 $
+Version:   $Revision: 1.16 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -257,6 +257,8 @@ public:
   /**Typedefs from the superclass */
   typedef typename Superclass::TimeStepType TimeStepType;
   typedef typename Superclass::FiniteDifferenceFunctionType FiniteDifferenceFunctionType;
+  typedef typename Superclass::RadiusType RadiusType;
+  typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
   
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -344,7 +346,7 @@ protected:
   
   /** The constant gradient to maintain between isosurfaces in the
       spare-field of the level-set image.  This value defaults to 1.0 */
-  static double m_ConstantGradientValue;
+  double m_ConstantGradientValue;
   
   /** Multiplicative identity of the ValueType. */
   static ValueType m_ValueOne;

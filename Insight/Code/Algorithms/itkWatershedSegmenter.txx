@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWatershedSegmenter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/01/12 23:02:27 $
-  Version:   $Revision: 1.34 $
+  Date:      $Date: 2008-01-27 18:29:24 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -859,13 +859,13 @@ void Segmenter<TInputImage>
         updateStack.push(labelIt.GetCenterPointer());
         minVal = valueIt.GetPixel(m_Connectivity.index[0]);
         moveIndex = m_Connectivity.direction[0];
-        for (unsigned int i = 1; i < m_Connectivity.size; ++i)
+        for (unsigned int ii = 1; ii < m_Connectivity.size; ++ii)
           {
-          nPos = m_Connectivity.index[i];
+          nPos = m_Connectivity.index[ii];
           if ( valueIt.GetPixel(nPos) < minVal) 
             {
             minVal = valueIt.GetPixel(nPos);
-            moveIndex = m_Connectivity.direction[i];
+            moveIndex = m_Connectivity.direction[ii];
             }
           }
         valueIt += moveIndex;

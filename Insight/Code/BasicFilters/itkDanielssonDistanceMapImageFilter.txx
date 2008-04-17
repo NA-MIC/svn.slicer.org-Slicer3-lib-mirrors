@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDanielssonDistanceMapImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/11/27 22:23:47 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2008-03-13 23:07:39 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -376,7 +376,20 @@ DanielssonDistanceMapImageFilter<TInputImage,TOutputImage>
 
   ReflectiveImageRegionConstIterator< VectorImageType > 
     it( distanceComponents, region );
-  it.FillOffsets(1);
+  typename VectorImageType::OffsetType voffset;
+  for(unsigned int dim=0; dim <VectorImageType::ImageDimension; dim++)
+    {
+    if (region.GetSize()[dim] > 1)
+      {
+      voffset[dim] = 1;
+      }
+    else
+      {
+      voffset[dim] = 0;
+      }
+    }
+  it.SetBeginOffset(voffset);
+  it.SetEndOffset(voffset);
 
   it.GoToBegin();
 
@@ -410,6 +423,10 @@ DanielssonDistanceMapImageFilter<TInputImage,TOutputImage>
     IndexType here = it.GetIndex();
     for(unsigned int dim=0; dim <VectorImageType::ImageDimension; dim++)
       {
+      if (region.GetSize()[dim] <= 1)
+        {
+        continue;
+        }
       if( it.IsReflected(dim) ) 
         {
         offset[dim]++;

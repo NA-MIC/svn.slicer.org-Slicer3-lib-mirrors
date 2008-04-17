@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageRegistration8.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:42 $
-  Version:   $Revision: 1.35 $
+  Date:      $Date: 2008-03-10 19:46:31 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -31,6 +31,7 @@
 //    OUTPUTS: {ImageRegistration8Output.png}
 //    OUTPUTS: {ImageRegistration8DifferenceBefore.png}
 //    OUTPUTS: {ImageRegistration8DifferenceAfter.png}
+//    OUTPUTS: {ImageRegistration8RegisteredSlice.png}
 //  Software Guide : EndCommandLineArgs
 
 // Software Guide : BeginLatex
@@ -149,7 +150,9 @@ int main( int argc, char *argv[] )
     std::cerr << " outputImagefile  [differenceBeforeRegistration] ";
     std::cerr << " [differenceAfterRegistration] ";
     std::cerr << " [sliceBeforeRegistration] ";
-    std::cerr << " [sliceAfterRegistration] "<< std::endl;
+    std::cerr << " [sliceDifferenceBeforeRegistration] ";
+    std::cerr << " [sliceDifferenceAfterRegistration] ";
+    std::cerr << " [sliceAfterRegistration] " << std::endl;
     return EXIT_FAILURE;
     }
   
@@ -591,6 +594,7 @@ int main( int argc, char *argv[] )
   resampler->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
   resampler->SetOutputOrigin(  fixedImage->GetOrigin() );
   resampler->SetOutputSpacing( fixedImage->GetSpacing() );
+  resampler->SetOutputDirection( fixedImage->GetDirection() );
   resampler->SetDefaultPixelValue( 100 );
   
   typedef  unsigned char  OutputPixelType;
@@ -727,7 +731,13 @@ int main( int argc, char *argv[] )
     sliceWriter->Update();
     }
 
-
+  if( argc > 9 )
+    {
+    extractor->SetInput( caster->GetOutput() );
+    resampler->SetTransform( finalTransform );
+    sliceWriter->SetFileName( argv[9] );  
+    sliceWriter->Update();
+    }
 
 
   return EXIT_SUCCESS;

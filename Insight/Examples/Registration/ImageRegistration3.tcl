@@ -3,8 +3,8 @@
 #  Program:   Insight Segmentation & Registration Toolkit
 #  Module:    $RCSfile: ImageRegistration3.tcl,v $
 #  Language:  C++
-#  Date:      $Date: 2004/12/28 14:42:49 $
-#  Version:   $Revision: 1.11 $
+#  Date:      $Date: 2007-11-22 00:30:16 $
+#  Version:   $Revision: 1.12 $
 #
 #  Copyright (c) Insight Software Consortium. All rights reserved.
 #  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -96,6 +96,7 @@ $resampler SetSize  [ $region GetSize ]
 
 $resampler SetOutputSpacing [ $fixedImage GetSpacing ]
 $resampler SetOutputOrigin  [ $fixedImage GetOrigin  ]
+$resampler SetOutputDirection  [ $fixedImage GetDirection  ]
 $resampler SetDefaultPixelValue 100
 
 set outputCast  [itkRescaleIntensityImageFilterF2US2_New]

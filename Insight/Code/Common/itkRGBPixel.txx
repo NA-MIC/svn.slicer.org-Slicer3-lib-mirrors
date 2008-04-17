@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRGBPixel.txx,v $
   Language:  C++
-  Date:      $Date: 2005/08/08 21:36:17 $
-  Version:   $Revision: 1.27 $
+  Date:      $Date: 2008-01-25 14:48:22 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -126,6 +126,42 @@ RGBPixel<T>
   return result;
 }
 
+ 
+/**
+ * Returns the results from a test for equality (all components must be equal)
+ */
+template<class T>
+bool
+RGBPixel<T>
+::operator==(const Self & r) const
+{
+  for( unsigned int i=0; i<3; i++) 
+    {
+    if((*this)[i] != r[i])
+      {
+      return false;
+      }
+    }
+  return true;
+}
+
+/**
+ * Returns the results from a test for less than (all components must be less than)
+ */
+template<class T>
+bool
+RGBPixel<T>
+::operator<(const Self & r) const
+{
+  for( unsigned int i=0; i<3; i++) 
+    {
+    if((*this)[i] >= r[i])
+      {
+      return false;
+      }
+    }
+  return true;
+}
 
 
 

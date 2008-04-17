@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLevelSetFunctionWithRefitTerm.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:30 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2008-03-03 13:58:44 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -86,6 +86,8 @@ LevelSetFunctionWithRefitTerm<TImageType, TSparseImageType>
 
   const unsigned long center = neighborhood.Size()/2;
   
+  const NeighborhoodScalesType neighborhoodScales = this->ComputeNeighborhoodScales(); 
+
   NormalVectorType normalvector;
   ScalarValueType curvature;
 
@@ -123,11 +125,11 @@ LevelSetFunctionWithRefitTerm<TImageType, TSparseImageType>
           }
         if ( counterP & indicator[j] ) 
           {
-          normalvector[j] += neighborhood.GetPixel (positionP);
+          normalvector[j] += neighborhood.GetPixel (positionP) * neighborhoodScales[j];
           }
         else
           {
-          normalvector[j] -= neighborhood.GetPixel (positionP);
+          normalvector[j] -= neighborhood.GetPixel (positionP) * neighborhoodScales[j];
           }
         } // end counterP
       } // end derivative axis
@@ -137,11 +139,11 @@ LevelSetFunctionWithRefitTerm<TImageType, TSparseImageType>
       {
       if ( counterN & indicator[j] )
         {
-        curvature -= normalvector[j];
+        curvature -= normalvector[j] * neighborhoodScales[j];
         }
       else
         {
-        curvature += normalvector[j];
+        curvature += normalvector[j] * neighborhoodScales[j];
         }
       } // end derivative axis
     } // end counterN

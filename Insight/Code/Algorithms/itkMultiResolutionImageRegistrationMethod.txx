@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMultiResolutionImageRegistrationMethod.txx,v $
   Language:  C++
-  Date:      $Date: 2006/06/08 20:30:47 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008-04-02 20:16:16 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -48,6 +48,9 @@ MultiResolutionImageRegistrationMethod<TFixedImage,TMovingImage>
   m_CurrentLevel = 0;
 
   m_Stop = false;
+
+  m_ScheduleSpecified = false;
+  m_NumberOfLevelsSpecified = false;
 
   m_InitialTransformParameters = ParametersType(1);
   m_InitialTransformParametersOfNextLevel = ParametersType(1);
@@ -130,9 +133,56 @@ MultiResolutionImageRegistrationMethod<TFixedImage,TMovingImage>
   m_Stop = true;
 }
 
+/*
+ * Set the schedules for the fixed and moving image pyramid
+ */
+template < typename TFixedImage, typename TMovingImage >
+void
+MultiResolutionImageRegistrationMethod<TFixedImage,TMovingImage>
+::SetSchedules( const ScheduleType & fixedImagePyramidSchedule,
+               const ScheduleType & movingImagePyramidSchedule )
+{
+  if( m_NumberOfLevelsSpecified )
+    {
+    itkExceptionMacro( "SetSchedules should not be used " 
+           << "if numberOfLevelves are specified using SetNumberOfLevels" );
+    }
+  m_FixedImagePyramidSchedule = fixedImagePyramidSchedule;
+  m_MovingImagePyramidSchedule = movingImagePyramidSchedule;
+  m_ScheduleSpecified = true;
 
+  //Set the number of levels based on the pyramid schedule specified
+  if ( m_FixedImagePyramidSchedule.rows() != 
+        m_MovingImagePyramidSchedule.rows())
+    {
+    itkExceptionMacro("The specified schedules contain unequal number of levels");
+    }
+  else
+    {
+    m_NumberOfLevels = m_FixedImagePyramidSchedule.rows();
+    }
 
+  this->Modified();
+}
 
+/*
+ * Set the number of levels  
+ */
+template < typename TFixedImage, typename TMovingImage >
+void
+MultiResolutionImageRegistrationMethod<TFixedImage,TMovingImage>
+::SetNumberOfLevels( unsigned long numberOfLevels )
+{
+  if( m_ScheduleSpecified )
+    {
+    itkExceptionMacro( "SetNumberOfLevels should not be used " 
+      << "if schedules have been specified using SetSchedules method " );
+    }
+
+  m_NumberOfLevels = numberOfLevels;
+  m_NumberOfLevelsSpecified = true;
+  this->Modified();
+}
 
 /*
  * Stop the Registration Process
@@ -177,32 +227,51 @@ MultiResolutionImageRegistrationMethod<TFixedImage,TMovingImage>
     itkExceptionMacro(<<"Moving image pyramid is not present");
     }
 
-  // Setup the fixed image pyramid
-  m_FixedImagePyramid->SetNumberOfLevels( m_NumberOfLevels );
+  // Setup the fixed and moving image pyramid
+  if( m_NumberOfLevelsSpecified )
+    {
+    m_FixedImagePyramid->SetNumberOfLevels( m_NumberOfLevels );
+    m_MovingImagePyramid->SetNumberOfLevels( m_NumberOfLevels );
+    }
+
+  if( m_ScheduleSpecified )
+    {
+    m_FixedImagePyramid->SetNumberOfLevels( m_FixedImagePyramidSchedule.rows());
+    m_FixedImagePyramid->SetSchedule( m_FixedImagePyramidSchedule );
+
+    m_MovingImagePyramid->SetNumberOfLevels( m_MovingImagePyramidSchedule.rows());
+    m_MovingImagePyramid->SetSchedule( m_MovingImagePyramidSchedule );
+    }
+
   m_FixedImagePyramid->SetInput( m_FixedImage );
   m_FixedImagePyramid->UpdateLargestPossibleRegion();
 
   // Setup the moving image pyramid
-  m_MovingImagePyramid->SetNumberOfLevels( m_NumberOfLevels );
   m_MovingImagePyramid->SetInput( m_MovingImage );
   m_MovingImagePyramid->UpdateLargestPossibleRegion();
 
   typedef typename FixedImageRegionType::SizeType         SizeType;
   typedef typename FixedImageRegionType::IndexType        IndexType;
-  typedef typename FixedImagePyramidType::ScheduleType    ScheduleType;
 
   ScheduleType schedule = m_FixedImagePyramid->GetSchedule();
+  std::cout << "FixedImage schedule: " << schedule << std::endl;
+
+  ScheduleType movingschedule = m_MovingImagePyramid->GetSchedule();
+  std::cout << "MovingImage schedule: " << movingschedule << std::endl;
 
   SizeType  inputSize  = m_FixedImageRegion.GetSize();
   IndexType inputStart = m_FixedImageRegion.GetIndex();
 
-  m_FixedImageRegionPyramid.reserve( m_NumberOfLevels );
-  m_FixedImageRegionPyramid.resize( m_NumberOfLevels );
+  const unsigned long numberOfLevels = 
+          m_FixedImagePyramid->GetNumberOfLevels(); 
+
+  m_FixedImageRegionPyramid.reserve( numberOfLevels );
+  m_FixedImageRegionPyramid.resize( numberOfLevels );
 
   // Compute the FixedImageRegion corresponding to each level of the 
   // pyramid. This uses the same algorithm of the ShrinkImageFilter 
   // since the regions should be compatible. 
-  for ( unsigned int level=0; level < m_NumberOfLevels; level++ )
+  for ( unsigned int level=0; level < numberOfLevels; level++ )
     {
     SizeType  size;
     IndexType start;
@@ -225,10 +294,6 @@ MultiResolutionImageRegistrationMethod<TFixedImage,TMovingImage>
     }
 
 }
-
-
-
-
 
 /*
  * Starts the Registration Process
@@ -359,6 +424,10 @@ MultiResolutionImageRegistrationMethod<TFixedImage,TMovingImage>
     os << indent << "FixedImageRegion at level " << level << ": ";
     os << m_FixedImageRegionPyramid[level] << std::endl;
     }
+  os << indent << "FixedImagePyramidSchedule : " << std::endl;
+  os << m_FixedImagePyramidSchedule << std::endl;
+  os << indent << "MovingImagePyramidSchedule : " << std::endl;
+  os << m_MovingImagePyramidSchedule << std::endl;
 
 }
 

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: MeanSquaresImageMetric1.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/12 22:08:29 $
+  Date:      $Date: 2006-11-12 22:08:29 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

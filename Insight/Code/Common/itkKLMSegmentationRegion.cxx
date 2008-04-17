@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkKLMSegmentationRegion.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/17 21:02:00 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007-12-23 17:59:28 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -558,7 +558,7 @@ KLMSegmentationRegion
 } // end GetRegionBorderConstItEnd
 
 
-int
+KLMSegmentationRegion::RegionBorderVectorSizeType
 KLMSegmentationRegion
 ::GetRegionBorderSize() const
 {

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVarianceImageFunctionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:30:10 $
+  Date:      $Date: 2003-09-10 14:30:10 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

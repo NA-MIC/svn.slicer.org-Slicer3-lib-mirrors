@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageRegistration4.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:42 $
-  Version:   $Revision: 1.42 $
+  Date:      $Date: 2008-03-13 15:50:13 $
+  Version:   $Revision: 1.44 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -119,7 +119,8 @@ int main( int argc, char *argv[] )
     std::cerr << " fixedImageFile  movingImageFile ";
     std::cerr << "outputImagefile [defaultPixelValue]" << std::endl;
     std::cerr << "[checkerBoardAfter] [checkerBoardBefore]" << std::endl;
-    std::cerr << "[numberOfBins]" << std::endl;
+    std::cerr << "[numberOfBins] [numberOfSamples]";
+    std::cerr << "[useExplicitPDFderivatives ] " << std::endl;
     return EXIT_FAILURE;
     }
   
@@ -230,6 +231,15 @@ int main( int argc, char *argv[] )
   //
   // Software Guide : EndLatex 
 
+
+  if( argc > 9 )
+    {
+    // Define whether to calculate the metric derivative by explicitly
+    // computing the derivatives of the joint PDF with respect to the Transform
+    // parameters, or doing it by progressively accumulating contributions from
+    // each bin in the joint PDF.
+    metric->SetUseExplicitPDFDerivatives( atoi( argv[9] ) );
+    }
 
 
 
@@ -385,6 +395,7 @@ int main( int argc, char *argv[] )
   resample->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
   resample->SetOutputOrigin(  fixedImage->GetOrigin() );
   resample->SetOutputSpacing( fixedImage->GetSpacing() );
+  resample->SetOutputDirection( fixedImage->GetDirection() );
   resample->SetDefaultPixelValue( defaultPixelValue );
 
 

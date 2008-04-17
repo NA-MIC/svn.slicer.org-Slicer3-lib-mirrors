@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHessian3DToVesselnessMeasureImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/28 14:26:56 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-01-11 13:09:19 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -27,7 +27,7 @@ namespace itk
  * Line filter to provide a vesselness measure for tubular objects from the
  * hessian matrix. The filter takes as input an image of hessian pixels
  * (SymmetricSecondRankTensor pixels) and preserves pixels that have
- * eigen values \f[\lambda_3\f] close to 0 and \f[\lambda_2\f] and \f[\lambda_1\f] as
+ * eigen values \f$ \lambda_3 \f$ close to 0 and \f$\lambda_2\f$ and \f$\lambda_1\f$ as
  * large negative values. (for bright tubular structures).
  * 
  * \f[ \lambda_1 < \lambda_2 < \lambda_3 \f]
@@ -36,15 +36,15 @@ namespace itk
  * The filter takes into account that the eigen values play a crucial role in 
  * discrimintaitng shape and orientation of structures. 
  *
- * \li Bright tubular structures will have low \f[\lambda_1\f] and large negative 
- * values of \f[\lambda_2\f] and \f[\lambda_3\f].
+ * \li Bright tubular structures will have low \f$\lambda_1\f$ and large negative 
+ * values of \f$\lambda_2\f$ and \f$\lambda_3\f$.
  * \li Conversely dark tubular structures will have a low value of 
- * \f[\lambda_1\f] and large positive values of \f[\lambda_2\f] and 
- * \f[\lambda_3\f]. 
- * \li Bright plate like structures have low values of \f[\lambda_1\f] and 
- * \f[\lambda_2\f] and large negative values of \f[\lambda_3\f]
- * \li Dark plate like structures have low values of \f[\lambda_1\f] and 
- * \f[\lambda_2\f] and large positive values of \f[\lambda_3\f]
+ * \f$\lambda_1\f$ and large positive values of \f$\lambda_2\f$ and 
+ * \f$\lambda_3\f$. 
+ * \li Bright plate like structures have low values of \f$\lambda_1\f$ and 
+ * \f$\lambda_2\f$ and large negative values of \f$\lambda_3\f$
+ * \li Dark plate like structures have low values of \f$\lambda_1\f$ and 
+ * \f$\lambda_2\f$ and large positive values of \f$\lambda_3\f$
  * \li Bright spherical (blob) like structures have all three eigen values as
  * large negative numbers
  * \li Dark spherical (blob) like structures have all three eigen values as
@@ -100,6 +100,9 @@ public:
                                                           EigenValueImageType;
   typedef   SymmetricEigenAnalysisImageFilter< 
               InputImageType, EigenValueImageType >     EigenAnalysisFilterType;
+
+  /** Run-time type information (and related methods).   */
+  itkTypeMacro( Hessian3DToVesselnessMeasureImageFilter, ImageToImageFilter );
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

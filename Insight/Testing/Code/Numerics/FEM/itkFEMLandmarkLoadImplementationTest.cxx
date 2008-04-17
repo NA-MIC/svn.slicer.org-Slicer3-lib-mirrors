@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMLandmarkLoadImplementationTest.cxx,v $
   Language:  C++
-  Date: $Date: 2006/11/07 23:23:16 $
+  Date: $Date: 2006-11-07 23:23:16 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

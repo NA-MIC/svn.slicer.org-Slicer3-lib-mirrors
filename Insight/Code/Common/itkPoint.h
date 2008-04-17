@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPoint.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/20 14:54:10 $
+  Date:      $Date: 2006-04-20 14:54:10 $
   Version:   $Revision: 1.65 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

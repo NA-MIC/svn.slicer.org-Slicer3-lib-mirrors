@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanSquareRegistrationFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:54 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -143,7 +143,7 @@ MeanSquareRegistrationFunction<TFixedImage,TMovingImage,TDeformationField>
   // Get moving image related information
   double movingValue;
   PointType mappedPoint;
-  typename Superclass::DeformationFieldType::PixelType itvec=this->GetDeformationField()->GetPixel(index);
+  DeformationFieldPixelType itvec=this->GetDeformationField()->GetPixel(index);
 
   for( j = 0; j < ImageDimension; j++ )
     {

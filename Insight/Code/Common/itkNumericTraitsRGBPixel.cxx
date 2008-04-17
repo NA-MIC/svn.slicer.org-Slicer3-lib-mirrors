@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNumericTraitsRGBPixel.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/03/28 22:03:50 $
+  Date:      $Date: 2006-03-28 22:03:50 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

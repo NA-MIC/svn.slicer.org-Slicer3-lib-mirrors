@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSparseFieldFourthOrderLevelSetImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/30 15:36:25 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008-03-03 13:58:46 $
+  Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -173,6 +173,8 @@ class ITK_EXPORT SparseFieldFourthOrderLevelSetImageFilter
   typedef typename Superclass::ValueType ValueType;
   typedef typename Superclass::IndexType IndexType;
   typedef typename Superclass::LayerType LayerType;
+  typedef typename Superclass::RadiusType RadiusType;
+  typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
 
   /** The storage class used as the node type for the sparse normal vector
       image. */

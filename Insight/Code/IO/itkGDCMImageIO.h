@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGDCMImageIO.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/18 15:10:05 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2008-01-02 14:00:15 $
+  Version:   $Revision: 1.34 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -34,7 +34,7 @@ namespace itk
  *
  *  http://creatis-www.insa-lyon.fr/Public/Gdcm/
  *
- *  CREATIS INSA - Lyon 2003-2005
+ *  CREATIS INSA - Lyon 2003-2008
  *    http://www.creatis.insa-lyon.fr
  *
  *  \warning There are several restrictions to this current writer:
@@ -46,9 +46,10 @@ namespace itk
  *                             - The SeQuence DICOM field (SQ).
  *                             - Fields from Private Dictionary with unresolved Name (= unknown at runtime)
  *           *  As of 01/15 the binary fields are properly passed.
-              *  Some very long (>0xfff) binary fields are not loaded (typically 0029|0010), 
+ *           *  Some very long (>0xfff) binary fields are not loaded (typically 0029|0010), 
  *              you need to explicitely set the maximum length of elements to load to be bigger
  *              (see Get/SetMaxSizeLoadEntry)
+ *           * GDCMImageIO was not handling rescale slope/intercept properly. This is fixed as of 11/12/2007
  *
  *  \ingroup IOFilters
  *
@@ -140,6 +141,8 @@ public:
 
   /** More general method to retrieve an arbitrary DICOM value based
    * on a DICOM Tag (eg "0123|4567").
+   * WARNING: You need to use the lower case for hex 0x[a-f], for instance:
+   * "0020|000d" instead of "0020|000D" (the latter won't work)
    */
   bool GetValueFromTag(const std::string & tag, std::string & value);
 

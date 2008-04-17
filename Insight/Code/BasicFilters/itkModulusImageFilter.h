@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkModulusImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/07/31 13:46:48 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007-09-27 11:36:41 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -93,6 +93,10 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
   
+  /** Runtime information support. */
+  itkTypeMacro(ModulusImageFilter, 
+               UnaryFunctorImageFilter);
+
   /** Set/Get the dividend */
   itkSetMacro( Dividend, InputPixelType );
   itkGetConstReferenceMacro( Dividend, InputPixelType );

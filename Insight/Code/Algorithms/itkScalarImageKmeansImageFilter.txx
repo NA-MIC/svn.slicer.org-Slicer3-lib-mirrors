@@ -3,7 +3,7 @@
     Program:   Insight Segmentation & Registration Toolkit
     Module:    $RCSfile: itkScalarImageKmeansImageFilter.txx,v $
     Language:  C++
-    Date:      $Date: 2005/07/26 15:55:08 $
+    Date:      $Date: 2005-07-26 15:55:08 $
     Version:   $Revision: 1.10 $
 
     Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkNeuralNetworkFileWriter.h,v $
 Language:  C++
-Date:      $Date: 2007/09/05 18:58:23 $
-Version:   $Revision: 1.13 $
+Date:      $Date: 2008-02-07 15:58:06 $
+Version:   $Revision: 1.14 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -50,7 +50,7 @@ namespace itk
  *
  * This class was contributed to the Insight Journal by  Raghu Venkatram
  * The original paper can be found at
- *   http://hdl.handle.net/1926/203
+ *   http://insight-journal.org/midas/handle.php?handle=1926/203
  *
  *
  * \author Raghu Venkatram

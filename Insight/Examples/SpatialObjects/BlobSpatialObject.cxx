@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: BlobSpatialObject.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/03/28 16:32:07 $
+  Date:      $Date: 2005-03-28 16:32:07 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMinimumImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/30 15:01:09 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007-09-27 11:36:41 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -78,6 +78,10 @@ public:
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
+
+  /** Runtime information support. */
+  itkTypeMacro(MinimumImageFilter, 
+               BinaryFunctorImageFilter);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */

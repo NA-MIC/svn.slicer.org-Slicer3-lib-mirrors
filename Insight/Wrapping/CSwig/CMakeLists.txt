@@ -502,9 +502,15 @@ IF(ITK_CSWIG_PYTHON)
 
   # Install the package python files.
   FOREACH(file ${ITK_PYTHON_FILES})
-    INSTALL(FILES "${ITK_BINARY_DIR}/Wrapping/CSwig/Python/${file}.py"
-      DESTINATION ${ITK_INSTALL_LIB_DIR_CM24}/python
-      COMPONENT RuntimeLibraries)
+    IF(ITK_CSWIG_CONFIGURATION_TYPES)
+      INSTALL(FILES "${ITK_BINARY_DIR}/Wrapping/CSwig/Python/\${CMAKE_INSTALL_CONFIG_NAME}/${file}.py"
+        DESTINATION ${ITK_INSTALL_LIB_DIR_CM24}/python
+        COMPONENT RuntimeLibraries)
+    ELSE(ITK_CSWIG_CONFIGURATION_TYPES)
+      INSTALL(FILES "${ITK_BINARY_DIR}/Wrapping/CSwig/Python/${file}.py"
+        DESTINATION ${ITK_INSTALL_LIB_DIR_CM24}/python
+        COMPONENT RuntimeLibraries)
+    ENDIF(ITK_CSWIG_CONFIGURATION_TYPES)
   ENDFOREACH(file)
   
   SET(ITK_CSWIG_PACKAGE_DIR "os.path.dirname(selfpath)")
@@ -668,6 +674,14 @@ MACRO(ITK_WRAP_LIBRARY WRAP_SOURCES LIBRARY_NAME DIRECTORY DEPEND_LIBRARY EXTRA_
     ELSE(ITK_LIBRARY_PROPERTIES)
     SET_TARGET_PROPERTIES( _${LIBRARY_NAME}Python PROPERTIES PREFIX "")
     ENDIF(ITK_LIBRARY_PROPERTIES)
+
+    # Python extension modules on Windows must have the extension ".pyd"
+    # instead of ".dll" as of Python 2.5.  Older python versions do support
+    # this suffix.
+    IF(WIN32 AND NOT CYGWIN)
+      SET_TARGET_PROPERTIES(_${LIBRARY_NAME}Python PROPERTIES SUFFIX ".pyd")
+    ENDIF(WIN32 AND NOT CYGWIN)
+
     TARGET_LINK_LIBRARIES(_${LIBRARY_NAME}Python ${EXTRA_LIBS} SwigRuntimePython ${PYTHON_LIBRARY})
     INSTALL(TARGETS _${LIBRARY_NAME}Python
       RUNTIME DESTINATION ${ITK_INSTALL_BIN_DIR_CM24} COMPONENT RuntimeLibraries

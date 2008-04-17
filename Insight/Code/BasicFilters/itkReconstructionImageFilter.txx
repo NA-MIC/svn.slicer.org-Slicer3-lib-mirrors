@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkReconstructionImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/12/15 15:12:28 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008-01-12 20:27:49 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -118,9 +118,6 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 
   TCompare compare;
 
-  typedef ImageRegionConstIterator<InputImageType> InputIteratorType;
-  typedef ImageRegionIterator<OutputImageType> OutputIteratorType;
-  
   MarkerImageConstPointer markerImage = this->GetMarkerImage();
   MaskImageConstPointer   maskImage = this->GetMaskImage();
   OutputImagePointer      output = this->GetOutput();
@@ -163,7 +160,6 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
   else
     {
     maskImageP = this->GetMaskImage();
-    OutputImagePointer      output = this->GetOutput();
     InputIteratorType inIt( markerImage,
                             output->GetRequestedRegion() );
     OutputIteratorType outIt( output,

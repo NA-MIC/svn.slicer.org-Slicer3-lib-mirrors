@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkStructHashFunction.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/05 20:57:46 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2007-12-21 16:50:20 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -52,9 +52,9 @@ inline unsigned int
 StructHashFunction< TInput >
 ::operator()( const InputType& key ) const
 {
-  int len = sizeof( InputType );
+  ::size_t len = sizeof( InputType );
   const char* p = reinterpret_cast< const char* >( &key );
-  int hash = 0;
+  unsigned int hash = 0;
   while( len-- )
     {
     hash = hash * 65 + *p++;

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDTITubeSpatialObjectPoint.txx,v $
   Language:  C++
-  Date:      $Date: 2007/07/16 23:15:51 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007-10-30 01:19:09 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -213,6 +213,7 @@ DTITubeSpatialObjectPoint< TPointDimension >
   this->m_NumDimensions = rhs.m_NumDimensions;
   this->m_X = rhs.m_X;
   this->m_T = rhs.m_T;
+  this->m_R = rhs.m_R;
   this->m_Normal1 = rhs.m_Normal1;
   this->m_Normal2 = rhs.m_Normal2;
   this->m_Color = rhs.m_Color;

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSimpleFastMutexLock.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/05/10 20:27:16 $
+  Date:      $Date: 2006-05-10 20:27:16 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

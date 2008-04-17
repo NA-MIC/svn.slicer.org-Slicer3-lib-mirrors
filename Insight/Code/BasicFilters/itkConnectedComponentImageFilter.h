@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConnectedComponentImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/18 20:03:03 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2007-10-05 10:31:58 $
+  Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -43,7 +43,9 @@ namespace itk
  * impose any particular ordering.
  *
  *
- * \sa ImageToImageFilter
+ * \sa ImageToImageFilter 
+ *
+ * \ingroup Singlethreaded
  */
 
 template <class TInputImage, class TOutputImage, class TMaskImage=TInputImage>

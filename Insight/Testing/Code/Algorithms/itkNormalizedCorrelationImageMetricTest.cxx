@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNormalizedCorrelationImageMetricTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/08 19:39:57 $
+  Date:      $Date: 2005-08-08 19:39:57 $
   Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

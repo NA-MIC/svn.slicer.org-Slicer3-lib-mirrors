@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOtsuMultipleThresholdsCalculator.txx,v $
   Language:  C++
-  Date:      $Date: 2005/01/13 15:36:46 $
+  Date:      $Date: 2005-01-13 15:36:46 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

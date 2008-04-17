@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshEulerOperatorJoinVertexFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/04 00:23:50 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-03-15 15:28:21 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,6 +17,7 @@
 #ifndef __itkQuadEdgeMeshEulerOperatorJoinVertexFunction_txx
 #define __itkQuadEdgeMeshEulerOperatorJoinVertexFunction_txx
 
+#include "itkQuadEdgeMeshEulerOperatorJoinVertexFunction.h"
 #include "itkQuadEdgeMeshZipMeshFunction.h"
 
 namespace itk
@@ -46,6 +47,12 @@ Evaluate( QEType* e )
     // We could shrink the edge to a point,
     // But we consider this case to be degenerated.
     itkDebugMacro( "Argument edge isolated." );
+    return( (QEType*) 0 );
+    }
+
+  if( CommonVertexNeighboor( e ) )
+    {
+    itkDebugMacro( "The two vertices have a common neighboor vertex." );
     return( (QEType*) 0 );
     }
    
@@ -196,6 +203,46 @@ Evaluate( QEType* e )
 
   return( this->m_Mesh->FindEdge( NewOrg, NewDest ) );
 
+}
+
+//--------------------------------------------------------------------------
+template < class TMesh, class TQEType >
+bool
+QuadEdgeMeshEulerOperatorJoinVertexFunction< TMesh, TQEType >::
+CommonVertexNeighboor( QEType* e )
+{
+  bool isLeftTriangle = e->IsLnextOfTriangle( );
+  bool isRiteTriangle = e->GetSym( )->IsLnextOfTriangle( );
+
+  //easy case
+  if( isLeftTriangle && isRiteTriangle )
+    {
+    if( e->GetOrder( ) <= 3 && e->GetSym( )->GetOrder( ) <= 3 )
+      return( true );
+    if( e->GetOnext( )->GetSym( )->GetOrder( ) <= 3 )
+      return( true );
+    if( e->GetOprev( )->GetSym( )->GetOrder( ) <= 3 )
+      return( true );
+    }
+
+  // general case
+  unsigned int counter = 0;
+  QEType* e_it = e->GetOnext( );
+  QEType* e_sym = e->GetSym( );
+  while( e_it != e )
+    {
+    QEType* e_sym_it = e->GetSym( )->GetOnext( );
+    while( e_sym_it != e_sym )
+      {
+      if(  e_it->GetDestination() == e_sym_it->GetDestination() )
+        counter++;
+      e_sym_it = e_sym_it->GetOnext( );
+      }
+    e_it = e_it->GetOnext( );
+    }
+  if( counter > 2 ) return( true );
+
+  return( false );
 }
 
 } // namespace itkQE

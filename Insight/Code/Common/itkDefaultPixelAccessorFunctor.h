@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDefaultPixelAccessorFunctor.h,v $
   Language:  C++
-  Date:      $Date: 2006/10/14 19:58:31 $
+  Date:      $Date: 2006-10-14 19:58:31 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

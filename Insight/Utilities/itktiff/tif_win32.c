@@ -1,4 +1,4 @@
-/* $Id: tif_win32.c,v 1.3 2007/01/05 20:20:57 ibanez Exp $ */
+/* $Id: tif_win32.c,v 1.3 2007-01-05 20:20:57 ibanez Exp $ */
 
 /*
  * Copyright (c) 1988-1997 Sam Leffler

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAutomaticTopologyMeshSource.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/14 11:54:32 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007-12-21 15:25:33 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -119,6 +119,7 @@ public:
 
   /** Hold on to the type information specified by the template parameters. */
   typedef          TOutputMesh               MeshType;
+  typedef typename MeshType::PointHashType   PointHashType;
   typedef typename MeshType::PointType       PointType;
   typedef typename MeshType::CellType        CellType;
   typedef typename MeshType::Pointer         MeshPointer;
@@ -145,7 +146,7 @@ public:
   typedef itk::hash_map<
     PointType,
     IdentifierType,
-    StructHashFunction< PointType > >          PointHashMap;
+    StructHashFunction< PointHashType > >          PointHashMap;
 
   /** The dimension of the output mesh. */
   itkStaticConstMacro(PointDimension, unsigned int,

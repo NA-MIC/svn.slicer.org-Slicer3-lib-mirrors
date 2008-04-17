@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFiniteDifferenceImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/09/21 17:59:20 $
-  Version:   $Revision: 1.45 $
+  Date:      $Date: 2008-03-03 13:58:51 $
+  Version:   $Revision: 1.46 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -129,8 +129,7 @@ FiniteDifferenceImageFilter<TInputImage,TOutputImage>
 
   // Get the size of the neighborhood on which we are going to operate.  This
   // radius is supplied by the difference function we are using.
-  typename FiniteDifferenceFunctionType::RadiusType radius
-    = this->GetDifferenceFunction()->GetRadius();
+  RadiusType radius = this->GetDifferenceFunction()->GetRadius();
 
   // Try to set up a buffered region that will accommodate our
   // neighborhood operations.  This may not be possible and we

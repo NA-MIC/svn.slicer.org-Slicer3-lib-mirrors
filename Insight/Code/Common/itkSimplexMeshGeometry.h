@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSimplexMeshGeometry.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/01 13:44:21 $
+  Date:      $Date: 2006-04-01 13:44:21 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMorphologicalWatershedFromMarkersImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/01/26 15:01:47 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008-02-07 15:07:57 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -121,8 +121,8 @@ MorphologicalWatershedFromMarkersImageFilter<TInputImage, TLabelImage>
     }
   
   // FAH (in french: File d'Attente Hierarchique)
-  typedef typename std::queue< IndexType >                    QueueType;
-  typedef typename std::map< InputImagePixelType, QueueType > MapType;
+  typedef std::queue< IndexType >                    QueueType;
+  typedef std::map< InputImagePixelType, QueueType > MapType;
   MapType fah;
 
   // the radius which will be used for all the shaped iterators

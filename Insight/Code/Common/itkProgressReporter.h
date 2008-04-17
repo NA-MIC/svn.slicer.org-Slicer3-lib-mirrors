@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkProgressReporter.h,v $
   Language:  C++
-  Date:      $Date: 2006/07/24 11:41:15 $
+  Date:      $Date: 2006-07-24 11:41:15 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

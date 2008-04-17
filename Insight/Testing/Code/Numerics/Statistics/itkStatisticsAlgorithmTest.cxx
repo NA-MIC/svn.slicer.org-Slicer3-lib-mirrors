@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkStatisticsAlgorithmTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/02/08 03:18:41 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-01-07 21:28:03 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,7 +30,7 @@ typedef itk::FixedArray< int, 3 > PixelType ;
 typedef itk::Image< PixelType, 3 > ImageType ;
 typedef itk::Statistics::ImageToListAdaptor< ImageType > SampleType ;
 typedef itk::Statistics::Subsample< SampleType > SubsampleType ;
-const unsigned int activeDimension = 1 ;
+const unsigned int testDimension = 1 ;
 
 void resetData(::itk::Image<PixelType, 3>::Pointer image,  std::vector<int> &refVector)
 {
@@ -69,7 +69,7 @@ void resetData(::itk::Image<PixelType, 3>::Pointer image,  std::vector<int> &ref
   viter = refVector.begin() ;
   while (viter != refVector.end())
     {
-      *viter = i_iter.Get()[activeDimension] ;
+      *viter = i_iter.Get()[testDimension] ;
       ++viter ;
       ++i_iter ;
     }
@@ -86,7 +86,7 @@ bool isSortedOrderCorrect(std::vector<int> &ref,
   SubsampleType::Iterator siter = subsample->Begin() ;
   while (siter != subsample->End())
     {
-      if (*viter != siter.GetMeasurementVector()[activeDimension])
+      if (*viter != siter.GetMeasurementVector()[testDimension])
         {
           ret = false ;
         }
@@ -144,7 +144,7 @@ int itkStatisticsAlgorithmTest(int, char* [] )
   // refVector
   resetData(image, refVector) ;
 
-  itk::Statistics::InsertSort< SubsampleType >(subsample, activeDimension,
+  itk::Statistics::InsertSort< SubsampleType >(subsample, testDimension,
                                     0, subsample->Size()) ;
   if (!isSortedOrderCorrect(refVector, subsample))
     {
@@ -154,7 +154,7 @@ int itkStatisticsAlgorithmTest(int, char* [] )
 
   // HeapSort algorithm test
   resetData(image, refVector) ;
-  itk::Statistics::HeapSort< SubsampleType >(subsample, activeDimension,
+  itk::Statistics::HeapSort< SubsampleType >(subsample, testDimension,
                                   0, subsample->Size()) ;
   if (!isSortedOrderCorrect(refVector, subsample))
     {
@@ -165,7 +165,7 @@ int itkStatisticsAlgorithmTest(int, char* [] )
   // IntospectiveSort algortihm test
   resetData(image, refVector) ;
   itk::Statistics::IntrospectiveSort< SubsampleType >
-    (subsample, activeDimension, 0, subsample->Size(), 16) ;
+    (subsample, testDimension, 0, subsample->Size(), 16) ;
   if (!isSortedOrderCorrect(refVector, subsample))
     {
       pass = false ;
@@ -175,7 +175,7 @@ int itkStatisticsAlgorithmTest(int, char* [] )
   // QuickSelect algorithm test
   resetData(image, refVector) ;
   SubsampleType::MeasurementType median = 
-    itk::Statistics::QuickSelect< SubsampleType >(subsample, activeDimension, 
+    itk::Statistics::QuickSelect< SubsampleType >(subsample, testDimension, 
                                                   0, subsample->Size(),
                                                   subsample->Size()/2) ;
   if (refVector[subsample->Size()/2] != median)

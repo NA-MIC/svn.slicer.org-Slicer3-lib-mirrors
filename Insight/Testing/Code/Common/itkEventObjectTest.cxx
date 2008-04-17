@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEventObjectTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/12/25 13:28:15 $
+  Date:      $Date: 2004-12-25 13:28:15 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

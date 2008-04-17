@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCellInterface.h,v $
   Language:  C++
-  Date:      $Date: 2007/04/06 12:50:58 $
+  Date:      $Date: 2007-04-06 12:50:58 $
   Version:   $Revision: 1.66 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

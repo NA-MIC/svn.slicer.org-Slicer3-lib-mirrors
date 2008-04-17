@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHistogramToEntropyImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:37:20 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-10-27 19:51:47 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -106,9 +106,12 @@ public:
   
   /** Standard class typedefs. */
   typedef HistogramToEntropyImageFilter Self;
-  typedef SmartPointer<Self>   Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  typedef SmartPointer<Self>            Pointer;
+  typedef SmartPointer<const Self>      ConstPointer;
   
+  /** Run-time type information (and related methods).   */
+  itkTypeMacro( HistogramToEntropyImageFilter, HistogramToImageFilter );
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 

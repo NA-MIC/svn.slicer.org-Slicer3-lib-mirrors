@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWatershedImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/02/24 20:42:17 $
+  Date:      $Date: 2004-02-24 20:42:17 $
   Version:   $Revision: 1.36 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

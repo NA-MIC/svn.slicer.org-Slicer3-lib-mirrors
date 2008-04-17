@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRayCastInterpolateImageFunctionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/04/07 20:40:28 $
+  Date:      $Date: 2005-04-07 20:40:28 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

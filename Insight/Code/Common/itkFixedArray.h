@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFixedArray.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/20 14:54:09 $
+  Date:      $Date: 2006-04-20 14:54:09 $
   Version:   $Revision: 1.38 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

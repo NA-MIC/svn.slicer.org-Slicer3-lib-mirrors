@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkProgressAccumulator.h,v $
   Language:  C++
-  Date:      $Date: 2005/11/17 22:41:08 $
-  Version:   $Revision: 1.10 $
+  Date:      $Date: 2007-12-21 15:32:36 $
+  Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -14,8 +14,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkProgressAccumulator_h_
-#define __itkProgressAccumulator_h_
+#ifndef __itkProgressAccumulator_h
+#define __itkProgressAccumulator_h
 
 #include "itkCommand.h"
 #include "itkObject.h"
@@ -28,7 +28,7 @@ namespace itk {
  * \class ProgressAccumulator
  * \brief Facilitates progress reporting for filters that wrap around
  *        multiple other filters.
- *        
+ *
  * This object allows a mini-pipeline filters to easily keep track of the 
  * progress performed by the internal filters.  
  * See DiscreteGaussianImageFilter.txx for an implementation example.
@@ -138,4 +138,3 @@ private:
 } // End namespace itk
 
 #endif // __itkProgressAccumulator_h_
-

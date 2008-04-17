@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOneWayEquivalencyTable.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/03/03 19:12:29 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2007-12-23 17:59:29 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -51,7 +51,7 @@ void OneWayEquivalencyTable::Flatten()
     }
 }
 
-unsigned long OneWayEquivalencyTable::RecursiveLookup(const unsigned a) const
+unsigned long OneWayEquivalencyTable::RecursiveLookup(const unsigned long a) const
 {
   unsigned long ans = a;
   unsigned long last_ans=a;

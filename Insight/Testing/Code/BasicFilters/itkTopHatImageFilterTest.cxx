@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTopHatImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/09/01 13:41:14 $
+  Date:      $Date: 2005-09-01 13:41:14 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOrthogonallyCorrected2DParametricPath.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/11/09 14:23:30 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007-12-23 17:59:29 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -27,14 +27,14 @@ OrthogonallyCorrected2DParametricPath::OutputType
 OrthogonallyCorrected2DParametricPath
 ::Evaluate( const InputType & inputValue ) const
 {
-  InputType           input = inputValue; // we may want to remap the input
-  InputType           inputRange;
-  InputType           normalizedInput;
-  OutputType          output;
-  int                 numOrthogonalCorrections;
-  double              softOrthogonalCorrectionTableIndex;
-  double              Correction, Correction1, Correction2;
-  VectorType          originalDerivative;
+  InputType               input = inputValue; // we may want to remap the input
+  InputType               inputRange;
+  InputType               normalizedInput;
+  OutputType              output;
+  OrthogonalCorrectionTableSizeType numOrthogonalCorrections;
+  double                  softOrthogonalCorrectionTableIndex;
+  double                  Correction, Correction1, Correction2;
+  VectorType              originalDerivative;
   
   numOrthogonalCorrections = m_OrthogonalCorrectionTable->Size(); 
 

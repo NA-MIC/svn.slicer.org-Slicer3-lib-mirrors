@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTetrahedronCellTopology.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:27 $
+  Date:      $Date: 2003-09-10 14:29:27 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

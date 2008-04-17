@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: BSplineWarping1.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:41 $
-  Version:   $Revision: 1.16 $
+  Date:      $Date: 2008-04-11 16:01:02 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -21,7 +21,7 @@
 
 //  Software Guide : BeginLatex
 //
-//  This example illustrates how to deform an image using a BSplineTransform.
+//  This example illustrates how to deform a 2D image using a BSplineTransform.
 // 
 //  \index{BSplineDeformableTransform}
 //
@@ -38,8 +38,40 @@
 #include "itkLinearInterpolateImageFunction.h"
 
 #include "itkBSplineDeformableTransform.h"
+//  Software Guide : EndCodeSnippet
 
 #include <fstream>
+
+//  The following section of code implements a Command observer
+//  used to monitor the evolution of the registration process.
+//
+#include "itkCommand.h"
+class CommandProgressUpdate : public itk::Command 
+{
+public:
+  typedef  CommandProgressUpdate   Self;
+  typedef  itk::Command             Superclass;
+  typedef itk::SmartPointer<Self>  Pointer;
+  itkNewMacro( Self );
+protected:
+  CommandProgressUpdate() {};
+public:
+  void Execute(itk::Object *caller, const itk::EventObject & event)
+    {
+      Execute( (const itk::Object *)caller, event);
+    }
+
+  void Execute(const itk::Object * object, const itk::EventObject & event)
+    {
+      const itk::ProcessObject * filter = 
+        dynamic_cast< const itk::ProcessObject * >( object );
+      if( ! itk::ProgressEvent().CheckEvent( &event ) )
+        {
+        return;
+        }
+      std::cout << filter->GetProgress() << std::endl;
+    }
+};
 
 
 int main( int argc, char * argv[] )
@@ -55,6 +87,7 @@ int main( int argc, char * argv[] )
     return EXIT_FAILURE;
     }
 
+// Software Guide : BeginCodeSnippet
   const     unsigned int   ImageDimension = 2;
 
   typedef   unsigned char  PixelType;
@@ -104,11 +137,13 @@ int main( int argc, char * argv[] )
 
   resampler->SetInterpolator( interpolator );
 
-  FixedImageType::SpacingType fixedSpacing = fixedImage->GetSpacing();
-  FixedImageType::PointType   fixedOrigin  = fixedImage->GetOrigin();
+  FixedImageType::SpacingType   fixedSpacing    = fixedImage->GetSpacing();
+  FixedImageType::PointType     fixedOrigin     = fixedImage->GetOrigin();
+  FixedImageType::DirectionType fixedDirection  = fixedImage->GetDirection();
 
   resampler->SetOutputSpacing( fixedSpacing );
   resampler->SetOutputOrigin(  fixedOrigin  );
+  resampler->SetOutputDirection(  fixedDirection  );
 
   
   FixedImageType::RegionType fixedRegion = fixedImage->GetBufferedRegion();
@@ -191,8 +226,8 @@ int main( int argc, char * argv[] )
 
   typedef TransformType::SpacingType SpacingType;
   SpacingType spacing;
-  spacing[0] = floor( fixedSpacing[0] * (fixedSize[0] - 1) / numberOfGridCells );
-  spacing[1] = floor( fixedSpacing[1] * (fixedSize[1] - 1) / numberOfGridCells );
+  spacing[0] = fixedSpacing[0] * (fixedSize[0] - 1) / numberOfGridCells;
+  spacing[1] = fixedSpacing[1] * (fixedSize[1] - 1) / numberOfGridCells;
 
   typedef TransformType::OriginType OriginType;
   OriginType origin;
@@ -202,6 +237,7 @@ int main( int argc, char * argv[] )
   bsplineTransform->SetGridSpacing( spacing );
   bsplineTransform->SetGridOrigin( origin );
   bsplineTransform->SetGridRegion( bsplineRegion );
+  bsplineTransform->SetGridDirection( fixedImage->GetDirection() );
   
 
   typedef TransformType::ParametersType     ParametersType;
@@ -270,6 +306,9 @@ int main( int argc, char * argv[] )
 
 
 
+   CommandProgressUpdate::Pointer observer = CommandProgressUpdate::New();
+
+   resampler->AddObserver( itk::ProgressEvent(), observer );
   
 
 //  Software Guide : BeginLatex

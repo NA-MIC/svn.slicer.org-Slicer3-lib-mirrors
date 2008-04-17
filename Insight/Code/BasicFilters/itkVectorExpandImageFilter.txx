@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorExpandImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:58 $
-  Version:   $Revision: 1.19 $
+  Date:      $Date: 2008-01-19 19:50:01 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -233,7 +233,6 @@ VectorExpandImageFilter<TInputImage,TOutputImage>
   typename TOutputImage::IndexType outputIndex;
   typename InterpolatorType::ContinuousIndexType inputIndex;
 
-  typedef typename TOutputImage::PixelType OutputPixelType;
   typedef typename InterpolatorType::OutputType InterpolatedType;
 
   OutputPixelType outputValue;

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCovariantVector.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/12/09 16:44:57 $
+  Date:      $Date: 2005-12-09 16:44:57 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

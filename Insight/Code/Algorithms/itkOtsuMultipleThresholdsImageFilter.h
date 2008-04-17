@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkOtsuMultipleThresholdsImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/05 13:59:37 $
+  Date:      $Date: 2006-04-05 13:59:37 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -2,7 +2,7 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkMultilayerNeuralNetworkBase.h,v $
 Language:  C++
-Date:      $Date: 2007/08/30 18:23:05 $
+Date:      $Date: 2007-08-30 18:23:05 $
 Version:   $Revision: 1.9 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/27 13:46:29 $
-  Version:   $Revision: 1.42 $
+  Date:      $Date: 2007-12-15 14:03:11 $
+  Version:   $Revision: 1.44 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -195,8 +195,8 @@ void VTKImageIO::InternalReadImageInformation(std::ifstream& file)
 
   //extract dimensions, spacing, origin
   unsigned int dims[3];
-  float spacing[3];
-  float origin[3];
+  double spacing[3];
+  double origin[3];
   file.getline(line,255);
   text = line;
 
@@ -239,7 +239,7 @@ void VTKImageIO::InternalReadImageInformation(std::ifstream& file)
     if ( text.find("SPACING") < text.length() || 
          text.find("spacing") < text.length() )
       {
-      sscanf(line, "%*s %f %f %f", spacing, spacing+1, spacing+2);
+      sscanf(line, "%*s %lf %lf %lf", spacing, spacing+1, spacing+2);
       for ( unsigned int i=0; i < m_NumberOfDimensions; i++ )
         {
         m_Spacing[i] = spacing[i];
@@ -249,7 +249,7 @@ void VTKImageIO::InternalReadImageInformation(std::ifstream& file)
     else if ( text.find("ORIGIN") < text.length() || 
               text.find("origin") < text.length() )
       {
-      sscanf(line, "%*s %f %f %f", origin, origin+1, origin+2);
+      sscanf(line, "%*s %lf %lf %lf", origin, origin+1, origin+2);
       for ( unsigned int i=0; i < m_NumberOfDimensions; i++ )
         {
         m_Origin[i] = origin[i];
@@ -479,10 +479,20 @@ void VTKImageIO::Write(const void* buffer)
 
   file << "POINT_DATA " << this->GetImageSizeInPixels() << "\n";
 
-  file << "SCALARS scalars " 
-       << this->GetComponentTypeAsString(m_ComponentType) << " "
-       << this->GetNumberOfComponents() << "\n"
-       << "LOOKUP_TABLE default\n";
+  // Prefer the VECTORS representation when possible:
+  if( this->GetPixelType() == ImageIOBase::VECTOR && this->GetNumberOfComponents() == 3 )
+    {
+    file << "VECTORS vectors " 
+      << this->GetComponentTypeAsString(m_ComponentType) << "\n";
+    }
+  else
+    {
+    // According to VTK documentation number of components should in range (1,4):
+    file << "SCALARS scalars " 
+      << this->GetComponentTypeAsString(m_ComponentType) << " "
+      << this->GetNumberOfComponents() << "\n"
+      << "LOOKUP_TABLE default\n";
+    }
 
   // Write the actual pixel data
   if ( m_FileType == ASCII )

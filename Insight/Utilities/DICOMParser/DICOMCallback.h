@@ -3,7 +3,7 @@
   Program:   DICOMParser
   Module:    $RCSfile: DICOMCallback.h,v $
   Language:  C++
-  Date:      $Date: 2007/03/19 12:33:47 $
+  Date:      $Date: 2007-03-19 12:33:47 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) 2003 Matt Turek

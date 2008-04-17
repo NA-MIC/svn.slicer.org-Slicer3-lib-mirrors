@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkLabelStatisticsImageFilter.txx,v $
 Language:  C++
-Date:      $Date: 2006/03/19 04:36:56 $
-Version:   $Revision: 1.16 $
+Date:      $Date: 2008-02-13 15:59:36 $
+Version:   $Revision: 1.18 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -57,7 +57,10 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>
     {
     InputImagePointer image =
       const_cast< typename Superclass::InputImageType * >( this->GetInput() );
-    image->SetRequestedRegionToLargestPossibleRegion();
+    if (image)
+      {
+      image->SetRequestedRegionToLargestPossibleRegion();
+      }
     }
   if ( this->GetLabelInput() )
     {
@@ -174,15 +177,15 @@ LabelStatisticsImageFilter<TInputImage, TLabelImage>
 
       //bounding box is min,max pairs
       int dimension = (*mapIt).second.m_BoundingBox.size() / 2;
-      for (int i = 0; i < (dimension * 2) ; i += 2 ) 
+      for (int ii = 0; ii < (dimension * 2) ; ii += 2 ) 
          {
-         if ((*mapIt).second.m_BoundingBox[i] > (*threadIt).second.m_BoundingBox[i])
+         if ((*mapIt).second.m_BoundingBox[ii] > (*threadIt).second.m_BoundingBox[ii])
            {
-           (*mapIt).second.m_BoundingBox[i] = (*threadIt).second.m_BoundingBox[i];
+           (*mapIt).second.m_BoundingBox[ii] = (*threadIt).second.m_BoundingBox[ii];
            }
-         if ((*mapIt).second.m_BoundingBox[i + 1] < (*threadIt).second.m_BoundingBox[i + 1])
+         if ((*mapIt).second.m_BoundingBox[ii + 1] < (*threadIt).second.m_BoundingBox[ii + 1])
            {
-           (*mapIt).second.m_BoundingBox[i + 1] = (*threadIt).second.m_BoundingBox[i + 1];
+           (*mapIt).second.m_BoundingBox[ii + 1] = (*threadIt).second.m_BoundingBox[ii + 1];
            }
          }
 

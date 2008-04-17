@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDilateObjectMorphologyImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2005/01/16 15:10:52 $
+  Date:      $Date: 2005-01-16 15:10:52 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ModelToImageRegistration2.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:42 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2008-04-10 17:48:00 $
+  Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -128,7 +128,7 @@ public:
         magnitude2 += fc * fc;
         }  
 
-      const double gradientMagnitude = sqrt( magnitude2 );
+      const double gradientMagnitude = vcl_sqrt( magnitude2 );
 
       std::cout << optimizer->GetCurrentIteration() << "   ";
       std::cout << optimizer->GetValue() << "   ";

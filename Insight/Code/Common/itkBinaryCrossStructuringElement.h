@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryCrossStructuringElement.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/08 18:56:16 $
+  Date:      $Date: 2007-02-08 18:56:16 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMeanSquaresHistogramImageToImageMetric.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:34 $
+  Date:      $Date: 2003-09-10 14:28:34 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
 Program:   Insight Segmentation & Registration Toolkit
 Module:    $RCSfile: itkBinaryMask3DMeshSource.txx,v $
 Language:  C++
-Date:      $Date: 2007/04/30 12:14:59 $
-Version:   $Revision: 1.27 $
+Date:      $Date: 2007-12-29 21:01:34 $
+Version:   $Revision: 1.28 $
 
 Copyright (c) Insight Software Consortium. All rights reserved.
 See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -1243,6 +1243,13 @@ BinaryMask3DMeshSource<TInputImage,TOutputMesh>
         }
       else
         {
+        if (m_LastRowNum >  m_CurrentRowIndex)
+          {
+          for (i = m_CurrentRowIndex; i < m_LastRowNum; i++)
+            {
+            free(m_LastRow[i]);
+            }
+          }
         m_LastRow = ( unsigned long ** ) realloc( m_LastRow, m_CurrentRowIndex*sizeof(unsigned long *) );
         }
       for ( i=0; i<m_CurrentRowIndex; i++ )
@@ -1285,6 +1292,13 @@ BinaryMask3DMeshSource<TInputImage,TOutputMesh>
         }
       else
         {
+        if (m_LastFrameNum >  m_CurrentFrameIndex)
+          {
+          for (i = m_CurrentFrameIndex; i < m_LastFrameNum; i++)
+            {
+            free(m_LastFrame[i]);
+            }
+          }
         m_LastFrame = ( unsigned long ** ) realloc( m_LastFrame, m_CurrentFrameIndex*sizeof(unsigned long *) );
         }
       for ( i=0; i<m_CurrentFrameIndex; i++ )

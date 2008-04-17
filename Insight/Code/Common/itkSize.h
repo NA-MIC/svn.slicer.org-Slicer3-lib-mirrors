@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSize.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/27 12:47:59 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008-03-27 18:05:58 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -187,6 +187,14 @@ public:
    * (and perhaps other compilers) from complaining about a partly
    * bracketed initializer. */
   SizeValueType m_Size[VDimension];
+
+
+// force gccxml to find the constructors found before the internal upgrade to gcc 4.2
+#if defined(CABLE_CONFIGURATION)
+  Size(); //purposely not implemented
+  Size(const Self&); //purposely not implemented
+  void operator=(const Self&); //purposely not implemented
+#endif
 
 };
 

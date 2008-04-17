@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMINC2ImageIO.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/31 19:24:48 $
-  Version:   $Revision: 1.2 $
+  Date:      $Date: 2008-01-27 12:53:07 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -102,7 +102,7 @@ public:
   char *GetDimensionOrder() { return m_DimensionOrder; }
   void SetDimensionOrder(char *dimorder) { m_DimensionOrder = dimorder; }
 
-  void XYZFromDirectionCosines(midimhandle_t *hdims, int *dim_indices, int *number_of_components);
+  void XYZFromDirectionCosines(midimhandle_t *hdims, int *dim_indices, unsigned int *number_of_components);
 
 protected:
   MINC2ImageIO();
@@ -111,7 +111,7 @@ protected:
 
   void WriteSlice(std::string& fileName, const void* buffer);
 
-  int m_NDims;
+  unsigned int m_NDims;
 
   char **m_DimensionName;
   virtual void SetDimensionName(unsigned int i, char *name);
@@ -124,10 +124,10 @@ protected:
   double m_Scale;
 
   // dimension size and start and step
-  int *        m_DimensionSize;
-  double *     m_DimensionStart;
-  double *     m_DimensionStep;
-  MatrixType   m_DirectionCosines;
+  unsigned int * m_DimensionSize;
+  double       * m_DimensionStart;
+  double       * m_DimensionStep;
+  MatrixType     m_DirectionCosines;
 
   int * m_DimensionIndices;
 

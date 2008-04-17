@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkIsolatedWatershedImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2004/05/20 00:03:01 $
+  Date:      $Date: 2004-05-20 00:03:01 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

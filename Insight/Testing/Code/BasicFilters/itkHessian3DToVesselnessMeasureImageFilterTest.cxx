@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHessian3DToVesselnessMeasureImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/07/06 22:01:13 $
+  Date:      $Date: 2006-07-06 22:01:13 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

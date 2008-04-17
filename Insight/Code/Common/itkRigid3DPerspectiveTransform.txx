@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkRigid3DPerspectiveTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:59 $
-  Version:   $Revision: 1.29 $
+  Date:      $Date: 2007-12-23 17:59:29 $
+  Version:   $Revision: 1.30 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -31,7 +31,7 @@ Rigid3DPerspectiveTransform():Superclass(SpaceDimension,ParametersDimension)
   m_Offset.Fill( 0 );
   m_Versor.SetIdentity();
   m_RotationMatrix = m_Versor.GetMatrix();
-  m_FocalDistance = 1.0;
+  m_FocalDistance = NumericTraits<ScalarType>::One;
   m_FixedOffset.Fill(0);
   m_CenterOfRotation.Fill(0);
   this->m_Parameters.Fill(0);

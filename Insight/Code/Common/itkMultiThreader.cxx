@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMultiThreader.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/16 15:24:14 $
+  Date:      $Date: 2007-09-16 15:24:14 $
   Version:   $Revision: 1.40 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

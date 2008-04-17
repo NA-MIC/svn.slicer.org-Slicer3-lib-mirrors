@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLabelOverlayImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/01/23 22:25:27 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-10-21 09:54:20 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -57,35 +57,6 @@ int itkLabelOverlayImageFilterTest(int argc, char * argv[])
     ImageType, ImageType, ColorImageType> FilterType;
   FilterType::Pointer filter = FilterType::New();
 
-  //Use the background
-  filter->SetUseBackground( true );
-  if( filter->GetUseBackground() != true )
-    {
-    std::cerr << "UseBackground Set/Get Problem" << std::endl;
-    return EXIT_FAILURE;
-    }
-   
-  filter->SetUseBackground( false );
-  if( filter->GetUseBackground() != false )
-    {
-    std::cerr << "UseBackground Set/Get Problem" << std::endl;
-    return EXIT_FAILURE;
-    }
- 
-  filter->UseBackgroundOn();
-  if( filter->GetUseBackground() != true )
-    {
-    std::cerr << "UseBackground Set/Get Problem" << std::endl;
-    return EXIT_FAILURE;
-    }
- 
-  filter->UseBackgroundOff();
-  if( filter->GetUseBackground() != false )
-    {
-    std::cerr << "UseBackground Set/Get Problem" << std::endl;
-    return EXIT_FAILURE;
-    }
-
   // Exercising Background Value methods
   filter->SetBackgroundValue( 10 );
   if( filter->GetBackgroundValue() != 10 )
@@ -112,7 +83,6 @@ int itkLabelOverlayImageFilterTest(int argc, char * argv[])
   //Set the filter input and label images
   filter->SetInput( reader->GetOutput() );
   filter->SetLabelImage( reader2->GetOutput() );
-  filter->SetUseBackground( true );
   filter->SetBackgroundValue( 13 );
   
   //Set opacity 

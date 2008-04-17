@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkExhaustiveOptimizerTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/05/14 18:52:48 $
+  Date:      $Date: 2005-05-14 18:52:48 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

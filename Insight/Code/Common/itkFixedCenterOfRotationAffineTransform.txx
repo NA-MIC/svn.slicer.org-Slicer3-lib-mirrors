@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFixedCenterOfRotationAffineTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2005/03/09 16:46:13 $
+  Date:      $Date: 2005-03-09 16:46:13 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

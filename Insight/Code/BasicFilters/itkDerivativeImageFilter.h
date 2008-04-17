@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDerivativeImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/17 14:22:26 $
+  Date:      $Date: 2006-03-17 14:22:26 $
   Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

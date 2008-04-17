@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMacro.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/27 17:49:34 $
-  Version:   $Revision: 1.75 $
+  Date:      $Date: 2007-12-28 18:28:29 $
+  Version:   $Revision: 1.83 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -450,9 +450,9 @@ static Pointer New(void) \
   rawPtr->UnRegister(); \
   return smartPtr; \
 } \
-virtual LightObject::Pointer CreateAnother(void) const \
+  virtual ::itk::LightObject::Pointer CreateAnother(void) const \
 { \
-  LightObject::Pointer smartPtr; \
+  ::itk::LightObject::Pointer smartPtr;         \
   smartPtr = x::New().GetPointer(); \
   return smartPtr; \
 }
@@ -637,27 +637,45 @@ private:
 
 //----------------------------------------------------------------------------
 // Setup legacy code policy.
+//
+// CMake options ITK_LEGACY_REMOVE and ITK_LEGACY_SILENT are converted
+// to definitions (or non-defs) in itkConfigure.h and tested below.
+// They may be used to completely remove legacy code or silence the
+// warnings.  The default is to warn about their use.
+//
+// Source files that test the legacy code may define ITK_LEGACY_TEST
+// like this:
+//
+//  #define ITK_LEGACY_TEST
+//  #include "itkClassWithDeprecatedMethod.h"
+//
+// in order to silence the warnings for calling deprecated methods.
+// No other source files in ITK should call the methods since they are
+// provided only for compatibility with older user code.
 
-// Define itkLegacy macro to mark legacy methods where they are
+// Define itkLegacyMacro to mark legacy methods where they are
 // declared in their class.  Example usage:
 //
 //   // @deprecated Replaced by MyOtherMethod() as of ITK 2.0.
-//   itkLegacy(void MyMethod());
+//   itkLegacyMacro(void MyMethod());
 #if defined(ITK_LEGACY_REMOVE)
-  // Remove legacy methods completely.
-# define itkLegacy(method)
-#elif defined(ITK_LEGACY_SILENT) || defined(ITK_WRAPPING_CXX)
+// Remove legacy methods completely.  Put a bogus declaration in
+// place to avoid stray semicolons because this is an error for some
+// compilers.  Using a class forward declaration allows any number
+// of repeats in any context without generating unique names.
+# define itkLegacyMacro(method) class itkLegacyMethodRemoved /* no ';' */
+#elif defined(ITK_LEGACY_SILENT) || defined(ITK_LEGACY_TEST) || defined(CSWIG)
   // Provide legacy methods with no warnings.
-# define itkLegacy(method) method
+# define itkLegacyMacro(method) method
 #else
   // Setup compile-time warnings for uses of deprecated methods if
   // possible on this compiler.
 # if defined(__GNUC__) && !defined(__INTEL_COMPILER) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
-#  define itkLegacy(method) method __attribute__((deprecated))
+#  define itkLegacyMacro(method) method __attribute__((deprecated))
 # elif defined(_MSC_VER) && _MSC_VER >= 1300
-#  define itkLegacy(method) __declspec(deprecated) method
+#  define itkLegacyMacro(method) __declspec(deprecated) method
 # else
-#  define itkLegacy(method) method
+#  define itkLegacyMacro(method) method
 # endif
 #endif
 
@@ -665,22 +683,22 @@ private:
 // bodies.  Example usage:
 //
 //   void itkMyClass::MyOldMethod()
-//   {
-//     itkLegacyBody(itkMyClass::MyOldMethod, 2.0);
-//   }
+//     {
+//     itkLegacyBodyMacro(itkMyClass::MyOldMethod, 2.0);
+//     }
 //
 //   void itkMyClass::MyMethod()
-//   {
-//     itkLegacyReplaceBody(itkMyClass::MyMethod, 2.0,
-//                          itkMyClass::MyOtherMethod);
-//   }
+//     {
+//     itkLegacyReplaceBodyMacro(itkMyClass::MyMethod, 2.0,
+//                               itkMyClass::MyOtherMethod);
+//     }
 #if defined(ITK_LEGACY_REMOVE) || defined(ITK_LEGACY_SILENT)
-# define itkLegacyBody(method, version)
-# define itkLegacyReplaceBody(method, version, replace)
+# define itkLegacyBodyMacro(method, version)
+# define itkLegacyReplaceBodyMacro(method, version, replace)
 #else
-# define itkLegacyBody(method, version) \
+# define itkLegacyBodyMacro(method, version) \
   itkWarningMacro(#method " was deprecated for ITK " #version " and will be removed in a future version.")
-# define itkLegacyReplaceBody(method, version, replace) \
+# define itkLegacyReplaceBodyMacro(method, version, replace) \
   itkWarningMacro(#method " was deprecated for ITK " #version " and will be removed in a future version.  Use " #replace " instead.")
 #endif
 
@@ -896,6 +914,42 @@ private:
 #else
 #  define ITK_NO_RETURN
 #endif
+
+
+#ifdef ITK_USE_TEMPLATE_META_PROGRAMMING_LOOP_UNROLLING
+//--------------------------------------------------------------------------------
+//  Helper macros for Template Meta-Programming techniques of for-loops unrolling
+//--------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------
+// Macro that generates an unrolled for loop for assigning elements of one array
+// to elements of another array The array are assumed to be of same length
+// (dimension), and this is also assumed to be the value of NumberOfIterations.
+// No verification of size is performed. Casting is perfomed as part of the
+// assignment, by using the DestinationElementType as the casting type. 
+// Source and destination array types must have defined opearator[] in their API.
+#define itkFoorLoopAssignmentMacro(DestinationType,SourceType,DestinationElementType,DestinationArray,SourceArray,NumberOfIterations) \
+    for(unsigned int i=0;i < NumberOfIterations; ++i) \
+      { \
+      DestinationArray[i] = static_cast< DestinationElementType >( SourceArray[i] ); \
+      }
+
+//--------------------------------------------------------------------------------
+// Macro that generates an unrolled for loop for rounding and assigning
+// elements of one array to elements of another array The array are assumed to
+// be of same length (dimension), and this is also assumed to be the value of
+// NumberOfIterations.  No verification of size is performed. Casting is
+// perfomed as part of the assignment, by using the DestinationElementType as
+// the casting type. 
+// Source and destination array types must have defined opearator[] in their API.
+#define itkFoorLoopRoundingAndAssignmentMacro(DestinationType,SourceType,DestinationElementType,DestinationArray,SourceArray,NumberOfIterations) \
+    for(unsigned int i=0;i < NumberOfIterations; ++i) \
+      { \
+      DestinationArray[i] = static_cast< DestinationElementType >( vnl_math_rnd( SourceArray[i] ) ); \
+      }
+
+#endif
+// end of Template Meta Programming helper macros
 
 
 #endif //end of itkMacro.h

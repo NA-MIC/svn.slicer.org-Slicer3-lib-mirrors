@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaSurfaceConverter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 18:09:06 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2008-01-07 21:48:41 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -45,9 +45,9 @@ MetaSurfaceConverter<NDimensions>
   double spacing[NDimensions];
   
   unsigned int ndims = Surface->NDims();
-  for(unsigned int i=0;i<ndims;i++)
+  for(unsigned int ii=0;ii<ndims;ii++)
     {
-    spacing[i]=Surface->ElementSpacing()[i];
+    spacing[ii]=Surface->ElementSpacing()[ii];
     }
   surface->GetIndexToObjectTransform()->SetScaleComponent(spacing);
   surface->GetProperty()->SetName(Surface->Name());
@@ -76,14 +76,14 @@ MetaSurfaceConverter<NDimensions>
     typedef typename SurfacePointType::VectorType VectorType;
     VectorType normal;
 
-    for(unsigned int i=0;i<ndims;i++)
+    for(unsigned int ii=0;ii<ndims;ii++)
       {
-      point[i]=(*it2)->m_X[i];
+      point[ii]=(*it2)->m_X[ii];
       }
    
-    for(unsigned int i=0;i<ndims;i++)
+    for(unsigned int ii=0;ii<ndims;ii++)
       {
-      normal[i]=(*it2)->m_V[i];
+      normal[ii]=(*it2)->m_V[ii];
       }
 
     pnt.SetRed((*it2)->m_Color[0]);
@@ -146,9 +146,9 @@ MetaSurfaceConverter<NDimensions>
     }
 
   float color[4];
-  for(unsigned int i=0;i<4;i++)
+  for(unsigned int ii=0;ii<4;ii++)
     {
-    color[i]=spatialObject->GetProperty()->GetColor()[i];
+    color[ii]=spatialObject->GetProperty()->GetColor()[ii];
     }
 
   Surface->Color(color);
@@ -159,10 +159,10 @@ MetaSurfaceConverter<NDimensions>
     }
   Surface->NPoints(Surface->GetPoints().size());
 
-  for(unsigned int i=0;i<NDimensions;i++)
+  for(unsigned int ii=0;ii<NDimensions;ii++)
     {
-    Surface->ElementSpacing(i, spatialObject->GetIndexToObjectTransform()
-                                            ->GetScaleComponent()[i]);
+    Surface->ElementSpacing(ii, spatialObject->GetIndexToObjectTransform()
+                                            ->GetScaleComponent()[ii]);
     }
 
   return Surface;

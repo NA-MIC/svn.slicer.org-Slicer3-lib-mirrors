@@ -3,8 +3,8 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmFile.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/05/24 07:26:20 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008-04-11 16:50:17 $
+  Version:   $Revision: 1.22 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de
   l'Image). All rights reserved. See Doc/License.txt or
@@ -1419,7 +1419,7 @@ int File::GetNumberOfScalarComponents()
 
    std::string strPhotometricInterpretation = GetEntryValue(0x0028,0x0004);
 
-   if ( ( strPhotometricInterpretation == "PALETTE COLOR ") )
+   if ( Util::DicomStringEqual(strPhotometricInterpretation, "PALETTE COLOR") )
    {
       if ( HasLUT() )// PALETTE COLOR is NOT enough
       {

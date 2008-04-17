@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: HoughTransform2DLinesImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/19 16:31:50 $
-  Version:   $Revision: 1.22 $
+  Date:      $Date: 2008-02-01 13:09:19 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -290,10 +290,10 @@ int main( int argc, char *argv[] )
       localIndex[0]=(long int)(u[0]+i*v[0]);
       localIndex[1]=(long int)(u[1]+i*v[1]);
 
-      OutputImageType::RegionType region =
+      OutputImageType::RegionType outputRegion =
                           localOutputImage->GetLargestPossibleRegion();
 
-      if( region.IsInside( localIndex ) )
+      if( outputRegion.IsInside( localIndex ) )
         {
         localOutputImage->SetPixel( localIndex, 255 );
         }

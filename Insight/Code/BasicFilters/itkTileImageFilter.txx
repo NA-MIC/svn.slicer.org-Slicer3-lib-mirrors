@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTileImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/08/01 19:16:19 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008-01-19 19:50:01 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -278,13 +278,13 @@ TileImageFilter<TInputImage, TOutputImage>
     value = it.Get().m_ImageNumber;
     if (value >= 0)
       {
-      typename TileImageType::IndexType tileIndex = it.GetIndex();
+      typename TileImageType::IndexType tileIndex2 = it.GetIndex();
 
       OutputSizeType regionSize;
       OutputIndexType regionIndex;
       for (unsigned int i = 0; i < OutputImageDimension; i++)
         {
-        regionIndex[i] = offsets[i][tileIndex[i]];
+        regionIndex[i] = offsets[i][tileIndex2[i]];
         if (i < InputImageDimension)
           {
           regionSize[i] = this->GetInput(value)->GetLargestPossibleRegion().GetSize()[i];

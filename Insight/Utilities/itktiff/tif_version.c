@@ -1,4 +1,4 @@
-/* $Header: /cvsroot/Insight/Insight/Utilities/itktiff/tif_version.c,v 1.1 2006/09/28 15:30:39 king Exp $ */
+/* $Header: /cvsroot/Insight/Insight/Utilities/itktiff/tif_version.c,v 1.1 2006-09-28 15:30:39 king Exp $ */
 /*
  * Copyright (c) 1992-1997 Sam Leffler
  * Copyright (c) 1992-1997 Silicon Graphics, Inc.

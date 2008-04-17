@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBarrier.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/25 23:18:04 $
+  Date:      $Date: 2007-01-25 23:18:04 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkJointDomainImageToListAdaptor.txx,v $
   Language:  C++
-  Date:      $Date: 2006/10/14 19:58:32 $
+  Date:      $Date: 2006-10-14 19:58:32 $
   Version:   $Revision: 1.11 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

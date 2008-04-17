@@ -1,4 +1,4 @@
-#	$Header: /cvsroot/Insight/Insight/Utilities/itktiff/dist/tiff.spec,v 1.1 2006/09/28 15:30:42 king Exp $
+#	$Header: /cvsroot/Insight/Insight/Utilities/itktiff/dist/tiff.spec,v 1.1 2006-09-28 15:30:42 king Exp $
 #
 # TIFF Software
 #

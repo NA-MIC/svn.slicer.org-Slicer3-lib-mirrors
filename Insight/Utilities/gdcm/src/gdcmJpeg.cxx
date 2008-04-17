@@ -3,7 +3,7 @@
   Program:   gdcm
   Module:    $RCSfile: gdcmJpeg.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/02 08:13:49 $
+  Date:      $Date: 2007-09-02 08:13:49 $
   Version:   $Revision: 1.12 $
                                                                                 
   Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de

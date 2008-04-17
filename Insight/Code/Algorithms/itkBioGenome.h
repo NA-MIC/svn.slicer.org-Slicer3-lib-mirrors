@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBioGenome.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:53 $
+  Date:      $Date: 2006-03-19 04:36:53 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

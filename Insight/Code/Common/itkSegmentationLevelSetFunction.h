@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSegmentationLevelSetFunction.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:09 $
-  Version:   $Revision: 1.17 $
+  Date:      $Date: 2008-03-03 13:58:52 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -58,6 +58,7 @@ public:
   /** Extract some parameters from the superclass. */
   typedef typename Superclass::ImageType ImageType;
   typedef typename Superclass::RadiusType RadiusType;
+  typedef typename Superclass::PixelRealType PixelRealType;
   typedef TFeatureImageType FeatureImageType;
   typedef typename Superclass::FloatOffsetType FloatOffsetType;
   typedef typename Superclass::ScalarValueType ScalarValueType;

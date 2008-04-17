@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGrayscaleConnectedClosingImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2006/12/15 21:40:37 $
+  Date:      $Date: 2006-12-15 21:40:37 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

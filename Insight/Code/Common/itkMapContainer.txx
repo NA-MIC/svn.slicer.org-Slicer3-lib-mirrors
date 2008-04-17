@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMapContainer.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/07 20:43:09 $
-  Version:   $Revision: 1.34 $
+  Date:      $Date: 2008-01-17 20:42:22 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -245,10 +245,10 @@ MapContainer< TElementIdentifier , TElement >
 template <typename TElementIdentifier, typename TElement>
 void
 MapContainer< TElementIdentifier , TElement >
-::Reserve(ElementIdentifier size)
+::Reserve(ElementIdentifier sz)
 {
   ElementIdentifier curSize = this->Size();
-  while ( curSize < size )
+  while ( curSize < sz )
     {
     this->CreateIndex(curSize);
     curSize = this->Size();

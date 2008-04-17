@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGEImageIOTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/02/24 17:03:22 $
-  Version:   $Revision: 1.14 $
+  Date:      $Date: 2008-01-29 00:33:27 $
+  Version:   $Revision: 1.18 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -64,10 +64,10 @@ int itkGEImageIOFactoryTest(int ac, char * av[])
     imageReader->Update() ;
     input = imageReader->GetOutput() ;
     }
-  catch (itk::ExceptionObject e)
+  catch (itk::ExceptionObject &e)
     {
-    std::cerr << "itkGEImageIOFactoryTest caught an exception:\n"
-              << e.what() << std::endl;
+    std::cout << "Caught unexpected exception. Test Failed!" << std::endl;
+    std::cout << e << std::endl;
     return EXIT_FAILURE;
     }
   return EXIT_SUCCESS;
@@ -123,10 +123,18 @@ int itkGEImageIOTest(int ac, char * av[])
       imageReader->Update() ;
       input = imageReader->GetOutput() ;
     }
-  catch (itk::ExceptionObject e)
+  catch (itk::ExceptionObject &e)
     {
-    std::cerr << "itkGEImageIOTest caught an exception:\n"
-              << e.what() << std::endl;
+    if (Failmode)
+      {
+      std::cout << "Caught unexpected exception. Test Failed!" << std::endl;
+      }
+    else
+      {
+      std::cout << "Caught expected exception. Test Passed!" << std::endl;
+      return EXIT_SUCCESS;
+      }
+    std::cout << e << std::endl;
     return Failmode ? 1 : 0;
     }
 

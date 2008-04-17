@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPixelTraits.h,v $
   Language:  C++
-  Date:      $Date: 2004/11/12 21:14:30 $
-  Version:   $Revision: 1.27 $
+  Date:      $Date: 2007-10-10 11:57:19 $
+  Version:   $Revision: 1.28 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -19,6 +19,8 @@
 =========================================================================*/
 #ifndef __itkPixelTraits_h
 #define __itkPixelTraits_h
+
+#include "itkMacro.h"
 
 namespace itk
 {

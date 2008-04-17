@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCurvatureRegistrationFilter.h,v $
   Language:  C++
-  Date:      $Date: 2005/09/07 18:41:29 $
+  Date:      $Date: 2005-09-07 18:41:29 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

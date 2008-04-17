@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCentralDifferenceImageFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/18 20:13:58 $
-  Version:   $Revision: 1.30 $
+  Date:      $Date: 2008-02-04 12:34:11 $
+  Version:   $Revision: 1.32 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -30,6 +30,7 @@ template <class TInputImage, class TCoordRep>
 CentralDifferenceImageFunction<TInputImage,TCoordRep>
 ::CentralDifferenceImageFunction()
 {
+  this->m_UseImageDirection = false;
 }
 
 
@@ -42,6 +43,7 @@ CentralDifferenceImageFunction<TInputImage,TCoordRep>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   this->Superclass::PrintSelf(os,indent);
+  os << indent << "UseImageDirection = " << this->m_UseImageDirection << std::endl;
 }
 
 
@@ -59,10 +61,13 @@ CentralDifferenceImageFunction<TInputImage,TCoordRep>
   
   IndexType neighIndex = index;
 
-  const typename InputImageType::SizeType& size =
-    this->GetInputImage()->GetBufferedRegion().GetSize();
-  const typename InputImageType::IndexType& start =
-    this->GetInputImage()->GetBufferedRegion().GetIndex();
+  const InputImageType * inputImage = this->GetInputImage();
+
+  const typename InputImageType::RegionType region = 
+    inputImage->GetBufferedRegion();
+
+  const typename InputImageType::SizeType& size   = region.GetSize();
+  const typename InputImageType::IndexType& start = region.GetIndex();
 
   for ( unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++ )
     {
@@ -76,17 +81,25 @@ CentralDifferenceImageFunction<TInputImage,TCoordRep>
     
     // compute derivative
     neighIndex[dim] += 1;
-    derivative[dim] = this->GetInputImage()->GetPixel( neighIndex );
+    derivative[dim] = inputImage->GetPixel( neighIndex );
 
     neighIndex[dim] -= 2;
-    derivative[dim] -= this->GetInputImage()->GetPixel( neighIndex );
+    derivative[dim] -= inputImage->GetPixel( neighIndex );
 
-    derivative[dim] *= 0.5 / this->GetInputImage()->GetSpacing()[dim];
+    derivative[dim] *= 0.5 / inputImage->GetSpacing()[dim];
     neighIndex[dim] += 1;
     }
 
-  return ( derivative );
+#ifdef ITK_USE_ORIENTED_IMAGE_DIRECTION
+  if( this->m_UseImageDirection )
+    {
+    OutputType orientedDerivative;
+    inputImage->TransformLocalVectorToPhysicalVector( derivative, orientedDerivative );
+    return orientedDerivative;
+    }
+#endif
 
+  return ( derivative );
 }
 
 

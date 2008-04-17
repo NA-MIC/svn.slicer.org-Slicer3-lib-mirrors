@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBSplineResampleImageFunction.h,v $
   Language:  C++
-  Date:      $Date: 2005/02/19 19:06:53 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007-09-27 11:36:40 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -58,7 +58,7 @@ public:
   typedef SmartPointer<const Self>              ConstPointer;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(BSplineReconstructionImageFunction, 
+  itkTypeMacro(BSplineResampleImageFunction, 
                BSplineInterpolateImageFunction);
 
   /** New macro for creation of through a Smart Pointer */

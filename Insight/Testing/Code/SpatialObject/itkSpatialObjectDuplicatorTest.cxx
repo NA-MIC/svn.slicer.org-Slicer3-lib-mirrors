@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSpatialObjectDuplicatorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/10/31 16:42:50 $
+  Date:      $Date: 2006-10-31 16:42:50 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

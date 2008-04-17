@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVTKPolyDataReaderQuadEdgeMeshTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/31 10:43:20 $
+  Date:      $Date: 2007-08-31 10:43:20 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

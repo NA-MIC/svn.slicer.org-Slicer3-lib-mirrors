@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkPolygonGroupSpatialObjectXMLFile.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/04/19 18:50:36 $
+  Date:      $Date: 2007-04-19 18:50:36 $
   Version:   $1.0$
 
   Copyright (c) Insight Software Consortium. All rights reserved.

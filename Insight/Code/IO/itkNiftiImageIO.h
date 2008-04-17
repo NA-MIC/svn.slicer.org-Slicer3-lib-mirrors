@@ -1,17 +1,17 @@
 /*=========================================================================
 
-Program:   Insight Segmentation & Registration Toolkit
-Module:    $RCSfile: itkNiftiImageIO.h,v $
-Language:  C++
-Date:      $Date: 2007/09/22 10:07:51 $
-Version:   $Revision: 1.9 $
+  Program:   Insight Segmentation & Registration Toolkit
+  Module:    $RCSfile: itkNiftiImageIO.h,v $
+  Language:  C++
+  Date:      $Date: 2008-03-04 03:07:42 $
+  Version:   $Revision: 1.14 $
 
-Copyright (c) Insight Software Consortium. All rights reserved.
-See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+  Copyright (c) Insight Software Consortium. All rights reserved.
+  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+     This software is distributed WITHOUT ANY WARRANTY; without even 
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
@@ -96,43 +96,30 @@ public:
   virtual ImageIORegion 
   GenerateStreamableReadRegionFromRequestedRegion( const ImageIORegion & requestedRegion ) const;
 
+  /** A mode to allow the Nifti filter to read and write to the LegacyAnalyze75 format as interpreted by
+    * the nifti library maintainers.  This format does not properly respect the file orientation fields.
+    * The itkAnalyzeImageIO file reader/writer should be used to match the Analyze75 file definitions as
+    * specified by the Mayo Clinic BIR laboratory.  By default this is set to false.
+    */
+  itkSetMacro(LegacyAnalyze75Mode,bool);
+  itkGetMacro(LegacyAnalyze75Mode,bool);
+
 protected:
   NiftiImageIO();
   ~NiftiImageIO();
   void PrintSelf(std::ostream& os, Indent indent) const;
+  virtual bool GetUseLegacyModeForTwoFileWriting(void) const { return false; }
 private:
   bool  MustRescale();
   void  DefineHeaderObjectDataType();
-  void  SetNIfTIOrientationFromImageIO(int origdims, int dims);
-  void  SetImageIOOrientationFromNIfTI(int dims);
-  /**
-   * \enum ValidAnalyzeOrientationFlags
-   * Valid Orientation values for objects
-   * - Key  Description           Origin   dims[1]  dims[2]  dims[3]
-   * - =================================================================
-   * - 0    transverse-unflipped   IRP       R->L     P->A    I->S
-   * - 1    coronal-unflipped      IRP       R->L     I->S    P->A
-   * - 2    sagittal-unflipped     IRP       P->A     I->S    R->L
-   * - 3    transverse-flipped     IRA       R->L     A->P    I->S
-   * - 4    coronal-flipped        SRP       R->L     S->I    P->A
-   * - 5    sagittal-flipped       ILP       P->A     I->S    L->R
-   * - Where the Origin disignators are with respect to the patient
-   * - [(I)nferior|(S)uperior] [(L)eft|(R)ight] [(A)nterior|(P)osterior]
-   * \note Key's 0-5 correspond to the Nifti v7.5 orientations, and should not be changed.
-   */
-  typedef enum {
-    ITK_ANALYZE_ORIENTATION_RPI_TRANSVERSE=0,        /**< Denotes a transverse data orientation Right-->Left, */
-    ITK_ANALYZE_ORIENTATION_RIP_CORONAL   =1,        /**< Denotes a coronal data orientation */
-    ITK_ANALYZE_ORIENTATION_PIR_SAGITTAL  =2,        /**< Denotes a sagittal data orientation */
-    ITK_ANALYZE_ORIENTATION_RAI_TRANSVERSE_FLIPPED=3,/**<  */
-    ITK_ANALYZE_ORIENTATION_RSP_CORONAL_FLIPPED=4,   /**<  */
-    ITK_ANALYZE_ORIENTATION_PIL_SAGITTAL_FLIPPED=5   /**<  */
-  } ValidNiftiOrientationFlags;
+  void  SetNIfTIOrientationFromImageIO(unsigned short int origdims, unsigned short int dims);
+  void  SetImageIOOrientationFromNIfTI(unsigned short int dims);
 
   nifti_image *     m_NiftiImage;
   double            m_RescaleSlope;
   double            m_RescaleIntercept;
   IOComponentType   m_OnDiskComponentType;
+  bool              m_LegacyAnalyze75Mode;
 
   NiftiImageIO(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented

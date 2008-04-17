@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCannySegmentationLevelSetFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2006/04/12 07:31:14 $
+  Date:      $Date: 2006-04-12 07:31:14 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

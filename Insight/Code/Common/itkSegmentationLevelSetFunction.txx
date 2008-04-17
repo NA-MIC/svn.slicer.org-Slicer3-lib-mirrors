@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSegmentationLevelSetFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2005/05/06 18:53:39 $
-  Version:   $Revision: 1.12 $
+  Date:      $Date: 2008-03-03 13:58:53 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -81,11 +81,13 @@ SegmentationLevelSetFunction<TImageType, TFeatureImageType>
                    const FloatOffsetType &offset, GlobalDataStruct *) const
 {
   IndexType idx = neighborhood.GetIndex();
+
   ContinuousIndexType cdx;
   for (unsigned i = 0; i < ImageDimension; ++i)
     {
     cdx[i] = static_cast<double>(idx[i]) - offset[i];
     }
+
   if ( m_Interpolator->IsInsideBuffer(cdx) )
     {
     return (static_cast<ScalarValueType>(

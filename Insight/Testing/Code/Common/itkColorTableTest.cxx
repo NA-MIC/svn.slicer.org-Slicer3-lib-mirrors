@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkColorTableTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/06/09 00:55:25 $
+  Date:      $Date: 2005-06-09 00:55:25 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

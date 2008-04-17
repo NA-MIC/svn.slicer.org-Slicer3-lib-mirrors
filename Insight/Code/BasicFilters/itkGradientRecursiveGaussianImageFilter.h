@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientRecursiveGaussianImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/16 15:29:35 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2007-12-29 17:51:23 $
+  Version:   $Revision: 1.39 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -53,10 +53,10 @@ class ITK_EXPORT GradientRecursiveGaussianImageFilter:
 {
 public:
   /** Standard class typedefs. */
-  typedef GradientRecursiveGaussianImageFilter  Self;
+  typedef GradientRecursiveGaussianImageFilter         Self;
   typedef ImageToImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef SmartPointer<Self>                   Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
+  typedef SmartPointer<Self>                           Pointer;
+  typedef SmartPointer<const Self>                     ConstPointer;
   
   
   /** Pixel Type of the input image */
@@ -78,15 +78,13 @@ public:
                 itkGetStaticConstMacro(ImageDimension) >   RealImageType;
 
 
-
-
   /**  Output Image Nth Element Adaptor
    *  This adaptor allows to use conventional scalar 
    *  smoothing filters to compute each one of the 
    *  components of the gradient image pixels. */
   typedef NthElementImageAdaptor< TOutputImage,
                                   InternalRealType >  OutputImageAdaptorType;
-  typedef typename OutputImageAdaptorType::Pointer OutputImageAdaptorPointer;
+  typedef typename OutputImageAdaptorType::Pointer    OutputImageAdaptorPointer;
 
   /**  Smoothing filter type */
   typedef RecursiveGaussianImageFilter<
@@ -108,16 +106,20 @@ public:
   typedef typename DerivativeFilterType::Pointer  DerivativeFilterPointer;
 
   /**  Pointer to the Output Image */
-  typedef typename TOutputImage::Pointer          OutputImagePointer;                                  
+  typedef typename TOutputImage::Pointer          OutputImagePointer;
 
 
   /** Type of the output Image */
-  typedef TOutputImage      OutputImageType;
+  typedef TOutputImage                                      OutputImageType;
   typedef typename          OutputImageType::PixelType      OutputPixelType;
   typedef typename PixelTraits<OutputPixelType>::ValueType  OutputComponentType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
+
+  /** Runtime information support. */
+  itkTypeMacro(GradientRecursiveGaussianImageFilter, 
+               ImageToImageFilter);
 
   /** Set Sigma value. Sigma is measured in the units of image spacing.  */
   void SetSigma( RealType sigma );
@@ -132,6 +134,18 @@ public:
    * the pipeline execution model.
    * \sa ImageToImageFilter::GenerateInputRequestedRegion() */
   virtual void GenerateInputRequestedRegion() throw(InvalidRequestedRegionError);
+
+  /** The UseImageDirection flag determines whether the gradients are
+   * computed with respect to the image grid or with respect to the physical
+   * space. When this flag is ON the gradients are computed with respect to
+   * the coodinate system of physical space. The difference is whether we take
+   * into account the image Direction or not. The flag ON will take into
+   * account the image direction and will result in an extra matrix
+   * multiplication compared to the amount of computation performed when the
+   * flag is OFF.  This flag is OFF by default. */
+  itkSetMacro( UseImageDirection, bool );
+  itkGetMacro( UseImageDirection, bool );
+  itkBooleanMacro( UseImageDirection );
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
@@ -164,6 +178,8 @@ private:
   /** Normalize the image across scale space */
   bool m_NormalizeAcrossScale; 
 
+  /** Take into account image orientation when computing the Gradient */
+  bool m_UseImageDirection;
 };
 
 } // end namespace itk
@@ -173,7 +189,3 @@ private:
 #endif
 
 #endif
-
-
-
-

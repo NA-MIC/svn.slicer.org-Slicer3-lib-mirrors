@@ -72,6 +72,15 @@ ENDIF( NOT ITK_USE_TRANSFORM_IO_FACTORIES )
 # Add ITKIO library
 ADD_LIBRARY(ITKIO ${ITKIO_SRCS})
 
+# Enable warnings for trunctation of 64bits to 32bits in Mac
+IF (APPLE)
+  IF(CMAKE_COMPILER_IS_GNUCXX)
+    IF(ITK_USE_64BITS_APPLE_TRUNCATION_WARNING)
+      SET_TARGET_PROPERTIES(ITKIO PROPERTIES COMPILE_FLAGS "-Wshorten-64-to-32")
+    ENDIF(ITK_USE_64BITS_APPLE_TRUNCATION_WARNING)
+  ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+ENDIF (APPLE)
+
 TARGET_LINK_LIBRARIES(ITKIO
 ITKCommon
 ITKNrrdIO
@@ -97,6 +106,9 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
   SET_SOURCE_FILES_PROPERTIES(itkPolygonGroupSpatialObjectXMLFile.cxx PROPERTIES COMPILE_FLAGS -w)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
+# itkTestDriver is built even when BUILD_TESTING is FALSE to:
+# + allow to run WrapITK tests without the other of the ITK tests
+# + be used by external code like contributions to the insight journal
 ADD_EXECUTABLE(itkTestDriver itkTestDriver.cxx) 
 TARGET_LINK_LIBRARIES(itkTestDriver ITKIO)
 IF(NOT ITK_INSTALL_NO_DEVELOPMENT)

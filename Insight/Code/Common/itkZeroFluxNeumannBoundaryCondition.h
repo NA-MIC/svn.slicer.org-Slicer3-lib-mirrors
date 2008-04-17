@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkZeroFluxNeumannBoundaryCondition.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/07 13:52:48 $
+  Date:      $Date: 2007-02-07 13:52:48 $
   Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

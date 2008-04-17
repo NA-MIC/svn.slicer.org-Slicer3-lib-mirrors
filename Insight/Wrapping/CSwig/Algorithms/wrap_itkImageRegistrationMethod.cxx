@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: wrap_itkImageRegistrationMethod.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/01/19 16:45:43 $
+  Date:      $Date: 2005-01-19 16:45:43 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

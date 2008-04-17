@@ -1,14 +1,15 @@
-D/Testing////
 D/docs////
 D/examples////
-D/niftilib////
-D/real_easy////
-D/utils////
-D/znzlib////
 D/fsliolib////
 D/nifticdf////
-/CMakeLists.txt/1.12/Fri Mar 14 14:56:37 2008//TITK-3-4
-/DartConfig.cmake/1.2/Fri Mar 14 14:56:37 2008//TITK-3-4
-/Makefile/1.4/Fri Mar 14 14:56:37 2008//TITK-3-4
-/README/1.4/Fri Mar 14 14:56:37 2008//TITK-3-4
-/Updates.txt/1.1/Fri Mar 14 14:56:37 2008//TITK-3-4
+D/niftilib////
+D/real_easy////
+D/Testing////
+D/utils////
+D/znzlib////
+/CMakeLists.txt/1.15/Mon Feb  4 02:03:56 2008//
+/DartConfig.cmake/1.2/Sat Feb 24 16:07:49 2007//
+/LICENSE/1.1/Mon Feb 25 02:37:12 2008//
+/Makefile/1.5/Mon Feb  4 02:03:56 2008//
+/README/1.5/Mon Feb  4 02:03:56 2008//
+/Updates.txt/1.2/Mon Feb  4 02:03:56 2008//

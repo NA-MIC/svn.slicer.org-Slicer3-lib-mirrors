@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConstantPadImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/24 16:03:17 $
+  Date:      $Date: 2006-03-24 16:03:17 $
   Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

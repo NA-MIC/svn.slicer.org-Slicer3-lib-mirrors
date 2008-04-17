@@ -1,6 +1,6 @@
 # GeodesicActiveContourImageFilter.py
 # Translated by Charl P. Botha <http://cpbotha.net/> from the cxx original.
-# $Id: GeodesicActiveContourImageFilter.py,v 1.5 2005/03/01 13:27:41 lorensen Exp $
+# $Id: GeodesicActiveContourImageFilter.py,v 1.5 2005-03-01 13:27:41 lorensen Exp $
 
 # NOTE: This example won't work if your ITK is older that 2004-02-26
 

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryMedialNodeMetric.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/20 13:36:35 $
+  Date:      $Date: 2007-04-20 13:36:35 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

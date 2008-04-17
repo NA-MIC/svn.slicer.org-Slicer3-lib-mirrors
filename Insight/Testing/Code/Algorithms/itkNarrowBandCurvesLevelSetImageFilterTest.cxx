@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNarrowBandCurvesLevelSetImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2003/10/07 16:43:01 $
-  Version:   $Revision: 1.7 $
+  Date:      $Date: 2007-12-18 20:55:36 $
+  Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -29,13 +29,19 @@
 #include "itkSimilarityIndexImageFilter.h"
 
 /* Uncomment to write out image files */
-/*
+
 #include "itkRescaleIntensityImageFilter.h"
 #include "itkImageFileWriter.h"
-*/
 
-int itkNarrowBandCurvesLevelSetImageFilterTest(int, char* [] )
+
+int itkNarrowBandCurvesLevelSetImageFilterTest(int argc, char* argv[] )
 {
+
+  if(argc < 2)
+    {
+    std::cerr << "Usage: " << argv[0] << " OutputImage\n";
+    return EXIT_FAILURE;
+    }
 
   const   unsigned int    ImageDimension = 2;
   typedef unsigned char   PixelType;
@@ -82,8 +88,9 @@ int itkNarrowBandCurvesLevelSetImageFilterTest(int, char* [] )
 
   /**
    * Create an edge potential map.
-   * First compute the image gradient magnitude using a derivative of gaussian filter.
-   * Then apply a sigmoid function to the gradient magnitude.
+   * First compute the image gradient magnitude using a derivative of
+   * gaussian filter. Then apply a sigmoid function to the gradient
+   * magnitude.
    */
   typedef itk::CastImageFilter< ImageType, InternalImageType > CastFilterType;
   CastFilterType::Pointer caster = CastFilterType::New();
@@ -189,7 +196,6 @@ int itkNarrowBandCurvesLevelSetImageFilterTest(int, char* [] )
   /** 
    * Uncomment to write out image files.
    */
-  /*
   typedef itk::ImageFileWriter< ImageType > WriterType;
   WriterType::Pointer writer = WriterType::New();
 
@@ -197,30 +203,12 @@ int itkNarrowBandCurvesLevelSetImageFilterTest(int, char* [] )
     ImageType > RescaleFilterType;
   RescaleFilterType::Pointer rescaler = RescaleFilterType::New();
 
-  writer->SetFileName( "inputImage.png" );
-  writer->SetInput( inputImage );
-  writer->Update();
-
-  rescaler->SetInput( gradMagnitude->GetOutput() );
   rescaler->SetOutputMinimum( 0 );
   rescaler->SetOutputMaximum( 255 );
-  writer->SetFileName( "gradMagnitude.png" );
-  writer->SetInput( rescaler->GetOutput() );
-  writer->Update();
-
-  rescaler->SetInput( sigmoid->GetOutput() );
-  writer->SetFileName( "edgePotential.png" );
-  writer->Update();
 
   writer->SetInput( thresholder->GetOutput() );
-  writer->SetFileName( "outputLevelSet.png" );
+  writer->SetFileName( argv[1] );
   writer->Update();
-
-  thresholder->SetInput( fastMarching->GetOutput() );
-  writer->SetInput( thresholder->GetOutput() );
-  writer->SetFileName( "initialLevelSet.png" );
-  writer->Update();
-  */
 
   // Check if overlap is above threshold
   if ( overlap->GetSimilarityIndex() > 0.90 )

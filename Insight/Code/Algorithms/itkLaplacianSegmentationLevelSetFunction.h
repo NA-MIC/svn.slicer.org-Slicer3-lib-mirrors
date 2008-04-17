@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLaplacianSegmentationLevelSetFunction.h,v $
   Language:  C++
-  Date:      $Date: 2004/08/08 12:18:38 $
+  Date:      $Date: 2004-08-08 12:18:38 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

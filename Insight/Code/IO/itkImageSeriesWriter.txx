@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageSeriesWriter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/19 13:58:17 $
-  Version:   $Revision: 1.28 $
+  Date:      $Date: 2008-01-27 18:30:01 $
+  Version:   $Revision: 1.29 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -379,13 +379,13 @@ ImageSeriesWriter<TInputImage,TOutputImage>
         DictionaryType & dictionary = m_ImageIO->GetMetaDataDictionary();
 
 
-        typename InputImageType::SpacingType spacing = inputImage->GetSpacing();
+        typename InputImageType::SpacingType spacing2 = inputImage->GetSpacing();
 
-        // origin of the outpu slice in the 
+        // origin of the output slice in the 
         // N-Dimensional space of the input image.
-        typename InputImageType::PointType   origin;  
+        typename InputImageType::PointType   origin2;  
     
-        inputImage->TransformIndexToPhysicalPoint( inIndex, origin );
+        inputImage->TransformIndexToPhysicalPoint( inIndex, origin2 );
 
         const unsigned int inputImageDimension = TInputImage::ImageDimension;
 
@@ -396,8 +396,8 @@ ImageSeriesWriter<TInputImage,TOutputImage>
 
         for( unsigned int d = 0; d < inputImageDimension; d++ )
           {
-          originArray[ d ]  = origin[ d ];
-          spacingArray[ d ] = spacing[ d ];
+          originArray[ d ]  = origin2[ d ];
+          spacingArray[ d ] = spacing2[ d ];
           }
 
         EncapsulateMetaData< DoubleArrayType >( dictionary, ITK_Origin, originArray );

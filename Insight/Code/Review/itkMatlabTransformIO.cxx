@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMatlabTransformIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/08/09 15:15:59 $
-  Version:   $Revision: 1.1 $
+  Date:      $Date: 2008-02-07 15:07:57 $
+  Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -52,7 +52,7 @@ CanWriteFile(const char *fileName)
 // but handle single precision as well.
 static void 
 ReadMat(vnl_matlab_readhdr &mathdr,
-        itk::Array<double> &array)
+        Array<double> &array)
 {
   if(mathdr.is_single())
     {
@@ -94,7 +94,7 @@ Read()
       itkExceptionMacro 
         ("Only vector parameters supported");
       }
-    itk::Array<double> TmpParameterArray(mathdr.rows());
+    Array<double> TmpParameterArray(mathdr.rows());
     ReadMat(mathdr,TmpParameterArray);
     std::string classname(mathdr.name());
     // create transform based on name of first vector
@@ -108,7 +108,7 @@ Read()
       itkExceptionMacro 
         ("Only vector parameters supported");
       }
-    itk::Array<double> TmpFixedParameterArray(mathdr2.rows());
+    Array<double> TmpFixedParameterArray(mathdr2.rows());
     ReadMat(mathdr2,TmpFixedParameterArray);
     transform->SetFixedParameters(TmpFixedParameterArray);
     transform->SetParametersByValue(TmpParameterArray);

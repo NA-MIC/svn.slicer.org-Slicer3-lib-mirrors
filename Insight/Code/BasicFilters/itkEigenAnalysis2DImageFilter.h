@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkEigenAnalysis2DImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/27 17:01:08 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007-10-27 19:51:42 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -50,6 +50,9 @@ public:
   typedef SmartPointer<Self>                   Pointer;
   typedef SmartPointer<const Self>        ConstPointer;
   
+  /** Run-time type information (and related methods).   */
+  itkTypeMacro( EigenAnalysis2DImageFilter, ImageToImageFilter );
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 

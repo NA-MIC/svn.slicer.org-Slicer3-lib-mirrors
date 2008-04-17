@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFEMElement3DC0LinearHexahedron.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:37:20 $
+  Date:      $Date: 2006-03-19 04:37:20 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

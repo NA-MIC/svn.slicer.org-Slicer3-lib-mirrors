@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshLineCell.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/25 22:28:11 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2007-10-08 21:38:18 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -212,8 +212,14 @@ void
 QuadEdgeMeshLineCell< TCellInterface >
 ::SetPointId( int localId, PointIdentifier pId )
 {
-  if( localId == 0 )      this->GetQEGeom( )->SetOrigin( pId );
-  else if( localId == 1 ) this->GetQEGeom( )->SetDestination( pId );
+  if( localId == 0 )
+    {
+    this->GetQEGeom( )->SetOrigin( pId );
+    }
+  else if( localId == 1 )
+    {
+    this->GetQEGeom( )->SetDestination( pId );
+    }
 }
 
 // ---------------------------------------------------------------------

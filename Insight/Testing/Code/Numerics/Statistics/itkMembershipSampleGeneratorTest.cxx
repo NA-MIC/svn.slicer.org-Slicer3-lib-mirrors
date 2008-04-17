@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMembershipSampleGeneratorTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/07/26 15:55:14 $
+  Date:      $Date: 2005-07-26 15:55:14 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkValarrayImageContainer.h,v $
   Language:  C++
-  Date:      $Date: 2007/05/16 17:29:17 $
+  Date:      $Date: 2007-05-16 17:29:17 $
   Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

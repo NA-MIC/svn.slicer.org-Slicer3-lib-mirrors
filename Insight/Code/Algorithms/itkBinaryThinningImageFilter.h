@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkBinaryThinningImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/04/04 13:20:12 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-02-03 04:05:28 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -92,6 +92,9 @@ public:
 
   /** Pointer Type for the output image. */
   typedef typename OutputImageType::Pointer OutputImagePointer;
+
+  /** Superclass typedefs. */
+  typedef typename Superclass::OutputImagePixelType  OutputImagePixelType;
   
   /** Neighborhood iterator type */
   typedef NeighborhoodIterator<TInputImage> NeighborhoodIteratorType ;
@@ -125,7 +128,6 @@ public:
 protected:
   BinaryThinningImageFilter();
   virtual ~BinaryThinningImageFilter() {};
-  void PrintSelf(std::ostream& os, Indent indent) const;
 
   /** Compute thinning Image. */
   void GenerateData();

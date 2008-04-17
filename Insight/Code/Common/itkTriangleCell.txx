@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTriangleCell.txx,v $
   Language:  C++
-  Date:      $Date: 2007/09/21 21:55:11 $
-  Version:   $Revision: 1.47 $
+  Date:      $Date: 2008-01-07 13:33:59 $
+  Version:   $Revision: 1.48 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -593,7 +593,6 @@ TriangleCell< TCellInterface >
     }
   else
     {
-    double t;
     if (closestPoint)
       {
       if ( pcoords[0] < 0.0 && pcoords[1] < 0.0 )

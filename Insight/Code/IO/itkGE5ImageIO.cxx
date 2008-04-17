@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGE5ImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 18:39:27 $
-  Version:   $Revision: 1.28 $
+  Date:      $Date: 2008-01-23 15:30:00 $
+  Version:   $Revision: 1.35 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -27,6 +27,10 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
+
+#include <vnl/vnl_vector.h>
+#include <vnl/vnl_matrix.h>
+#include <vnl/vnl_cross.h>
 
 #include "itkGEImageHeader.h"
 #include "itkIOCommon.h"
@@ -78,11 +82,13 @@ int GE5ImageIO
   // First pass see if image is a raw MR extracted via ximg
   if( !this->ReadBufferAsBinary( f, (void *)&imageHdr,sizeof(imageHdr) ) )
     {
+    f.close();
     return -1;
     }
   ByteSwapper<int>::SwapFromSystemToBigEndian(&imageHdr.GENESIS_IH_img_magic);
   if (imageHdr.GENESIS_IH_img_magic == GE_5X_MAGIC_NUMBER)
     {
+    f.close();
     return 0;
     }
   f.seekg(0,std::ios::beg);
@@ -94,16 +100,19 @@ int GE5ImageIO
   if( !this->ReadBufferAsBinary( f, (void *)hdr, GENESIS_SU_HDR_LEN ) )
     {
     reason = "Failed to read study header";
+    f.close();
     return -1;
     }
   strncpy (prod, hdr+GENESIS_SU_PRODID, 13);
   prod[13] = '\0';
   if (strcmp (prod, GE_PROD_STR) == 0)
     {
+    f.close();
     return 0;
     }
 
   reason = "Failed to find string SIGNA";
+  f.close();
   return -1;
 }
 
@@ -162,7 +171,7 @@ GE5ImageIO::SwapPixHdr (Ge5xPixelHeader * hdr)
 }
 
 
-struct GEImageHeader *
+GEImageHeader *
 GE5ImageIO::ReadHeader (const char  *FileNameToRead)
 {
   //#define VERBOSE_DEBUGGING
@@ -174,7 +183,7 @@ GE5ImageIO::ReadHeader (const char  *FileNameToRead)
 
   Ge5xPixelHeader imageHdr;              /* Header Structure for GE 5x images */
   char hdr[GENESIS_IM_HDR_START + GENESIS_MR_HDR_LEN];  /* Header to hold GE header */
-  struct GEImageHeader *curImage;
+  GEImageHeader *curImage;
   bool pixelHdrFlag;
   int timeStamp;
   char tmpId[64];
@@ -184,7 +193,7 @@ GE5ImageIO::ReadHeader (const char  *FileNameToRead)
     {
     itkExceptionMacro(
       "GE5ImageIO could not open file "
-      << this->GetFileName() << " for reading."
+      << FileNameToRead << " for reading."
       << std::endl
       << "Reason: "
       << reason
@@ -196,14 +205,14 @@ GE5ImageIO::ReadHeader (const char  *FileNameToRead)
     {
     itkExceptionMacro(
       "GE5ImageIO failed to create a GEImageHeader while reading "
-      << this->GetFileName() << " ."
+      << FileNameToRead << " ."
       << std::endl
       << "Reason: "
       << "new GEImageHeader failed."
       );
     
     }
-  memset(curImage,0,sizeof(struct GEImageHeader));
+  memset(curImage,0,sizeof(GEImageHeader));
   pixelHdrFlag = false;
 
   
@@ -212,7 +221,7 @@ GE5ImageIO::ReadHeader (const char  *FileNameToRead)
     {
     itkExceptionMacro(
       "GE5ImageIO failed to open "
-      << this->GetFileName() << " for input."
+      << FileNameToRead << " for input."
       << std::endl
       << "Reason: "
       << itksys::SystemTools::GetLastSystemError()
@@ -227,7 +236,7 @@ GE5ImageIO::ReadHeader (const char  *FileNameToRead)
       }
     itkExceptionMacro(
       "GE5ImageIO IO error while reading  "
-      << this->GetFileName() << " ."
+      << FileNameToRead << " ."
       << std::endl
       << "Reason: "
       << itksys::SystemTools::GetLastSystemError()
@@ -246,7 +255,7 @@ GE5ImageIO::ReadHeader (const char  *FileNameToRead)
         }
       itkExceptionMacro(
         "GE5ImageIO IO error while seeking  "
-        << this->GetFileName() << " ."
+        << FileNameToRead << " ."
         << std::endl
         << "Reason: "
         << itksys::SystemTools::GetLastSystemError()
@@ -267,7 +276,7 @@ GE5ImageIO::ReadHeader (const char  *FileNameToRead)
       }
     itkExceptionMacro(
       "GE5ImageIO IO error while reading  "
-      << this->GetFileName() << " ."
+      << FileNameToRead << " ."
       << std::endl
       << "Reason: "
       << itksys::SystemTools::GetLastSystemError()
@@ -283,6 +292,8 @@ GE5ImageIO::ReadHeader (const char  *FileNameToRead)
   strncpy (curImage->hospital, &hdr[GENESIS_EX_HDR_START + GENESIS_EX_HOSPNAME], 
            GENESIS_EX_DETECT - GENESIS_EX_HOSPNAME + 1);
 
+  // Get the coordinate information from the header. This will be used
+  // later on to compute the origin, spacing and directions.
   curImage->centerR = hdr2Float(&hdr[GENESIS_IM_HDR_START + GENESIS_CT_CTR_R]);
   curImage->centerA = hdr2Float(&hdr[GENESIS_IM_HDR_START + GENESIS_CT_CTR_A]);
   curImage->centerS = hdr2Float(&hdr[GENESIS_IM_HDR_START + GENESIS_CT_CTR_S]);
@@ -388,10 +399,10 @@ GE5ImageIO::ReadHeader (const char  *FileNameToRead)
 
   RGEDEBUG(fprintf (stderr, "Location %f %c %c\n", curImage->sliceLocation, hdr[GENESIS_IM_HDR_START + GENESIS_MR_LOC_RAS], hdr[GENESIS_IM_HDR_START + GENESIS_MR_LOC_RAS+1]);)
 
-  curImage->TR = hdr2Int (&hdr[GENESIS_IM_HDR_START + GENESIS_MR_TR]) / 1000.0;
-  curImage->TI = hdr2Int (&hdr[GENESIS_IM_HDR_START + GENESIS_MR_TI]) / 1000.0;
-  curImage->TE = hdr2Int (&hdr[GENESIS_IM_HDR_START + GENESIS_MR_TE]) / 1000.0;
-  curImage->TE2 = hdr2Int (&hdr[GENESIS_IM_HDR_START + GENESIS_MR_TE2]) / 1000.0;
+  curImage->TR = hdr2Int (&hdr[GENESIS_IM_HDR_START + GENESIS_MR_TR]) / 1000.0f;
+  curImage->TI = hdr2Int (&hdr[GENESIS_IM_HDR_START + GENESIS_MR_TI]) / 1000.0f;
+  curImage->TE = hdr2Int (&hdr[GENESIS_IM_HDR_START + GENESIS_MR_TE]) / 1000.0f;
+  curImage->TE2 = hdr2Int (&hdr[GENESIS_IM_HDR_START + GENESIS_MR_TE2]) / 1000.0f;
   RGEDEBUG(fprintf (stderr, "TR %f, TI %f, TE %f, TE2 %f\n", curImage->TR, curImage->TI, curImage->TE, curImage->TE2);)
 
   curImage->numberOfEchoes =
@@ -441,43 +452,47 @@ GE5ImageIO::ReadHeader (const char  *FileNameToRead)
 void
 GE5ImageIO::ModifyImageInformation()
 {
-  std::vector<double> dirx(3,0), diry(3,0), dirz(3,0);
+  vnl_vector<double> dirx(3), diry(3), dirz(3);
 
-  double len;
+  // NOTE: itk use LPS coordinates while the GE system uses RAS
+  // coordinates. Consequently, the R and A coordinates must be negated
+  // to convert them to L and P.
+
   dirx[0] = -(m_ImageHeader->trhcR - m_ImageHeader->tlhcR);
   dirx[1] = -(m_ImageHeader->trhcA - m_ImageHeader->tlhcA);
-  dirx[2] = -(m_ImageHeader->trhcS - m_ImageHeader->tlhcS);
-  len = dirx[0]*dirx[0] + dirx[1]*dirx[1] + dirx[2]*dirx[2];
-  len = vcl_sqrt(len);
-  for (unsigned int i = 0; i < 3; i++)
-    {
-    dirx[i] /= len;
-    }
-  diry[0] = m_ImageHeader->trhcR - m_ImageHeader->brhcR;
-  diry[1] = m_ImageHeader->trhcA - m_ImageHeader->brhcA;
-  diry[2] = m_ImageHeader->brhcS - m_ImageHeader->trhcS;
-  len = diry[0]*diry[0] + diry[1]*diry[1] + diry[2]*diry[2];
-  len = vcl_sqrt(len);
-  for (unsigned int i = 0; i < 3; i++)
-    {
-    diry[i] /= len;
-    }
-  dirz[0] = m_ImageHeader->normR;
-  dirz[1] = m_ImageHeader->normA;
-  dirz[2] = m_ImageHeader->normS;
-  len = dirz[0]*dirz[0] + dirz[1]*dirz[1] + dirz[2]*dirz[2];
-  len = vcl_sqrt(len);
-  for (unsigned int i = 0; i < 3; i++)
-    {
-    dirz[i] /= len;
-    }
+  dirx[2] =  (m_ImageHeader->trhcS - m_ImageHeader->tlhcS);
+  dirx.normalize();
+
+  diry[0] = -(m_ImageHeader->brhcR - m_ImageHeader->trhcR);
+  diry[1] = -(m_ImageHeader->brhcA - m_ImageHeader->trhcA);
+  diry[2] =  (m_ImageHeader->brhcS - m_ImageHeader->trhcS);
+  diry.normalize();
+
+  dirz[0] = -m_ImageHeader->normR;
+  dirz[1] = -m_ImageHeader->normA;
+  dirz[2] =  m_ImageHeader->normS;
+  dirz.normalize();
+
+  // Set the directions
   this->SetDirection(0,dirx);
   this->SetDirection(1,diry);
   this->SetDirection(2,dirz);  
 
-  this->SetOrigin(0, -m_ImageHeader->tlhcR);
-  this->SetOrigin(1, -m_ImageHeader->tlhcA);
-  this->SetOrigin(2,  m_ImageHeader->tlhcS);
+  // See if slices need to be reversed. itk uses a right hand
+  // coordinate system. If the computed slice direction is opposite
+  // the direction in the header, the files have to be read in reverse
+  // order.
+  vnl_vector<double> sliceDirection = vnl_cross_3d(dirx, diry);
+  if (dot_product(sliceDirection,dirz) < 0)
+    {
+    // Use the computed direction
+    this->SetDirection(2,sliceDirection);  
+
+    // Sort image list in reverse order
+    m_FilenameList->SetSortOrder(IPLFileNameList::SortGlobalDescend);
+    m_FilenameList->sortImageList();
+
+    }
 
   // Compute the spacing between two slices  from the origins of the
   // first two files in the study
@@ -492,13 +507,18 @@ GE5ImageIO::ModifyImageInformation()
     it++;
     std::string file2 = (*it)->GetImageFileName();
 
-    struct GEImageHeader *hdr1 = this->ReadHeader(file1.c_str());
-    struct GEImageHeader *hdr2 = this->ReadHeader(file2.c_str());
+    GEImageHeader *hdr1 = this->ReadHeader(file1.c_str());
+    GEImageHeader *hdr2 = this->ReadHeader(file2.c_str());
 
     float origin1[3], origin2[3];
     origin1[0] = hdr1->tlhcR;
     origin1[1] = hdr1->tlhcA;
     origin1[2] = hdr1->tlhcS;
+
+    // Origin shopuld always come from the first slice
+    this->SetOrigin(0, -hdr1->tlhcR);
+    this->SetOrigin(1, -hdr1->tlhcA);
+    this->SetOrigin(2,  hdr1->tlhcS);
 
     origin2[0] = hdr2->tlhcR;
     origin2[1] = hdr2->tlhcA;
@@ -514,6 +534,13 @@ GE5ImageIO::ModifyImageInformation()
     // Cleanup
     delete hdr1;
     delete hdr2;
+    }
+  else
+    // If there is only one slice, the use it's origin
+    {
+    this->SetOrigin(0, -m_ImageHeader->tlhcR);
+    this->SetOrigin(1, -m_ImageHeader->tlhcA);
+    this->SetOrigin(2,  m_ImageHeader->tlhcS);
     }
 }
 } // end namespace itk

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFourierSeriesPath.txx,v $
   Language:  C++
-  Date:      $Date: 2006/11/09 14:23:29 $
+  Date:      $Date: 2006-11-09 14:23:29 $
   Version:   $Revision: 1.8 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

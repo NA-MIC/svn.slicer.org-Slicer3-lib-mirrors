@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkLabelToRGBImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/25 14:28:08 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2007-10-22 12:54:03 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -62,8 +62,9 @@ public:
   typedef TOutputImage OutputImageType;
   typedef TLabelImage  LabelImageType;
 
-  typedef typename TOutputImage::PixelType OutputPixelType;
-  typedef typename TLabelImage::PixelType  LabelPixelType;
+  typedef typename TOutputImage::PixelType                     OutputPixelType;
+  typedef typename TLabelImage::PixelType                      LabelPixelType;
+  typedef typename NumericTraits< OutputPixelType >::ValueType OutputPixelValueType;
 
   /** Runtime information support. */
   itkTypeMacro(LabelToRGBImageFilter, UnaryFunctorImageFilter);
@@ -75,10 +76,9 @@ public:
   itkSetMacro( BackgroundValue, LabelPixelType );
   itkGetConstReferenceMacro( BackgroundValue, LabelPixelType );
 
-  /** Set/Get if one of the labels must be considered as background */
-  itkSetMacro( UseBackground, bool );
-  itkGetConstReferenceMacro( UseBackground, bool );
-  itkBooleanMacro(UseBackground);
+  /** Set/Get the background color in the output image */
+  itkSetMacro( BackgroundColor, OutputPixelType );
+  itkGetConstReferenceMacro( BackgroundColor, OutputPixelType );
 
 protected:
   LabelToRGBImageFilter();
@@ -94,7 +94,7 @@ private:
   LabelToRGBImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
   
-  bool              m_UseBackground;
+  OutputPixelType   m_BackgroundColor;
   LabelPixelType    m_BackgroundValue;
 };
 

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkScaleSkewVersor3DTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/30 14:51:12 $
+  Date:      $Date: 2007-04-30 14:51:12 $
   Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransformsSetParametersTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/05 16:35:04 $
+  Date:      $Date: 2007-09-05 16:35:04 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) 2002 Insight Consortium. All rights reserved.

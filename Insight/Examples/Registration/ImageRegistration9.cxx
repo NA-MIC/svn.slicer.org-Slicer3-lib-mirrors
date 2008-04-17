@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageRegistration9.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/09/07 14:17:42 $
-  Version:   $Revision: 1.32 $
+  Date:      $Date: 2007-11-22 00:30:16 $
+  Version:   $Revision: 1.34 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -271,9 +271,8 @@ int main( int argc, char *argv[] )
   //  translation are quite different, we take advantage of the scaling
   //  functionality provided by the optimizers. We know that the first $N
   //  \times N$ elements of the parameters array correspond to the rotation
-  //  matrix factor, the next $N$ correspond to the rotation center, and the
-  //  last $N$ are the components of the translation to be applied after
-  //  multiplication with the matrix is performed.
+  //  matrix factor, and the last $N$ are the components of the translation to
+  //  be applied after multiplication with the matrix is performed.
   //
   //  Software Guide : EndLatex 
 
@@ -546,6 +545,7 @@ int main( int argc, char *argv[] )
   resampler->SetSize(    fixedImage->GetLargestPossibleRegion().GetSize() );
   resampler->SetOutputOrigin(  fixedImage->GetOrigin() );
   resampler->SetOutputSpacing( fixedImage->GetSpacing() );
+  resampler->SetOutputDirection( fixedImage->GetDirection() );
   resampler->SetDefaultPixelValue( 100 );
   
   typedef  unsigned char  OutputPixelType;

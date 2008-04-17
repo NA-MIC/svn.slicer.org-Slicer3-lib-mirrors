@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorImageNeighborhoodAccessorFunctor.h,v $
   Language:  C++
-  Date:      $Date: 2005/10/31 22:16:43 $
+  Date:      $Date: 2005-10-31 22:16:43 $
   Version:   $Revision: 1.3 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

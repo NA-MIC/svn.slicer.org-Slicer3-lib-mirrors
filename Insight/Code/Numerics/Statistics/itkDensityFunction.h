@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDensityFunction.h,v $
   Language:  C++
-  Date:      $Date: 2006/02/24 16:57:21 $
+  Date:      $Date: 2006-02-24 16:57:21 $
   Version:   $Revision: 1.10 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

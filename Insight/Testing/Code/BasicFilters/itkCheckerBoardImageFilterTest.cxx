@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCheckerBoardImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/05/23 22:51:46 $
+  Date:      $Date: 2005-05-23 22:51:46 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

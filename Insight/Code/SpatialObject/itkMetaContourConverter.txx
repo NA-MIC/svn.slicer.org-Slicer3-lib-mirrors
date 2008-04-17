@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaContourConverter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 18:07:16 $
+  Date:      $Date: 2007-08-17 18:07:16 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

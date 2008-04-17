@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkChainCodePath2D.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/18 20:14:09 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2007-12-23 17:59:28 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -76,7 +76,9 @@ public:
   typedef Index<2>    IndexType;
 
   /** ChainCodeType is a usless relic of the parent class */
-  typedef std::vector<OffsetType>  ChainCodeType;
+  typedef Superclass::ChainCodeType ChainCodeType;
+  typedef Superclass::ChainCodeSizeType ChainCodeSizeType;
+
   /** ChainCodePath2D stores its data as a Freeman-encoded chain code */
   typedef std::vector<int>         ChainCode2DType;
 
@@ -100,7 +102,7 @@ public:
   itkNewMacro( Self );
   
   /** How many steps in the chaincode? */
-  inline unsigned int NumberOfSteps() const { return m_Chain2D.size(); }
+  inline ChainCodeSizeType NumberOfSteps() const { return m_Chain2D.size(); }
   
   
   /** Insert a new step into the chaincode at a specified position */

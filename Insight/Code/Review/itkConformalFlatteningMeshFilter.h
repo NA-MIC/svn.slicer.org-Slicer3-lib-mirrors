@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConformalFlatteningMeshFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/02/24 12:56:51 $
+  Date:      $Date: 2007-02-24 12:56:51 $
   Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: ImageAdaptor1.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/12/28 14:45:15 $
+  Date:      $Date: 2004-12-28 14:45:15 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

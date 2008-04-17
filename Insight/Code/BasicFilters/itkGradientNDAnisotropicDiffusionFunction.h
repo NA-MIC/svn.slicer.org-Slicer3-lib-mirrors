@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGradientNDAnisotropicDiffusionFunction.h,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:28:48 $
-  Version:   $Revision: 1.15 $
+  Date:      $Date: 2008-01-18 20:07:32 $
+  Version:   $Revision: 1.16 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -76,6 +76,7 @@ public:
   /** Inherit some parameters from the superclass type. */
   typedef typename Superclass::ImageType        ImageType;
   typedef typename Superclass::PixelType        PixelType;
+  typedef typename Superclass::PixelRealType    PixelRealType;
   typedef typename Superclass::TimeStepType     TimeStepType;
   typedef typename Superclass::RadiusType       RadiusType;
   typedef typename Superclass::NeighborhoodType NeighborhoodType;

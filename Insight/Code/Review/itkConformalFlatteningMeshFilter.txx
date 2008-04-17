@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConformalFlatteningMeshFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/04/19 15:25:46 $
-  Version:   $Revision: 1.18 $
+  Date:      $Date: 2008-01-13 13:16:38 $
+  Version:   $Revision: 1.20 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -227,7 +227,6 @@ ConformalFlatteningMeshFilter<TPixelType>
   unsigned int boundaryId1 = *pointIditer;
   pointIditer++;
   unsigned int boundaryId2 = *pointIditer;
-  pointIditer++;
 
   InputPointType ptA; ptA.Fill(0.0);
   InputPointType ptB; ptB.Fill(0.0);
@@ -340,17 +339,17 @@ ConformalFlatteningMeshFilter<TPixelType>
 
   while( cellIterator != cellEnd )
     {
-    CellType * cell = cellIterator.Value();
-    unsigned int cellNumberOfPoints = cell->GetNumberOfPoints();
+    CellType * aCell = cellIterator.Value();
+    unsigned int aCellNumberOfPoints = aCell->GetNumberOfPoints();
 
-    if( cellNumberOfPoints != 3 )
+    if( aCellNumberOfPoints != 3 )
       {
-      itkExceptionMacro("cell has " << cellNumberOfPoints << " points\n"
+      itkExceptionMacro("cell has " << aCellNumberOfPoints << " points\n"
       "This filter can only process triangle meshes.");
       return;
       }
 
-    PointIdIterator pointIditer = cell->PointIdsBegin();
+    pointIditer = aCell->PointIdsBegin();
 
     ptIdA = *pointIditer;
     pointIditer++;
@@ -489,8 +488,6 @@ ConformalFlatteningMeshFilter<TPixelType>
     outPoints->Begin();
   typename OutputPointsContainer::Iterator      outputPointEnd =
     outPoints->End();
-
-  typedef typename OutputMeshType::PointType OutputPointType;
 
   OutputPointType point;
   point[2] = 0.0;

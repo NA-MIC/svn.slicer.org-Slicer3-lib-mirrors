@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkHistogram.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/17 18:03:31 $
-  Version:   $Revision: 1.45 $
+  Date:      $Date: 2008-01-07 21:28:29 $
+  Version:   $Revision: 1.46 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -593,9 +593,9 @@ Histogram< TMeasurement, VMeasurementVectorSize, TFrequencyContainer >
     while( m < size && p_n > p);
 
     binProportion = f_n / totalFrequency ;
-    double min = double( this->GetBinMin(dimension, n + 1) ) ;
-    double max = double( this->GetBinMax(dimension, n + 1) ) ;
-    double interval = max - min ;
+    min = double( this->GetBinMin(dimension, n + 1) ) ;
+    max = double( this->GetBinMax(dimension, n + 1) ) ;
+    interval = max - min ;
     return max - ((p_n_prev - p) / binProportion) * interval ;
     }
 }

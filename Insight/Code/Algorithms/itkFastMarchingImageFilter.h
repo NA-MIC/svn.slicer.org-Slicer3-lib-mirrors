@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFastMarchingImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/09/01 21:28:34 $
-  Version:   $Revision: 1.36 $
+  Date:      $Date: 2008-01-18 20:07:31 $
+  Version:   $Revision: 1.37 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -118,17 +118,17 @@ public:
   itkTypeMacro(FastMarchingImageFilter, ImageSource);
 
   /** Typedef support of level set method types. */
-  typedef LevelSetTypeDefault<TLevelSet>  LevelSetType;
-  typedef typename LevelSetType::LevelSetImageType  LevelSetImageType;
-  typedef typename LevelSetType::LevelSetPointer  LevelSetPointer;
-  typedef typename LevelSetType::PixelType  PixelType;
-  typedef typename LevelSetType::NodeType NodeType;
-  typedef typename LevelSetType::NodeContainer NodeContainer;
+  typedef LevelSetTypeDefault<TLevelSet>              LevelSetType;
+  typedef typename LevelSetType::LevelSetImageType    LevelSetImageType;
+  typedef typename LevelSetType::LevelSetPointer      LevelSetPointer;
+  typedef typename LevelSetType::PixelType            PixelType;
+  typedef typename LevelSetType::NodeType             NodeType;
+  typedef typename LevelSetType::NodeContainer        NodeContainer;
   typedef typename LevelSetType::NodeContainerPointer NodeContainerPointer;
-  typedef typename LevelSetImageType::SizeType    OutputSizeType;
-  typedef typename LevelSetImageType::RegionType  OutputRegionType;
-  typedef typename LevelSetImageType::SpacingType OutputSpacingType;
-  typedef typename LevelSetImageType::PointType   OutputPointType;
+  typedef typename LevelSetImageType::SizeType        OutputSizeType;
+  typedef typename LevelSetImageType::RegionType      OutputRegionType;
+  typedef typename LevelSetImageType::SpacingType     OutputSpacingType;
+  typedef typename LevelSetImageType::PointType       OutputPointType;
 
   class AxisNodeType : public NodeType
   {

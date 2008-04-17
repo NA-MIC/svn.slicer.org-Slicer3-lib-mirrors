@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkWatershedSegmentTree.txx,v $
   Language:  C++
-  Date:      $Date: 2004/03/03 19:15:20 $
+  Date:      $Date: 2004-03-03 19:15:20 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMRASlabIdentifier.h,v $
   Language:  C++
-  Date:      $Date: 2004/11/04 20:40:33 $
+  Date:      $Date: 2004-11-04 20:40:33 $
   Version:   $Revision: 1.15 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

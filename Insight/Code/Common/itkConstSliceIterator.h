@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkConstSliceIterator.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 23:23:51 $
+  Date:      $Date: 2006-03-19 23:23:51 $
   Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

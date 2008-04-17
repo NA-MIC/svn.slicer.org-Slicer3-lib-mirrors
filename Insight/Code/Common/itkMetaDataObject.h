@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkMetaDataObject.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:09 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2007-12-04 22:44:53 $
+  Version:   $Revision: 1.21 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -221,6 +221,21 @@ template <class T>
   {
     return ExposeMetaData(Dictionary, std::string(key), outval);
   }
+// const versions of ExposeMetaData just to make life easier for enduser programmers, and to maintain backwards compatibility.
+// The other option is to cast away constness in the main function.
+template <class T>
+  inline bool ExposeMetaData(const MetaDataDictionary &Dictionary, const std::string key, T &outval)
+    {
+    MetaDataDictionary NonConstVersion=Dictionary;
+    return ExposeMetaData(NonConstVersion,key,outval);
+    }
+
+template <class T>
+  inline bool ExposeMetaData(const MetaDataDictionary &Dictionary, const char * const key, T &outval)
+    {
+    MetaDataDictionary NonConstVersion=Dictionary;
+    return ExposeMetaData(Dictionary, std::string(key), outval);
+    }
 
 } // end namespace itk
 

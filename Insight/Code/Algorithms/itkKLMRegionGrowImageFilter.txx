@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkKLMRegionGrowImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/10/23 12:48:34 $
-  Version:   $Revision: 1.57 $
+  Date:      $Date: 2008-02-14 05:02:22 $
+  Version:   $Revision: 1.59 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -76,7 +76,10 @@ KLMRegionGrowImageFilter<TInputImage,TOutputImage>
   // This filter requires all of the input image to be in the buffer
   InputImagePointer inputPtr =
     const_cast< InputImageType * >( this->GetInput() );
-  inputPtr->SetRequestedRegionToLargestPossibleRegion();
+  if (inputPtr)
+    {
+    inputPtr->SetRequestedRegionToLargestPossibleRegion();
+    }
 }
 
 
@@ -814,11 +817,11 @@ KLMRegionGrowImageFilter<TInputImage,TOutputImage>
     }
 
   // Assign new consecutive labels
-  for ( unsigned int iregion = 0; iregion < m_InitialNumberOfRegions; iregion++ )
+  for ( iregion = 0; iregion < m_InitialNumberOfRegions; iregion++ )
     {
     RegionLabelType labelValue = m_RegionsPointer[ iregion ]->GetRegionLabel();
 
-    RegionLabelType newLabelValue = remapLabelsVec[ labelValue - 1 ];
+    newLabelValue = remapLabelsVec[ labelValue - 1 ];
     double newAreaValue = m_RegionsPointer[ labelValue - 1 ]->GetRegionArea();
     MeanRegionIntensityType newMeanValue =
       m_RegionsPointer[ labelValue - 1 ]->GetMeanRegionIntensity();

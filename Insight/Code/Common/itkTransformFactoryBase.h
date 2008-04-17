@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTransformFactoryBase.h,v $
   Language:  C++
-  Date:      $Date: 2005/04/01 15:52:35 $
+  Date:      $Date: 2005-04-01 15:52:35 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

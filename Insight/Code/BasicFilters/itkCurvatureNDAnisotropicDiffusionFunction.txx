@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCurvatureNDAnisotropicDiffusionFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:30 $
+  Date:      $Date: 2004-12-21 22:47:30 $
   Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

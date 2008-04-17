@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkGrayscaleGeodesicErodeDilateImageFilterTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/28 16:02:43 $
+  Date:      $Date: 2005-11-28 16:02:43 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

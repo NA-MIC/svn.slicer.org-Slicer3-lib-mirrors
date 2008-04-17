@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: IterativeClosestPoint1.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/04/16 23:10:55 $
+  Date:      $Date: 2007-04-16 23:10:55 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

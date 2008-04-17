@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSparseFieldFourthOrderLevelSetImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2004/12/21 22:47:31 $
-  Version:   $Revision: 1.8 $
+  Date:      $Date: 2008-03-03 13:58:47 $
+  Version:   $Revision: 1.9 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -103,7 +103,9 @@ SparseFieldFourthOrderLevelSetImageFilter<TInputImage, TOutputImage>
   NormalVectorType normalvector;
   ValueType curvature;
   bool flag = false;
-  
+
+  const NeighborhoodScalesType neighborhoodScales = this->GetDifferenceFunction()->ComputeNeighborhoodScales();
+
   for( j = 0; j < ImageDimension; j++ )
     {
         stride[j] = it.GetStride( (unsigned long) j);
@@ -133,11 +135,11 @@ SparseFieldFourthOrderLevelSetImageFilter<TInputImage, TOutputImage>
         {
         if ( counter & indicator[j] )
           {
-          curvature -= normalvector[j];
+          curvature -= normalvector[j] * neighborhoodScales[j];
           }
         else
           {
-          curvature += normalvector[j];
+          curvature += normalvector[j] * neighborhoodScales[j];
           }
         } // end derivative axis
       }

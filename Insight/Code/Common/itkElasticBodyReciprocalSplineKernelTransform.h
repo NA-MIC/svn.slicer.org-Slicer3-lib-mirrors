@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkElasticBodyReciprocalSplineKernelTransform.h,v $
   Language:  C++
-  Date:      $Date: 2007/01/30 20:56:07 $
-  Version:   $Revision: 1.9 $
+  Date:      $Date: 2007-12-20 17:10:46 $
+  Version:   $Revision: 1.13 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -104,7 +104,11 @@ protected:
    * r(x) = Euclidean norm = sqrt[x1^2 + x2^2 + x3^2]
    * \f[ r(x) = \sqrt{ x_1^2 + x_2^2 + x_3^2 }  \f]
    * I = identity matrix */
-  const GMatrixType & ComputeG(const InputVectorType& x) const;
+  virtual void ComputeG(const InputVectorType& landmarkVector, GMatrixType & gmatrix) const;
+  /**
+   * \deprecated in ITK 3.6, please use void ComputeG(vector,gmatrix) instead.
+   */
+  itkLegacyMacro( virtual const GMatrixType & ComputeG(const InputVectorType& landmarkVector) const );
 
   /** alpha, Poisson's ratio */
   TScalarType m_Alpha;

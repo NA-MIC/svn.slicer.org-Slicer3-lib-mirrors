@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkTestMain.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/09 01:19:33 $
-  Version:   $Revision: 1.26 $
+  Date:      $Date: 2008-03-17 19:28:02 $
+  Version:   $Revision: 1.27 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -293,14 +293,10 @@ int RegressionTestImage (const char *testImageFilename,
     diff->SetToleranceRadius( radiusTolerance );
     diff->UpdateLargestPossibleRegion();
 
-  double status = diff->GetTotalDifference();
-
-  const unsigned int numberOfFailedPixels = 
-    diff->GetNumberOfPixelsWithDifferences();
+  double status = diff->GetNumberOfPixelsWithDifferences();
 
   // if there are discrepencies, create an diff image
-  if ( status && reportErrors &&  
-      ( numberOfFailedPixels > numberOfPixelsTolerance ) )
+  if ( (status > numberOfPixelsTolerance) && reportErrors )
     {
     typedef itk::RescaleIntensityImageFilter<ImageType,OutputType> RescaleType;
     typedef itk::ExtractImageFilter<OutputType,DiffOutputType> ExtractType;
@@ -414,7 +410,7 @@ int RegressionTestImage (const char *testImageFilename,
 
 
     }
-  return (status != 0) ? 1 : 0;
+  return (status > numberOfPixelsTolerance) ? 1 : 0;
 }
 
 //

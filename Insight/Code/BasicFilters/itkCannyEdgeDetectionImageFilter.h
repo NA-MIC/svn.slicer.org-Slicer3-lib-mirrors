@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkCannyEdgeDetectionImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/08/29 20:20:37 $
-  Version:   $Revision: 1.23 $
+  Date:      $Date: 2007-10-16 14:22:34 $
+  Version:   $Revision: 1.24 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -183,12 +183,12 @@ public:
     this->m_Threshold = th;
     this->m_UpperThreshold = m_Threshold;
     this->m_LowerThreshold = m_Threshold/2.0;
-    itkLegacyReplaceBody(SetThreshold, 2.2, SetUpperThreshold);
+    itkLegacyReplaceBodyMacro(SetThreshold, 2.2, SetUpperThreshold);
   }
   
   OutputImagePixelType GetThreshold(OutputImagePixelType th) 
   {
-    itkLegacyReplaceBody(GetThreshold, 2.2, GetUpperThreshold);
+    itkLegacyReplaceBodyMacro(GetThreshold, 2.2, GetUpperThreshold);
     return this->m_Threshold; 
   }
 

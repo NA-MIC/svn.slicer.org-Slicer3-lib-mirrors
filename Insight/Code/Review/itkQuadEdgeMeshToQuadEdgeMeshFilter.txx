@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshToQuadEdgeMeshFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2007/07/24 20:05:24 $
-  Version:   $Revision: 1.5 $
+  Date:      $Date: 2008-02-07 05:12:00 $
+  Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -17,6 +17,8 @@
 
 #ifndef __itkQuadEdgeMeshToQuadEdgeMeshFilter_txx
 #define __itkQuadEdgeMeshToQuadEdgeMeshFilter_txx
+
+#include "itkQuadEdgeMeshToQuadEdgeMeshFilter.h"
 
 namespace itk
 {
@@ -60,7 +62,7 @@ QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh, TOutputMesh >
     if( ( qe = dynamic_cast< InputEdgeCellType* >( cIt.Value() ) ) )
       {
       InputQEPrimal* QEGeom = qe->GetQEGeom( );
-      out->AddEdge( QEGeom->GetOrigin(), QEGeom->GetDestination() );
+      out->AddEdgeWithSecurePointList( QEGeom->GetOrigin(), QEGeom->GetDestination() );
       }
     else
       {
@@ -74,7 +76,7 @@ QuadEdgeMeshToQuadEdgeMeshFilter< TInputMesh, TOutputMesh >
           points.push_back( ( *pit ) );
           pit++;
           }
-        out->AddFace( points );
+        out->AddFaceWithSecurePointList( points );
         } 
       }
     cIt++;

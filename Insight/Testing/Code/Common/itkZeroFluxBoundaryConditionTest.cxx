@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkZeroFluxBoundaryConditionTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2006/04/21 00:56:56 $
+  Date:      $Date: 2006-04-21 00:56:56 $
   Version:   $Revision: 1.2 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

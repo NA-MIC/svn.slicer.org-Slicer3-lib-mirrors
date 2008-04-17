@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshEulerOperatorCreateCenterVertexFunction.txx,v $
   Language:  C++
-  Date:      $Date: 2007/08/04 00:23:50 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2008-02-07 05:12:00 $
+  Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -16,6 +16,8 @@
 =========================================================================*/
 #ifndef __itkQuadEdgeMeshEulerOperatorCreateCenterVertexFunction_txx
 #define __itkQuadEdgeMeshEulerOperatorCreateCenterVertexFunction_txx
+
+#include "itkQuadEdgeMeshEulerOperatorCreateCenterVertexFunction.h"
 
 namespace itk
 {

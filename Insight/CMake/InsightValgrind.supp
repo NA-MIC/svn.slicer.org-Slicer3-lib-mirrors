@@ -1,4 +1,9 @@
 {
+   Some dl_relocate_object suppressions
+   Memcheck:Cond
+   fun:_dl_relocate_object
+}
+{
    Some Error from the itk::MultiThreader::DispatchSingleMethodThread
    Memcheck:Leak
    fun:calloc
@@ -320,4 +325,20 @@
   /lib/libz
   Memcheck:Cond
   obj:*/libz.so.1.2.3
+}
+
+{
+   dlopen leak1
+   Memcheck:Leak
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlopen*
+}
+
+{
+   dlopen leak2
+   Memcheck:Leak
+   fun:calloc
+   obj:/lib/libdl-2.3.?.so
+   fun:dlopen*
 }

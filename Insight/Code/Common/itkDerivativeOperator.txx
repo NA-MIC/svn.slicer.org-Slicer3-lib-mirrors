@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkDerivativeOperator.txx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:06 $
-  Version:   $Revision: 1.21 $
+  Date:      $Date: 2008-01-20 18:00:40 $
+  Version:   $Revision: 1.22 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -31,7 +31,6 @@ DerivativeOperator<TPixel, VDimension, TAllocator>
 {
   unsigned int i;
   unsigned int j;
-  typedef typename NumericTraits<PixelType>::RealType PixelRealType;  
   PixelRealType previous;
   PixelRealType next;
   const unsigned int w = 2*((m_Order + 1)/2) + 1;

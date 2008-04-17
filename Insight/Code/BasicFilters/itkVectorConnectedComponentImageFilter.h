@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkVectorConnectedComponentImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/09/26 12:05:05 $
+  Date:      $Date: 2006-09-26 12:05:05 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

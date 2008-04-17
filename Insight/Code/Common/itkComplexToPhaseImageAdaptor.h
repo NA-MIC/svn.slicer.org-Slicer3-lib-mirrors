@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkComplexToPhaseImageAdaptor.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 23:24:29 $
+  Date:      $Date: 2006-03-19 23:24:29 $
   Version:   $Revision: 1.4 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

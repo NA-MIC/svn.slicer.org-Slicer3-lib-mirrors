@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkNrrdCovariantVectorImageReadTest.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/20 22:47:07 $
+  Date:      $Date: 2005-08-20 22:47:07 $
   Version:   $Revision: 1.1 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

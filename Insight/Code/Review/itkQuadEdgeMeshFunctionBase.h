@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkQuadEdgeMeshFunctionBase.h,v $
   Language:  C++
-  Date:      $Date: 2007/08/09 07:23:48 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-02-07 15:07:58 $
+  Version:   $Revision: 1.6 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -52,17 +52,17 @@ namespace itk
  * 
  */
 template < class TMesh, class TOutput >
-class ITK_EXPORT QuadEdgeMeshFunctionBase : public itk::Object
+class ITK_EXPORT QuadEdgeMeshFunctionBase : public Object
 {
 public:
   /** Standard class typedefs. */
   typedef QuadEdgeMeshFunctionBase      Self;
-  typedef itk::Object                   Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  typedef Object                        Superclass;
+  typedef SmartPointer<Self>            Pointer;
+  typedef SmartPointer<const Self>      ConstPointer;
   
   /** Run-time type information (and related methods). */
-  itkTypeMacro(QuadEdgeMeshFunctionBase, itk::Object);
+  itkTypeMacro(QuadEdgeMeshFunctionBase, Object);
 
   /** Mesh type that must be modified */
   typedef TMesh                           MeshType;
@@ -78,10 +78,10 @@ public:
     }
 
   /** Evaluate at the specified input position */
-  virtual OutputType Evaluate( )
-    {
-    return( (OutputType) 0 );
-    }
+  //virtual OutputType Evaluate( )
+  //  {
+  //  return( (OutputType) 0 );
+  //  }
 
 protected:
   QuadEdgeMeshFunctionBase()

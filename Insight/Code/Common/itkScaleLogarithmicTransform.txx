@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkScaleLogarithmicTransform.txx,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:59 $
+  Date:      $Date: 2006-03-19 04:36:59 $
   Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkExpImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2006/03/19 04:36:56 $
-  Version:   $Revision: 1.20 $
+  Date:      $Date: 2007-11-28 13:36:19 $
+  Version:   $Revision: 1.23 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -50,6 +50,9 @@ public:
   {
     return !(*this != other);
   }
+#if defined(_MSC_VER) && (_MSC_VER == 1300)
+#pragma optimize("g",off)
+#endif
   inline TOutput operator()( const TInput & A )
   {
     return (TOutput)vcl_exp((double)A);
@@ -76,6 +79,10 @@ public:
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
+  /** Runtime information support. */
+  itkTypeMacro(ExpImageFilter, 
+               UnaryFunctorImageFilter);
+
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   itkConceptMacro(InputConvertibleToDoubleCheck,
@@ -95,7 +102,9 @@ private:
 
 
 };
-
+#if defined(_MSC_VER) && (_MSC_VER == 1300)
+#pragma optimize("",on)
+#endif
 } // end namespace itk
 
 

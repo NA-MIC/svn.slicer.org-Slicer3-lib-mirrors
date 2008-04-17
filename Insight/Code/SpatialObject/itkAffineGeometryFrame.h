@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkAffineGeometryFrame.h,v $
   Language:  C++
-  Date:      $Date: 2007/07/16 23:09:53 $
+  Date:      $Date: 2007-07-16 23:09:53 $
   Version:   $Revision: 1.7 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

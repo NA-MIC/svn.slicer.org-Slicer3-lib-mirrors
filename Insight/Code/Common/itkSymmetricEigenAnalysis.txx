@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSymmetricEigenAnalysis.txx,v $
   Language:  C++
-  Date:      $Date: 2006/11/08 23:39:12 $
+  Date:      $Date: 2006-11-08 23:39:12 $
   Version:   $Revision: 1.12 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

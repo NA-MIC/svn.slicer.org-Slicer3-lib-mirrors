@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkImageReverseIterator.h,v $
   Language:  C++
-  Date:      $Date: 2005/08/14 02:53:07 $
+  Date:      $Date: 2005-08-14 02:53:07 $
   Version:   $Revision: 1.17 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

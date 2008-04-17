@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkIPLCommonImageIO.cxx,v $
   Language:  C++
-  Date:      $Date: 2007/03/29 18:39:27 $
-  Version:   $Revision: 1.47 $
+  Date:      $Date: 2008-01-24 16:04:39 $
+  Version:   $Revision: 1.50 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -226,7 +226,8 @@ void IPLCommonImageIO::Read(void* buffer)
   f2.close();
 #endif
 }
-struct GEImageHeader *IPLCommonImageIO::ReadHeader(const char * )
+
+GEImageHeader *IPLCommonImageIO::ReadHeader(const char * )
 {
   //
   // must be redefined in a child class
@@ -313,7 +314,7 @@ void IPLCommonImageIO::ReadImageInformation()
   std::vector<std::string>::size_type i;
   std::vector<std::string>::size_type numfiles; 
     
-  struct GEImageHeader *curImageHeader;
+  GEImageHeader *curImageHeader;
 
   for(i = 0, numfiles = Dir->GetNumberOfFiles(); i < numfiles; i++) 
     {
@@ -333,7 +334,7 @@ void IPLCommonImageIO::ReadImageInformation()
       {
       curImageHeader = this->ReadHeader(fullPath);
       }
-    catch (itk::ExceptionObject e)
+    catch (itk::ExceptionObject &)
       {
       // ReadGE4XHeader throws an exception on any error.
       // So if, for example we run into a subdirectory, it would
@@ -500,7 +501,7 @@ int IPLCommonImageIO
     }
   else
     {
-    *ip = 0.0;
+    *ip = 0.0f;
     }
   return 0;
 }

@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkSigmoidImageFilter.h,v $
   Language:  C++
-  Date:      $Date: 2007/09/16 14:41:02 $
+  Date:      $Date: 2007-09-16 14:41:02 $
   Version:   $Revision: 1.14 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

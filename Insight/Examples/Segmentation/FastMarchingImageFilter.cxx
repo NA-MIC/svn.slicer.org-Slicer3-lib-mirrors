@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: FastMarchingImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/11/19 16:31:50 $
+  Date:      $Date: 2005-11-19 16:31:50 $
   Version:   $Revision: 1.46 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.

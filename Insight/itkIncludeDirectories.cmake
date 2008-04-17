@@ -30,6 +30,7 @@ SET(ITK_INCLUDE_DIRS_BUILD_TREE ${ITK_INCLUDE_DIRS_BUILD_TREE}
   ${ITK_SOURCE_DIR}/Code/SpatialObject
   ${ITK_SOURCE_DIR}/Utilities/MetaIO
   ${ITK_SOURCE_DIR}/Utilities/NrrdIO
+  ${ITK_BINARY_DIR}/Utilities/NrrdIO
   ${ITK_SOURCE_DIR}/Utilities/DICOMParser
   ${ITK_BINARY_DIR}/Utilities/DICOMParser
   ${ITK_BINARY_DIR}/Utilities/expat
@@ -42,9 +43,11 @@ SET(ITK_INCLUDE_DIRS_BUILD_TREE ${ITK_INCLUDE_DIRS_BUILD_TREE}
 )
 
 # For explicit instantiation.  Probably should make it ${ITK_BINARY_DIR}/Code/Common
-SET(ITK_INCLUDE_DIRS_BUILD_TREE ${ITK_INCLUDE_DIRS_BUILD_TREE}
-  ${ITK_BINARY_DIR}/Code/Common
-)
+IF(ITK_EXPLICIT_INSTANTIATION)
+  SET(ITK_INCLUDE_DIRS_BUILD_TREE ${ITK_INCLUDE_DIRS_BUILD_TREE}
+    ${ITK_BINARY_DIR}/Code/Common
+    )
+ENDIF(ITK_EXPLICIT_INSTANTIATION)
 
 # Directories needed when using FFTW
 IF(USE_FFTWF OR USE_FFTWD)
@@ -56,8 +59,10 @@ ENDIF(USE_FFTWF OR USE_FFTWD)
 # VXL include directories.
 IF(NOT ITK_USE_SYSTEM_VXL)
   SET(ITK_INCLUDE_DIRS_BUILD_TREE ${ITK_INCLUDE_DIRS_BUILD_TREE}
+    ${ITK_SOURCE_DIR}/Utilities/vxl/v3p/netlib
     ${ITK_SOURCE_DIR}/Utilities/vxl/vcl
     ${ITK_SOURCE_DIR}/Utilities/vxl/core
+    ${ITK_BINARY_DIR}/Utilities/vxl/v3p/netlib
     ${ITK_BINARY_DIR}/Utilities/vxl/vcl
     ${ITK_BINARY_DIR}/Utilities/vxl/core
     )
@@ -70,6 +75,13 @@ IF(NOT ITK_USE_SYSTEM_GDCM)
     ${ITK_SOURCE_DIR}/Utilities/gdcm/src
     )
 ENDIF(NOT ITK_USE_SYSTEM_GDCM)
+
+# LIBXML2 include directories.
+IF(ITK_USE_LIBXML2)
+  SET(ITK_INCLUDE_DIRS_BUILD_TREE ${ITK_INCLUDE_DIRS_BUILD_TREE}
+    ${ITK_BINARY_DIR}/Utilities/itklibxml2
+    )
+ENDIF(ITK_USE_LIBXML2)
 
 # Patended include directories added only if the user explicitly enabled the
 # ITK_USE_PATENTED option. Users are responsible for getting a license from the
@@ -107,36 +119,38 @@ ENDIF(ITK_USE_SYSTEM_VXL)
 #-----------------------------------------------------------------------------
 # Include directories from the install tree.
 SET(ITK_INSTALL_INCLUDE_PATH "${CMAKE_INSTALL_PREFIX}${ITK_INSTALL_INCLUDE_DIR}")
-SET(ITK_INCLUDE_DIRS_INSTALL_TREE ${ITK_INCLUDE_DIRS_INSTALL_TREE}
-  ${ITK_INSTALL_INCLUDE_PATH}
-  ${ITK_INSTALL_INCLUDE_PATH}/Algorithms
-  ${ITK_INSTALL_INCLUDE_PATH}/BasicFilters
-  ${ITK_INSTALL_INCLUDE_PATH}/Common
-  ${ITK_INSTALL_INCLUDE_PATH}/expat
-  ${ITK_INSTALL_INCLUDE_PATH}/Numerics
-  ${ITK_INSTALL_INCLUDE_PATH}/IO
-  ${ITK_INSTALL_INCLUDE_PATH}/Numerics/FEM
-  ${ITK_INSTALL_INCLUDE_PATH}/Numerics/Statistics
-  ${ITK_INSTALL_INCLUDE_PATH}/Numerics/NeuralNetworks
-  ${ITK_INSTALL_INCLUDE_PATH}/SpatialObject
-  ${ITK_INSTALL_INCLUDE_PATH}/Utilities/MetaIO
-  ${ITK_INSTALL_INCLUDE_PATH}/Utilities/NrrdIO
-  ${ITK_INSTALL_INCLUDE_PATH}/Utilities/DICOMParser
-  ${ITK_INSTALL_INCLUDE_PATH}/Utilities/itkExtHdrs
-  ${ITK_INSTALL_INCLUDE_PATH}/Utilities
+SET(ITK_INCLUDE_RELATIVE_DIRS ${ITK_INCLUDE_RELATIVE_DIRS}
+  Algorithms
+  BasicFilters
+  Common
+  Numerics
+  IO
+  Numerics/FEM
+  Numerics/Statistics
+  Numerics/NeuralNetworks
+  SpatialObject
+  Utilities/MetaIO
+  Utilities/NrrdIO
+  Utilities/DICOMParser
+  Utilities/expat
+  Utilities/nifti/niftilib
+  Utilities/nifti/znzlib
+  Utilities/itkExtHdrs
+  Utilities
 )
 
 IF(NOT ITK_USE_SYSTEM_VXL)
-  SET(ITK_INCLUDE_DIRS_INSTALL_TREE ${ITK_INCLUDE_DIRS_INSTALL_TREE}
-    ${ITK_INSTALL_INCLUDE_PATH}/Utilities/vxl/vcl
-    ${ITK_INSTALL_INCLUDE_PATH}/Utilities/vxl/core
+  SET(ITK_INCLUDE_RELATIVE_DIRS ${ITK_INCLUDE_RELATIVE_DIRS}
+    Utilities/vxl/v3p/netlib
+    Utilities/vxl/vcl
+    Utilities/vxl/core
     )
 ENDIF(NOT ITK_USE_SYSTEM_VXL)
 
 IF(NOT ITK_USE_SYSTEM_GDCM)
-  SET(ITK_INCLUDE_DIRS_INSTALL_TREE ${ITK_INCLUDE_DIRS_INSTALL_TREE}
-    ${ITK_INSTALL_INCLUDE_PATH}/gdcm
-    ${ITK_INSTALL_INCLUDE_PATH}/gdcm/src
+  SET(ITK_INCLUDE_RELATIVE_DIRS ${ITK_INCLUDE_RELATIVE_DIRS}
+    gdcm
+    gdcm/src
     )
 ENDIF(NOT ITK_USE_SYSTEM_GDCM)
 
@@ -144,8 +158,8 @@ ENDIF(NOT ITK_USE_SYSTEM_GDCM)
 # ITK_USE_PATENTED option. Users are responsible for getting a license from the
 # patent holders in order to use any of those methods.
 IF(ITK_USE_PATENTED)
-  SET(ITK_INCLUDE_DIRS_INSTALL_TREE ${ITK_INCLUDE_DIRS_INSTALL_TREE}
-    ${ITK_INSTALL_INCLUDE_PATH}/Patented
+  SET(ITK_INCLUDE_RELATIVE_DIRS ${ITK_INCLUDE_RELATIVE_DIRS}
+    Patented
     )
 ENDIF(ITK_USE_PATENTED)
 
@@ -154,8 +168,8 @@ ENDIF(ITK_USE_PATENTED)
 # copyright holders in order to use any of those methods. The methods are not
 # covered by the backward compatibility policy either.
 IF(ITK_USE_REVIEW)
-  SET(ITK_INCLUDE_DIRS_INSTALL_TREE ${ITK_INCLUDE_DIRS_INSTALL_TREE}
-    ${ITK_INSTALL_INCLUDE_PATH}/Review
+  SET(ITK_INCLUDE_RELATIVE_DIRS ${ITK_INCLUDE_RELATIVE_DIRS}
+    Review
     )
 ENDIF(ITK_USE_REVIEW)
 
@@ -165,3 +179,7 @@ ENDIF(ITK_USE_REVIEW)
 ITK_THIRD_PARTY_INCLUDE2(PNG)
 ITK_THIRD_PARTY_INCLUDE2(TIFF)
 ITK_THIRD_PARTY_INCLUDE2(ZLIB)
+IF(ITK_USE_SYSTEM_LIBXML2 OR ITK_USE_LIBXML2)
+  ITK_THIRD_PARTY_INCLUDE(LIBXML2 libxml2)
+ENDIF(ITK_USE_SYSTEM_LIBXML2 OR ITK_USE_LIBXML2)
+

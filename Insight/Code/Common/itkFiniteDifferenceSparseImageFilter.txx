@@ -3,8 +3,8 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: itkFiniteDifferenceSparseImageFilter.txx,v $
   Language:  C++
-  Date:      $Date: 2003/09/10 14:29:07 $
-  Version:   $Revision: 1.4 $
+  Date:      $Date: 2008-01-07 13:33:59 $
+  Version:   $Revision: 1.5 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
@@ -268,8 +268,6 @@ typename FiniteDifferenceSparseImageFilter<TInputImageType,
 FiniteDifferenceSparseImageFilter<TInputImageType, TSparseOutputImageType>
 ::ThreadedCalculateChange( const ThreadRegionType &regionToProcess, int )
 {
-  typedef typename SparseOutputImageType::SizeType   SizeType;
-  typedef typename SparseOutputImageType::IndexType  IndexType;
   typedef typename FiniteDifferenceFunctionType::NeighborhoodType
     NeighborhoodIteratorType;
   
@@ -312,7 +310,6 @@ void
 FiniteDifferenceSparseImageFilter<TInputImageType, TSparseOutputImageType>
 ::ThreadedPrecalculateChange( const ThreadRegionType &regionToProcess, int )
 {
-  typedef typename SparseOutputImageType::SizeType   SizeType;
   typedef typename FiniteDifferenceFunctionType::NeighborhoodType
     NeighborhoodIteratorType;
 

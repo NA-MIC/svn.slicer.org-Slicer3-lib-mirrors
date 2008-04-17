@@ -3,7 +3,7 @@
   Program:   Insight Segmentation & Registration Toolkit
   Module:    $RCSfile: VectorGradientAnisotropicDiffusionImageFilter.cxx,v $
   Language:  C++
-  Date:      $Date: 2005/08/27 01:46:05 $
+  Date:      $Date: 2005-08-27 01:46:05 $
   Version:   $Revision: 1.26 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
