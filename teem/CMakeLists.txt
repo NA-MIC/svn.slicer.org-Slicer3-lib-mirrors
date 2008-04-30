@@ -2,6 +2,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.0)
 PROJECT(TEEM)
 
+if(COMMAND cmake_policy)
+    cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
+
 #-----------------------------------------------------------------------------
 # TEEM version number.  Must reflect the values in teem/src/air/air.h
 SET(TEEM_VERSION_MAJOR "1")
