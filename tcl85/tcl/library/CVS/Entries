@@ -6,13 +6,13 @@ D/msgcat////
 D/opt////
 D/reg////
 D/tcltest////
-/auto.tcl/1.28/Fri May  2 15:19:29 2008//Tcore-8-5-2
-/clock.tcl/1.47/Wed Feb 27 02:08:27 2008//Tcore-8-5-2
-/history.tcl/1.7/Fri May  2 15:19:29 2008//Tcore-8-5-2
-/init.tcl/1.104/Fri May  2 15:19:30 2008//Tcore-8-5-2
-/package.tcl/1.35/Fri May  2 15:19:30 2008//Tcore-8-5-2
-/parray.tcl/1.4/Fri May  2 15:19:30 2008//Tcore-8-5-2
-/safe.tcl/1.16/Fri May  2 15:19:30 2008//Tcore-8-5-2
-/tclIndex/1.10/Fri May  2 15:19:30 2008//Tcore-8-5-2
-/tm.tcl/1.14/Tue Mar 18 18:14:57 2008//Tcore-8-5-2
-/word.tcl/1.10/Fri May  2 15:19:30 2008//Tcore-8-5-2
+/auto.tcl/1.28/Fri May  2 18:21:33 2008//Tcore-8-5-2
+/clock.tcl/1.47/Fri May  2 18:56:57 2008//Tcore-8-5-2
+/history.tcl/1.7/Fri May  2 18:21:33 2008//Tcore-8-5-2
+/init.tcl/1.104/Fri May  2 18:21:33 2008//Tcore-8-5-2
+/package.tcl/1.35/Fri May  2 18:21:33 2008//Tcore-8-5-2
+/parray.tcl/1.4/Fri May  2 18:21:33 2008//Tcore-8-5-2
+/safe.tcl/1.16/Fri May  2 18:21:33 2008//Tcore-8-5-2
+/tclIndex/1.10/Fri May  2 18:21:33 2008//Tcore-8-5-2
+/tm.tcl/1.14/Fri May  2 18:56:57 2008//Tcore-8-5-2
+/word.tcl/1.10/Fri May  2 18:21:33 2008//Tcore-8-5-2
