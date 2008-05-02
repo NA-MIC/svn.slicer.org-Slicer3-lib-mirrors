@@ -48,7 +48,7 @@
  *	permission to use and distribute the software in accordance with the
  *	terms specified in this license.
  *
- * RCS: @(#) $Id: tclMacOSXBundle.c,v 1.3.2.6 2007/04/29 02:21:33 das Exp $
+ * RCS: @(#) $Id: tclMacOSXBundle.c,v 1.11 2007/04/23 20:46:13 das Exp $
  */
 
 #include "tclPort.h"
@@ -230,3 +230,11 @@ Tcl_MacOSXOpenVersionedBundleResources(
     return TCL_ERROR;
 #endif /* HAVE_COREFOUNDATION */
 }
+
+/*
+ * Local Variables:
+ * mode: c
+ * c-basic-offset: 4
+ * fill-column: 78
+ * End:
+ */

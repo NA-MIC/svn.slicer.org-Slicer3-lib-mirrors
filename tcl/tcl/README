@@ -1,11 +1,11 @@
 README:  Tcl
-    This is the Tcl 8.4.15 source distribution.
+    This is the Tcl 8.5.2 source distribution.
     Tcl/Tk is also available through NetCVS:
 	http://tcl.sourceforge.net/
     You can get any source release of Tcl from the file distributions
     link at the above URL.
 
-RCS: @(#) $Id: README,v 1.49.2.18 2006/10/23 17:53:23 dgp Exp $
+RCS: @(#) $Id: README,v 1.67 2008/02/13 18:00:33 dgp Exp $
 
 Contents
 --------
@@ -25,7 +25,7 @@ Contents
 Tcl provides a powerful platform for creating integration applications that
 tie together diverse applications, protocols, devices, and frameworks.
 When paired with the Tk toolkit, Tcl provides the fastest and most powerful
-way to create GUI applications that run on PCs, Unix, and the Macintosh.
+way to create GUI applications that run on PCs, Unix, and Mac OS X.
 Tcl can also be used for a variety of web-related tasks and for creating
 powerful command languages for applications.
 
@@ -48,14 +48,14 @@ and selling it either in whole or in part.  See the file
 
 Extensive documentation is available at our website.
 The home page for this release, including new features, is
-	http://www.tcl.tk/software/tcltk/8.4.html
+	http://www.tcl.tk/software/tcltk/8.5.html
 
 Detailed release notes can be found at the file distributions page
 by clicking on the relevant version.
 	http://sourceforge.net/project/showfiles.php?group_id=10894
 
 Information about Tcl itself can be found at
-	http://www.tcl.tk/about/
+	http://www.tcl.tk/scripting/
 
 There have been many Tcl books on the market.  Many are mentioned in the Wiki:
 	http://wiki.tcl.tk/book
@@ -98,19 +98,14 @@ about building Tcl from sources at
 
 	http://www.tcl.tk/doc/howto/compile.html
 
-4. TclPro Development tools
+4. Development tools
 ---------------------------
 
-A high quality set of commercial quality development tools is available to
-accelerate your Tcl application development.  The TclPro product provides a
-debugger, static code checker, packaging utility, and bytecode compiler.
-TclPro was open-sourced when Scriptics/Ajuba was acquired by Interwoven.
-Visit its home at SourceForge for more information and source/binaries:
-
-	http://tclpro.sourceforge.net/
-
-ActiveState has picked up support for commercial Tcl development tools.
-More information can be found at
+ActiveState produces a high quality set of commercial quality development
+tools that is available to accelerate your Tcl application development.
+Tcl Dev Kit builds on the earlier TclPro toolset and provides a debugger,
+static code checker, single-file wrapping utility, bytecode compiler and
+more.  More information can be found at
 
 	http://www.ActiveState.com/Tcl
 
@@ -119,32 +114,23 @@ More information can be found at
 
 There is a USENET news group, "comp.lang.tcl", intended for the exchange of
 information about Tcl, Tk, and related applications.  The newsgroup is a
-great place to ask general information questions.  There is also
-a USENET news group, "comp.lang.tcl.announce", intended to announce new
-releases of software, training, and more.  For bug reports, please
+great place to ask general information questions.  For bug reports, please
 see the "Support and bug fixes" section below.
 
-6. Tcl contributed archive
---------------------------
-
-Many people have created exciting packages and applications based on Tcl
-and/or Tk and made them freely available to the Tcl community.  An archive
-of these contributions is kept on the machine ftp://archives.tcl.tk/pub/tcl
-(aka ftp://ftp.procplace.com/pub/tcl).  You can access the archive using
-anonymous FTP.  The archive also contains several FAQ ("frequently asked
-questions") documents that provide solutions to problems that are commonly
-encountered by Tcl newcomers.
-
-7. The Tcler's Wiki
--------------------
+6. Tcl'ers Wiki
+---------------
 
 A Wiki-based open community site covering all aspects of Tcl/Tk is at:
 
 	http://wiki.tcl.tk/
 
-A wealth of useful information can be found there.
+It is dedicated to the Tcl programming language and its extensions.  A
+wealth of useful information can be found there.  It contains code
+snippets, references to papers, books, and FAQs, as well as pointers to
+development tools, extensions, and applications.  You can also recommend
+additional URLs by editing the wiki yourself.
 
-8. Mailing lists
+7. Mailing lists
 ----------------
 
 Several mailing lists are hosted at SourceForge to discuss development or
@@ -155,7 +141,7 @@ to subscribe, visit:
 
 and go to the Mailing Lists page.
 
-9. Support and Training
+8. Support and Training
 ------------------------
 
 We are very interested in receiving bug reports, patches, and suggestions
@@ -180,7 +166,7 @@ The Tcl community is too large for us to provide much individual support
 for users.  If you need help we suggest that you post questions to
 comp.lang.tcl.  We read the newsgroup and will attempt to answer esoteric
 questions for which no one else is likely to know the answer.  In addition,
-see the following page on the Wiki for links to other organizations that offer
+see the following Web site for links to other organizations that offer
 Tcl/Tk training:
 
 	http://wiki.tcl.tk/training

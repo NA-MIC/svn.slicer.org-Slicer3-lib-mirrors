@@ -12,7 +12,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: safe.tcl,v 1.9.2.3 2005/07/22 21:59:41 dgp Exp $
+# RCS: @(#) $Id: safe.tcl,v 1.16 2006/11/03 00:34:52 hobbs Exp $
 
 #
 # The implementation is based on namespaces. These naming conventions
@@ -466,18 +466,6 @@ proc ::safe::interpAddToAccessPath {slave path} {
 	# Source init.tcl into the slave, to get auto_load and other
 	# procedures defined:
 
-	# We don't try to use the -rsrc on the mac because it would get
-	# confusing if you would want to customize init.tcl
-	# for a given set of safe slaves, on all the platforms
-	# you just need to give a specific access_path and
-	# the mac should be no exception. As there is no
-	# obvious full "safe ressources" design nor implementation
-	# for the mac, safe interps there will just don't
-	# have that ability. (A specific app can still reenable
-	# that using custom aliases if they want to).
-	# It would also make the security analysis and the Safe Tcl security
-	# model platform dependant and thus more error prone.
-
 	if {[catch {::interp eval $slave\
 		{source [file join $tcl_library init.tcl]}} msg]} {
 	    Log $slave "can't source init.tcl ($msg)"
@@ -529,7 +517,7 @@ proc ::safe::interpDelete {slave} {
 		# remove the hook now, otherwise if the hook
 		# calls us somehow, we'll loop
 		Unset $hookname
-		if {[catch {eval $hook [list $slave]} err]} {
+		if {[catch {{*}$hook $slave} err]} {
 		    Log $slave "Delete hook error ($err)"
 		}
 	    }
@@ -640,15 +628,15 @@ proc ::safe::setLogCmd {args} {
     }
     # set/get values
     proc Set {args} {
-	eval [linsert $args 0 Toplevel set]
+	Toplevel set {*}$args
     }
     # lappend on toplevel vars
     proc Lappend {args} {
-	eval [linsert $args 0 Toplevel lappend]
+	Toplevel lappend {*}$args
     }
     # unset a var/token (currently just an global level eval)
     proc Unset {args} {
-	eval [linsert $args 0 Toplevel unset]
+	Toplevel unset {*}$args
     }
     # test existance 
     proc Exists {varname} {
@@ -677,7 +665,7 @@ proc ::safe::setLogCmd {args} {
     proc TranslatePath {slave path} {
 	# somehow strip the namespaces 'functionality' out (the danger
 	# is that we would strip valid macintosh "../" queries... :
-	if {[regexp {(::)|(\.\.)} $path]} {
+	if {[string match "*::*" $path] || [string match "*..*" $path]} {
 	    error "invalid characters in path $path"
 	}
 	set n [expr {[Set [PathNumberName $slave]]-1}]
@@ -695,7 +683,7 @@ proc ::safe::setLogCmd {args} {
     proc Log {slave msg {type ERROR}} {
 	variable Log
 	if {[info exists Log] && [llength $Log]} {
-	    eval $Log [list "$type for slave $slave : $msg"]
+	    {*}$Log "$type for slave $slave : $msg"
 	}
     }
 
@@ -726,8 +714,6 @@ proc ::safe::setLogCmd {args} {
 
 	set argc [llength $args]
 	# Allow only "source filename"
-	# (and not mac specific -rsrc for instance - see comment in ::init
-	# for current rationale)
 	if {$argc != 1} {
 	    set msg "wrong # args: should be \"source fileName\""
 	    Log $slave "$msg ($args)"
@@ -860,7 +846,7 @@ proc ::safe::setLogCmd {args} {
     proc Subset {slave command okpat args} {
 	set subcommand [lindex $args 0]
 	if {[regexp $okpat $subcommand]} {
-	    return [eval [linsert $args 0 $command]]
+	    return [$command {*}$args]
 	}
 	set msg "not allowed to invoke subcommand $subcommand of $command"
 	Log $slave $msg
@@ -895,8 +881,7 @@ proc ::safe::setLogCmd {args} {
 	set subcommand [lindex $args 0]
 
 	if {[regexp $okpat $subcommand]} {
-	    return [eval [linsert $args 0 \
-		    ::interp invokehidden $slave encoding]]
+	    return [::interp invokehidden $slave encoding {*}$args]
 	}
 
 	if {[string first $subcommand system] == 0} {
