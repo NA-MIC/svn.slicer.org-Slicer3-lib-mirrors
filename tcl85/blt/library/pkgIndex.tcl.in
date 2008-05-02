@@ -1,0 +1,92 @@
+# Tcl package index file, version 1.0
+
+namespace eval blt {}
+
+proc blt::load_library { name version dir package } {
+
+    set prefix "%SO_PREFIX%"
+    set suffix "%LIB_SUFFIX%"
+    set so [info sharedlibextension]
+    regsub {\.} $version {} version_no_dots
+
+    set fullname ${prefix}${name}${version_no_dots}${suffix}${so}
+
+    global tcl_platform
+    if { $tcl_platform(platform) == "unix" } {
+	set library [file join $dir $fullname]
+	if { ![file exists $library] } {
+	    # Try the parent directory.
+	    set library [file join [file dirname $dir] $fullname]
+	}
+	if { ![file exists $library] } {
+	    # Default to the path generated at compilation.
+	    set library [file join "%LIB_DIR%" $fullname]
+	}
+    } else {
+	set library $fullname
+    }
+    load $library $package
+}
+
+set version "%VERSION%"
+
+package ifneeded BLT $version [subst -nocommands {
+    package require bltcore $version
+    if { [info commands tk] == "tk" } {
+	package require bltextra $version
+    } 
+    package provide BLT $version
+}]
+
+package ifneeded bltcore $version \
+    [list blt::load_library "BLTCore" $version $dir "bltcore"]
+
+package ifneeded bltextra $version \
+    [list blt::load_library "BLTX" $version $dir "bltx"]
+
+package ifneeded bltdatatablexml $version \
+	[list blt::datatable load xml $dir]
+
+package ifneeded bltdatatablemysql $version \
+	[list blt::datatable load mysql $dir]
+
+package ifneeded bltdatatabletree $version \
+	[list blt::datatable load tree $dir]
+
+package ifneeded bltdatatablevector $version \
+	[list blt::datatable load vector $dir]
+
+package ifneeded bltdatatablecsv $version \
+	[list blt::datatable load csv $dir]
+
+package ifneeded bltpicturejpg $version \
+	[list blt::picture load jpg $dir]
+
+package ifneeded bltpicturetif $version \
+	[list blt::picture load tif $dir]
+
+package ifneeded bltpicturepng $version \
+	[list blt::picture load png $dir]
+
+package ifneeded bltpicturegif $version \
+	[list blt::picture load gif $dir]
+
+package ifneeded bltpicturepbm $version \
+	[list blt::picture load pbm $dir]
+
+package ifneeded bltpicturexbm $version \
+	[list blt::picture load xbm $dir]
+
+package ifneeded bltpicturexpm $version \
+	[list blt::picture load xpm $dir]
+
+package ifneeded bltpicturebmp $version \
+	[list blt::picture load bmp $dir]
+
+package ifneeded bltpicturephoto $version \
+	[list blt::picture load photo $dir]
+
+package ifneeded blttreexml $version \
+	[list blt::tree load xml $dir]
+
+# End of package index file

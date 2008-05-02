@@ -1,0 +1,636 @@
+
+# ------------------------------------------------------------------------
+# 	Makefile for static version of BLT library
+# ------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------
+# 	C Compiler options 
+# ------------------------------------------------------------------------
+
+BLT_LIBRARY =		@BLT_LIBRARY@
+CC =			@CC@
+CFLAGS =		@CFLAGS@ 
+DBG =			@LIB_SUFFIX@
+DEFINES =		@DEFINES@ 
+EXTRA_CFLAGS =		@GCCFLAGS@
+LDFLAGS =		@LDFLAGS@ @LD_RUN_PATH@
+LIB_PREFIX =		@LIB_PREFIX@
+TCLLIBPATH   =		@TCL_LIB_DIR@/tcl@TCL_VERSION@
+TCL_DBG =		@TCL_DBGX@
+
+EXPAT_INC_SPEC =	@EXPAT_INC_SPEC@
+EXPAT_LIB_SPEC =	@EXPAT_LIB_SPEC@
+FT2_INC_SPEC =		@FT2_INC_SPEC@
+FT2_LIB_SPEC =		@FT2_LIB_SPEC@
+JPG_INC_SPEC =		@JPG_INC_SPEC@
+JPG_LIB_SPEC =		@JPG_LIB_SPEC@
+MYSQL_INC_SPEC =	@MYSQL_INC_SPEC@
+MYSQL_LIB_SPEC =	@MYSQL_LIB_SPEC@
+PNG_INC_SPEC =		@PNG_INC_SPEC@
+PNG_LIB_SPEC =		@PNG_LIB_SPEC@
+TCL_INC_SPEC =		@TCL_INC_SPEC@
+TCL_LIB_SPEC =		@TCL_LIB_SPEC@
+TCL_STUBS_SPEC =	@TCL_STUBS_SPEC@
+TIF_INC_SPEC =		@TIF_INC_SPEC@
+TIF_LIB_SPEC =		@TIF_LIB_SPEC@
+TK_INC_SPEC =		@TK_INC_SPEC@
+TK_LIB_SPEC =		@TK_LIB_SPEC@
+TK_STUBS_SPEC =	@TK_STUBS_SPEC@
+X11_INC_SPEC =		@X11_INC_SPEC@
+X11_LIB_SPEC =		@X11_LIB_SPEC@
+XFT_INC_SPEC =		@XFT_INC_SPEC@
+XFT_LIB_SPEC =		@XFT_LIB_SPEC@
+XPM_INC_SPEC =		@XPM_INC_SPEC@
+XPM_LIB_SPEC =		@XPM_LIB_SPEC@
+
+SO_LD =			@BLT_SO_LD@
+SO_EXT =		@BLT_SO_EXT@
+SO_PREFIX =		@BLT_SO_PREFIX@
+LIB_SUFFIX =		@BLT_LIB_SUFFIX@
+SO_LD_FLAGS =		@BLT_SO_LD_FLAGS@ @LD_RUN_PATH@ 
+SO_STD_LIBS =		@BLT_SO_LIBS@ 
+SO_BLT_TCL_LIBS =	@BLT_SO_TCL_LIBS@ 
+
+IMPLIB_PREFIX =		@IMPLIB_PREFIX@
+IMPLIB_EXT =		@IMPLIB_EXT@
+	
+version =		@BLT_MAJOR_VERSION@@BLT_MINOR_VERSION@
+
+ifneq ("$(TCL_STUBS_SPEC)", "")
+  tcl_lib_spec=$(TCL_STUBS_SPEC)
+else
+  tcl_lib_spec=$(TCL_LIB_SPEC)
+endif
+
+ifneq ("$(TK_STUBS_SPEC)", "")
+  tk_lib_spec=$(TK_STUBS_SPEC)
+else
+  tk_lib_spec=$(TK_LIB_SPEC)
+endif
+
+# ------------------------------------------------------------------------
+# 	Source and targer installation directories 
+# ------------------------------------------------------------------------
+
+bindir =		$(exec_prefix)/bin
+exec_prefix =		@exec_prefix@
+incdir =		$(prefix)/include
+libdir =		@libdir@
+scriptdir =		$(exec_prefix)/lib
+
+prefix =		@prefix@
+srcdir =		@srcdir@
+
+pkgdir =		@BLT_LIBRARY@
+
+instdirs =		$(prefix) \
+			$(exec_prefix) \
+			$(bindir) \
+			$(libdir) \
+			$(incdir) \
+			$(scriptdir)
+
+# ------------------------------------------------------------------------
+# 	Directories containing Tcl and Tk include files and libraries
+# ------------------------------------------------------------------------
+
+INCLUDES =	-I. -I$(srcdir) -I$(srcdir)/../win @INCLUDES@
+
+# ------------------------------------------------------------------------
+#       Libraries directives for Tcl, Tk, X11, and BLT
+# ------------------------------------------------------------------------
+
+EXTRA_LIBS =		@EXTRA_LIBS@ @LIBS@
+
+STD_LIBS =		@LIBS@
+
+BLT_TK_LIBS =		$(FT2_LIB_SPEC) \
+			$(JPG_LIB_SPEC) \
+			$(PNG_LIB_SPEC) \
+			$(TIF_LIB_SPEC) \
+			$(XPM_LIB_SPEC) \
+			$(XFT_LIB_SPEC) \
+			$(EXTRA_LIBS) 
+
+BLT_TCL_LIBS =		$(MYSQL_LIB_SPEC) \
+			$(EXPAT_LIB_SPEC) \
+			$(EXTRA_LIBS) 
+
+BLT_LIBS =		$(BLT_TCL_LIBS) $(BLT_TK_LIBS) $(EXTRA_LIBS)
+
+blt_tcl_name =		BltTcl$(version)$(DBG)
+blt_tk_name =		BltTk$(version)$(DBG)
+
+blt_tcl_spec =		-L. -l$(blt_tcl_name)
+blt_tk_spec =		-L. -l$(blt_tcl_name)
+
+blt_tcl_so =		$(SO_PREFIX)$(blt_tcl_name)$(SO_EXT)
+blt_tcl_a =		lib$(blt_tcl_name).a
+blt_tcl_implib =	$(IMPLIB_PREFIX)$(blt_tcl_name)$(IMPLIB_EXT)
+
+blt_tk_so =		$(SO_PREFIX)$(blt_tk_name)$(SO_EXT)
+blt_tk_a =		lib$(blt_tk_name).a
+blt_tk_implib =		$(IMPLIB_PREFIX)$(blt_tk_name)$(IMPLIB_EXT)
+
+blt_dt_csv_name =       BltDataTableCsv$(version)$(DBG)
+blt_dt_mysql_name =     BltDataTableMysql$(version)$(DBG)
+blt_dt_tree_name =      BltDataTableTree$(version)$(DBG)
+blt_dt_vec_name =       BltDataTableVector$(version)$(DBG)
+blt_dt_xml_name =       BltDataTableXml$(version)$(DBG)
+
+blt_dt_xml_so =		$(SO_PREFIX)$(blt_dt_xml_name)$(SO_EXT)
+blt_dt_mysql_so =       $(SO_PREFIX)$(blt_dt_mysql_name)$(SO_EXT)
+blt_dt_tree_so =	$(SO_PREFIX)$(blt_dt_tree_name)$(SO_EXT)
+blt_dt_vec_so =		$(SO_PREFIX)$(blt_dt_vec_name)$(SO_EXT)
+blt_dt_csv_so =		$(SO_PREFIX)$(blt_dt_csv_name)$(SO_EXT)
+
+blt_dt_xml_implib =	$(IMPLIB_PREFIX)$(blt_dt_xml_name)$(IMPLIB_EXT)
+blt_dt_mysql_implib =	$(IMPLIB_PREFIX)$(blt_dt_mysql_name)$(IMPLIB_EXT)
+blt_dt_tree_implib =	$(IMPLIB_PREFIX)$(blt_dt_tree_name)$(IMPLIB_EXT)
+blt_dt_vec_implib =	$(IMPLIB_PREFIX)$(blt_dt_vec_name)$(IMPLIB_EXT)
+blt_dt_csv_implib =	$(IMPLIB_PREFIX)$(blt_dt_csv_name)$(IMPLIB_EXT)
+
+blt_pict_gif_name =     BltPictureGif$(version)$(DBG)
+blt_pict_jpg_name =     BltPictureJpg$(version)$(DBG)
+blt_pict_photo_name =   BltPicturePhoto$(version)$(DBG)
+blt_pict_png_name =     BltPicturePng$(version)$(DBG)
+blt_pict_tif_name =     BltPictureTif$(version)$(DBG)
+blt_pict_xbm_name =     BltPictureXbm$(version)$(DBG)
+blt_pict_xpm_name =     BltPictureXpm$(version)$(DBG)
+
+blt_pict_gif_so =	$(SO_PREFIX)$(blt_pict_gif_name)$(SO_EXT)
+blt_pict_jpg_so =	$(SO_PREFIX)$(blt_pict_jpg_name)$(SO_EXT)
+blt_pict_png_so =	$(SO_PREFIX)$(blt_pict_png_name)$(SO_EXT)
+blt_pict_tif_so =	$(SO_PREFIX)$(blt_pict_tif_name)$(SO_EXT)
+blt_pict_xbm_so =	$(SO_PREFIX)$(blt_pict_xbm_name)$(SO_EXT)
+blt_pict_xpm_so =	$(SO_PREFIX)$(blt_pict_xpm_name)$(SO_EXT)
+blt_pict_photo_so =     $(SO_PREFIX)$(blt_pict_photo_name)$(SO_EXT)
+
+blt_pict_gif_implib =    $(IMPLIB_PREFIX)$(blt_pict_gif_name)$(IMPLIB_EXT)
+blt_pict_jpg_implib =    $(IMPLIB_PREFIX)$(blt_pict_jpg_name)$(IMPLIB_EXT)
+blt_pict_png_implib =    $(IMPLIB_PREFIX)$(blt_pict_png_name)$(IMPLIB_EXT)
+blt_pict_tif_implib =    $(IMPLIB_PREFIX)$(blt_pict_tif_name)$(IMPLIB_EXT)
+blt_pict_xbm_implib =    $(IMPLIB_PREFIX)$(blt_pict_xbm_name)$(IMPLIB_EXT)
+blt_pict_xpm_implib =    $(IMPLIB_PREFIX)$(blt_pict_xpm_name)$(IMPLIB_EXT)
+blt_pict_photo_implib =  $(IMPLIB_PREFIX)$(blt_pict_photo_name)$(IMPLIB_EXT)
+
+blt_tree_xml_name =	BltTreeXml$(version)$(DBG)
+
+blt_tree_xml_so =	$(SO_PREFIX)$(blt_tree_xml_name)$(SO_EXT)
+
+blt_tree_xml_implib =    $(IMPLIB_PREFIX)$(blt_tree_xml_name)$(IMPLIB_EXT)
+
+blt_tcl_pkgs_so =	$(blt_dt_csv_so) \
+			$(blt_dt_tree_so) \
+			$(blt_dt_vec_so) 
+ifneq ("$(EXPAT_LIB_SPEC)", "")
+   blt_tcl_pkgs_so += $(blt_dt_xml_so) $(blt_tree_xml_so)
+endif
+ifneq ("$(MYSQL_LIB_SPEC)", "")
+   blt_tcl_pkgs_so += $(blt_dt_mysql_so) 
+endif
+
+blt_tk_pkgs_so =	$(blt_pict_gif_so) \
+			$(blt_pict_xbm_so) \
+			$(blt_pict_photo_so)
+ifneq ("$(JPG_LIB_SPEC)", "")
+   blt_tk_pkgs_so += $(blt_pict_jpg_so) 
+endif
+ifneq ("$(PNG_LIB_SPEC)", "")
+   blt_tk_pkgs_so += $(blt_pict_png_so) 
+endif
+ifneq ("$(XPM_LIB_SPEC)", "")
+   blt_tk_pkgs_so += $(blt_pict_xpm_so) 
+endif
+ifneq ("$(XPM_TIF_SPEC)", "")
+   blt_tk_pkgs_so += $(blt_pict_tif_so) 
+endif
+
+# ------------------------------------------------------------------------
+# 	You don't need to edit anything beyond this point
+# ------------------------------------------------------------------------
+
+N_OBJS =		bltTed.o
+V3_OBJS =		bltTri.o bltGrMt.o 
+
+TK_OBJS =		tkButton.o tkFrame.o bltScrollbar.o 
+
+GRAPH_OBJS =		bltGrAxis.o \
+			bltGrBar.o \
+			bltGrElem.o \
+			bltGrGrid.o \
+			bltGrHairs.o \
+			bltGrLegd.o \
+			bltGrLine.o \
+			bltGrMarker.o \
+			bltGrMisc.o \
+			bltGrPen.o \
+			bltGrPs.o \
+			bltGraph.o 
+
+TREEVIEW_OBJS =		bltTreeView.o \
+			bltTvCmd.o \
+			bltTvCol.o \
+			bltTvEdit.o \
+			bltTvStyle.o 
+
+PICTURE_OBJS =		bltPicture.o \
+			bltPictCmd.o \
+			bltPictDraw.o \
+			bltPictMmx.o 
+
+PICTURE_PKG_OBJS =	bltPictGif.o \
+			bltPictJpg.o \
+			bltPictPhoto.o \
+			bltPictPng.o \
+			bltPictTif.o \
+			bltPictXbm.o \
+			bltPictXpm.o 
+
+
+TREE_OBJS =		bltTree.o \
+			bltTreeCmd.o \
+
+TREE_PKG_OBJS =		bltTreeXml.o 
+
+DATATABLE_OBJS =	bltDataTable.o \
+			bltDtCmd.o \
+
+DATATABLE_PKG_OBJS =	bltDtCsv.o \
+			bltDtMysql.o \
+			bltDtTree.o \
+			bltDtVec.o \
+			bltDtXml.o 
+
+BLT_TCL_SO_OBJS =	bltAlloc.o \
+			bltArrayObj.o \
+			bltBase64.o \
+			bltBgexec.o \
+			bltChain.o \
+			bltCrc32.o \
+			bltCsv.o \
+			$(DATATABLE_OBJS) \
+			bltDebug.o \
+			bltHash.o \
+			bltInit.o \
+			bltList.o \
+			bltNsUtil.o \
+			bltParse.o \
+			bltPool.o \
+			bltDBuffer.o \
+			bltSpline.o \
+			bltSwitch.o \
+			$(TREE_OBJS) \
+			bltUtil.o \
+			bltVecCmd.o \
+			bltVecMath.o \
+			bltVector.o \
+			bltWatch.o \
+			bltWinDde.o \
+			bltWinPipe.o \
+			bltWinUtil.o \
+			pure_api.o
+
+
+BLT_TCL_A_OBJS =	$(BLT_TCL_SO_OBJS) \
+			$(TREE_PKG_OBJS) \
+			$(DATATABLE_PKG_OBJS) 
+		
+BLT_TK_SO_OBJS =    $(GRAPH_OBJS) \
+			$(PICTURE_OBJS) \
+			$(TREEVIEW_OBJS) \
+			bltBeep.o \
+			bltBgStyle.o \
+			bltBind.o \
+			bltBitmap.o \
+			bltBusy.o \
+			bltCanvEps.o \
+			bltComboBtn.o \
+			bltComboEntry.o \
+			bltComboMenu.o \
+			bltComboTree.o \
+			bltConfig.o \
+			bltContainer.o \
+			bltCutbuffer.o \
+			bltDragdrop.o \
+			bltHtext.o \
+			bltImage.o \
+			bltOldConfig.o \
+			bltPs.o \
+			bltTable.o \
+			bltTabnotebook.o \
+			bltTabset.o \
+			bltText.o \
+			bltTile.o \
+			bltWinBitmap.o \
+			bltWinDraw.o \
+			bltWinFont.o \
+			bltWinPainter.o \
+			bltWinPrnt.o \
+			bltWinWindow.o \
+			bltWindow.o \
+			bltWinop.o  \
+			$(TK_OBJS) $(N_OBJS) 
+
+
+BLT_TK_A_OBJS =		$(BLT_TK_SO_OBJS) \
+			$(PICTURE_PKG_OBJS) 
+
+
+BLT_SO_OBJS =		$(BLT_TCL_SO_OBJS) \
+			$(BLT_TK_SO_OBJS) 
+
+BLT_A_OBJS =		$(BLT_TCL_A_OBJS) \
+			$(BLT_TK_A_OBJS) 
+
+DEMO_OBJS =		tkConsole.o bltWinMain.o
+
+
+NOT_YET =		bltContainer.o bltCutBuffer.o bltColor.o
+
+# GNU Make-specific macro
+SRCS =			$(patsubst %.o,$(srcdir)/%.c,$(BLT_A_OBJS)) 
+
+bltwish =	bltwish$(version).exe
+bltsh =		bltsh$(version).exe
+headers =	$(srcdir)/blt.h \
+		$(srcdir)/bltBind.h \
+		$(srcdir)/bltChain.h \
+		bltHash.h \
+		$(srcdir)/bltList.h \
+		$(srcdir)/bltPool.h \
+		$(srcdir)/bltTree.h \
+		$(srcdir)/bltVector.h 
+
+
+CC_OPTS =	$(EXTRA_CFLAGS) $(CFLAGS) $(DEFINES) $(INCLUDES)
+INSTALL =	@INSTALL@
+INSTALL_DATA =	@INSTALL_DATA@
+INSTALL_ROOT =  
+RANLIB =		@RANLIB@
+SHELL =			/bin/sh
+AR =			ar rc
+RM =			rm -f
+LINT =			lint
+LINTFLAGS =		-axhbns
+XREF =			cxref
+XREFFLAGS =		-dltR
+LN_S =			@LN_S@
+VPATH =			$(srcdir)
+
+all: $(blt_tcl_so) $(bltsh) $(blt_tk_so) $(bltwish) build_all_pkgs
+
+build_demo: $(bltsh) $(bltwish)  
+
+$(bltwish): $(blt_tcl_a) $(blt_tk_a)  $(srcdir)/tkConsole.c $(srcdir)/bltWinMain.c
+	$(RM) $(bltwish)
+	$(CC) $(CC_OPTS) $(LDFLAGS) -o $(bltwish) \
+		-DTCLLIBPATH=\"$(TCLLIBPATH)\" -DSTATIC_PKGS \
+		$(srcdir)/bltWinMain.c $(srcdir)/tkConsole.c \
+		$(blt_tk_a) $(blt_tcl_a)  \
+		$(TK_STUBS_SPEC) $(TK_LIB_SPEC) \
+		$(TCL_STUBS_SPEC) $(TCL_LIB_SPEC) \
+		$(BLT_LIBS) -mwindows
+
+$(bltsh): build_tcl_libs build_tcl_pkgs $(srcdir)/bltWinMain.c 
+	$(RM) $(bltsh)
+	$(CC) $(CC_OPTS) $(LDFLAGS) -DTCL_ONLY -o $(bltsh) \
+		-DTCLLIBPATH=\"$(TCLLIBPATH)\" -DSTATIC_PKGS \
+		$(srcdir)/bltWinMain.c $(blt_tcl_a) \
+		$(TCL_STUBS_SPEC) $(TCL_LIB_SPEC) \
+		$(BLT_TCL_LIBS) -mconsole
+
+$(blt_tcl_a):  $(BLT_TCL_A_OBJS) $(srcdir)/bltTclInit.c
+	$(RM) $@
+	$(AR) $@ $(BLT_TCL_A_OBJS) bltTclInit.o
+	$(RANLIB) $@
+
+$(blt_tk_a):  $(BLT_TK_A_OBJS) $(srcdir)/bltTkInit.c
+	$(RM) $@
+	$(AR) $@ $(BLT_TK_A_OBJS) bltTkInit.o
+	$(RANLIB) $@
+
+build_tcl_libs: $(blt_tcl_so) $(blt_tcl_a)
+build_tk_libs:  $(blt_tk_so) $(blt_tk_a) 
+build_all_libs: build_tcl_libs build_tk_libs
+
+build_tcl_pkgs: $(blt_tcl_pkgs_so) 
+build_tk_pkgs:  $(blt_tk_pkgs_so)
+build_all_pkgs: build_tcl_pkgs build_tk_pkgs 
+
+$(blt_tcl_so):  $(BLT_TCL_SO_OBJS) bltTclInit.o 
+	$(RM) $@
+	$(CC) -shared -Wl,--dll -o $(blt_tcl_so) \
+	    -Wl,--out-implib=$(blt_tcl_implib) \
+	    -Wl,--whole-archive $(BLT_TCL_SO_OBJS) bltTclInit.o \
+	    -Wl,--no-whole-archive $(tcl_lib_spec) \
+		$(BLT_TCL_LIBS) -mconsole
+
+$(blt_tk_so):  $(BLT_TK_SO_OBJS) bltTkInit.o 
+	$(RM) $@
+	$(CC) -shared -o $(blt_tk_so) \
+	    -Wl,--out-implib=$(blt_tk_implib) \
+	    -Wl,--whole-archive $(BLT_TK_SO_OBJS) bltTkInit.o \
+	    -Wl,--no-whole-archive $(blt_tcl_so) \
+		$(tcl_lib_spec) $(tk_lib_spec) \
+		$(BLT_TK_LIBS) $(BLT_TCL_LIBS) -mwindows
+
+$(blt_dt_mysql_so): bltDtMysql.o
+	$(RM) $@
+	$(CC) -shared -o $(blt_dt_mysql_so) \
+	    -Wl,--out-implib=$(blt_dt_mysql_implib) \
+	    -Wl,--whole-archive bltDtMysql.o \
+	    -Wl,--no-whole-archive $(blt_tcl_so) \
+			$(tcl_lib_spec) $(MYSQL_LIB_SPEC)
+
+$(blt_dt_xml_so): bltDtXml.o
+	$(RM) $@
+	$(CC) -shared -o $(blt_dt_xml_so) \
+	    -Wl,--out-implib=$(blt_dt_xml_implib) \
+	    -Wl,--whole-archive bltDtXml.o \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) \
+			$(tcl_lib_spec) $(EXPAT_LIB_SPEC)
+
+$(blt_dt_csv_so): bltDtCsv.o
+	$(RM) $@
+	$(CC) -shared -Wl,--dll -o $(blt_dt_csv_so) \
+	    -Wl,--out-implib=$(blt_dt_csv_implib) \
+	    -Wl,--whole-archive bltDtCsv.o \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) \
+			$(tcl_lib_spec) 
+
+$(blt_dt_vec_so): bltDtVec.o
+	$(RM) $@
+	$(CC) -shared -o $(blt_dt_vec_so) \
+	    -Wl,--out-implib=$(blt_dt_vec_implib) \
+	    -Wl,--whole-archive bltDtVec.o \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) \
+			$(tcl_lib_spec) 
+
+
+$(blt_dt_tree_so): bltDtTree.o $(blt_tcl_implib) 
+	$(RM) $@
+	$(CC) -shared -o $(blt_dt_tree_so) \
+	    -Wl,--out-implib=$(blt_dt_tree_implib) \
+	    -Wl,--whole-archive bltDtTree.o \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) \
+			$(tcl_lib_spec) 
+
+
+$(blt_tree_xml_so): bltTreeXml.o $(blt_tcl_implib) 
+	$(RM) $@
+	$(CC) -shared -o $(blt_tree_xml_so) \
+	    -Wl,--out-implib=$(blt_tree_xml_implib) \
+	    -Wl,--whole-archive bltTreeXml.o \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) \
+			$(tcl_lib_spec) $(EXPAT_LIB_SPEC)
+
+
+$(blt_pict_gif_so): bltPictGif.o $(blt_tcl_implib) $(blt_tk_implib)
+	$(RM) $@
+	$(CC) -shared -o $(blt_pict_gif_so) \
+	    -Wl,--out-implib=$(blt_pict_gif_implib) \
+	    -Wl,--whole-archive bltPictGif.o  \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) $(blt_tk_so) \
+			$(tcl_lib_spec)
+
+$(blt_pict_jpg_so): bltPictJpg.o $(blt_tcl_implib) $(blt_tk_implib)
+	$(RM) $@
+	$(CC) -shared -o $(blt_pict_jpg_so) \
+	    -Wl,--out-implib=$(blt_pict_jpg_implib) \
+	    -Wl,--whole-archive bltPictJpg.o  \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) $(blt_tk_so) \
+			$(tcl_lib_spec) $(JPG_LIB_SPEC)
+
+$(blt_pict_tif_so): bltPictTif.o $(blt_tcl_implib) $(blt_tk_implib)
+	$(RM) $@
+	$(CC) -shared -o $(blt_pict_tif_so) \
+	    -Wl,--out-implib=$(blt_pict_tif_implib) \
+	    -Wl,--whole-archive bltPictTif.o  \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) $(blt_tk_implib) \
+		$(tcl_lib_spec) $(TIF_LIB_SPEC)
+
+$(blt_pict_xpm_so): bltPictXpm.o $(blt_tcl_implib) $(blt_tk_implib)
+	$(RM) $@
+	$(CC) -shared -o $(blt_pict_xpm_so) \
+	    -Wl,--out-implib=$(blt_pict_xpm_implib) \
+	    -Wl,--whole-archive bltPictXpm.o  \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) $(blt_tk_implib) \
+		$(tcl_lib_spec) $(XPM_LIB_SPEC)
+
+$(blt_pict_xbm_so): bltPictXbm.o $(blt_tcl_implib) $(blt_tk_implib)
+	$(RM) $@
+	$(CC) -shared -o $(blt_pict_xbm_so) \
+	    -Wl,--out-implib=$(blt_pict_xbm_implib) \
+	    -Wl,--whole-archive bltPictXbm.o  \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) $(blt_tk_implib) \
+		$(tcl_lib_spec) 
+
+$(blt_pict_png_so): bltPictPng.o $(blt_tcl_implib) $(blt_tk_implib)
+	$(RM) $@
+	$(CC) -shared -o $(blt_pict_png_so) \
+	    -Wl,--out-implib=$(blt_pict_png_implib) \
+	    -Wl,--whole-archive bltPictPng.o  \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) $(blt_tk_implib) \
+		$(tcl_lib_spec) $(PNG_LIB_SPEC)
+
+$(blt_pict_photo_so): bltPictPhoto.o $(blt_tcl_implib) $(blt_tk_implib)
+	$(RM) $@
+	$(CC) -shared -o $(blt_pict_photo_so) \
+	    -Wl,--out-implib=$(blt_pict_photo_implib) \
+	    -Wl,--whole-archive bltPictPhoto.o  \
+	    -Wl,--no-whole-archive $(blt_tcl_implib) $(blt_tk_implib) \
+		$(tk_lib_spec) $(tcl_lib_spec) 
+
+
+install: mkdirs install-lib install-demo install-headers install-pkgs
+
+install-demo: $(bltwish) $(bltsh)
+	$(INSTALL) -m 0755 $(bltwish) $(INSTALL_ROOT)$(bindir)
+	$(INSTALL) -m 0755 $(bltsh) $(INSTALL_ROOT)$(bindir)
+
+install-lib: $(blt_tcl_a) $(blt_tk_a) $(blt_tcl_so) $(blt_tk_so)
+	$(INSTALL_DATA) $(blt_tcl_a) $(INSTALL_ROOT)$(libdir)
+	$(RANLIB) $(INSTALL_ROOT)$(libdir)/$(blt_tcl_a)
+	$(INSTALL_DATA) $(blt_tk_a) $(INSTALL_ROOT)$(libdir)
+	$(RANLIB) $(INSTALL_ROOT)$(libdir)/$(blt_tk_a)
+	$(INSTALL) -m 0755 $(blt_tcl_so) $(INSTALL_ROOT)$(bindir)
+	$(INSTALL) -m 0755 $(blt_tk_so) $(INSTALL_ROOT)$(bindir)
+	$(INSTALL_DATA) $(blt_tcl_implib) $(INSTALL_ROOT)$(libdir)
+	$(INSTALL_DATA) $(blt_tk_implib) $(INSTALL_ROOT)$(libdir)
+
+
+install-pkgs: $(blt_tcl_pkgs_so) $(blt_tk_pkgs_so)
+	@for i in $(blt_tcl_pkgs_so) $(blt_tk_pkgs_so) ; do \
+	  echo $(RM) $(INSTALL_ROOT)$(libdir)/$$i ; \
+	  $(RM) $(INSTALL_ROOT)$(libdir)/$$i ; \
+	  echo $(INSTALL) -m 0755 $$i $(INSTALL_ROOT)$(pkgdir) ; \
+	  $(INSTALL) -m 0755 $$i $(INSTALL_ROOT)$(pkgdir) ; \
+        done
+
+mkdirs:
+	@for i in $(instdirs) ; do \
+          if test -d $(INSTALL_ROOT)$$i ; then \
+            : ; \
+          else \
+            echo " mkdir $(INSTALL_ROOT)$$i" ; \
+            mkdir $(INSTALL_ROOT)$$i ; \
+          fi ; \
+        done
+
+install-headers:
+	@for i in $(headers) ; do \
+	    echo "installing $$i..." ; \
+	    $(INSTALL_DATA) -m 0444 $$i $(INSTALL_ROOT)$(incdir) ; \
+	done
+
+lint:
+	$(LINT) $(LINTFLAGS) $(DEFINES) $(INCLUDES) $(SRCS)
+
+xref:
+	$(XREF) $(XREFFLAGS) $(DEFINES) $(INCLUDES) $(SRCS)
+
+clean:
+	$(RM) $(BLT_A_OBJS) bltTkInit.o bltTclInit.o bltWinDll.o \
+		$(blt_a) $(blt_tcl_a) $(blt_tk_a) \
+		$(blt_so) $(blt_tcl_so) $(blt_tk_so) \
+		$(blt_tcl_pkgs_so) $(blt_tk_pkgs_so) \
+		*$(IMPLIB_EXT) \
+		$(bltsh)* $(bltwish)* .pure* *~
+
+distclean: clean
+	$(RM) $(srcdir)/*.bak $(srcdir)/*\~ $(srcdir)/"#"*  Makefile
+	$(RM) bltConfig.h bltHash.h Makefile TAGS
+
+bltDtMysql.o: $(srcdir)/bltDtMysql.c
+	$(CC) -c $(CC_OPTS) $(MYSQL_INC_SPEC) $?
+
+bltDtXml.o: $(srcdir)/bltDtXml.c
+	$(CC) -c $(CC_OPTS) $(EXPAT_INC_SPEC) $?
+
+bltTree.o: $(srcdir)/bltTree.c
+	$(CC) -c $(CC_OPTS) $(EXPAT_INC_SPEC) $?
+
+bltTreeXml.o: $(srcdir)/bltTreeXml.c
+	$(CC) -c $(CC_OPTS) $(EXPAT_INC_SPEC) $?
+
+bltUnixFont.o: $(srcdir)/bltUnixFont.c
+	$(CC) -c $(CC_OPTS) $(FT2_INC_SPEC) $?
+bltPictDraw.o: $(srcdir)/bltPictDraw.c $(srcdir)/bltPaintDraw.c
+	$(CC) -c $(CC_OPTS) $(FT2_INC_SPEC) $<
+bltPictJpg.o: $(srcdir)/bltPictJpg.c       
+	$(CC) -c $(CC_OPTS) $(JPG_INC_SPEC) $?
+bltPictTif.o: $(srcdir)/bltPictTif.c       
+	$(CC) -c $(CC_OPTS) $(TIF_INC_SPEC) $?
+bltPictPng.o: $(srcdir)/bltPictPng.c       
+	$(CC) -c $(CC_OPTS) $(PNG_INC_SPEC) $?
+bltPictXpm.o: $(srcdir)/bltPictXpm.c       
+	$(CC) -c $(CC_OPTS) $(XPM_INC_SPEC) $?
+bltPictXbm.o: $(srcdir)/bltPictXbm.c       
+	$(CC) -c $(CC_OPTS) $?
+bltTclInit.o: $(srcdir)/bltTclInit.c
+	$(CC) -c $(CC_OPTS) -DBLT_LIBRARY=\"$(BLT_LIBRARY)\" \
+		$(srcdir)/bltTclInit.c
+.c.o:
+	$(CC) -c $(CC_OPTS) $<
+
