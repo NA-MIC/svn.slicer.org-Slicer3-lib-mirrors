@@ -1,0 +1,12 @@
+ADD_LIBRARY(ell
+  cubicEll.c
+  eigen.c
+  genmat.c
+  mat.c
+  miscEll.c
+  quat.c
+  vecEll.c
+)
+
+TARGET_LINK_LIBRARIES(ell nrrd biff air)
+INSTALL_TARGETS(${TEEM_INSTALL_LIB_DIR} ell)
