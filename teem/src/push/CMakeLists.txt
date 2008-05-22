@@ -4,3 +4,4 @@ ADD_LIBRARY(push
 )
 
 TARGET_LINK_LIBRARIES(push ten gage ell nrrd biff air)
+INSTALL_TARGETS(${TEEM_INSTALL_LIB_DIR} push)
