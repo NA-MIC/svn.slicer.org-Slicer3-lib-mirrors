@@ -1,7 +1,7 @@
 MACRO(CREATE_EXEC name sources libraries)
   ADD_EXECUTABLE("${name}" ${sources})
   TARGET_LINK_LIBRARIES("${name}" ${libraries})
-  INSTALL_TARGETS(/bin "${name}")
+  INSTALL_TARGETS(${TEEM_INSTALL_BIN_DIR} "${name}")
 ENDMACRO(CREATE_EXEC)
 
 CREATE_EXEC(airSanity airSanity.c air)
