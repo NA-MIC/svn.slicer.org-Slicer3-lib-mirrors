@@ -1,0 +1,141 @@
+/*=========================================================================
+
+  Module:    $RCSfile: vtkKWRadioButton.cxx,v $
+
+  Copyright (c) Kitware, Inc.
+  All rights reserved.
+  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
+
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+     PURPOSE.  See the above copyright notice for more information.
+
+=========================================================================*/
+#include "vtkKWApplication.h"
+#include "vtkKWRadioButton.h"
+#include "vtkObjectFactory.h"
+
+#include <vtksys/stl/string>
+
+//----------------------------------------------------------------------------
+vtkStandardNewMacro( vtkKWRadioButton );
+vtkCxxRevisionMacro(vtkKWRadioButton, "$Revision: 1.33 $");
+
+//----------------------------------------------------------------------------
+void vtkKWRadioButton::CreateWidget()
+{
+  // Call the superclass to create the widget and set the appropriate flags
+
+  if (!vtkKWWidget::CreateSpecificTkWidget(this,
+        "radiobutton", "-value 1 -highlightthickness 0 -padx 2 -pady 2 -bd 2"))
+    {
+    vtkErrorMacro("Failed creating widget " << this->GetClassName());
+    return;
+    }
+
+  this->Configure();
+}
+
+//----------------------------------------------------------------------------
+void vtkKWRadioButton::SetValue(const char *v)
+{
+  this->SetConfigurationOption("-value", v);
+}
+
+//----------------------------------------------------------------------------
+const char* vtkKWRadioButton::GetValue()
+{
+  return this->GetConfigurationOption("-value");
+}
+
+//----------------------------------------------------------------------------
+void vtkKWRadioButton::SetValueAsInt(int v)
+{
+  this->SetConfigurationOptionAsInt("-value", v);
+}
+
+//----------------------------------------------------------------------------
+int vtkKWRadioButton::GetValueAsInt()
+{
+  return this->GetConfigurationOptionAsInt("-value");
+}
+
+//----------------------------------------------------------------------------
+void vtkKWRadioButton::SetVariableValue(const char *v)
+{
+  if (this->IsCreated() && this->GetVariableName())
+    {
+    this->Script("set %s {%s}", this->GetVariableName(), v ? v : "");
+    }
+}
+
+//----------------------------------------------------------------------------
+const char* vtkKWRadioButton::GetVariableValue()
+{
+  if (this->IsCreated() && this->GetVariableName())
+    {
+    return this->Script("set %s", this->GetVariableName());
+    }
+  return NULL;
+}
+
+//----------------------------------------------------------------------------
+void vtkKWRadioButton::SetVariableValueAsInt(int v)
+{
+  char buffer[256];
+  sprintf(buffer, "%d", v);
+  this->SetVariableValue(buffer);
+}
+
+//----------------------------------------------------------------------------
+int vtkKWRadioButton::GetVariableValueAsInt()
+{
+  return atoi(this->GetVariableValue());
+}
+
+//----------------------------------------------------------------------------
+int vtkKWRadioButton::GetSelectedState()
+{
+  if (this->IsCreated() && this->GetVariableName())
+    {
+#if 0
+    return atoi(
+       this->Script("expr {${%s}} == {[%s cget -value]}",
+                    this->VariableName, this->GetWidgetName()));
+#else
+    vtksys_stl::string varvalue(
+      Tcl_GetVar(this->GetApplication()->GetMainInterp(), 
+                 this->VariableName, TCL_GLOBAL_ONLY));
+    vtksys_stl::string value(this->GetConfigurationOption("-value"));
+    return !strcmp(varvalue.c_str(), value.c_str());
+#endif
+    }
+  return 0;
+}
+
+//----------------------------------------------------------------------------
+void vtkKWRadioButton::CommandCallback()
+{
+  int state = this->GetSelectedState();
+  this->InvokeCommand(state);
+  this->InvokeEvent(vtkKWRadioButton::SelectedStateChangedEvent, &state);
+}
+
+//----------------------------------------------------------------------------
+void vtkKWRadioButton::SetCommand(vtkObject *object, const char *method)
+{
+  this->Superclass::SetCommand(object, method);
+}
+
+//----------------------------------------------------------------------------
+void vtkKWRadioButton::InvokeCommand(int)
+{
+  this->InvokeObjectMethodCommand(this->Command);
+}
+
+//----------------------------------------------------------------------------
+void vtkKWRadioButton::PrintSelf(ostream& os, vtkIndent indent)
+{
+  this->Superclass::PrintSelf(os,indent);
+}
+
