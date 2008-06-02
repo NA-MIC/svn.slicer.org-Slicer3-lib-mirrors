@@ -1,0 +1,25 @@
+/CMakeLists.txt/1.70.2.1/Sat May 31 18:24:01 2008//TVTK-5-2
+/README/1.10/Thu Jun  9 14:09:32 2005//TVTK-5-2
+/pkgIndex.tcl.in/1.11/Tue Aug 14 13:46:35 2007//TVTK-5-2
+/vtkDetermineTkResources.cmake/1.4/Sat Dec 10 05:18:37 2005//TVTK-5-2
+/vtkParaTkAppInit.cxx/1.2/Fri Nov 14 20:43:38 2003//TVTK-5-2
+/vtkTkAppInit.cxx/1.37/Tue Aug 14 13:46:35 2007//TVTK-5-2
+/vtkTkAppInitConfigure.h.in/1.8/Tue Aug 23 13:29:49 2005//TVTK-5-2
+/vtktcl.c/1.13/Tue Aug 14 13:46:35 2007//TVTK-5-2
+D/resources////
+D/vtk////
+D/vtkbase////
+D/vtkcommon////
+D/vtkfiltering////
+D/vtkgraphics////
+D/vtkhybrid////
+D/vtkimaging////
+D/vtkinfovis////
+D/vtkinteraction////
+D/vtkio////
+D/vtkparallel////
+D/vtkrendering////
+D/vtktesting////
+D/vtkviews////
+D/vtkvolumerendering////
+D/vtkwidgets////
