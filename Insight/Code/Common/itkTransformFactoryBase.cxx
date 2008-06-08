@@ -19,6 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "itkVersion.h"
 
 #include "itkAffineTransform.h"
+#include "itkBSplineDeformableTransform.h"
 #include "itkCenteredAffineTransform.h"
 #include "itkCenteredEuler3DTransform.h"
 #include "itkCenteredEuler3DTransform.h"
@@ -60,8 +61,10 @@ void TransformFactoryBase::RegisterDefaultTransforms()
   if ( !m_Factory )
     {
     // BSpline purposely not registered!
+    // -- Why not?  It's needed for the vtkITKBsplineTransform.
     TransformFactory<AffineTransform<double,2> >::RegisterTransform ();
     TransformFactory<AffineTransform<double,3> >::RegisterTransform ();
+    TransformFactory<BSplineDeformableTransform<double,3,3> >::RegisterTransform ();
     TransformFactory<CenteredAffineTransform<double,2> >::RegisterTransform ();
     TransformFactory<CenteredAffineTransform<double,3> >::RegisterTransform ();
     TransformFactory<CenteredEuler3DTransform<double> >::RegisterTransform ();
