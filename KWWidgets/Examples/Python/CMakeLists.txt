@@ -1,4 +1,0 @@
-subdirs(
-  HelloWorld
-  WidgetsTour
-  )
