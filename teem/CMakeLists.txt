@@ -231,7 +231,7 @@ SET(CC "${CMAKE_C_COMPILER}")
 # For build tree usage
 
 # The install-only section is empty for the build tree.
-set(KWWidgets_CONFIG_INSTALL_ONLY)
+set(TEEM_CONFIG_INSTALL_ONLY)
 
 SET(TEEM_USE_FILE_CONFIG 
   "${TEEM_SOURCE_DIR}/CMake/TEEMUse.cmake")
