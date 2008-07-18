@@ -4,7 +4,11 @@
 #   integration with Slicer.   These changes have not been committed back to
 #   the CMake project.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+IF(COMMAND CMAKE_POLICY)
+  CMAKE_POLICY(SET CMP0003 NEW)
+ENDIF(COMMAND CMAKE_POLICY)
+
 PROJECT(SLICERLIBCURL C)
 
 #-----------------------------------------------------------------------------
@@ -641,7 +645,7 @@ ADD_DEFINITIONS(-DSLICERLIBCURL_HAVE_CONFIG_H)
 CONFIGURE_FILE(${SLICERLIBCURL_SOURCE_DIR}/config.h.in
   ${SLICERLIBCURL_BINARY_DIR}/SLICERLIBCURLConfig.h)
 
-ADD_LIBRARY(slicerlibcurl ${libCurl_SRCS})
+ADD_LIBRARY(slicerlibcurl STATIC ${libCurl_SRCS})
 TARGET_LINK_LIBRARIES(slicerlibcurl ${CURL_LIBS})
 IF(APPLE)
   SET_TARGET_PROPERTIES(slicerlibcurl PROPERTIES COMPILE_FLAGS -fno-common)

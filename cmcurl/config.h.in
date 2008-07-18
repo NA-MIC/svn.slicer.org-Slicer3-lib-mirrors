@@ -5,6 +5,9 @@
 #pragma warning(disable:4996)
 #endif
 
+/* when building libcurl itself */
+#cmakedefine BUILDING_LIBCURL ${BUILDING_LIBCURL}
+
 /* to disable DICT */
 #cmakedefine CURL_DISABLE_DICT ${CURL_DISABLE_DICT}
 
@@ -25,6 +28,15 @@
 
 /* to disable TELNET */
 #cmakedefine CURL_DISABLE_TELNET ${CURL_DISABLE_TELNET}
+
+/* to make a symbol visible */
+#cmakedefine CURL_EXTERN_SYMBOL ${CURL_EXTERN_SYMBOL}
+
+/* to enable hidden symbols */
+#cmakedefine CURL_HIDDEN_SYMBOLS ${CURL_HIDDEN_SYMBOLS}
+
+/* when not building a shared library */
+#cmakedefine CURL_STATICLIB ${CURL_STATICLIB}
 
 /* Set to explicitly specify we don't want to use thread-safe functions */
 #cmakedefine DISABLED_THREADSAFE ${DISABLED_THREADSAFE}
