@@ -52,4 +52,7 @@
 #define LIBCURL_VERSION_MINOR 12
 #define LIBCURL_VERSION_PATCH 1
 
+/* We will build libcurl statically */
+#define CURL_STATICLIB 1
+
 #endif /* __CURL_CURLVER_H */

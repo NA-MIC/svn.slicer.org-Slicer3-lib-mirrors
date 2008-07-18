@@ -48,6 +48,31 @@ extern "C" {
 #endif
 
 /*
+ * Decorate exportable functions for Win32 DLL linking.
+ * This avoids using a .def file for building libcurl.dll.
+ */
+#if (defined(WIN32) || defined(_WIN32)) && !defined(CURL_STATICLIB)
+#if defined(BUILDING_LIBCURL)
+#define CURL_EXTERN  __declspec(dllexport)
+#else
+#define CURL_EXTERN  __declspec(dllimport)
+#endif
+#else
+
+#ifdef CURL_HIDDEN_SYMBOLS
+/*
+ * This definition is used to make external definitions visibile in the
+ * shared library when symbols are hidden by default.  It makes no
+ * difference when compiling applications whether this is set or not,
+ * only when compiling the library.
+ */
+#define CURL_EXTERN CURL_EXTERN_SYMBOL
+#else
+#define CURL_EXTERN
+#endif
+#endif
+
+/*
  * We want the typedef curl_off_t setup for large file support on all
  * platforms. We also provide a CURL_FORMAT_OFF_T define to use in *printf
  * format strings when outputting a variable of type curl_off_t.
