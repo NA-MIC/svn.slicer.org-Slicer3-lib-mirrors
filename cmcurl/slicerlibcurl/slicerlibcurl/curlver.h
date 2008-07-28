@@ -55,4 +55,10 @@
 /* We will build libcurl statically */
 #define CURL_STATICLIB 1
 
+/* ...only if not on Solaris... :) */
+
+#if defined (__SVR4) && defined (__sun)
+#define CURL_STATICLIB 0
+#endif
+
 #endif /* __CURL_CURLVER_H */
