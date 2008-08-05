@@ -1,0 +1,137 @@
+/*=========================================================================
+
+  Program:   Insight Segmentation & Registration Toolkit
+  Module:    $RCSfile: itkTIFFImageIOTest.cxx,v $
+  Language:  C++
+  Date:      $Date: 2007-10-26 20:50:44 $
+  Version:   $Revision: 1.6 $
+
+  Copyright (c) Insight Software Consortium. All rights reserved.
+  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+
+     This software is distributed WITHOUT ANY WARRANTY; without even 
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     PURPOSE.  See the above copyright notices for more information.
+
+=========================================================================*/
+#include "itkImageFileReader.h"
+#include "itkImageFileWriter.h"
+#include "itkImage.h"
+#include <fstream>
+
+int itkTIFFImageIOTest( int ac, char* av[] )
+{
+
+  if(ac < 3)
+    {
+    std::cerr << "Usage: " << av[0] 
+              << " Input Output [dimensionality:default 2]"
+              << "[pixeltype: 1:uchar(default) 2:ushort]\n";
+    return EXIT_FAILURE;
+    }
+  
+  typedef itk::RGBPixel<unsigned short> PixelTypeShort;
+  typedef itk::RGBPixel<unsigned char> PixelTypeChar;
+  typedef itk::Image<PixelTypeChar, 2> myImageChar;
+  typedef itk::Image<unsigned char, 3> myImage3D;
+  typedef itk::Image<PixelTypeShort, 2> myImageShort;
+
+  itk::ImageFileReader<myImageChar>::Pointer reader 
+                                  = itk::ImageFileReader<myImageChar>::New();
+
+  itk::ImageFileReader<myImage3D>::Pointer reader3D 
+                                  = itk::ImageFileReader<myImage3D>::New();
+
+  itk::ImageFileReader<myImageShort>::Pointer readerShort 
+                                  = itk::ImageFileReader<myImageShort>::New();
+
+
+  if((ac == 5) && (!strcmp(av[4],"2")))
+    {
+    readerShort->SetFileName(av[1]);
+    }
+  else if((ac == 4) && (!strcmp(av[3],"3")))
+    {
+    reader3D->SetFileName(av[1]);
+    }
+  else
+    {
+    reader->SetFileName(av[1]);
+    }
+
+  try
+    { 
+    if((ac == 5) && (!strcmp(av[4],"2")))
+      {
+      readerShort->Update();
+      }
+    else if((ac == 4) && (!strcmp(av[3],"3")))
+      {
+      reader3D->Update();
+      }
+    else
+      {
+      reader->Update();
+      }
+    }
+  catch (itk::ExceptionObject & e)
+    {
+    std::cerr << "exception in file reader " << std::endl;
+    std::cerr << e.GetDescription() << std::endl;
+    std::cerr << e.GetLocation() << std::endl;
+    return EXIT_FAILURE;
+    }
+  
+
+  if((ac == 5) && (!strcmp(av[4],"2")))
+    {
+    myImageShort::Pointer image = readerShort->GetOutput();
+
+    image->Print(std::cout );
+
+    myImageShort::RegionType region = image->GetLargestPossibleRegion();
+    std::cout << "region " << region;
+
+    // Generate test image
+    itk::ImageFileWriter<myImageShort>::Pointer writer;
+    writer = itk::ImageFileWriter<myImageShort>::New();
+    writer->SetInput( readerShort->GetOutput() );
+    writer->SetFileName(av[2]);
+    writer->Update();
+    }
+  else if((ac == 4) && (!strcmp(av[3],"3")))
+    {
+    myImage3D::Pointer image = reader3D->GetOutput();
+
+    image->Print(std::cout );
+
+    myImage3D::RegionType region = image->GetLargestPossibleRegion();
+    std::cout << "region " << region;
+
+    // Generate test image
+    itk::ImageFileWriter<myImage3D>::Pointer writer;
+    writer = itk::ImageFileWriter<myImage3D>::New();
+    writer->SetInput( reader3D->GetOutput() );
+    writer->SetFileName(av[2]);
+    writer->Update();
+    }
+  else
+    {
+    myImageChar::Pointer image = reader->GetOutput();
+
+    image->Print(std::cout );
+
+    myImageChar::RegionType region = image->GetLargestPossibleRegion();
+    std::cout << "region " << region;
+
+    // Generate test image
+    itk::ImageFileWriter<myImageChar>::Pointer writer;
+    writer = itk::ImageFileWriter<myImageChar>::New();
+    writer->SetInput( reader->GetOutput() );
+    writer->SetFileName(av[2]);
+    writer->Update();
+    }
+
+  return EXIT_SUCCESS;
+
+}

@@ -1,0 +1,25 @@
+/CMakeLists.txt/1.57/Tue Aug 28 18:23:12 2007//TITK-3-8
+/itkAmoebaOptimizerTest.cxx/1.22/Mon May 26 00:50:23 2008//TITK-3-8
+/itkCompositeValleyFunctionTest.cxx/1.6/Mon May 26 00:50:23 2008//TITK-3-8
+/itkConjugateGradientOptimizerTest.cxx/1.24/Mon May 26 00:50:23 2008//TITK-3-8
+/itkCumulativeGaussianOptimizerTest.cxx/1.9/Mon May 26 00:51:22 2008//TITK-3-8
+/itkExhaustiveOptimizerTest.cxx/1.6/Fri May  9 14:33:06 2008//TITK-3-8
+/itkFRPROptimizerTest.cxx/1.3/Mon May 26 00:51:57 2008//TITK-3-8
+/itkGradientDescentOptimizerTest.cxx/1.23/Tue Feb  8 03:18:41 2005//TITK-3-8
+/itkLBFGSBOptimizerTest.cxx/1.3/Tue Feb  8 03:18:41 2005//TITK-3-8
+/itkLBFGSOptimizerTest.cxx/1.18/Tue Feb  8 03:18:41 2005//TITK-3-8
+/itkLevenbergMarquardtOptimizerTest.cxx/1.34/Fri Dec 28 15:34:56 2007//TITK-3-8
+/itkMultivariateLegendrePolynomialTest.cxx/1.9/Tue Feb  8 04:20:01 2005//TITK-3-8
+/itkNumericsHeaderObjCxxTest.mm/1.1/Thu Aug 23 14:28:06 2007//TITK-3-8
+/itkNumericsHeaderTest.cxx/1.29/Mon May 26 00:49:04 2008//TITK-3-8
+/itkNumericsPrintTest.cxx/1.7/Wed Sep 10 14:30:11 2003//TITK-3-8
+/itkNumericsTest.cxx/1.11/Wed Sep 10 14:30:11 2003//TITK-3-8
+/itkNumericsTests.cxx/1.15/Sat May 14 18:01:11 2005//TITK-3-8
+/itkOptimizersHierarchyTest.cxx/1.8/Tue Feb  8 03:18:41 2005//TITK-3-8
+/itkPowellOptimizerTest.cxx/1.4/Wed Apr 30 03:30:43 2008//TITK-3-8
+/itkRegularStepGradientDescentOptimizerTest.cxx/1.23/Mon Sep 10 16:32:01 2007//TITK-3-8
+/itkSPSAOptimizerTest.cxx/1.2/Mon Apr  4 14:56:26 2005//TITK-3-8
+/itkSymmetricEigenSystemTest.cxx/1.6/Tue Feb  8 04:20:01 2005//TITK-3-8
+/itkVersorRigid3DTransformOptimizerTest.cxx/1.8/Tue Feb  8 03:18:41 2005//TITK-3-8
+/itkVersorTransformOptimizerTest.cxx/1.13/Tue Feb  8 03:18:41 2005//TITK-3-8
+D
