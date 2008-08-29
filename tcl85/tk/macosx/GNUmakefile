@@ -9,7 +9,7 @@
 # See the file "license.terms" for information on usage and redistribution of
 # this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: GNUmakefile,v 1.9 2008/03/11 22:33:22 das Exp $
+# RCS: @(#) $Id: GNUmakefile,v 1.9.2.2 2008/08/19 00:08:36 das Exp $
 #
 ########################################################################################################
 
@@ -86,7 +86,7 @@ OBJ_DIR			= ${OBJROOT}/${BUILD_STYLE}
 
 empty			:=
 space			:= ${empty} ${empty}
-objdir			:= $(subst ${space},\ ,${OBJ_DIR})
+objdir			= $(subst ${space},\ ,${OBJ_DIR})
 
 develop_make_args	:= BUILD_STYLE=Development CONFIGURE_ARGS=--enable-symbols
 deploy_make_args	:= BUILD_STYLE=Deployment INSTALL_TARGET=install-strip
@@ -131,6 +131,7 @@ else
 override CONFIGURE_ARGS := ${CONFIGURE_ARGS} --enable-xft
 VERSION			:= ${VERSION}-X11
 wish			:= ${wish}-X11
+override EMBEDDED_BUILD := 0
 endif
 
 INSTALL_TARGETS		= install-binaries install-libraries
@@ -184,7 +185,7 @@ ${objdir}/Makefile: ${UNIX_DIR}/Makefile.in ${UNIX_DIR}/configure \
 	--mandir="${MANDIR}" --enable-threads --enable-framework \
 	--with-tcl="${TCL_DIR}" \
 	${CONFIGURE_ARGS} ${EXTRA_CONFIGURE_ARGS}; else ./config.status; fi
-ifneq (${TK_X11},)
+ifneq (${VERSION},${TCL_VERSION})
 	@cd "${OBJ_DIR}" && sed -e 's#/Versions/${TCL_VERSION}#/Versions/${VERSION}#' \
 	tkConfig.sh > tkConfig.sh.1 && mv -f tkConfig.sh.1 tkConfig.sh
 endif
