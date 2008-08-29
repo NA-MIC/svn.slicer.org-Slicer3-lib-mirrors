@@ -1,3 +1,45 @@
+2008-08-14  Daniel Steffen  <das@users.sourceforge.net>
+
+	* unix/tcl.m4 (SC_PATH_X):	check for libX11.dylib in addition to
+					libX11.so et al.
+
+	* unix/configure: 		autoconf-2.13
+
+2008-08-06  Joe English  <jenglish@users.sourceforge.net>
+
+	* generic/tk.h: Fix for [Bug 2010422]: account for X11 changing
+	constant LASTEvent.
+
+2008-06-18  Daniel Steffen  <das@users.sourceforge.net>
+
+	* macosx/tkMacOSXCarbonEvents.c:	fix debug carbon event tracing;
+	(InstallStandardApplicationEventHandler):	replace needless use of
+	TkMacOSXInitNamedDebugSymbol() by standard TkMacOSXInitNamedSymbol().
+
+	* macosx/tkMacOSXDebug.c:	revert 2007-11-09 commit making
+	* macosx/tkMacOSXDebug.h:	TkMacOSXInitNamedDebugSymbol()
+					available outside of debug builds.
+
+	* macosx/tkMacOSXEmbed.c (TkpMakeWindow):	fix bug with missing
+	* macosx/tkMacOSXSubwindows.c (XMapWindow):	focus on first map by
+	only sending VisibilityNotify events once windows are mapped (rather
+	than when they are created).
+
+	* macosx/tkMacOSXWindowEvent.c (TkMacOSXProcessWindowEvent): fix
+	return value.
+
+2008-06-12  Daniel Steffen  <das@users.sourceforge.net>
+
+	* generic/tkPointer.c (Tk_UpdatePointer): fix failure to restore a
+	global grab capture and to release the restrict window capture when
+	releasing a button grab. Fixes segfault due to dangling reference to
+	restrict window inside TkpSetCapture() implementation. [Bug 1991932]
+
+	* macosx/tkMacOSXXStubs.c: sync with core-8-5-branch.
+
+	* unix/tcl.m4 (SunOS-5.11): fix 64bit amd64 support with gcc & Sun cc.
+	* unix/configure: autoconf-2.13
+
 2008-04-17  Don Porter  <dgp@users.sourceforge.net>
 
 	*** 8.4.19 TAGGED FOR RELEASE ***
