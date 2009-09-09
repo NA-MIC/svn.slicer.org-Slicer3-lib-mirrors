@@ -92,6 +92,7 @@ INCLUDE (CheckIncludeFiles)
 INCLUDE (CheckLibraryExists)
 INCLUDE (CheckSymbolExists)
 INCLUDE (CheckTypeSize)
+INCLUDE (curlCheckCAcceptsFlags)
 
 SET(libCurl_SRCS
   base64.c
@@ -647,15 +648,22 @@ ELSE(RETSIGTYPE_TEST)
 ENDIF(RETSIGTYPE_TEST)
 
 IF(CMAKE_COMPILER_IS_GNUCC AND APPLE)
+  # -no-cpp-precomp and -Wno-long-double were compiler flags present
+  # only in Apple's gcc and not in the FSF gcc. The flags are obsolete
+  # and totally removed in gcc 4.2 and later. I believe they are only
+  # needed with gcc 3.3 and earlier.
+
   # The Mac version of GCC warns about use of long double.  Disable it.
+  curlCHECK_C_ACCEPTS_FLAGS("-Wno-long-double" C_HAS_LONGDOUBLE_FLAG)
+  IF(C_HAS_LONGDOUBLE_FLAG)
   GET_SOURCE_FILE_PROPERTY(MPRINTF_COMPILE_FLAGS mprintf.c COMPILE_FLAGS)
-  IF(MPRINTF_COMPILE_FLAGS)
-    SET(MPRINTF_COMPILE_FLAGS "${MPRINTF_COMPILE_FLAGS} -Wno-long-double")
-  ELSE(MPRINTF_COMPILE_FLAGS)
-    SET(MPRINTF_COMPILE_FLAGS "-Wno-long-double")
-  ENDIF(MPRINTF_COMPILE_FLAGS)
-  SET_SOURCE_FILES_PROPERTIES(mprintf.c PROPERTIES
-    COMPILE_FLAGS ${MPRINTF_COMPILE_FLAGS})
+    IF(MPRINTF_COMPILE_FLAGS)
+      SET(MPRINTF_COMPILE_FLAGS "${MPRINTF_COMPILE_FLAGS} -Wno-long-double")
+    ELSE(MPRINTF_COMPILE_FLAGS)
+      SET(MPRINTF_COMPILE_FLAGS "-Wno-long-double")
+    ENDIF(MPRINTF_COMPILE_FLAGS)
+  SET_SOURCE_FILES_PROPERTIES(mprintf.c PROPERTIES COMPILE_FLAGS ${MPRINTF_COMPILE_FLAGS})
+  ENDIF(C_HAS_LONGDOUBLE_FLAG)
 ENDIF(CMAKE_COMPILER_IS_GNUCC AND APPLE)
 
 # The rest of the build
