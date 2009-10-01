@@ -1,8 +1,8 @@
-
-package provide vfs::zip 1.0
+# Removed provision of the backward compatible name. Moved to separate
+# file/package.
+package provide vfs::zip 1.0.1
 
 package require vfs
-package provide zipvfs 1.0
 
 # Using the vfs, memchan and Trf extensions, we ought to be able
 # to write a Tcl-only zip virtual filesystem.  What we have below
@@ -240,17 +240,37 @@ proc zip::DosTime {date time} {
     set time [u_short $time]
     set date [u_short $date]
 
-    set sec [expr { ($time & 0x1F) * 2 }]
-    set min [expr { ($time >> 5) & 0x3F }]
+    # time = fedcba9876543210
+    #        HHHHHmmmmmmSSSSS (sec/2 actually)
+
+    # data = fedcba9876543210
+    #        yyyyyyyMMMMddddd
+
+    set sec  [expr { ($time & 0x1F) * 2 }]
+    set min  [expr { ($time >> 5) & 0x3F }]
     set hour [expr { ($time >> 11) & 0x1F }]
 
     set mday [expr { $date & 0x1F }]
-    set mon [expr { (($date >> 5) & 0xF) }]
+    set mon  [expr { (($date >> 5) & 0xF) }]
     set year [expr { (($date >> 9) & 0xFF) + 1980 }]
 
-    set dt [format {%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d} \
-	$year $mon $mday $hour $min $sec]
-    return [clock scan $dt -gmt 1]
+    # Fix up bad date/time data, no need to fail
+    while {$sec  > 59} {incr sec  -60}
+    while {$min  > 59} {incr sec  -60}
+    while {$hour > 23} {incr hour -24}
+    if {$mday < 1}  {incr mday}
+    if {$mon  < 1}  {incr mon}
+    while {$mon > 12} {incr hour -12}
+
+    while {[catch {
+	set dt [format {%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d} \
+		    $year $mon $mday $hour $min $sec]
+	set res [clock scan $dt -gmt 1]
+    }]} {
+	# Only mday can be wrong, at end of month
+	incr mday -1
+    }
+    return $res
 }
 
 
@@ -282,6 +302,16 @@ proc zip::Data {fd arr {varPtr ""} {verify 0}} {
     if { $varPtr == "" } {
 	seek $fd $sb(csize) current
     } else {
+	# Added by Chuck Ferril 10-26-03 to fix reading of OpenOffice
+	#  .sxw files. Any files in the zip that had a method of 8
+	#  (deflate) failed here because size and csize were zero.
+	#  I'm not sure why the above computes the size and csize
+	#  wrong, but stat appears works properly. I originally
+	#  checked for csize of zero, but adding this change didn't
+	#  appear to break the none deflated file access and seemed
+	#  more natural.
+ 	zip::stat $fd $sb(name) sb
+
 	set data [read $fd $sb(csize)]
     }
 
@@ -318,19 +348,46 @@ proc zip::Data {fd arr {varPtr ""} {verify 0}} {
 proc zip::EndOfArchive {fd arr} {
     upvar 1 $arr cb
 
-    seek $fd -22 end
-    set pos [tell $fd]
-    set hdr [read $fd 22]
+    # [SF Tclvfs Bug 1003574]. Do not seek over beginning of file.
+    seek $fd 0 end
 
-    binary scan $hdr A4ssssiis xhdr \
+    # Just looking in the last 512 bytes may be enough to handle zip
+    # archives without comments, however for archives which have
+    # comments the chunk may start at an arbitrary distance from the
+    # end of the file. So if we do not find the header immediately
+    # we have to extend the range of our search, possibly until we
+    # have a large part of the archive in memory. We can fail only
+    # after the whole file has been searched.
+
+    set sz  [tell $fd]
+    set len 512
+    set at  512
+    while {1} {
+	if {$sz < $at} {set n -$sz} else {set n -$at}
+
+	seek $fd $n end
+	set hdr [read $fd $len]
+	set pos [string first "PK\05\06" $hdr]
+	if {$pos == -1} {
+	    if {$at >= $sz} {
+		return -code error "no header found"
+	    }
+	    set len 540 ; # after 1st iteration we force overlap with last buffer
+	    incr at 512 ; # to ensure that the pattern we look for is not split at
+	    #           ; # a buffer boundary, nor the header itself
+	} else {
+	    break
+	}
+    }
+
+    set hdr [string range $hdr [expr $pos + 4] [expr $pos + 21]]
+    set pos [expr [tell $fd] + $pos - 512]
+
+    binary scan $hdr ssssiis \
 	cb(ndisk) cb(cdisk) \
 	cb(nitems) cb(ntotal) \
 	cb(csize) cb(coff) \
-	cb(comment) 
-
-    if { ![string equal "PK\05\06" $xhdr]} {
-	error "bad header"
-    }
+	cb(comment)
 
     set cb(ndisk)	[u_short $cb(ndisk)]
     set cb(nitems)	[u_short $cb(nitems)]
