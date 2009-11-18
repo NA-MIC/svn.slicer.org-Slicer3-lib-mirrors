@@ -1,0 +1,8 @@
+/CMakeLists.txt////*///
+/bar.cxx////*///
+/dep.cxx////*///
+/dep_custom.cxx////*///
+/generator.cxx////*///
+/zot.cxx////*///
+/zot_macro_dir.cxx////*///
+/zot_macro_tgt.cxx////*///

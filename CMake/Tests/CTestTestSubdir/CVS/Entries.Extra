@@ -1,0 +1,6 @@
+D/subdir///////
+D/subdir2///////
+D/subdir3///////
+/CMakeLists.txt////*///
+/CTestConfig.cmake////*///
+/test.cmake.in////*///

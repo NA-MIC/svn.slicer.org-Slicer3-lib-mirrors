@@ -1,0 +1,14 @@
+/CMakeLists.txt////*///
+/bar.cxx////*///
+/foo.cxx////*///
+/foo.h////*///
+/foo2.h////*///
+/fooBoth.h////*///
+/fooDeepPublic.h////*///
+/fooExtensionlessResource////*///
+/fooNeither.h////*///
+/fooPrivate.h////*///
+/fooPrivateExtensionlessHeader////*///
+/fooPublic.h////*///
+/fooPublicExtensionlessHeader////*///
+/test.lua////*///

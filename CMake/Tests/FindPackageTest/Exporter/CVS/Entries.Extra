@@ -1,0 +1,4 @@
+/CMakeLists.txt////*///
+/CMakeTestExportPackageConfig.cmake.in////*///
+/CMakeTestExportPackageConfigVersion.cmake.in////*///
+/dummy.c////*///

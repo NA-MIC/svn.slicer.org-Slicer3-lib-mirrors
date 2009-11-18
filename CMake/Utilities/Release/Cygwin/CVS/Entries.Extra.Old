@@ -1,0 +1,5 @@
+/CMakeLists.txt////*///
+/README.cygwin.in////*///
+/cygwin-package.sh.in////*///
+/cygwin-patch.diff.in////*///
+/cygwin-setup.hint.in////*///

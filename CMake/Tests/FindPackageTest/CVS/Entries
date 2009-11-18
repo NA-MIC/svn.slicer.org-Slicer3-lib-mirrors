@@ -1,0 +1,18 @@
+D/A////
+D/B////
+D/Baz 1.1////
+D/Baz 1.2////
+D/TApp.app////
+D/TFramework.framework////
+D/include////
+D/lib////
+D/Exporter////
+/CMakeLists.txt/1.18.2.1/Wed Nov 18 20:33:54 2009//TCMake-2-8-0
+/FindPackageTest.cxx/1.1/Thu Jul 24 15:33:06 2003//TCMake-2-8-0
+/FindRecursiveA.cmake/1.2/Wed Oct  8 14:56:23 2008//TCMake-2-8-0
+/FindRecursiveB.cmake/1.1/Fri Oct  3 14:40:06 2008//TCMake-2-8-0
+/FindRecursiveC.cmake/1.1/Fri Oct  3 14:40:06 2008//TCMake-2-8-0
+/FindVersionTestA.cmake/1.2/Wed Sep 10 14:11:48 2008//TCMake-2-8-0
+/FindVersionTestB.cmake/1.2/Wed Sep 10 14:11:48 2008//TCMake-2-8-0
+/FindVersionTestC.cmake/1.2/Wed Sep 10 14:11:48 2008//TCMake-2-8-0
+/FindVersionTestD.cmake/1.1/Wed Sep 10 14:11:48 2008//TCMake-2-8-0

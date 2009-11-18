@@ -1,0 +1,18 @@
+/CMakeLists.txt/1.1/Fri Jun 24 13:02:16 2005//
+/curlgtk.c/1.1/Fri Jun 24 13:02:16 2005//
+/curltest.c/1.2/Tue Dec  2 21:40:04 2008//
+/ftpget.c/1.2/Sun Jul  9 17:48:37 2006//
+/ftpgetresp.c/1.2/Sun Jul  9 17:48:37 2006//
+/ftpupload.c/1.2/Sun Jul  9 17:48:37 2006//
+/getinmemory.c/1.1/Fri Jun 24 13:02:16 2005//
+/http-post.c/1.1/Fri Jun 24 13:02:16 2005//
+/httpput.c/1.1/Fri Jun 24 13:02:16 2005//
+/multithread.c/1.1/Fri Jun 24 13:02:16 2005//
+/persistant.c/1.1/Fri Jun 24 13:02:16 2005//
+/postit2.c/1.1/Fri Jun 24 13:02:16 2005//
+/sepheaders.c/1.2/Sun Apr 15 15:56:07 2007//
+/simple.c/1.1/Fri Jun 24 13:02:16 2005//
+/simplessl.c/1.1/Fri Jun 24 13:02:16 2005//
+/testconfig.h.in/1.1/Fri Jun 24 13:02:16 2005//
+/win32sockets.c/1.1/Fri Jun 24 13:02:16 2005//
+D

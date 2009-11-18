@@ -1,0 +1,19 @@
+/CMakeLists.txt/1.28.8.1/Thu Oct  1 21:21:27 2009//TCMake-2-8-0
+/COPYRIGHT/1.2/Wed Dec 28 15:18:37 2005//TCMake-2-8-0
+/append.c/1.14/Wed Jun 10 15:49:01 2009//TCMake-2-8-0
+/block.c/1.4/Wed Jul 12 13:21:26 2006//TCMake-2-8-0
+/config.h.in/1.12/Mon Sep 17 19:18:35 2007//TCMake-2-8-0
+/decode.c/1.6/Wed Jun 10 15:49:01 2009//TCMake-2-8-0
+/encode.c/1.5/Mon Dec 17 22:50:55 2007//TCMake-2-8-0
+/extract.c/1.16/Wed Jun 10 15:49:42 2009//TCMake-2-8-0
+/filesystem.c/1.5/Thu Feb  2 20:53:31 2006//TCMake-2-8-0
+/filesystem.h/1.3/Wed Dec 28 19:58:07 2005//TCMake-2-8-0
+/handle.c/1.9/Tue May 23 16:38:22 2006//TCMake-2-8-0
+/internal.h/1.7/Mon Sep 17 19:18:35 2007//TCMake-2-8-0
+/libtar.c/1.19.2.1/Wed Oct 28 16:17:15 2009//TCMake-2-8-0
+/libtar.h/1.5/Thu Mar  9 13:20:31 2006//TCMake-2-8-0
+/output.c/1.8/Thu Mar 30 18:49:56 2006//TCMake-2-8-0
+/tar.h/1.2/Wed Dec 28 15:18:37 2005//TCMake-2-8-0
+/util.c/1.8/Wed Jun 10 15:49:02 2009//TCMake-2-8-0
+/wrapper.c/1.10/Wed Jun 10 15:49:02 2009//TCMake-2-8-0
+D

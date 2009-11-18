@@ -1,0 +1,15 @@
+/check_command_line.c.in////*///
+/check_mark.cmake////*///
+/config.h.in////*///
+/doc1.tex////*///
+/foo.h.in////*///
+/foo.in////*///
+/gen_redirect_in.c////*///
+/generator.cxx////*///
+/main.cxx////*///
+/tcat.cxx////*///
+/wrapped.h////*///
+/wrapper.cxx////*///
+D/GeneratedHeader///////
+D/GeneratorInExtraDir///////
+/CMakeLists.txt////*///

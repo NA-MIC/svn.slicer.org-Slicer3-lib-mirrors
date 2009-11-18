@@ -1,0 +1,5 @@
+/foo1.c////*///
+/foo2.c////*///
+/foo_precompile.c////*///
+D/include///////
+/CMakeLists.txt////*///

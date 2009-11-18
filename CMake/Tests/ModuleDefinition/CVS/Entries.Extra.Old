@@ -1,0 +1,8 @@
+/CMakeLists.txt////*///
+/example_dll.c////*///
+/example_dll.def////*///
+/example_dll_2.c////*///
+/example_dll_2.def////*///
+/example_exe.c////*///
+/example_exe.def////*///
+/example_mod_1.c////*///

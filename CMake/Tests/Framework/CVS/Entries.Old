@@ -1,0 +1,15 @@
+/CMakeLists.txt/1.12/Fri Sep  5 19:51:19 2008//
+/bar.cxx/1.4/Wed Aug  1 20:15:54 2007//
+/foo.cxx/1.4/Wed Aug  1 20:15:54 2007//
+/foo.h/1.1/Tue May  8 14:58:35 2007//
+/foo2.h/1.1/Tue May  8 14:58:35 2007//
+/fooBoth.h/1.1/Tue Aug 14 15:45:15 2007//
+/fooDeepPublic.h/1.1/Tue Apr  8 04:06:47 2008//
+/fooExtensionlessResource/1.1/Fri Sep  5 19:51:19 2008//
+/fooNeither.h/1.1/Tue Aug 14 15:45:15 2007//
+/fooPrivate.h/1.1/Tue Aug 14 15:45:15 2007//
+/fooPrivateExtensionlessHeader/1.1/Fri Sep  5 19:51:19 2008//
+/fooPublic.h/1.1/Tue Aug 14 15:45:15 2007//
+/fooPublicExtensionlessHeader/1.1/Fri Sep  5 19:51:19 2008//
+/test.lua/1.2/Tue Aug 14 15:45:15 2007//
+D

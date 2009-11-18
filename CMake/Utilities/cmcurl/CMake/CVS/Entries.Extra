@@ -1,0 +1,7 @@
+/CMakeConfigurableFile.in////*///
+/CheckTypeSize.c.in////*///
+/CheckTypeSize.cmake////*///
+/CurlCheckCSourceCompiles.cmake////*///
+/CurlCheckCSourceRuns.cmake////*///
+/CurlTests.c////*///
+/OtherTests.cmake////*///

@@ -1,0 +1,5 @@
+/CMakeLists.txt////*///
+/CTestConfig.cmake////*///
+/badCode.cxx////*///
+/testNoBuild.cmake.in////*///
+/testNoExe.cmake.in////*///

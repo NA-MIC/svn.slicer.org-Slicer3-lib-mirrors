@@ -1,0 +1,4 @@
+/CMakeLists.txt////*///
+/CTestConfig.cmake////*///
+/test.cmake.in////*///
+/timeout.c////*///
