@@ -1,4 +1,8 @@
-.TH cmake 1 "May 05, 2008" "cmake 2.6-patch 0"
+.TH cmakevars 1 "November 13, 2009" "cmake 2.8.0"
+.SH NAME
+.PP
+cmakevars \- Reference of CMake variables.
+
 .SH VARIABLES THAT PROVIDE INFORMATION
 .PP
 variables defined by cmake, that give information about the project, and cmake
@@ -13,11 +17,11 @@ This specifies name of the program that creates archive or static libraries.
 .B CMAKE_BINARY_DIR
 The path to the top level of the build tree.
 
-This is the full path to the top level of the current CMake build tree. For an in-source build, this would be the same as CMAKE_SOURCE_DIR. 
+This is the full path to the top level of the current CMake build tree. For an in\-source build, this would be the same as CMAKE_SOURCE_DIR. 
 
 .TP
 .B CMAKE_BUILD_TOOL
-Tool used for the acutal build process.
+Tool used for the actual build process.
 
 This variable is set to the program that will be needed to build the output of CMake.   If the generator selected was Visual Studio 6, the CMAKE_MAKE_PROGRAM will be set to msdev, for Unix makefiles it will be set to make or gmake, and for Visual Studio 7 it set to devenv.  For Nmake Makefiles the value is nmake. This can be useful for adding special flags and commands based on the final build environment. 
 
@@ -40,40 +44,77 @@ Minor version of CMake used to create the CMakeCache.txt file
 This is stores the minor version of CMake used to write a CMake cache file. It is only different when a different version of CMake is run on a previously created cache file.
 
 .TP
-.B CMAKE_CACHE_RELEASE_VERSION
-Release version of CMake used to create the CMakeCache.txt file
+.B CMAKE_CACHE_PATCH_VERSION
+Patch version of CMake used to create the CMakeCache.txt file
 
-This is stores the release version of CMake used to write a CMake cache file. It is only different when a different version of CMake is run on a previously created cache file.
+This is stores the patch version of CMake used to write a CMake cache file. It is only different when a different version of CMake is run on a previously created cache file.
 
 .TP
 .B CMAKE_CFG_INTDIR
-Build time configuration directory for project.
+Build\-time reference to per\-configuration output subdirectory.
 
-This is a variable that is used to provide developers access to the intermediate directory used by Visual Studio IDE projects.   For example, if building Debug all executables and libraries end up in a Debug directory.   On UNIX systems this variable is set to ".".  However, with Visual Studio this variable is set to $(IntDir).   $(IntDir) is expanded by the IDE only.  So this variable should only be used in custom commands that will be run during the build process.   This variable should not be used directly in a CMake command.  CMake has no way of knowing if Debug or Release will be picked by the IDE for a build type. If a program needs to know the directory it was built in, it can use CMAKE_INTDIR. CMAKE_INTDIR is a C/C++ preprocessor macro that is defined on the command line of the compiler.   If it has a value, it will be the intermediate directory used to build the file.   This way an executable or a library can find files that are located in the build directory.
+For native build systems supporting multiple configurations in the build tree (such as Visual Studio and Xcode), the value is a reference to a build\-time variable specifying the name of the per\-configuration output subdirectory.  On Makefile generators this evaluates to "." because there is only one configuration in a build tree.  Example values:
+
+
+.nf
+  $(IntDir)        = Visual Studio 6
+  $(OutDir)        = Visual Studio 7, 8, 9
+  $(Configuration) = Visual Studio 10
+  $(CONFIGURATION) = Xcode
+  .                = Make\-based tools
+.fi
+
+Since these values are evaluated by the native build system, this variable is suitable only for use in command lines that will be evaluated at build time.  Example of intended usage:
+
+
+.nf
+  add_executable(mytool mytool.c)
+  add_custom_command(
+    OUTPUT out.txt
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/mytool
+            ${CMAKE_CURRENT_SOURCE_DIR}/in.txt out.txt
+    DEPENDS mytool in.txt
+    )
+  add_custom_target(drive ALL DEPENDS out.txt)
+.fi
+
+Note that CMAKE_CFG_INTDIR is no longer necessary for this purpose but has been left for compatibility with existing projects.  Instead add_custom_command() recognizes executable target names in its COMMAND option, so "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/mytool" can be replaced by just "mytool".
+
+
+This variable is read\-only.  Setting it is undefined behavior.  In multi\-configuration build systems the value of this variable is passed as the value of preprocessor symbol "CMAKE_INTDIR" to the compilation of all source files.
 
 .TP
 .B CMAKE_COMMAND
 The full path to the cmake executable.
 
-This is the full path to the CMake executable cmake which is useful from custom commands that want to use the cmake -E option for portable system commands. (e.g. /usr/local/bin/cmake
+This is the full path to the CMake executable cmake which is useful from custom commands that want to use the cmake \-E option for portable system commands. (e.g. /usr/local/bin/cmake
+
+.TP
+.B CMAKE_CROSSCOMPILING
+Is CMake currently cross compiling.
+
+This variable will be set to true by CMake if CMake is cross compiling. Specifically if the build platform is different from the target platform.
 
 .TP
 .B CMAKE_CTEST_COMMAND
 Full path to ctest command installed with cmake.
 
-This is the full path to the CTest executable ctest which is useful from custom commands that want  to use the cmake -E option for portable system commands.
+This is the full path to the CTest executable ctest which is useful from custom commands that want  to use the cmake \-E option for portable system commands.
 
 .TP
 .B CMAKE_CURRENT_BINARY_DIR
 The path to the binary directory currently being processed.
 
-This the full path to the build directory that is currently being processed by cmake.  Each directory added by add_subdirectory will create a binary directory in the build tree, and as it is being processed this variable will be set. For in-source builds this is the current source directory being processed.
+This the full path to the build directory that is currently being processed by cmake.  Each directory added by add_subdirectory will create a binary directory in the build tree, and as it is being processed this variable will be set. For in\-source builds this is the current source directory being processed.
 
 .TP
 .B CMAKE_CURRENT_LIST_FILE
 Full path to the listfile currently being processed.
 
-As CMake processes the listfiles in your project this variable will always be set to the one currently being processed. See also CMAKE_PARENT_LIST_FILE.
+As CMake processes the listfiles in your project this variable will always be set to the one currently being processed.  The value has dynamic scope.  When CMake starts processing commands in a source file it sets this variable to the location of the file.  When CMake finishes processing commands from the file it restores the previous value.  Therefore the value of the variable inside a macro or function is the file invoking the bottom\-most entry on the call stack, not the file containing the macro or function definition.
+
+
+See also CMAKE_PARENT_LIST_FILE.
 
 .TP
 .B CMAKE_CURRENT_LIST_LINE
@@ -91,19 +132,28 @@ This the full path to the source directory that is currently being processed by 
 .B CMAKE_DL_LIBS
 Name of library containing dlopen and dlcose.
 
-The name of the library that has dlopen and dlclose in it, usually -ldl on most UNIX machines.
+The name of the library that has dlopen and dlclose in it, usually \-ldl on most UNIX machines.
 
 .TP
 .B CMAKE_EDIT_COMMAND
-Full path to CMakeSetup or ccmake.
+Full path to cmake\-gui or ccmake.
 
-This is the full path to the CMake executable that can graphically edit the cache.  For example, CMakeSetup, ccmake, or cmake -i.
+This is the full path to the CMake executable that can graphically edit the cache.  For example, cmake\-gui, ccmake, or cmake \-i.
 
 .TP
 .B CMAKE_EXECUTABLE_SUFFIX
 The suffix for executables on this platform.
 
 The suffix to use for the end of an executable if any, .exe on Windows.
+
+
+CMAKE_EXECUTABLE_SUFFIX_<LANG> overrides this for language <LANG>.
+
+.TP
+.B CMAKE_EXTRA_SHARED_LIBRARY_SUFFIXES
+Additional suffixes for shared libraries.
+
+Extensions for shared libraries other than that specified by CMAKE_SHARED_LIBRARY_SUFFIX, if any.  CMake uses this to recognize external shared library files during analysis of libraries linked by a target.
 
 .TP
 .B CMAKE_GENERATOR
@@ -123,11 +173,17 @@ The prefix for import libraries that you link to.
 
 The prefix to use for the name of an import library if used on this platform.
 
+
+CMAKE_IMPORT_LIBRARY_PREFIX_<LANG> overrides this for language <LANG>.
+
 .TP
 .B CMAKE_IMPORT_LIBRARY_SUFFIX
 The suffix for import  libraries that you link to.
 
-The suffix to use for the end of an import library if used onthis platform.
+The suffix to use for the end of an import library if used on this platform.
+
+
+CMAKE_IMPORT_LIBRARY_SUFFIX_<LANG> overrides this for language <LANG>.
 
 .TP
 .B CMAKE_LINK_LIBRARY_SUFFIX
@@ -160,6 +216,12 @@ Full path to the parent listfile of the one currently being processed.
 As CMake processes the listfiles in your project this variable will always be set to the listfile that included or somehow invoked the one currently being processed. See also CMAKE_CURRENT_LIST_FILE.
 
 .TP
+.B CMAKE_PATCH_VERSION
+The patch version of cmake (i.e. the 3 in X.X.3).
+
+This specifies the patch version of the CMake executable being run.
+
+.TP
 .B CMAKE_PROJECT_NAME
 The name of the current project.
 
@@ -183,11 +245,17 @@ The prefix for shared libraries that you link to.
 
 The prefix to use for the name of a shared library, lib on UNIX.
 
+
+CMAKE_SHARED_LIBRARY_PREFIX_<LANG> overrides this for language <LANG>.
+
 .TP
 .B CMAKE_SHARED_LIBRARY_SUFFIX
 The suffix for shared libraries that you link to.
 
 The suffix to use for the end of a shared library, .dll on Windows.
+
+
+CMAKE_SHARED_LIBRARY_SUFFIX_<LANG> overrides this for language <LANG>.
 
 .TP
 .B CMAKE_SHARED_MODULE_PREFIX
@@ -195,11 +263,17 @@ The prefix for loadable modules that you link to.
 
 The prefix to use for the name of a loadable module on this platform.
 
+
+CMAKE_SHARED_MODULE_PREFIX_<LANG> overrides this for language <LANG>.
+
 .TP
 .B CMAKE_SHARED_MODULE_SUFFIX
 The suffix for shared libraries that you link to.
 
 The suffix to use for the end of a loadable module on this platform
+
+
+CMAKE_SHARED_MODULE_SUFFIX_<LANG> overrides this for language <LANG>.
 
 .TP
 .B CMAKE_SIZEOF_VOID_P
@@ -211,13 +285,13 @@ This is set to the size of a pointer on the machine, and is determined by a try 
 .B CMAKE_SKIP_RPATH
 If true, do not add run time path information.
 
-If this is set to TRUE, then the rpath information is not added to compiled executables.  The defaultis to add rpath information if the platform supports it.This allows for easy running from the build tree.
+If this is set to TRUE, then the rpath information is not added to compiled executables.  The default is to add rpath information if the platform supports it.This allows for easy running from the build tree.
 
 .TP
 .B CMAKE_SOURCE_DIR
 The path to the top level of the source tree.
 
-This is the full path to the top level of the current CMake source tree. For an in-source build, this would be the same as CMAKE_BINARY_DIR. 
+This is the full path to the top level of the current CMake source tree. For an in\-source build, this would be the same as CMAKE_BINARY_DIR. 
 
 .TP
 .B CMAKE_STANDARD_LIBRARIES
@@ -231,11 +305,17 @@ The prefix for static libraries that you link to.
 
 The prefix to use for the name of a static library, lib on UNIX.
 
+
+CMAKE_STATIC_LIBRARY_PREFIX_<LANG> overrides this for language <LANG>.
+
 .TP
 .B CMAKE_STATIC_LIBRARY_SUFFIX
 The suffix for static libraries that you link to.
 
 The suffix to use for the end of a static library, .lib on Windows.
+
+
+CMAKE_STATIC_LIBRARY_SUFFIX_<LANG> overrides this for language <LANG>.
 
 .TP
 .B CMAKE_USING_VC_FREE_TOOLS
@@ -248,6 +328,12 @@ This is set to true if the compiler is Visual Studio free tools.
 Create verbose makefiles if on.
 
 This variable defaults to false. You can set this variable to true to make CMake produce verbose makefiles that show each command line as it is used.
+
+.TP
+.B CMAKE_VERSION
+The full version of cmake in major.minor.patch format.
+
+This specifies the full version of the CMake executable being run.  This variable is defined by versions 2.6.3 and higher.  See variables CMAKE_MAJOR_VERSION, CMAKE_MINOR_VERSION, and CMAKE_PATCH_VERSION for individual version components.
 
 .TP
 .B PROJECT_BINARY_DIR
@@ -299,16 +385,16 @@ Specifies the build type for make based generators.
 This specifies what build type will be built in this tree.  Possible values are empty, Debug, Release, RelWithDebInfo and MinSizeRel. This variable is only supported for make based generators. If this variable is supported, then CMake will also provide initial values for the variables with the name  CMAKE_C_FLAGS_[Debug|Release|RelWithDebInfo|MinSizeRel]. For example, if CMAKE_BUILD_TYPE is Debug, then CMAKE_C_FLAGS_DEBUG will be added to the CMAKE_C_FLAGS.
 
 .TP
+.B CMAKE_COLOR_MAKEFILE
+Enables color output when using the Makefile generator.
+
+When enabled, the generated Makefiles will produce colored output. Default is ON.
+
+.TP
 .B CMAKE_CONFIGURATION_TYPES
 Specifies the available build types.
 
 This specifies what build types will be available such as Debug, Release, RelWithDebInfo etc. This has reasonable defaults on most platforms. But can be extended to provide other build types. See also CMAKE_BUILD_TYPE.
-
-.TP
-.B CMAKE_CROSSCOMPILING
-Is CMake currently cross compiling.
-
-This variable will be set to true by CMake if CMake is cross compiling. Specifically if the build platform is different from the target platform.
 
 .TP
 .B CMAKE_FIND_LIBRARY_PREFIXES
@@ -323,19 +409,31 @@ Suffixes to append when looking for libraries.
 This specifies what suffixes to add to library names when the find_library command looks for libraries. On Windows systems this is typically .lib and .dll, meaning that when trying to find the foo library it will look for foo.dll etc.
 
 .TP
+.B CMAKE_INCLUDE_PATH
+Path used for searching by FIND_FILE() and FIND_PATH().
+
+Specifies a path which will be used both by FIND_FILE() and FIND_PATH(). Both commands will check each of the contained directories for the existence of the file which is currently searched. By default it is empty, it is intended to be set by the project. See also CMAKE_SYSTEM_INCLUDE_PATH, CMAKE_PREFIX_PATH.
+
+.TP
 .B CMAKE_INSTALL_PREFIX
 Install directory used by install.
 
-If "make install" is invoked or INSTALL is built, this directory is pre-pended onto all install directories. This variable defaults to /usr/local on UNIX and c:/Program Files on Windows.
+If "make install" is invoked or INSTALL is built, this directory is pre\-pended onto all install directories. This variable defaults to /usr/local on UNIX and c:/Program Files on Windows.
+
+.TP
+.B CMAKE_LIBRARY_PATH
+Path used for searching by FIND_LIBRARY().
+
+Specifies a path which will be used by FIND_LIBRARY(). FIND_LIBRARY() will check each of the contained directories for the existence of the library which is currently searched. By default it is empty, it is intended to be set by the project. See also CMAKE_SYSTEM_LIBRARY_PATH, CMAKE_PREFIX_PATH.
 
 .TP
 .B CMAKE_MFC_FLAG
 Tell cmake to use MFC for an executable or dll.
 
-This can be set in a CMakeLists.txt file and will enable MFC in the application.  It should be set to 1 for static the static MFC library, and 2 for the shared MFC library.  This is used in visual studio 6 and 7 project files.   The CMakeSetup dialog uses MFC and the CMakeLists.txt looks like this:
+This can be set in a CMakeLists.txt file and will enable MFC in the application.  It should be set to 1 for static the static MFC library, and 2 for the shared MFC library.  This is used in visual studio 6 and 7 project files.   The CMakeSetup dialog used MFC and the CMakeLists.txt looks like this:
 
 
-ADD_DEFINITIONS(-D_AFXDLL)
+add_definitions(\-D_AFXDLL)
 
 
 set(CMAKE_MFC_FLAG 2)
@@ -348,13 +446,55 @@ add_executable(CMakeSetup WIN32 ${SRCS})
 .B CMAKE_MODULE_PATH
 Path to look for cmake modules to load.
 
-Specifies a path to override the default seach path for CMake modules. For example include commands will look in this path first for modules to include.
+Specifies a path to override the default search path for CMake modules. For example include commands will look in this path first for modules to include.
 
 .TP
 .B CMAKE_NOT_USING_CONFIG_FLAGS
 Skip _BUILD_TYPE flags if true.
 
 This is an internal flag used by the generators in CMake to tell CMake to skip the _BUILD_TYPE flags.
+
+.TP
+.B CMAKE_PREFIX_PATH
+Path used for searching by FIND_XXX(), with appropriate suffixes added.
+
+Specifies a path which will be used by the FIND_XXX() commands. It contains the "base" directories, the FIND_XXX() commands append appropriate subdirectories to the base directories. So FIND_PROGRAM() adds /bin to each of the directories in the path, FIND_LIBRARY() appends /lib to each of the directories, and FIND_PATH() and FIND_FILE() append /include . By default it is empty, it is intended to be set by the project. See also CMAKE_SYSTEM_PREFIX_PATH, CMAKE_INCLUDE_PATH, CMAKE_LIBRARY_PATH, CMAKE_PROGRAM_PATH.
+
+.TP
+.B CMAKE_PROGRAM_PATH
+Path used for searching by FIND_PROGRAM().
+
+Specifies a path which will be used by FIND_PROGRAM(). FIND_PROGRAM() will check each of the contained directories for the existence of the program which is currently searched. By default it is empty, it is intended to be set by the project. See also CMAKE_SYSTEM_PROGRAM_PATH,  CMAKE_PREFIX_PATH.
+
+.TP
+.B CMAKE_SKIP_INSTALL_ALL_DEPENDENCY
+Don't make the install target depend on the all target.
+
+By default, the "install" target depends on the "all" target. This has the effect, that when "make install" is invoked or INSTALL is built, first the "all" target is built, then the installation starts. If CMAKE_SKIP_INSTALL_ALL_DEPENDENCY is set to TRUE, this dependency is not created, so the installation process will start immediately, independent from whether the project has been completely built or not.
+
+.TP
+.B CMAKE_SYSTEM_INCLUDE_PATH
+Path used for searching by FIND_FILE() and FIND_PATH().
+
+Specifies a path which will be used both by FIND_FILE() and FIND_PATH(). Both commands will check each of the contained directories for the existence of the file which is currently searched. By default it contains the standard directories for the current system. It is NOT intended to be modified by the project, use CMAKE_INCLUDE_PATH for this. See also CMAKE_SYSTEM_PREFIX_PATH.
+
+.TP
+.B CMAKE_SYSTEM_LIBRARY_PATH
+Path used for searching by FIND_LIBRARY().
+
+Specifies a path which will be used by FIND_LIBRARY(). FIND_LIBRARY() will check each of the contained directories for the existence of the library which is currently searched. By default it contains the standard directories for the current system. It is NOT intended to be modified by the project, use CMAKE_SYSTEM_LIBRARY_PATH for this. See also CMAKE_SYSTEM_PREFIX_PATH.
+
+.TP
+.B CMAKE_SYSTEM_PREFIX_PATH
+Path used for searching by FIND_XXX(), with appropriate suffixes added.
+
+Specifies a path which will be used by the FIND_XXX() commands. It contains the "base" directories, the FIND_XXX() commands append appropriate subdirectories to the base directories. So FIND_PROGRAM() adds /bin to each of the directories in the path, FIND_LIBRARY() appends /lib to each of the directories, and FIND_PATH() and FIND_FILE() append /include . By default this contains the standard directories for the current system. It is NOT intended to be modified by the project, use CMAKE_PREFIX_PATH for this. See also CMAKE_SYSTEM_INCLUDE_PATH, CMAKE_SYSTEM_LIBRARY_PATH, CMAKE_SYSTEM_PROGRAM_PATH.
+
+.TP
+.B CMAKE_SYSTEM_PROGRAM_PATH
+Path used for searching by FIND_PROGRAM().
+
+Specifies a path which will be used by FIND_PROGRAM(). FIND_PROGRAM() will check each of the contained directories for the existence of the program which is currently searched. By default it contains the standard directories for the current system. It is NOT intended to be modified by the project, use CMAKE_PROGRAM_PATH for this. See also CMAKE_SYSTEM_PREFIX_PATH.
 
 .TP
 .B CMAKE_USER_MAKE_RULES_OVERRIDE
@@ -430,28 +570,34 @@ True on windows systems, including win64.
 Set to true when the host system is Windows and on cygwin.
 
 .TP
+.B CMAKE_OBJECT_PATH_MAX
+Maximum object file full\-path length allowed by native build tools.
+
+CMake computes for every source file an object file name that is unique to the source file and deterministic with respect to the full path to the source file.  This allows multiple source files in a target to share the same name if they lie in different directories without rebuilding when one is added or removed.  However, it can produce long full paths in a few cases, so CMake shortens the path using a hashing scheme when the full path to an object file exceeds a limit.  CMake has a built\-in limit for each platform that is sufficient for common tools, but some native tools may have a lower limit.  This variable may be set to specify the limit explicitly.  The value must be an integer no less than 128.
+
+.TP
 .B CMAKE_SYSTEM
 Name of system cmake is compiling for.
 
-This variable is the composite of CMAKE_SYSTEM_NAMEand CMAKE_SYSTEM_VERSION, like this ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_VERSION}. If CMAKE_SYSTEM_VERSION is not set, then CMAKE_SYSTEM is the same as CMAKE_SYSTEM_NAME.
+This variable is the composite of CMAKE_SYSTEM_NAME and CMAKE_SYSTEM_VERSION, like this ${CMAKE_SYSTEM_NAME}\-${CMAKE_SYSTEM_VERSION}. If CMAKE_SYSTEM_VERSION is not set, then CMAKE_SYSTEM is the same as CMAKE_SYSTEM_NAME.
 
 .TP
 .B CMAKE_SYSTEM_NAME
 Name of the OS CMake is building for.
 
-This is the name of the operating system on which CMake is targeting.   On systems that have the uname command, this variable is set to the output of uname -s.  Linux, Windows,  and Darwin for Mac OSX are the values found  on the big three operating systems.
+This is the name of the operating system on which CMake is targeting.   On systems that have the uname command, this variable is set to the output of uname \-s.  Linux, Windows,  and Darwin for Mac OSX are the values found  on the big three operating systems.
 
 .TP
 .B CMAKE_SYSTEM_PROCESSOR
 The name of the CPU CMake is building for.
 
-On systems that support uname, this variable is set to the output of uname -p, on windows it is set to the value of the environment variable PROCESSOR_ARCHITECTURE
+On systems that support uname, this variable is set to the output of uname \-p, on windows it is set to the value of the environment variable PROCESSOR_ARCHITECTURE
 
 .TP
 .B CMAKE_SYSTEM_VERSION
 OS version CMake is building for.
 
-A numeric version string for the system, on systems that support uname, this variable is set to the output of uname -r. On other systems this is set to major-minor version numbers.
+A numeric version string for the system, on systems that support uname, this variable is set to the output of uname \-r. On other systems this is set to major\-minor version numbers.
 
 .TP
 .B CYGWIN
@@ -495,7 +641,19 @@ True on windows systems, including win64.
 
 Set to true when the target system is Windows and on cygwin.
 
+.TP
+.B XCODE_VERSION
+Version of Xcode (Xcode generator only).
+
+Under the Xcode generator, this is the version of Xcode as specified in "Xcode.app/Contents/version.plist" (such as "3.1.2").
+
 .SH VARIABLES THAT CONTROL THE BUILD
+.TP
+.B CMAKE_<CONFIG>_POSTFIX
+Default filename postfix for libraries under configuration <CONFIG>.
+
+When a non\-executable target is created its <CONFIG>_POSTFIX target property is initialized with the value of this variable if it is set.
+
 .TP
 .B CMAKE_ARCHIVE_OUTPUT_DIRECTORY
 Where to put all the ARCHIVE targets when built.
@@ -510,9 +668,9 @@ Normally CMake uses the build tree for the RPATH when building executables etc o
 
 .TP
 .B CMAKE_DEBUG_POSTFIX
-A postfix to add to targets when build as debug.
+See variable CMAKE_<CONFIG>_POSTFIX.
 
-This variable is used to initialize the DEBUG_POSTFIX property on all the targets. If set the postfix will be appended to any targets built when the configuration is Debug.
+This variable is a special case of the more\-general CMAKE_<CONFIG>_POSTFIX variable for the DEBUG configuration.
 
 .TP
 .B CMAKE_EXE_LINKER_FLAGS
@@ -533,6 +691,15 @@ Fortran module output directory.
 This variable is used to initialize the Fortran_MODULE_DIRECTORY property on all the targets. See that target property for additional information.
 
 .TP
+.B CMAKE_INCLUDE_CURRENT_DIR
+Automatically add the current source\- and build directories to the include path.
+
+If this variable is enabled, CMake automatically adds in each directory ${CMAKE_CURRENT_SOURCE_DIR} and ${CMAKE_CURRENT_BINARY_DIR} to the include path for this directory. These additional include directories do not propagate down to subdirectories. This is useful mainly for out\-of\-source builds, where files generated into the build tree are included by files located in the source tree.
+
+
+By default CMAKE_INCLUDE_CURRENT_DIR is OFF.
+
+.TP
 .B CMAKE_INSTALL_NAME_DIR
 Mac OSX directory name for installed targets.
 
@@ -542,7 +709,7 @@ CMAKE_INSTALL_NAME_DIR is used to initialize the INSTALL_NAME_DIR property on al
 .B CMAKE_INSTALL_RPATH
 The rpath to use for installed targets.
 
-A semicolon-separated list specifying the rpath to use in installed targets (for platforms that support it). This is used to initialize the target property INSTALL_RPATH for all targets.
+A semicolon\-separated list specifying the rpath to use in installed targets (for platforms that support it). This is used to initialize the target property INSTALL_RPATH for all targets.
 
 .TP
 .B CMAKE_INSTALL_RPATH_USE_LINK_PATH
@@ -560,7 +727,7 @@ This variable is used to initialize the LIBRARY_OUTPUT_DIRECTORY property on all
 .B CMAKE_LIBRARY_PATH_FLAG
 The flag used to add a library search path to a compiler.
 
-The flag used to specify a library directory to the compiler. On most compilers this is "-L".
+The flag used to specify a library directory to the compiler. On most compilers this is "\-L".
 
 .TP
 .B CMAKE_LINK_DEF_FILE_FLAG  
@@ -578,7 +745,13 @@ The flag used before a library file path is given to the linker.  This is needed
 .B CMAKE_LINK_LIBRARY_FLAG
 Flag used to link a library into an executable.
 
-The flag used to specify a library to link to an executable.  On most compilers this is "-l".
+The flag used to specify a library to link to an executable.  On most compilers this is "\-l".
+
+.TP
+.B CMAKE_NO_BUILTIN_CHRPATH
+Do not use the builtin ELF editor to fix RPATHs on installation.
+
+When an ELF binary needs to have a different RPATH after installation than it does in the build tree, CMake uses a builtin editor to change the RPATH in the installed copy.  If this variable is set to true then CMake will relink the binary before installation instead of using its builtin editor.
 
 .TP
 .B CMAKE_RUNTIME_OUTPUT_DIRECTORY
@@ -602,19 +775,13 @@ If this is set to TRUE, then the CMake will use relative paths between the sourc
 .B EXECUTABLE_OUTPUT_PATH
 Old executable location variable.
 
-This variable should no longer be used as of CMake 2.6.  Use the RUNTIME_OUTPUT_DIRECTORY target property instead.  It will override this variable if it is set.
-
-
-If set, this is the directory where all executables built during the build process will be placed.
+The target property RUNTIME_OUTPUT_DIRECTORY supercedes this variable for a target if it is set.  Executable targets are otherwise placed in this directory.
 
 .TP
 .B LIBRARY_OUTPUT_PATH
 Old library location variable.
 
-This variable should no longer be used as of CMake 2.6.  Use the ARCHIVE_OUTPUT_DIRECTORY, LIBRARY_OUTPUT_DIRECTORY, and RUNTIME_OUTPUT_DIRECTORY target properties instead.  They will override this variable if they are set.
-
-
-If set, this is the directory where all the libraries built during the build process will be placed.
+The target properties ARCHIVE_OUTPUT_DIRECTORY, LIBRARY_OUTPUT_DIRECTORY, and RUNTIME_OUTPUT_DIRECTORY supercede this variable for a target if they are set.  Library targets are otherwise placed in this directory.
 
 .SH VARIABLES FOR LANGUAGES
 .TP
@@ -652,6 +819,12 @@ This is used in determining the compiler ABI and is subject to change.
 An internal variable subject to change.
 
 This is used in determining the compiler and is subject to change.
+
+.TP
+.B CMAKE_<LANG>_COMPILER_LOADED
+Defined to true if the language is enabled.
+
+When language <LANG> is enabled by project() or enable_language() this variable is defined to 1.
 
 .TP
 .B CMAKE_<LANG>_COMPILE_OBJECT
@@ -708,10 +881,34 @@ File extensions that should be ignored by the build.
 This is a list of file extensions that may be part of a project for a given language but are not compiled. 
 
 .TP
-.B CMAKE_<LANG>_LINKER_PREFERENCE
-Determine if a language should be used for linking.
+.B CMAKE_<LANG>_IMPLICIT_INCLUDE_DIRECTORIES
+Directories implicitly searched by the compiler for header files.
 
-If this is "Preferred" then if there is a mixed language shared library or executable, then this languages linker command will be used.
+CMake does not explicitly specify these directories on compiler command lines for language <LANG>.  This prevents system include directories from being treated as user include directories on some compilers.
+
+.TP
+.B CMAKE_<LANG>_IMPLICIT_LINK_DIRECTORIES
+Implicit linker search path detected for language <LANG>.
+
+Compilers typically pass directories containing language runtime libraries and default library search paths when they invoke a linker.  These paths are implicit linker search directories for the compiler's language.  CMake automatically detects these directories for each language and reports the results in this variable.
+
+.TP
+.B CMAKE_<LANG>_IMPLICIT_LINK_LIBRARIES
+Implicit link libraries and flags detected for language <LANG>.
+
+Compilers typically pass language runtime library names and other flags when they invoke a linker.  These flags are implicit link options for the compiler's language.  CMake automatically detects these libraries and flags for each language and reports the results in this variable.
+
+.TP
+.B CMAKE_<LANG>_LINKER_PREFERENCE
+Preference value for linker language selection.
+
+The "linker language" for executable, shared library, and module targets is the language whose compiler will invoke the linker.  The LINKER_LANGUAGE target property sets the language explicitly.  Otherwise, the linker language is that whose linker preference value is highest among languages compiled and linked into the target.  See also the CMAKE_<LANG>_LINKER_PREFERENCE_PROPAGATES variable.
+
+.TP
+.B CMAKE_<LANG>_LINKER_PREFERENCE_PROPAGATES
+True if CMAKE_<LANG>_LINKER_PREFERENCE propagates across targets.
+
+This is used when CMake selects a linker language for a target.  Languages compiled directly into the target are always considered.  A language compiled into static libraries linked by the target is considered if this variable is true.
 
 .TP
 .B CMAKE_<LANG>_LINK_EXECUTABLE 
@@ -733,9 +930,9 @@ This is used in determining the platform and is subject to change.
 
 .TP
 .B CMAKE_<LANG>_SIZEOF_DATA_PTR
-An internal variable subject to change.
+Size of pointer\-to\-data types for language <LANG>.
 
-This is used in determining the architecture and is subject to change.
+This holds the size (in bytes) of pointer\-to\-data types in the target platform ABI.  It is defined for languages C and CXX (C++).
 
 .TP
 .B CMAKE_<LANG>_SOURCE_FILE_EXTENSIONS
@@ -763,7 +960,7 @@ If this variable is set, it should to point to a CMakeLists.txt file that will b
 
 .SH COPYRIGHT
 .PP
-Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
+Copyright 2000\-2009 Kitware, Inc., Insight Software Consortium.  All rights reserved.
 
 .PP
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -775,13 +972,10 @@ Redistributions of source code must retain the above copyright notice, this list
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
 .PP
-The names of Kitware, Inc., the Insight Consortium, or the names of any consortium members, or of any contributors, may not be used to endorse or promote products derived from this software without specific prior written permission.
+Neither the names of Kitware, Inc., the Insight Software Consortium, nor the names of their contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
 .PP
-Modified source versions must be plainly marked as such, and must not be misrepresented as being the original software.
-
-.PP
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 .SH SEE ALSO
 .PP
@@ -809,14 +1003,16 @@ Links to available documentation may be found on this web page.
 .B Mailing List
 http://www.cmake.org/HTML/MailingLists.html
 
-For help and discussion about using cmake, a mailing list is provided at cmake@cmake.org. The list is member-post-only but one may sign up on the CMake web page. Please first read the full documentation at http://www.cmake.org before posting questions to the list.
+For help and discussion about using cmake, a mailing list is provided at cmake@cmake.org. The list is member\-post\-only but one may sign up on the CMake web page. Please first read the full documentation at http://www.cmake.org before posting questions to the list.
 
 .PP
 Summary of helpful links:
 
 
+.nf
   Home: http://www.cmake.org
   Docs: http://www.cmake.org/HTML/Documentation.html
   Mail: http://www.cmake.org/HTML/MailingLists.html
   FAQ:  http://www.cmake.org/Wiki/CMake_FAQ
+.fi
 

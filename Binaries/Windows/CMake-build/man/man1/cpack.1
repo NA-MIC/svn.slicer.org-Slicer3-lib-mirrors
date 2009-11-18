@@ -1,16 +1,22 @@
-.TH cpack 1 "May 05, 2008" "cpack 2.6-patch 0"
+.TH cpack 1 "November 13, 2009" "cpack 2.8.0"
 .SH NAME
 .PP
-  cpack - Packaging driver provided by CMake.
+.nf
+  cpack \- Packaging driver provided by CMake.
+.fi
+
 .SH USAGE
 .PP
-  cpack -G <generator> [options]
+.nf
+  cpack \-G <generator> [options]
+.fi
+
 .SH DESCRIPTION
 .PP
-The "cpack" executable is the CMake packaging program.  CMake-generated build trees created for projects that use the INSTALL_* commands have packaging support.  This program will generate the package.
+The "cpack" executable is the CMake packaging program.  CMake\-generated build trees created for projects that use the INSTALL_* commands have packaging support.  This program will generate the package.
 
 .PP
-CMake is a cross-platform build system generator.  Projects specify their build process with platform-independent CMake listfiles included in each directory of a source tree with the name CMakeLists.txt. Users build a project by using CMake to generate a build system for a native tool on their platform.
+CMake is a cross\-platform build system generator.  Projects specify their build process with platform\-independent CMake listfiles included in each directory of a source tree with the name CMakeLists.txt. Users build a project by using CMake to generate a build system for a native tool on their platform.
 
 .SH OPTIONS
 .TP
@@ -64,20 +70,26 @@ ZIP file format
 
 .SH PROPERTIES
 .PP
-  CMake Properties - Properties supported by CMake, the Cross-Platform Makefile Generator.
+.nf
+  CMake Properties \- Properties supported by CMake, the Cross\-Platform Makefile Generator.
+.fi
+
 .PP
 This is the documentation for the properties supported by CMake. Properties can have different scopes. They can either be assigned to a source file, a directory, a target or globally to CMake. By modifying the values of properties the behaviour of the build system can be customized.
 
 .SH COMPATIBILITY COMMANDS
 .PP
-  CMake Compatibility Listfile Commands - Obsolete commands supported by CMake for compatibility.
+.nf
+  CMake Compatibility Listfile Commands \- Obsolete commands supported by CMake for compatibility.
+.fi
+
 .PP
-This is the documentation for now obsolete listfile commands from previous CMake versions, which are still supported for compatibility reasons. You should instead use the newer, faster and shinier new commands. ;-)
+This is the documentation for now obsolete listfile commands from previous CMake versions, which are still supported for compatibility reasons. You should instead use the newer, faster and shinier new commands. ;\-)
 
 .SH MODULES
 .SH COPYRIGHT
 .PP
-Copyright (c) 2002 Kitware, Inc., Insight Consortium.  All rights reserved.
+Copyright 2000\-2009 Kitware, Inc., Insight Software Consortium.  All rights reserved.
 
 .PP
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,13 +101,10 @@ Redistributions of source code must retain the above copyright notice, this list
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
 .PP
-The names of Kitware, Inc., the Insight Consortium, or the names of any consortium members, or of any contributors, may not be used to endorse or promote products derived from this software without specific prior written permission.
+Neither the names of Kitware, Inc., the Insight Software Consortium, nor the names of their contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
 .PP
-Modified source versions must be plainly marked as such, and must not be misrepresented as being the original software.
-
-.PP
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 .SH SEE ALSO
 .PP
@@ -126,18 +135,20 @@ Links to available documentation may be found on this web page.
 .B Mailing List
 http://www.cmake.org/HTML/MailingLists.html
 
-For help and discussion about using cmake, a mailing list is provided at cmake@cmake.org. The list is member-post-only but one may sign up on the CMake web page. Please first read the full documentation at http://www.cmake.org before posting questions to the list.
+For help and discussion about using cmake, a mailing list is provided at cmake@cmake.org. The list is member\-post\-only but one may sign up on the CMake web page. Please first read the full documentation at http://www.cmake.org before posting questions to the list.
 
 .PP
 Summary of helpful links:
 
 
+.nf
   Home: http://www.cmake.org
   Docs: http://www.cmake.org/HTML/Documentation.html
   Mail: http://www.cmake.org/HTML/MailingLists.html
   FAQ:  http://www.cmake.org/Wiki/CMake_FAQ
+.fi
 
 .SH AUTHOR
 .PP
-This manual page was generated by the "--help-man" option.
+This manual page was generated by the "\-\-help\-man" option.
 
