@@ -1,4 +1,6 @@
 
+project(blas)
+
 enable_language(Fortran)
 
 set(BLAS_SOURCES
