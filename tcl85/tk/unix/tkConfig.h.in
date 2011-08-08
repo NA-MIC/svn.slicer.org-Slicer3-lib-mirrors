@@ -10,6 +10,9 @@
 /* Is pthread_getattr_np declared in <pthread.h>? */
 #undef GETATTRNP_NOT_DECLARED
 
+/* Define to 1 if you have the <AvailabilityMacros.h> header file. */
+#undef HAVE_AVAILABILITYMACROS_H
+
 /* Do we have access to Darwin CoreFoundation.framework? */
 #undef HAVE_COREFOUNDATION
 
@@ -87,6 +90,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Is weak import available? */
+#undef HAVE_WEAK_IMPORT
 
 /* Have we turned on XFT (antialiased fonts)? */
 #undef HAVE_XFT
@@ -175,15 +181,15 @@
 /* Are TkAqua debug messages enabled? */
 #undef TK_MAC_DEBUG
 
-/* Do we need a special AIX hack for timezones? */
-#undef USE_DELTA_FOR_TZ
-
 /* Do we want to use the threaded memory allocator? */
 #undef USE_THREAD_ALLOC
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
 #undef WORDS_BIGENDIAN
+
+/* Are Darwin SUSv3 extensions available? */
+#undef _DARWIN_C_SOURCE
 
 /* Add the _ISOC99_SOURCE flag when building */
 #undef _ISOC99_SOURCE

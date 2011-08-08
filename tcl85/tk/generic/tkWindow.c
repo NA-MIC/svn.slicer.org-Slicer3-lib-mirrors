@@ -11,7 +11,7 @@
  * See the file "license.terms" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkWindow.c,v 1.89.2.2 2008/04/07 23:14:07 hobbs Exp $
+ * RCS: @(#) $Id: tkWindow.c,v 1.89.2.5 2010/01/06 23:16:20 nijtmans Exp $
  */
 
 #include "tkInt.h"
@@ -1640,6 +1640,13 @@ Tk_MapWindow(
     if (winPtr->window == None) {
 	Tk_MakeWindowExist(tkwin);
     }
+    /*
+     * [Bug 2645457]: the previous call permits events to be processed and can
+     * lead to the destruction of the window under some conditions.
+     */
+    if (winPtr->flags & TK_ALREADY_DEAD) {
+	return;
+    }
     if (winPtr->flags & TK_WIN_MANAGED) {
 	/*
 	 * Lots of special processing has to be done for top-level windows.
@@ -2948,7 +2955,7 @@ Initialize(
      * only an issue when Tk is loaded dynamically.
      */
 
-    if (Tcl_InitStubs(interp, TCL_VERSION, 1) == NULL) {
+    if (Tcl_InitStubs(interp, TCL_VERSION, 0) == NULL) {
 	return TCL_ERROR;
     }
 
@@ -3303,7 +3310,7 @@ Tk_PkgInitStubsCheck(
 	int count = 0;
 
 	while (*p) {
-	    count += !isdigit(*p++);
+	    count += !isdigit(UCHAR(*p++));
 	}
 	if (count == 1) {
 	    if (0 != strncmp(version, actualVersion, strlen(version))) {

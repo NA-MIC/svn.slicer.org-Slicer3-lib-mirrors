@@ -13,7 +13,7 @@
  * See the file "license.terms" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkMacOSXWm.c,v 1.63.2.1 2008/05/03 21:09:16 das Exp $
+ * RCS: @(#) $Id: tkMacOSXWm.c,v 1.63.2.3 2009/02/06 08:13:23 das Exp $
  */
 
 #include "tkMacOSXPrivate.h"
@@ -425,6 +425,9 @@ TkWmDeadWindow(
     }
     if (wmPtr->hints.flags & IconMaskHint) {
 	Tk_FreeBitmap(winPtr->display, wmPtr->hints.icon_mask);
+    }
+    if (wmPtr->iconName != NULL) {
+	ckfree(wmPtr->iconName);
     }
     if (wmPtr->leaderName != NULL) {
 	ckfree(wmPtr->leaderName);
@@ -2134,6 +2137,12 @@ WmManageCmd(
     if (!Tk_IsTopLevel(frameWin)) {
 	MacDrawable *macWin = (MacDrawable *) winPtr->window;
 
+	if (!Tk_IsManageable(frameWin)) {
+	    Tcl_AppendResult(interp, "window \"",
+		Tk_PathName(frameWin), "\" is not manageable: must be "
+		"a frame, labelframe or toplevel", NULL);
+	    return TCL_ERROR;
+	}
 	TkFocusSplit(winPtr);
 	Tk_UnmapWindow(frameWin);
 	if (wmPtr == NULL) {
@@ -2954,6 +2963,9 @@ WmTransientCmd(
 
 	argv3 = Tcl_GetStringFromObj(objv[3], &length);
 	wmPtr->master = Tk_WindowId(master);
+	if (wmPtr->masterWindowName != NULL) {
+	    ckfree(wmPtr->masterWindowName);
+	}
 	wmPtr->masterWindowName = ckalloc((unsigned) length+1);
 	strcpy(wmPtr->masterWindowName, argv3);
     }

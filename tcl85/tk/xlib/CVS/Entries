@@ -1,7 +1,7 @@
 D/X11////
-/xbytes.h/1.3/Fri Jun 27 11:23:29 2008//Tcore-8-5-branch
-/xcolors.c/1.7/Fri Jun 27 11:23:29 2008//Tcore-8-5-branch
-/xdraw.c/1.5/Fri Jun 27 11:23:29 2008//Tcore-8-5-branch
-/xgc.c/1.16/Fri Jun 27 11:23:29 2008//Tcore-8-5-branch
-/ximage.c/1.9/Fri Jun 27 11:23:29 2008//Tcore-8-5-branch
-/xutil.c/1.4/Fri Jun 27 11:23:29 2008//Tcore-8-5-branch
+/xbytes.h/1.3/Mon Aug  8 21:35:54 2011//Tcore-8-5-9
+/xcolors.c/1.7/Mon Aug  8 21:35:54 2011//Tcore-8-5-9
+/xdraw.c/1.5/Mon Aug  8 21:35:54 2011//Tcore-8-5-9
+/xgc.c/1.16/Mon Aug  8 21:35:54 2011//Tcore-8-5-9
+/ximage.c/1.9/Mon Aug  8 21:35:54 2011//Tcore-8-5-9
+/xutil.c/1.4/Mon Aug  8 21:35:54 2011//Tcore-8-5-9

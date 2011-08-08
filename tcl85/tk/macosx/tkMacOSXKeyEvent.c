@@ -54,7 +54,7 @@
  *	software in accordance with the terms specified in this
  *	license.
  *
- * RCS: @(#) $Id: tkMacOSXKeyEvent.c,v 1.24 2007/12/13 15:27:10 dgp Exp $
+ * RCS: @(#) $Id: tkMacOSXKeyEvent.c,v 1.24.2.2 2010/01/02 10:43:26 dkf Exp $
  */
 
 #include "tkMacOSXPrivate.h"
@@ -496,6 +496,7 @@ InitKeyEvent(
 	return -1;
     }
 
+    memset(eventPtr, 0, sizeof(XEvent));
     eventPtr->xany.send_event = false;
     eventPtr->xany.serial = Tk_Display(tkwin)->request;
 
@@ -1076,6 +1077,7 @@ XUngrabKeyboard(
  * Side effects:
  *	None.
  *
+ *----------------------------------------------------------------------
  */
 
 Tk_Window

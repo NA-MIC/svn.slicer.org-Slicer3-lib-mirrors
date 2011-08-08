@@ -11,11 +11,12 @@
  * See the file "license.terms" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkCanvPs.c,v 1.19 2007/12/13 15:24:13 dgp Exp $
+ * RCS: @(#) $Id: tkCanvPs.c,v 1.19.2.4 2009/04/10 11:07:32 dkf Exp $
  */
 
 #include "tkInt.h"
 #include "tkCanvas.h"
+#include "tkFont.h"
 
 /*
  * See tkCanvas.h for key data structures used to implement canvases.
@@ -42,6 +43,7 @@ typedef struct TkColormapData {	/* Hold color information for a window */
  */
 
 typedef struct TkPostscriptInfo {
+    Tk_Window tkwin;		/* The canvas being printed. */
     int x, y, width, height;	/* Area to print, in canvas pixel
 				 * coordinates. */
     int x2, y2;			/* x+width and y+height. */
@@ -81,7 +83,7 @@ typedef struct TkPostscriptInfo {
 				 * pre-pass that collects font information, so
 				 * the Postscript generated isn't relevant. */
     int prolog;			/* Non-zero means output should contain the
-				 * file prolog.ps in the header. */
+				 * prolog definitions in the header. */
 } TkPostscriptInfo;
 
 /*
@@ -191,6 +193,7 @@ TkCanvPostscriptCmd(
     }
     oldInfoPtr = canvasPtr->psInfo;
     canvasPtr->psInfo = (Tk_PostscriptInfo) psInfoPtr;
+    psInfo.tkwin = canvasPtr->tkwin;
     psInfo.x = canvasPtr->xOrigin;
     psInfo.y = canvasPtr->yOrigin;
     psInfo.width = -1;
@@ -755,7 +758,7 @@ Tk_PostscriptFont(
 
     Tcl_DStringInit(&ds);
     points = Tk_PostscriptFontName(tkfont, &ds);
-    sprintf(pointString, "%d", points);
+    sprintf(pointString, "%d", TkFontGetPoints(psInfoPtr->tkwin, points));
     Tcl_AppendResult(interp, "/", Tcl_DStringValue(&ds), " findfont ",
 	    pointString, " scalefont ", NULL);
     if (strncasecmp(Tcl_DStringValue(&ds), "Symbol", 7) != 0) {

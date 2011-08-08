@@ -27,7 +27,7 @@
  *	top-level window, not to the Tk_Window.  BoxToRect()
  *	accounts for this.
  *
- * RCS: @(#) $Id: ttkMacOSXTheme.c,v 1.21.2.1 2008/05/04 17:16:51 jenglish Exp $
+ * RCS: @(#) $Id: ttkMacOSXTheme.c,v 1.21.2.4 2010/08/26 02:06:10 hobbs Exp $
  */
 
 #include "tkMacOSXPrivate.h"
@@ -55,6 +55,12 @@
 #define END_DRAWING \
 	SetGWorld(saveWorld,saveDevice); }
 #endif /* defined(BUILD_TILE) */
+
+#ifdef __LP64__
+#define RangeToFactor(maximum) (((double) (INT_MAX >> 1)) / (maximum))
+#else
+#define RangeToFactor(maximum) (((double) (LONG_MAX >> 1)) / (maximum))
+#endif /* __LP64__ */
 
 /*----------------------------------------------------------------------
  * +++ Utilities.
@@ -473,6 +479,57 @@ static Ttk_ElementSpec ComboboxElementSpec = {
 };
 
 /*----------------------------------------------------------------------
+ * +++ Spinbuttons.
+ *
+ * From Apple HIG, part III, section "Controls", "The Stepper Control":
+ * there should be 2 pixels of space between the stepper control
+ * (AKA IncDecButton, AKA "little arrows") and the text field it modifies.
+ */
+
+static Ttk_Padding SpinbuttonMargins = {2,0,2,0};
+static void SpinButtonElementSize(
+    void *clientData, void *elementRecord, Tk_Window tkwin,
+    int *widthPtr, int *heightPtr, Ttk_Padding *paddingPtr)
+{
+    SInt32 s;
+
+    ChkErr(GetThemeMetric, kThemeMetricLittleArrowsWidth, &s);
+    *widthPtr = s + Ttk_PaddingWidth(SpinbuttonMargins);
+    ChkErr(GetThemeMetric, kThemeMetricLittleArrowsHeight, &s);
+    *heightPtr = s + Ttk_PaddingHeight(SpinbuttonMargins);
+}
+
+static void SpinButtonElementDraw(
+    void *clientData, void *elementRecord, Tk_Window tkwin,
+    Drawable d, Ttk_Box b, Ttk_State state)
+{
+    Rect bounds = BoxToRect(d, Ttk_PadBox(b, SpinbuttonMargins));
+    ThemeButtonDrawInfo info;
+
+    /* @@@ can't currently distinguish PressedUp (== Pressed) from PressedDown;
+     * ignore this bit for now [see #2219588]
+     */
+    info.state = Ttk_StateTableLookup(ThemeStateTable,
+    	state & ~TTK_STATE_PRESSED);
+    info.value = Ttk_StateTableLookup(ButtonValueTable, state);
+    info.adornment = kThemeAdornmentNone;
+
+    BEGIN_DRAWING(d)
+    ChkErr(DrawThemeButton,
+	&bounds, kThemeIncDecButton, &info, NULL, NULL, NULL, 0);
+    END_DRAWING
+}
+
+static Ttk_ElementSpec SpinButtonElementSpec = {
+    TK_STYLE_VERSION_2,
+    sizeof(NullElement),
+    TtkNullElementOptions,
+    SpinButtonElementSize,
+    SpinButtonElementDraw
+};
+
+
+/*----------------------------------------------------------------------
  * +++ DrawThemeTrack-based elements --
  * Progress bars and scales. (See also: <<NOTE-TRACKS>>)
  */
@@ -525,7 +582,7 @@ static void TrackElementDraw(
 {
     TrackElementData *data = clientData;
     TrackElement *elem = elementRecord;
-    double from = 0, to = 100, value = 0;
+    double from = 0, to = 100, value = 0, factor;
     int orientation = TTK_ORIENT_HORIZONTAL;
     ThemeTrackDrawInfo info;
 
@@ -533,15 +590,13 @@ static void TrackElementDraw(
     Tcl_GetDoubleFromObj(NULL, elem->toObj, &to);
     Tcl_GetDoubleFromObj(NULL, elem->valueObj, &value);
     Ttk_GetOrientFromObj(NULL, elem->orientObj, &orientation);
+    factor = RangeToFactor(to - from);
 
-    /* @@@ BUG: min, max, and value should account for resolution:
-     * @@@ if finer than 1.0, conversion to int breaks.
-     */
     info.kind = data->kind;
     info.bounds = BoxToRect(d, b);
-    info.min = (int) from;		/* @@@ */
-    info.max = (int) to;		/* @@@ */
-    info.value = (int) value;		/* @@@ */
+    info.min = (int) from * factor;
+    info.max = (int) to * factor;
+    info.value = (int) value * factor;
 
     info.attributes = orientation == TTK_ORIENT_HORIZONTAL
 	    ? kThemeTrackHorizontal : 0;
@@ -643,7 +698,7 @@ static void PbarElementDraw(
 {
     PbarElement *pbar = elementRecord;
     int orientation = TTK_ORIENT_HORIZONTAL;
-    double value = 0, maximum = 100;
+    double value = 0, maximum = 100, factor;
     int phase = 0;
     ThemeTrackDrawInfo info;
 
@@ -651,6 +706,7 @@ static void PbarElementDraw(
     Tcl_GetDoubleFromObj(NULL, pbar->valueObj, &value);
     Tcl_GetDoubleFromObj(NULL, pbar->maximumObj, &maximum);
     Tcl_GetIntFromObj(NULL, pbar->phaseObj, &phase);
+    factor = RangeToFactor(maximum);
 
     if (!strcmp("indeterminate", Tcl_GetString(pbar->modeObj)) && value) {
 	info.kind = kThemeIndeterminateBar;
@@ -659,8 +715,8 @@ static void PbarElementDraw(
     }
     info.bounds = BoxToRect(d, b);
     info.min = 0;
-    info.max = (int) maximum;	/* @@@ See note above */
-    info.value = (int) value;
+    info.max = (int) maximum * factor;
+    info.value = (int) value * factor;
     info.attributes = orientation == TTK_ORIENT_HORIZONTAL
 	    ? kThemeTrackHorizontal : 0;
     info.attributes |= kThemeTrackShowThumb;
@@ -700,12 +756,13 @@ static void SeparatorElementDraw(
     Drawable d, Ttk_Box b, unsigned int state)
 {
     Rect bounds = BoxToRect(d, b);
-    ThemeDrawState drawState = Ttk_StateTableLookup(ThemeStateTable, state);
+    ThemeDrawState drawState;
 
     /*
      * DrawThemeSeparator only supports kThemeStateActive / kThemeStateInactive
     */
     state &= TTK_STATE_BACKGROUND;
+    drawState = Ttk_StateTableLookup(ThemeStateTable, state);
     BEGIN_DRAWING(d)
     ChkErr(DrawThemeSeparator, &bounds, drawState);
     END_DRAWING
@@ -902,8 +959,11 @@ static void DisclosureElementSize(
     int *widthPtr, int *heightPtr, Ttk_Padding *paddingPtr)
 {
     SInt32 s;
-    GetThemeMetric(kThemeMetricDisclosureTriangleWidth, &s); *widthPtr = s;
-    GetThemeMetric(kThemeMetricDisclosureTriangleHeight, &s); *heightPtr = s;
+
+    ChkErr(GetThemeMetric, kThemeMetricDisclosureTriangleWidth, &s);
+    *widthPtr = s;
+    ChkErr(GetThemeMetric, kThemeMetricDisclosureTriangleHeight, &s);
+    *heightPtr = s;
 }
 
 static void DisclosureElementDraw(
@@ -976,6 +1036,11 @@ TTK_LAYOUT("Tab",
 	    TTK_NODE("Notebook.label", TTK_EXPAND|TTK_FILL_BOTH))))
 
 /* Progress bars -- track only */
+TTK_LAYOUT("TSpinbox",
+    TTK_NODE("Spinbox.spinbutton", TTK_PACK_RIGHT|TTK_STICK_E)
+    TTK_GROUP("Spinbox.field", TTK_EXPAND|TTK_FILL_X,
+	TTK_NODE("Spinbox.textarea", TTK_EXPAND|TTK_FILL_X)))
+
 TTK_LAYOUT("TProgressbar",
     TTK_NODE("Progressbar.track", TTK_EXPAND|TTK_FILL_BOTH))
 
@@ -985,7 +1050,7 @@ TTK_LAYOUT("Heading",
     TTK_NODE("Treeheading.image", TTK_PACK_RIGHT)
     TTK_NODE("Treeheading.text", 0))
 
-/* Tree items -- omit focus ring */ 
+/* Tree items -- omit focus ring */
 TTK_LAYOUT("Item",
     TTK_GROUP("Treeitem.padding", TTK_FILL_BOTH,
 	TTK_NODE("Treeitem.indicator", TTK_PACK_LEFT)
@@ -1024,6 +1089,8 @@ static int AquaTheme_Init(Tcl_Interp *interp)
 	&ButtonElementSpec, &BevelButtonParms);
     Ttk_RegisterElementSpec(themePtr, "Menubutton.button",
 	&ButtonElementSpec, &PopupButtonParms);
+    Ttk_RegisterElementSpec(themePtr, "Spinbox.spinbutton",
+    	&SpinButtonElementSpec, 0);
     Ttk_RegisterElementSpec(themePtr, "Combobox.button",
 	&ComboboxElementSpec, 0);
     Ttk_RegisterElementSpec(themePtr, "Treeitem.indicator",
@@ -1036,6 +1103,7 @@ static int AquaTheme_Init(Tcl_Interp *interp)
 
     Ttk_RegisterElementSpec(themePtr, "Labelframe.border",&GroupElementSpec,0);
     Ttk_RegisterElementSpec(themePtr, "Entry.field",&EntryElementSpec,0);
+    Ttk_RegisterElementSpec(themePtr, "Spinbox.field",&EntryElementSpec,0);
 
     Ttk_RegisterElementSpec(themePtr, "separator",&SeparatorElementSpec,0);
     Ttk_RegisterElementSpec(themePtr, "hseparator",&SeparatorElementSpec,0);

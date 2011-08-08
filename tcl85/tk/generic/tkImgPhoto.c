@@ -17,7 +17,7 @@
  *	   Department of Computer Science,
  *	   Australian National University.
  *
- * RCS: @(#) $Id: tkImgPhoto.c,v 1.76 2007/12/13 15:24:14 dgp Exp $
+ * RCS: @(#) $Id: tkImgPhoto.c,v 1.76.2.4 2009/09/25 08:48:53 dkf Exp $
  */
 
 #include "tkInt.h"
@@ -473,7 +473,6 @@ PhotoFormatThreadExitProc(
     while (tsdPtr->oldFormatList != NULL) {
 	freePtr = tsdPtr->oldFormatList;
 	tsdPtr->oldFormatList = tsdPtr->oldFormatList->nextPtr;
-	ckfree((char *) freePtr->name);
 	ckfree((char *) freePtr);
     }
     while (tsdPtr->formatList != NULL) {
@@ -508,8 +507,7 @@ Tk_CreateOldPhotoImageFormat(
     Tk_PhotoImageFormat *formatPtr)
 				/* Structure describing the format. All of the
 				 * fields except "nextPtr" must be filled in
-				 * by caller. Must not have been passed to
-				 * Tk_CreatePhotoImageFormat previously. */
+				 * by caller. */
 {
     Tk_PhotoImageFormat *copyPtr;
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
@@ -521,8 +519,6 @@ Tk_CreateOldPhotoImageFormat(
     }
     copyPtr = (Tk_PhotoImageFormat *) ckalloc(sizeof(Tk_PhotoImageFormat));
     *copyPtr = *formatPtr;
-    copyPtr->name = (char *) ckalloc((unsigned) (strlen(formatPtr->name) + 1));
-    strcpy(copyPtr->name, formatPtr->name);
     copyPtr->nextPtr = tsdPtr->oldFormatList;
     tsdPtr->oldFormatList = copyPtr;
 }
@@ -532,8 +528,7 @@ Tk_CreatePhotoImageFormat(
     Tk_PhotoImageFormat *formatPtr)
 				/* Structure describing the format. All of the
 				 * fields except "nextPtr" must be filled in
-				 * by caller. Must not have been passed to
-				 * Tk_CreatePhotoImageFormat previously. */
+				 * by caller. */
 {
     Tk_PhotoImageFormat *copyPtr;
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
@@ -545,12 +540,14 @@ Tk_CreatePhotoImageFormat(
     }
     copyPtr = (Tk_PhotoImageFormat *) ckalloc(sizeof(Tk_PhotoImageFormat));
     *copyPtr = *formatPtr;
-    copyPtr->name = (char *) ckalloc((unsigned) (strlen(formatPtr->name) + 1));
-    strcpy(copyPtr->name, formatPtr->name);
     if (isupper((unsigned char) *formatPtr->name)) {
 	copyPtr->nextPtr = tsdPtr->oldFormatList;
 	tsdPtr->oldFormatList = copyPtr;
     } else {
+	/* for compatibility with aMSN: make a copy of formatPtr->name */
+	char *name = ckalloc(strlen(formatPtr->name) + 1);
+	strcpy(name, formatPtr->name);
+	copyPtr->name = name;
 	copyPtr->nextPtr = tsdPtr->formatList;
 	tsdPtr->formatList = copyPtr;
     }
@@ -2469,6 +2466,8 @@ ImgPhotoGet(
 	    WhitePixelOfScreen(Tk_Screen(tkwin));
     gcValues.background = (black != NULL)? black->pixel:
 	    BlackPixelOfScreen(Tk_Screen(tkwin));
+    Tk_FreeColor(white);
+    Tk_FreeColor(black);
     gcValues.graphics_exposures = False;
     instancePtr->gc = Tk_GetGC(tkwin,
 	    GCForeground|GCBackground|GCGraphicsExposures, &gcValues);
@@ -4279,7 +4278,7 @@ Tk_FindPhoto(
     Tk_ImageType *typePtr;
 
     clientData = Tk_GetImageMasterData(interp, imageName, &typePtr);
-    if (typePtr != &tkPhotoImageType) {
+    if ((typePtr == NULL) || (typePtr->name != tkPhotoImageType.name)) {
 	return NULL;
     }
     return (Tk_PhotoHandle) clientData;
@@ -5682,8 +5681,8 @@ ImgGetPhoto(
 	} else if (optPtr->options & OPT_GRAYSCALE) {
 	    for (y = blockPtr->height; y > 0; y--) {
 		for (x = blockPtr->width; x > 0; x--) {
-		    *destPtr = (unsigned char)
-			    (srcPtr[0]*11+srcPtr[1]*16+srcPtr[2]*5 + 16) >> 5;
+		    *destPtr = (unsigned char) ((srcPtr[0]*11 + srcPtr[1]*16
+			    + srcPtr[2]*5 + 16) >> 5);
 		    srcPtr += blockPtr->pixelSize;
 		    destPtr += newPixelSize;
 		}

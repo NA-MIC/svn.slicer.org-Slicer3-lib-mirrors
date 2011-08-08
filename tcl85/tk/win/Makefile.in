@@ -4,7 +4,7 @@
 # "autoconf" program (constructs like "@foo@" will get replaced in the
 # actual Makefile.
 #
-# RCS: @(#) $Id: Makefile.in,v 1.78 2008/03/18 06:59:04 jenglish Exp $
+# RCS: @(#) $Id: Makefile.in,v 1.78.2.5 2010/08/27 00:21:45 hobbs Exp $
 
 TCLVERSION		= @TCL_VERSION@
 TCLPATCHL		= @TCL_PATCH_LEVEL@
@@ -446,7 +446,7 @@ runtest: binaries $(TKTEST)
 shell: binaries
 	$(SHELL_ENV) ./$(WISH) $(SCRIPT)
 
-demo:
+demo: $(WISH)
 	$(SHELL_ENV) ./$(WISH) $(ROOT_DIR)/library/demos/widget
 
 # This target can be used to run wish inside either gdb or insight
@@ -479,8 +479,7 @@ install-binaries: binaries
 	@echo "Creating package index $(PKG_INDEX)"; 
 	@$(RM) $(PKG_INDEX);
 	@(\
-	echo "if {[catch {package present Tcl\
-		$(TCLVERSION)$(TCLPATCHL)}]} { return }";\
+	echo "if {[catch {package present Tcl 8.5.0}]} { return }";\
 	echo "package ifneeded Tk $(VERSION)$(PATCH_LEVEL)\
 		[list load [file join \$$dir .. .. bin $(TK_DLL_FILE)] Tk]";\
 	) > $(PKG_INDEX);
@@ -516,7 +515,7 @@ install-libraries: libraries
 	    $(INSTALL_DATA) $$i $(INCLUDE_INSTALL_DIR)/X11; \
 	    done;
 	@echo "Installing library files to $(SCRIPT_INSTALL_DIR)";
-	@for i in $(ROOT_DIR)/library/*.tcl $(GENERIC_DIR)/prolog.ps \
+	@for i in $(ROOT_DIR)/library/*.tcl \
 	        $(ROOT_DIR)/library/tclIndex $(UNIX_DIR)/tkAppInit.c; \
 	    do \
 	    $(INSTALL_DATA) $$i $(SCRIPT_INSTALL_DIR); \
@@ -599,6 +598,7 @@ install-private-headers: libraries
 $(WISH): $(TK_LIB_FILE) $(TK_STUB_LIB_FILE) $(WISH_OBJS) wish.$(RES)
 	$(CC) $(CFLAGS) $(WISH_OBJS) $(TCL_LIB_FILE) $(TK_LIB_FILE) $(LIBS) \
 	wish.$(RES) $(CC_EXENAME) $(LDFLAGS_WINDOW)
+	@VC_MANIFEST_EMBED_EXE@
 
 tktest : $(TKTEST)
 
@@ -606,6 +606,7 @@ $(TKTEST): $(TK_LIB_FILE) $(TKTEST_OBJS) wish.$(RES) $(CAT32)
 	$(CC) $(CFLAGS) $(TKTEST_OBJS) $(TCL_LIB_FILE) \
 	$(TK_LIB_FILE) $(LIBS) \
 	wish.$(RES) $(CC_EXENAME) $(LDFLAGS_WINDOW)
+	@VC_MANIFEST_EMBED_EXE@
 
 # Msys make requires this next rule for some reason.
 $(TCL_SRC_DIR)/win/cat.c:
@@ -627,6 +628,7 @@ ${TK_STUB_LIB_FILE}: ${STUB_OBJS}
 ${TK_DLL_FILE}: ${TK_OBJS} $(TK_RES)
 	@$(RM) ${TK_DLL_FILE}
 	@MAKE_DLL@ ${TK_OBJS} $(TK_RES) $(SHLIB_LD_LIBS)
+	@VC_MANIFEST_EMBED_DLL@
 
 ${TK_LIB_FILE}: ${TK_OBJS}
 	@$(RM) ${TK_LIB_FILE}
@@ -667,7 +669,7 @@ tkWindow.$(OBJEXT): configure Makefile
 
 # Implicit rule for all object files that will end up in the Tcl library
 
-.c.$(OBJEXT):
+%.$(OBJEXT): %.c
 	$(CC) -c $(STUB_CC_SWITCHES) -DBUILD_tk -DBUILD_ttk @DEPARG@ $(CC_OBJNAME)
 
 .rc.$(RES):

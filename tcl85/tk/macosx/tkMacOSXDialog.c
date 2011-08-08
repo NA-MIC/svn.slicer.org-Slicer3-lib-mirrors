@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkMacOSXDialog.c,v 1.36.2.2 2008/05/03 21:33:00 das Exp $
+ * RCS: @(#) $Id: tkMacOSXDialog.c,v 1.36.2.6 2009/10/22 10:27:58 dkf Exp $
  */
 
 #include "tkMacOSXPrivate.h"
@@ -38,6 +38,7 @@
  * The following structures are used in the GetFileName() function. They store
  * information about the file dialog and the file filters.
  */
+
 typedef struct _OpenFileData {
     FileFilterList fl;          /* List of file filters.                   */
     SInt16 curType;             /* The filetype currently being listed.    */
@@ -314,7 +315,7 @@ Tk_GetOpenFileObjCmd(
 	    }
 	    break;
 	case OPEN_INITFILE:
-	    initialFile = Tcl_GetString(objv[i + 1]);
+	    initialFile = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
 	    /* empty strings should be like no selection given */
 	    if (choiceLen == 0) {
 		initialFile = NULL;
@@ -322,6 +323,9 @@ Tk_GetOpenFileObjCmd(
 	    break;
 	case OPEN_MESSAGE:
 	    choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
+	    if (message) {
+		CFRelease(message);
+	    }
 	    message = CFStringCreateWithBytes(NULL, (unsigned char *) choice,
 		    choiceLen, kCFStringEncodingUTF8, false);
 	    break;
@@ -340,6 +344,9 @@ Tk_GetOpenFileObjCmd(
 	    break;
 	case OPEN_TITLE:
 	    choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
+	    if (title) {
+		CFRelease(title);
+	    }
 	    title = CFStringCreateWithBytes(NULL, (unsigned char *) choice,
 		    choiceLen, kCFStringEncodingUTF8, false);
 	    break;
@@ -357,7 +364,8 @@ Tk_GetOpenFileObjCmd(
 	initialPtr = &initialDesc;
     }
     if (typeVariablePtr) {
-	initialtype = Tcl_GetVar(interp, Tcl_GetString(typeVariablePtr), 0);
+	initialtype = Tcl_GetVar(interp, Tcl_GetString(typeVariablePtr),
+		TCL_GLOBAL_ONLY);
     }
     result = NavServicesGetFile(interp, &ofd, initialPtr, NULL, &selectDesc,
 	    title, message, initialtype, multiple, OPEN_FILE, parent);
@@ -369,7 +377,11 @@ Tk_GetOpenFileObjCmd(
 	while (filterPtr && i-- > 0) {
 	    filterPtr = filterPtr->next;
 	}
-	Tcl_SetVar(interp, Tcl_GetString(typeVariablePtr), filterPtr->name, 0);
+	if (Tcl_SetVar(interp, Tcl_GetString(typeVariablePtr),
+		filterPtr ? filterPtr->name : "",
+		TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG) == NULL) {
+	    result = TCL_ERROR;
+	}
     }
 
   end:
@@ -477,6 +489,9 @@ Tk_GetSaveFileObjCmd(
 	    break;
 	case SAVE_MESSAGE:
 	    choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
+	    if (message) {
+		CFRelease(message);
+	    }
 	    message = CFStringCreateWithBytes(NULL, (unsigned char *) choice,
 		    choiceLen, kCFStringEncodingUTF8, false);
 	    break;
@@ -489,6 +504,9 @@ Tk_GetSaveFileObjCmd(
 	    break;
 	case SAVE_TITLE:
 	    choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
+	    if (title) {
+		CFRelease(title);
+	    }
 	    title = CFStringCreateWithBytes(NULL, (unsigned char *) choice,
 		    choiceLen, kCFStringEncodingUTF8, false);
 	    break;
@@ -581,6 +599,9 @@ Tk_ChooseDirectoryObjCmd(
 	    break;
 	case CHOOSE_MESSAGE:
 	    choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
+	    if (message) {
+		CFRelease(message);
+	    }
 	    message = CFStringCreateWithBytes(NULL, (unsigned char *) choice,
 		    choiceLen, kCFStringEncodingUTF8, false);
 	    break;
@@ -593,6 +614,9 @@ Tk_ChooseDirectoryObjCmd(
 	    break;
 	case CHOOSE_TITLE:
 	    choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
+	    if (title) {
+		CFRelease(title);
+	    }
 	    title = CFStringCreateWithBytes(NULL, (unsigned char *) choice,
 		    choiceLen, kCFStringEncodingUTF8, false);
 	    break;
@@ -1482,6 +1506,9 @@ Tk_MessageBoxObjCmd(
 
 	case ALERT_DETAIL:
 	    str = Tcl_GetString(objv[i + 1]);
+	    if (finemessageTextCF) {
+		CFRelease(finemessageTextCF);
+	    }
 	    finemessageTextCF = CFStringCreateWithCString(NULL, str,
 		    kCFStringEncodingUTF8);
 	    break;
@@ -1509,6 +1536,9 @@ Tk_MessageBoxObjCmd(
 
 	case ALERT_MESSAGE:
 	    str = Tcl_GetString(objv[i + 1]);
+	    if (messageTextCF) {
+		CFRelease(messageTextCF);
+	    }
 	    messageTextCF = CFStringCreateWithCString(NULL, str,
 		    kCFStringEncodingUTF8);
 	    break;

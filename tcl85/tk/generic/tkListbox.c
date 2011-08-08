@@ -11,7 +11,7 @@
  * See the file "license.terms" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tkListbox.c,v 1.44 2007/12/13 15:24:15 dgp Exp $
+ * RCS: @(#) $Id: tkListbox.c,v 1.44.2.4 2010/01/29 12:41:11 nijtmans Exp $
  */
 
 #include "default.h"
@@ -439,6 +439,8 @@ static void		MigrateHashEntries(Tcl_HashTable *table,
 static Tk_ClassProcs listboxClass = {
     sizeof(Tk_ClassProcs),	/* size */
     ListboxWorldChanged,	/* worldChangedProc */
+    NULL,					/* createProc */
+    NULL					/* modalProc */
 };
 
 /*
@@ -673,7 +675,7 @@ ListboxWidgetObjCmd(
 	    break;
 	}
 
-	objPtr = Tk_GetOptionValue(interp, (char *)listPtr,
+	objPtr = Tk_GetOptionValue(interp, (char *) listPtr,
 		listPtr->optionTable, objv[2], listPtr->tkwin);
 	if (objPtr == NULL) {
 	    result = TCL_ERROR;
@@ -884,7 +886,7 @@ ListboxWidgetObjCmd(
 
 	attrPtr = ListboxGetItemAttributes(interp, listPtr, index);
 
-	objPtr = Tk_GetOptionValue(interp, (char *)attrPtr,
+	objPtr = Tk_GetOptionValue(interp, (char *) attrPtr,
 		listPtr->itemAttrOptionTable, objv[3], listPtr->tkwin);
 	if (objPtr == NULL) {
 	    result = TCL_ERROR;
@@ -920,7 +922,7 @@ ListboxWidgetObjCmd(
 
 	attrPtr = ListboxGetItemAttributes(interp, listPtr, index);
 	if (objc <= 4) {
-	    objPtr = Tk_GetOptionInfo(interp, (char *)attrPtr,
+	    objPtr = Tk_GetOptionInfo(interp, (char *) attrPtr,
 		    listPtr->itemAttrOptionTable,
 		    (objc == 4) ? objv[3] : NULL, listPtr->tkwin);
 	    if (objPtr == NULL) {
@@ -1246,9 +1248,9 @@ ListboxXviewSubCmd(
 	    - 2*(listPtr->inset + listPtr->selBorderWidth);
     if (objc == 2) {
 	if (listPtr->maxWidth == 0) {
-	    Tcl_SetResult(interp, "0 1", TCL_STATIC);
+	    Tcl_SetResult(interp, "0.0 1.0", TCL_STATIC);
 	} else {
-	    char buf[TCL_DOUBLE_SPACE * 2];
+	    char buf[TCL_DOUBLE_SPACE];
 
 	    fraction = listPtr->xOffset/((double) listPtr->maxWidth);
 	    fraction2 = (listPtr->xOffset + windowWidth)
@@ -1256,8 +1258,10 @@ ListboxXviewSubCmd(
 	    if (fraction2 > 1.0) {
 		fraction2 = 1.0;
 	    }
-	    sprintf(buf, "%g %g", fraction, fraction2);
+	    Tcl_PrintDouble(NULL, fraction, buf);
 	    Tcl_SetResult(interp, buf, TCL_VOLATILE);
+	    Tcl_PrintDouble(NULL, fraction2, buf);
+	    Tcl_AppendResult(interp, " ", buf, NULL);
 	}
     } else if (objc == 3) {
 	if (Tcl_GetIntFromObj(interp, objv[2], &index) != TCL_OK) {
@@ -1318,9 +1322,9 @@ ListboxYviewSubCmd(
 
     if (objc == 2) {
 	if (listPtr->nElements == 0) {
-	    Tcl_SetResult(interp, "0 1", TCL_STATIC);
+	    Tcl_SetResult(interp, "0.0 1.0", TCL_STATIC);
 	} else {
-	    char buf[TCL_DOUBLE_SPACE * 2];
+	    char buf[TCL_DOUBLE_SPACE];
 
 	    fraction = listPtr->topIndex/((double) listPtr->nElements);
 	    fraction2 = (listPtr->topIndex+listPtr->fullLines)
@@ -1328,8 +1332,10 @@ ListboxYviewSubCmd(
 	    if (fraction2 > 1.0) {
 		fraction2 = 1.0;
 	    }
-	    sprintf(buf, "%g %g", fraction, fraction2);
+	    Tcl_PrintDouble(NULL, fraction, buf);
 	    Tcl_SetResult(interp, buf, TCL_VOLATILE);
+	    Tcl_PrintDouble(NULL, fraction2, buf);
+	    Tcl_AppendResult(interp, " ", buf, NULL);
 	}
     } else if (objc == 3) {
 	if (GetListboxIndex(interp, listPtr, objv[2], 0, &index) != TCL_OK) {
@@ -1339,8 +1345,6 @@ ListboxYviewSubCmd(
     } else {
 	type = Tk_GetScrollInfoObj(interp, objc, objv, &fraction, &count);
 	switch (type) {
-	case TK_SCROLL_ERROR:
-	    return TCL_ERROR;
 	case TK_SCROLL_MOVETO:
 	    index = (int) (listPtr->nElements*fraction + 0.5);
 	    break;
@@ -1354,6 +1358,9 @@ ListboxYviewSubCmd(
 	case TK_SCROLL_UNITS:
 	    index = listPtr->topIndex + count;
 	    break;
+	case TK_SCROLL_ERROR:
+	default:
+	    return TCL_ERROR;
 	}
 	ChangeListboxView(listPtr, index);
     }
@@ -1750,9 +1757,7 @@ ListboxWorldChanged(
     XGCValues gcValues;
     GC gc;
     unsigned long mask;
-    Listbox *listPtr;
-
-    listPtr = (Listbox *) instanceData;
+    Listbox *listPtr = (Listbox *) instanceData;
 
     if (listPtr->state & STATE_NORMAL) {
 	gcValues.foreground = listPtr->fgColorPtr->pixel;
@@ -2743,7 +2748,7 @@ GetListboxIndex(
 	char *start, *end;
 
 	start = stringRep + 1;
-	strtol(start, &end, 0);
+	y = strtol(start, &end, 0);
 	if ((start == end) || (*end != ',')) {
 	    Tcl_AppendResult(interp, "bad listbox index \"", stringRep,
 		    "\": must be active, anchor, end, @x,y, or a number",
@@ -2925,7 +2930,7 @@ ListboxScanTo(
      * scan started.
      */
 
-    newOffset = listPtr->scanMarkXOffset - (10*(x - listPtr->scanMarkX));
+    newOffset = listPtr->scanMarkXOffset - 10*(x - listPtr->scanMarkX);
     if (newOffset > maxOffset) {
 	newOffset = listPtr->scanMarkXOffset = maxOffset;
 	listPtr->scanMarkX = x;
@@ -3244,7 +3249,7 @@ static void
 ListboxUpdateVScrollbar(
     register Listbox *listPtr)	/* Information about widget. */
 {
-    char string[TCL_DOUBLE_SPACE * 2];
+    char firstStr[TCL_DOUBLE_SPACE+1], lastStr[TCL_DOUBLE_SPACE+1];
     double first, last;
     int result;
     Tcl_Interp *interp;
@@ -3256,14 +3261,16 @@ ListboxUpdateVScrollbar(
 	first = 0.0;
 	last = 1.0;
     } else {
-	first = listPtr->topIndex/((double) listPtr->nElements);
-	last = (listPtr->topIndex+listPtr->fullLines)
-		/((double) listPtr->nElements);
+	first = listPtr->topIndex / (double) listPtr->nElements;
+	last = (listPtr->topIndex + listPtr->fullLines)
+		/ (double) listPtr->nElements;
 	if (last > 1.0) {
 	    last = 1.0;
 	}
     }
-    sprintf(string, " %g %g", first, last);
+    firstStr[0] = lastStr[0] = ' ';
+    Tcl_PrintDouble(NULL, first, firstStr+1);
+    Tcl_PrintDouble(NULL, last, lastStr+1);
 
     /*
      * We must hold onto the interpreter from the listPtr because the data at
@@ -3271,14 +3278,15 @@ ListboxUpdateVScrollbar(
      */
 
     interp = listPtr->interp;
-    Tcl_Preserve((ClientData) interp);
-    result = Tcl_VarEval(interp, listPtr->yScrollCmd, string, NULL);
+    Tcl_Preserve(interp);
+    result = Tcl_VarEval(interp, listPtr->yScrollCmd, firstStr, lastStr,
+	    NULL);
     if (result != TCL_OK) {
 	Tcl_AddErrorInfo(interp,
 		"\n    (vertical scrolling command executed by listbox)");
 	Tcl_BackgroundError(interp);
     }
-    Tcl_Release((ClientData) interp);
+    Tcl_Release(interp);
 }
 
 /*
@@ -3305,7 +3313,7 @@ static void
 ListboxUpdateHScrollbar(
     register Listbox *listPtr)	/* Information about widget. */
 {
-    char string[TCL_DOUBLE_SPACE * 2];
+    char firstStr[TCL_DOUBLE_SPACE+1], lastStr[TCL_DOUBLE_SPACE+1];
     int result, windowWidth;
     double first, last;
     Tcl_Interp *interp;
@@ -3319,14 +3327,17 @@ ListboxUpdateHScrollbar(
 	first = 0;
 	last = 1.0;
     } else {
-	first = listPtr->xOffset/((double) listPtr->maxWidth);
-	last = (listPtr->xOffset + windowWidth)
-		/((double) listPtr->maxWidth);
+	register double maxWide = (double) listPtr->maxWidth;
+
+	first = listPtr->xOffset / maxWide;
+	last = (listPtr->xOffset + windowWidth) / maxWide;
 	if (last > 1.0) {
 	    last = 1.0;
 	}
     }
-    sprintf(string, " %g %g", first, last);
+    firstStr[0] = lastStr[0] = ' ';
+    Tcl_PrintDouble(NULL, first, firstStr+1);
+    Tcl_PrintDouble(NULL, last, lastStr+1);
 
     /*
      * We must hold onto the interpreter because the data referred to at
@@ -3334,14 +3345,15 @@ ListboxUpdateHScrollbar(
      */
 
     interp = listPtr->interp;
-    Tcl_Preserve((ClientData) interp);
-    result = Tcl_VarEval(interp, listPtr->xScrollCmd, string, NULL);
+    Tcl_Preserve(interp);
+    result = Tcl_VarEval(interp, listPtr->xScrollCmd, firstStr, lastStr,
+	    NULL);
     if (result != TCL_OK) {
 	Tcl_AddErrorInfo(interp,
 		"\n    (horizontal scrolling command executed by listbox)");
 	Tcl_BackgroundError(interp);
     }
-    Tcl_Release((ClientData) interp);
+    Tcl_Release(interp);
 }
 
 /*
@@ -3400,7 +3412,7 @@ ListboxListVarProc(
 	if (Tcl_ListObjLength(listPtr->interp, varListObj, &i) != TCL_OK) {
 	    Tcl_SetVar2Ex(interp, listPtr->listVarName, NULL, oldListObj,
 		    TCL_GLOBAL_ONLY);
-	    return "invalid listvar value";
+	    return (char *) "invalid listvar value";
 	}
 
 	listPtr->listObj = varListObj;
