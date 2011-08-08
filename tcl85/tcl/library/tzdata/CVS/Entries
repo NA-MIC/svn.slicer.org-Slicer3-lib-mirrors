@@ -1,45 +1,61 @@
-/CET/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/CST6CDT/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Cuba/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/EET/1.2/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/EST/1.5/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/EST5EDT/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Egypt/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Eire/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/GB/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/GB-Eire/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/GMT/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/GMT+0/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/GMT-0/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/GMT0/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Greenwich/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/HST/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Hongkong/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Iceland/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Iran/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Israel/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Jamaica/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Japan/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Kwajalein/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Libya/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/MET/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/MST/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/MST7MDT/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/NZ/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/NZ-CHAT/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Navajo/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/PRC/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/PST8PDT/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Poland/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Portugal/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/ROC/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/ROK/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Singapore/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Turkey/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/UCT/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/UTC/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Universal/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/W-SU/1.3/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/WET/1.2/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-/Zulu/1.4/Wed Oct  4 21:03:56 2006//Tcore-8-5-2
-D
+D/Africa////
+D/America////
+D/Antarctica////
+D/Arctic////
+D/Asia////
+D/Atlantic////
+D/Australia////
+D/Brazil////
+D/Canada////
+D/Chile////
+D/Etc////
+D/Europe////
+D/Indian////
+D/Mexico////
+D/Pacific////
+D/SystemV////
+D/US////
+/CET/1.3.8.3/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/CST6CDT/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Cuba/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/EET/1.2.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/EST/1.5.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/EST5EDT/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Egypt/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Eire/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/GB/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/GB-Eire/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/GMT/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/GMT+0/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/GMT-0/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/GMT0/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Greenwich/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/HST/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Hongkong/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Iceland/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Iran/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Israel/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Jamaica/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Japan/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Kwajalein/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Libya/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/MET/1.3.8.3/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/MST/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/MST7MDT/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/NZ/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/NZ-CHAT/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Navajo/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/PRC/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/PST8PDT/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Poland/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Portugal/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/ROC/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/ROK/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Singapore/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Turkey/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/UCT/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/UTC/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Universal/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/W-SU/1.3.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/WET/1.2.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/Zulu/1.4.8.2/Mon Aug  8 21:41:48 2011//Tcore-8-5-9

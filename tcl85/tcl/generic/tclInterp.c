@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclInterp.c,v 1.83 2008/01/30 10:45:55 msofer Exp $
+ * RCS: @(#) $Id: tclInterp.c,v 1.83.2.4 2009/12/29 13:13:18 dkf Exp $
  */
 
 #include "tclInt.h"
@@ -2061,9 +2061,9 @@ SlaveBgerror(
 		    NULL);
 	    return TCL_ERROR;
 	}
-	TclSetBgErrorHandler(interp, objv[0]);
+	TclSetBgErrorHandler(slaveInterp, objv[0]);
     }
-    Tcl_SetObjResult(interp, TclGetBgErrorHandler(interp));
+    Tcl_SetObjResult(interp, TclGetBgErrorHandler(slaveInterp));
     return TCL_OK;
 }
 
@@ -2472,11 +2472,15 @@ SlaveEval(
 
     if (objc == 1) {
 	/*
-	 * TIP #280: Make invoker available to eval'd script.
+	 * TIP #280: Make actual argument location available to eval'd script.
 	 */
 
         Interp *iPtr = (Interp *) interp;
-	result = TclEvalObjEx(slaveInterp, objv[0], 0, iPtr->cmdFramePtr, 0);
+	CmdFrame* invoker = iPtr->cmdFramePtr;
+	int word          = 0;
+
+	TclArgumentGet (interp, objv[0], &invoker, &word);
+	result = TclEvalObjEx(slaveInterp, objv[0], 0, invoker, word);
     } else {
 	objPtr = Tcl_ConcatObj(objc, objv);
 	Tcl_IncrRefCount(objPtr);
@@ -2813,8 +2817,25 @@ Tcl_MakeSafe(
 {
     Tcl_Channel chan;		/* Channel to remove from safe interpreter. */
     Interp *iPtr = (Interp *) interp;
+    Tcl_Interp *master = ((InterpInfo*) iPtr->interpInfo)->slave.masterInterp;
 
     TclHideUnsafeCommands(interp);
+
+    if (master != NULL) {
+	/*
+	 * Alias these function implementations in the slave to those in the
+	 * master; the overall implementations are safe, but they're normally
+	 * defined by init.tcl which is not sourced by safe interpreters.
+	 * Assume these functions all work. [Bug 2895741]
+	 */
+
+	(void) Tcl_Eval(interp,
+		"namespace eval ::tcl {namespace eval mathfunc {}}");
+	(void) Tcl_CreateAlias(interp, "::tcl::mathfunc::min", master,
+		"::tcl::mathfunc::min", 0, NULL);
+	(void) Tcl_CreateAlias(interp, "::tcl::mathfunc::max", master,
+		"::tcl::mathfunc::max", 0, NULL);
+    }
 
     iPtr->flags |= SAFE_INTERP;
 
@@ -3599,10 +3620,20 @@ TimeLimitCallback(
     ClientData clientData)
 {
     Tcl_Interp *interp = clientData;
+    Interp *iPtr = clientData;
     int code;
 
     Tcl_Preserve(interp);
-    ((Interp *)interp)->limit.timeEvent = NULL;
+    iPtr->limit.timeEvent = NULL;
+
+    /*
+     * Must reset the granularity ticker here to force an immediate full
+     * check. This is OK because we're swallowing the cost in the overall cost
+     * of the event loop. [Bug 2891362]
+     */
+
+    iPtr->limit.granularityTicker = 0;
+
     code = Tcl_LimitCheck(interp);
     if (code != TCL_OK) {
 	Tcl_AddErrorInfo(interp, "\n    (while waiting for event)");

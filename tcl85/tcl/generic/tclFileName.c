@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclFileName.c,v 1.86 2007/12/13 15:23:17 dgp Exp $
+ * RCS: @(#) $Id: tclFileName.c,v 1.86.2.5 2010/05/21 12:18:17 nijtmans Exp $
  */
 
 #include "tclInt.h"
@@ -1412,6 +1412,9 @@ Tcl_GlobObjCmd(
 	 */
 
 	Tcl_ListObjLength(interp, typePtr, &length);
+	if (length <= 0) {
+	    goto skipTypes;
+	}
 	globTypes = (Tcl_GlobTypeData*)
 		TclStackAlloc(interp,sizeof(Tcl_GlobTypeData));
 	globTypes->type = 0;
@@ -1529,6 +1532,7 @@ Tcl_GlobObjCmd(
 	}
     }
 
+  skipTypes:
     /*
      * Now we perform the actual glob below. This may involve joining together
      * the pattern arguments, dealing with particular file types etc. We use a
@@ -1887,7 +1891,7 @@ TclGlob(
 	 * for existence and type.
 	 */
 	if (types == NULL) {
-	    /* 
+	    /*
 	     * We just want to check for existence.  In this case we
 	     * make it easy on Tcl_FSMatchInDirectory and its
 	     * sub-implementations by not bothering them (even though
@@ -1899,7 +1903,7 @@ TclGlob(
 	    }
 	    result = TCL_OK;
 	} else {
-	    /* 
+	    /*
 	     * We want to check for the correct type.  Tcl_FSMatchInDirectory
 	     * is documented to do this for us, if we give it a NULL pattern.
 	     */
@@ -1948,7 +1952,7 @@ TclGlob(
 	if (pathPrefix == NULL) {
 	    Tcl_Panic("Called TclGlob with TCL_GLOBMODE_TAILS and pathPrefix==NULL");
 	}
-	
+
 	pre = Tcl_GetStringFromObj(pathPrefix, &prefixLen);
 	if (prefixLen > 0
 		&& (strchr(separators, pre[prefixLen-1]) == NULL)) {
@@ -2346,14 +2350,42 @@ DoGlob(
 		pattern, &dirOnly);
 	*p = save;
 	if (result == TCL_OK) {
-	    int subdirc, i;
+	    int subdirc, i, repair = -1;
 	    Tcl_Obj **subdirv;
 
 	    result = Tcl_ListObjGetElements(interp, subdirsPtr,
 		    &subdirc, &subdirv);
 	    for (i=0; result==TCL_OK && i<subdirc; i++) {
+		Tcl_Obj *copy = NULL;
+
+		if (pathPtr == NULL && Tcl_GetString(subdirv[i])[0] == '~') {
+		    Tcl_ListObjLength(NULL, matchesObj, &repair);
+		    copy = subdirv[i];
+		    subdirv[i] = Tcl_NewStringObj("./", 2);
+		    Tcl_AppendObjToObj(subdirv[i], copy);
+		    Tcl_IncrRefCount(subdirv[i]);
+		}
 		result = DoGlob(interp, matchesObj, separators, subdirv[i],
 			1, p+1, types);
+		if (copy) {
+		    int end;
+
+		    Tcl_DecrRefCount(subdirv[i]);
+		    subdirv[i] = copy;
+		    Tcl_ListObjLength(NULL, matchesObj, &end);
+		    while (repair < end) {
+			const char *bytes;
+			int numBytes;
+			Tcl_Obj *fixme, *newObj;
+			Tcl_ListObjIndex(NULL, matchesObj, repair, &fixme);
+			bytes = Tcl_GetStringFromObj(fixme, &numBytes);
+			newObj = Tcl_NewStringObj(bytes+2, numBytes-2);
+			Tcl_ListObjReplace(NULL, matchesObj, repair, 1,
+				1, &newObj);
+			repair++;
+		    }
+		    repair = -1;
+		}
 	    }
 	}
 	TclDecrRefCount(subdirsPtr);
@@ -2402,7 +2434,6 @@ DoGlob(
 
 #if defined(__CYGWIN__) && defined(__WIN32__)
 	    {
-		extern int cygwin_conv_to_win32_path(const char *, char *);
 		char winbuf[MAX_PATH+1];
 
 		cygwin_conv_to_win32_path(Tcl_DStringValue(&append), winbuf);
@@ -2452,9 +2483,10 @@ DoGlob(
 	}
 	Tcl_IncrRefCount(joinedPtr);
 	Tcl_DStringFree(&append);
-	Tcl_FSMatchInDirectory(interp, matchesObj, joinedPtr, NULL, types);
+	result = Tcl_FSMatchInDirectory(interp, matchesObj, joinedPtr, NULL,
+		types);
 	Tcl_DecrRefCount(joinedPtr);
-	return TCL_OK;
+	return result;
     }
 
     /*

@@ -16,7 +16,7 @@
  * See the file "license.terms" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclCmdIL.c,v 1.137 2008/03/14 19:46:17 dgp Exp $
+ * RCS: @(#) $Id: tclCmdIL.c,v 1.137.2.9 2010/06/22 12:12:48 dkf Exp $
  */
 
 #include "tclInt.h"
@@ -1044,7 +1044,7 @@ InfoFrameCmd(
 	int levels =
 		(iPtr->cmdFramePtr == NULL ? 0 : iPtr->cmdFramePtr->level);
 
-	Tcl_SetIntObj(Tcl_GetObjResult(interp), levels);
+	Tcl_SetObjResult(interp, Tcl_NewIntObj (levels));
 	return TCL_OK;
     } else if (objc != 2) {
 	Tcl_WrongNumArgs(interp, 1, objv, "?number?");
@@ -1125,6 +1125,8 @@ TclInfoFrame(
 	"eval", "eval", "eval", "precompiled", "source", "proc"
     };
     Tcl_Obj *tmpObj;
+    Proc *procPtr =
+	framePtr->framePtr ? framePtr->framePtr->procPtr : NULL;
 
    /*
      * Pull the information and construct the dictionary to return, as list.
@@ -1156,7 +1158,7 @@ TclInfoFrame(
 	 */
 
 	ADD_PAIR("type", Tcl_NewStringObj(typeString[framePtr->type], -1));
-	ADD_PAIR("line", Tcl_NewIntObj(framePtr->line[0]));
+	ADD_PAIR("line", Tcl_NewIntObj(1));
 
 	/*
 	 * We put a duplicate of the command list obj into the result to
@@ -1181,8 +1183,6 @@ TclInfoFrame(
 	 * Execution of bytecode. Talk to the BC engine to fill out the frame.
 	 */
 
-	Proc *procPtr =
-		framePtr->framePtr ? framePtr->framePtr->procPtr : NULL;
 	CmdFrame *fPtr;
 
 	fPtr = (CmdFrame *) TclStackAlloc(interp, sizeof(CmdFrame));
@@ -1202,7 +1202,9 @@ TclInfoFrame(
 	 */
 
 	ADD_PAIR("type", Tcl_NewStringObj(typeString[fPtr->type], -1));
-	ADD_PAIR("line", Tcl_NewIntObj(fPtr->line[0]));
+	if (fPtr->line) {
+	    ADD_PAIR("line", Tcl_NewIntObj(fPtr->line[0]));
+	}
 
 	if (fPtr->type == TCL_LOCATION_SOURCE) {
 	    ADD_PAIR("file", fPtr->data.eval.path);
@@ -1216,44 +1218,6 @@ TclInfoFrame(
 
 	ADD_PAIR("cmd",
 		Tcl_NewStringObj(fPtr->cmd.str.cmd, fPtr->cmd.str.len));
-
-	if (procPtr != NULL) {
-	    Tcl_HashEntry *namePtr = procPtr->cmdPtr->hPtr;
-
-	    if (namePtr) {
-		/*
-		 * This is a regular command.
-		 */
-
-		char *procName = Tcl_GetHashKey(namePtr->tablePtr, namePtr);
-		char *nsName = procPtr->cmdPtr->nsPtr->fullName;
-
-		ADD_PAIR("proc", Tcl_NewStringObj(nsName, -1));
-
-		if (strcmp(nsName, "::") != 0) {
-		    Tcl_AppendToObj(lv[lc-1], "::", -1);
-		}
-		Tcl_AppendToObj(lv[lc-1], procName, -1);
-	    } else if (procPtr->cmdPtr->clientData) {
-		ExtraFrameInfo *efiPtr = procPtr->cmdPtr->clientData;
-		int i;
-
-		/*
-		 * This is a non-standard command. Luckily, it's told us how
-		 * to render extra information about its frame.
-		 */
-
-		for (i=0 ; i<efiPtr->length ; i++) {
-		    lv[lc++] = Tcl_NewStringObj(efiPtr->fields[i].name, -1);
-		    if (efiPtr->fields[i].proc) {
-			lv[lc++] = efiPtr->fields[i].proc(
-				efiPtr->fields[i].clientData);
-		    } else {
-			lv[lc++] = efiPtr->fields[i].clientData;
-		    }
-		}
-	    }
-	}
 	TclStackFree(interp, fPtr);
 	break;
     }
@@ -1279,6 +1243,49 @@ TclInfoFrame(
     case TCL_LOCATION_PROC:
 	Tcl_Panic("TCL_LOCATION_PROC found in standard frame");
 	break;
+    }
+
+    /*
+     * 'proc'. Common to all frame types. Conditional on having an associated
+     * Procedure CallFrame.
+     */
+
+    if (procPtr != NULL) {
+	Tcl_HashEntry *namePtr = procPtr->cmdPtr->hPtr;
+
+	if (namePtr) {
+	    /*
+	     * This is a regular command.
+	     */
+
+	    char *procName = Tcl_GetHashKey(namePtr->tablePtr, namePtr);
+	    char *nsName = procPtr->cmdPtr->nsPtr->fullName;
+
+	    ADD_PAIR("proc", Tcl_NewStringObj(nsName, -1));
+
+	    if (strcmp(nsName, "::") != 0) {
+		Tcl_AppendToObj(lv[lc-1], "::", -1);
+	    }
+	    Tcl_AppendToObj(lv[lc-1], procName, -1);
+	} else if (procPtr->cmdPtr->clientData) {
+	    ExtraFrameInfo *efiPtr = procPtr->cmdPtr->clientData;
+	    int i;
+
+	    /*
+	     * This is a non-standard command. Luckily, it's told us how to
+	     * render extra information about its frame.
+	     */
+
+	    for (i=0 ; i<efiPtr->length ; i++) {
+		lv[lc++] = Tcl_NewStringObj(efiPtr->fields[i].name, -1);
+		if (efiPtr->fields[i].proc) {
+		    lv[lc++] =
+			efiPtr->fields[i].proc(efiPtr->fields[i].clientData);
+		} else {
+		    lv[lc++] = efiPtr->fields[i].clientData;
+		}
+	    }
+	}
     }
 
     /*
@@ -2398,7 +2405,7 @@ Tcl_LrepeatObjCmd(
     register Tcl_Obj *CONST objv[])
 				/* The argument objects. */
 {
-    int elementCount, i, result;
+    int elementCount, i, result, totalElems;
     Tcl_Obj *listPtr, **dataArray;
     List *listRepPtr;
 
@@ -2428,11 +2435,27 @@ Tcl_LrepeatObjCmd(
     objv += 2;
 
     /*
+     * Final sanity check. Total number of elements must fit in a signed
+     * integer. We also limit the number of elements to 512M-1 so allocations
+     * on 32-bit machines are guaranteed to be less than 2GB! [Bug 2130992]
+     */
+
+    totalElems = objc * elementCount;
+    if (totalElems/objc != elementCount || totalElems/elementCount != objc) {
+	Tcl_AppendResult(interp, "too many elements in result list", NULL);
+	return TCL_ERROR;
+    }
+    if (totalElems >= 0x20000000) {
+	Tcl_AppendResult(interp, "too many elements in result list", NULL);
+	return TCL_ERROR;
+    }
+
+    /*
      * Get an empty list object that is allocated large enough to hold each
      * init value elementCount times.
      */
 
-    listPtr = Tcl_NewListObj(elementCount*objc, NULL);
+    listPtr = Tcl_NewListObj(totalElems, NULL);
     listRepPtr = (List *) listPtr->internalRep.twoPtrValue.ptr1;
     listRepPtr->elemCount = elementCount*objc;
     dataArray = &listRepPtr->elements;
@@ -3358,7 +3381,7 @@ Tcl_LsetObjCmd(
      */
 
     if (objc < 3) {
-	Tcl_WrongNumArgs(interp, 1, objv, "listVar index ?index...? value");
+	Tcl_WrongNumArgs(interp, 1, objv, "listVar ?index? ?index...? value");
 	return TCL_ERROR;
     }
 
@@ -3435,7 +3458,7 @@ Tcl_LsortObjCmd(
     int objc,			/* Number of arguments. */
     Tcl_Obj *CONST objv[])	/* Argument values. */
 {
-    int i, j, index, unique, indices, length, nocase = 0, sortMode, indexc;
+    int i, j, index, indices, length, nocase = 0, sortMode, indexc;
     Tcl_Obj *resultPtr, *cmdPtr, **listObjPtrs, *listObj, *indexPtr;
     SortElement *elementArray, *elementPtr;
     SortInfo sortInfo;		/* Information about this sort that needs to
@@ -3474,11 +3497,13 @@ Tcl_LsortObjCmd(
     sortInfo.interp = interp;
     sortInfo.resultCode = TCL_OK;    
     cmdPtr = NULL;
-    unique = 0;
     indices = 0;
     for (i = 1; i < objc-1; i++) {
 	if (Tcl_GetIndexFromObj(interp, objv[i], switches, "option", 0,
 		&index) != TCL_OK) {
+	    if (sortInfo.indexc > 1) {
+		ckfree((char *) sortInfo.indexv);
+	    }
 	    return TCL_ERROR;
 	}
 	switch ((enum Lsort_Switches) index) {
@@ -3570,7 +3595,6 @@ Tcl_LsortObjCmd(
 	    sortInfo.sortMode = SORTMODE_REAL;
 	    break;
 	case LSORT_UNIQUE:
-	    unique = 1;
 	    sortInfo.unique = 1;
 	    break;
 	case LSORT_INDICES:

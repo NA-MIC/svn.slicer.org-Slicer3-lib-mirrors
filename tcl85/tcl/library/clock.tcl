@@ -13,7 +13,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: clock.tcl,v 1.47 2008/02/27 02:08:27 kennykb Exp $
+# RCS: @(#) $Id: clock.tcl,v 1.47.2.9 2009/10/29 01:17:03 kennykb Exp $
 #
 #----------------------------------------------------------------------
 
@@ -687,7 +687,8 @@ proc ::tcl::clock::format { args } {
     # name in the 'FormatProc' array to avoid losing its internal
     # representation, which contains the name resolution.
     
-    set procName ::tcl::clock::formatproc'$format'$locale
+    set procName formatproc'$format'$locale
+    set procName [namespace current]::[string map {: {\:} \\ {\\}} $procName]
     if {[info exists FormatProc($procName)]} {
 	set procName $FormatProc($procName)
     } else {
@@ -1368,7 +1369,7 @@ proc ::tcl::clock::FreeScan { string base timezone locale } {
 	    [dict get $date dayOfMonth]
     } result]
     if { $status != 0 } {
-	return -code error "unable to convert date-time string \"$string\""
+	return -code error "unable to convert date-time string \"$string\": $result"
     }
 
     lassign $result parseDate parseTime parseZone parseRel \
@@ -1531,7 +1532,8 @@ proc ::tcl::clock::ParseClockScanFormat {formatString locale} {
     # Check whether the format has been parsed previously, and return
     # the existing recognizer if it has.
 
-    set procName [namespace current]::scanproc'$formatString'$locale
+    set procName scanproc'$formatString'$locale
+    set procName [namespace current]::[string map {: {\:} \\ {\\}} $procName]
     if { [namespace which $procName] != {} } {
 	return $procName
     }
@@ -1994,6 +1996,20 @@ proc ::tcl::clock::ParseClockScanFormat {formatString locale} {
     append procBody $postcode
     append procBody [list set changeover [mc GREGORIAN_CHANGE_DATE]] \n
 
+    # Get time zone if needed
+
+    if { ![dict exists $fieldSet seconds] 
+	 && ![dict exists $fieldSet starDate] } {
+	if { [dict exists $fieldSet tzName] } {
+	    append procBody {
+		set timeZone [dict get $date tzName]
+	    }
+	}
+	append procBody {
+	    ::tcl::clock::SetupTimeZone $timeZone
+	}
+    }
+
     # Add code that gets Julian Day Number from the fields.
 
     append procBody [MakeParseCodeFromFields $fieldSet $DateParseActions]
@@ -2016,17 +2032,7 @@ proc ::tcl::clock::ParseClockScanFormat {formatString locale} {
 			+ ( 86400 * wide([dict get $date julianDay]) )
 			+ [dict get $date secondOfDay] }]
 	}
-    }
-
-    if { ![dict exists $fieldSet seconds] 
-	 && ![dict exists $fieldSet starDate] } {
-	if { [dict exists $fieldSet tzName] } {
-	    append procBody {
-		set timeZone [dict get $date tzName]
-	    }
-	}
 	append procBody {
-	    ::tcl::clock::SetupTimeZone $timeZone
 	    set date [::tcl::clock::ConvertLocalToUTC $date[set date {}] \
 			  $TZData($timeZone) \
 			  $changeover]
@@ -2557,25 +2563,28 @@ proc ::tcl::clock::LocalizeFormat { locale format } {
     }
     set inFormat $format
 
-    # Handle locale-dependent format groups by mapping them out of
-    # the input string.  Note that the order of the [string map]
-    # operations is significant because earlier formats can refer
-    # to later ones; for example %c can refer to %X, which in turn
-    # can refer to %T.
+    # Handle locale-dependent format groups by mapping them out of the format
+    # string.  Note that the order of the [string map] operations is
+    # significant because later formats can refer to later ones; for example
+    # %c can refer to %X, which in turn can refer to %T.
     
-    set format [string map [list %c [mc DATE_TIME_FORMAT] \
-				%Ec [mc LOCALE_DATE_TIME_FORMAT]] $format]
-    set format [string map [list %x [mc DATE_FORMAT] \
-				%Ex [mc LOCALE_DATE_FORMAT] \
-				%X [mc TIME_FORMAT] \
-				%EX [mc LOCALE_TIME_FORMAT]] $format]
-    set format [string map [list %r [mc TIME_FORMAT_12] \
-				%R [mc TIME_FORMAT_24] \
-				%T [mc TIME_FORMAT_24_SECS]] $format]
-    set format [string map [list %D %m/%d/%Y \
-				%EY [mc LOCALE_YEAR_FORMAT]\
-				%+ {%a %b %e %H:%M:%S %Z %Y}] $format]
-
+    set list {
+	%% %%
+	%D %m/%d/%Y
+	%+ {%a %b %e %H:%M:%S %Z %Y}
+    }
+    lappend list %EY [string map $list [mc LOCALE_YEAR_FORMAT]]
+    lappend list %T  [string map $list [mc TIME_FORMAT_24_SECS]]
+    lappend list %R  [string map $list [mc TIME_FORMAT_24]]
+    lappend list %r  [string map $list [mc TIME_FORMAT_12]]
+    lappend list %X  [string map $list [mc TIME_FORMAT]]
+    lappend list %EX [string map $list [mc LOCALE_TIME_FORMAT]]
+    lappend list %x  [string map $list [mc DATE_FORMAT]]
+    lappend list %Ex [string map $list [mc LOCALE_DATE_FORMAT]]
+    lappend list %c  [string map $list [mc DATE_TIME_FORMAT]]
+    lappend list %Ec [string map $list [mc LOCALE_DATE_TIME_FORMAT]]
+    set format [string map $list $format]
+				       
     dict set McLoaded $locale FORMAT $inFormat $format
     return $format
 }
@@ -3214,7 +3223,7 @@ proc ::tcl::clock::SetupTimeZone { timezone } {
 	    # again with a time zone file - this time without a colon
 
 	    if { [catch { LoadTimeZoneFile $timezone }]
-		 && [catch { ZoneinfoFile $timezone } - opts] } {
+		 && [catch { LoadZoneinfoFile $timezone } - opts] } {
 		dict unset opts -errorinfo
 		return -options $opts "time zone $timezone not found"
 	    }
@@ -3883,23 +3892,50 @@ proc ::tcl::clock::ProcessPosixTimeZone { z } {
 			      * $dstSignum }]
     }
 
-    # Fill in defaults for US DST rules
+    # Fill in defaults for European or US DST rules
+    # US start time is the second Sunday in March
+    # EU start time is the last Sunday in March
+    # US end time is the first Sunday in November.
+    # EU end time is the last Sunday in October
 
     if { [dict get $z startDayOfYear] eq {} 
 	 && [dict get $z startMonth] eq {} } {
+	if {($stdSignum * $stdHours>=0) && ($stdSignum * $stdHours<=12)} {
+	    # EU
+	    dict set z startWeekOfMonth 5
+	    if {$stdHours>2} {
+		dict set z startHours 2
+	    } else {
+		dict set z startHours [expr {$stdHours+1}]
+	    }
+	} else {
+	    # US
+	    dict set z startWeekOfMonth 2
+	    dict set z startHours 2
+	}
 	dict set z startMonth 3
-	dict set z startWeekOfMonth 2
 	dict set z startDayOfWeek 0
-	dict set z startHours 2
 	dict set z startMinutes 0
 	dict set z startSeconds 0
     }
     if { [dict get $z endDayOfYear] eq {} 
 	 && [dict get $z endMonth] eq {} } {
-	dict set z endMonth 11
-	dict set z endWeekOfMonth 1
+	if {($stdSignum * $stdHours>=0) && ($stdSignum * $stdHours<=12)} {
+	    # EU
+	    dict set z endMonth 10
+	    dict set z endWeekOfMonth 5
+	    if {$stdHours>2} {
+		dict set z endHours 3
+	    } else {
+		dict set z endHours [expr {$stdHours+2}]
+	    }
+	} else {
+	    # US
+	    dict set z endMonth 11
+	    dict set z endWeekOfMonth 1
+	    dict set z endHours 2
+	}
 	dict set z endDayOfWeek 0
-	dict set z endHours 2
 	dict set z endMinutes 0
 	dict set z endSeconds 0
     }
@@ -4357,8 +4393,8 @@ proc ::tcl::clock::add { clockval args } {
 		}
 		default {
 		    return -code error \
-			-errorcode [list CLOCK badSwitch $flag] \
-			"bad switch \"$flag\",\
+			-errorcode [list CLOCK badSwitch $a] \
+			"bad switch \"$a\",\
                          must be -gmt, -locale or -timezone"
 		}
 	    }

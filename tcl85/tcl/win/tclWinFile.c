@@ -11,7 +11,7 @@
  * See the file "license.terms" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclWinFile.c,v 1.95 2007/12/13 15:28:44 dgp Exp $
+ * RCS: @(#) $Id: tclWinFile.c,v 1.95.2.4 2010/04/19 07:40:41 nijtmans Exp $
  */
 
 /* #define _WIN32_WINNT	0x0500 */
@@ -123,6 +123,7 @@ typedef struct _REPARSE_DATA_BUFFER {
 	    WORD SubstituteNameLength;
 	    WORD PrintNameOffset;
 	    WORD PrintNameLength;
+	    ULONG Flags;
 	    WCHAR PathBuffer[1];
 	} SymbolicLinkReparseBuffer;
 	struct {
@@ -225,7 +226,7 @@ WinLink(
 {
     WCHAR tempFileName[MAX_PATH];
     TCHAR *tempFilePart;
-    int attr;
+    DWORD attr;
 
     /*
      * Get the full path referenced by the target.
@@ -246,7 +247,7 @@ WinLink(
      */
 
     attr = (*tclWinProcs->getFileAttributesProc)(linkSourcePath);
-    if (attr != 0xffffffff) {
+    if (attr != INVALID_FILE_ATTRIBUTES) {
 	Tcl_SetErrno(EEXIST);
 	return -1;
     }
@@ -270,7 +271,7 @@ WinLink(
      */
 
     attr = (*tclWinProcs->getFileAttributesProc)(linkTargetPath);
-    if (attr == 0xffffffff) {
+    if (attr == INVALID_FILE_ATTRIBUTES) {
 	/*
 	 * The target doesn't exist.
 	 */
@@ -346,7 +347,7 @@ WinReadLink(
 {
     WCHAR tempFileName[MAX_PATH];
     TCHAR *tempFilePart;
-    int attr;
+    DWORD attr;
 
     /*
      * Get the full path referenced by the target.
@@ -367,7 +368,7 @@ WinReadLink(
      */
 
     attr = (*tclWinProcs->getFileAttributesProc)(linkSourcePath);
-    if (attr == 0xffffffff) {
+    if (attr == INVALID_FILE_ATTRIBUTES) {
 	/*
 	 * The source doesn't exist.
 	 */
@@ -445,18 +446,18 @@ WinSymLinkDirectory(
 
     memset(reparseBuffer, 0, sizeof(DUMMY_REPARSE_BUFFER));
     reparseBuffer->ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
-    reparseBuffer->SymbolicLinkReparseBuffer.SubstituteNameLength =
+    reparseBuffer->MountPointReparseBuffer.SubstituteNameLength =
 	    wcslen(nativeTarget) * sizeof(WCHAR);
     reparseBuffer->Reserved = 0;
-    reparseBuffer->SymbolicLinkReparseBuffer.PrintNameLength = 0;
-    reparseBuffer->SymbolicLinkReparseBuffer.PrintNameOffset =
-	    reparseBuffer->SymbolicLinkReparseBuffer.SubstituteNameLength
+    reparseBuffer->MountPointReparseBuffer.PrintNameLength = 0;
+    reparseBuffer->MountPointReparseBuffer.PrintNameOffset =
+	    reparseBuffer->MountPointReparseBuffer.SubstituteNameLength
 	    + sizeof(WCHAR);
-    memcpy(reparseBuffer->SymbolicLinkReparseBuffer.PathBuffer, nativeTarget,
+    memcpy(reparseBuffer->MountPointReparseBuffer.PathBuffer, nativeTarget,
 	    sizeof(WCHAR)
-	    + reparseBuffer->SymbolicLinkReparseBuffer.SubstituteNameLength);
+	    + reparseBuffer->MountPointReparseBuffer.SubstituteNameLength);
     reparseBuffer->ReparseDataLength =
-	    reparseBuffer->SymbolicLinkReparseBuffer.SubstituteNameLength+12;
+	    reparseBuffer->MountPointReparseBuffer.SubstituteNameLength+12;
 
     return NativeWriteReparse(linkDirPath, reparseBuffer);
 }
@@ -604,12 +605,12 @@ WinReadLinkDirectory(
 	 */
 
 	offset = 0;
-	if (reparseBuffer->SymbolicLinkReparseBuffer.PathBuffer[0] == L'\\') {
+	if (reparseBuffer->MountPointReparseBuffer.PathBuffer[0] == L'\\') {
 	    /*
 	     * Check whether this is a mounted volume.
 	     */
 
-	    if (wcsncmp(reparseBuffer->SymbolicLinkReparseBuffer.PathBuffer,
+	    if (wcsncmp(reparseBuffer->MountPointReparseBuffer.PathBuffer,
 		    L"\\??\\Volume{",11) == 0) {
 		char drive;
 
@@ -618,7 +619,7 @@ WinReadLinkDirectory(
 		 * to fix here. It doesn't seem very well documented.
 		 */
 
-		reparseBuffer->SymbolicLinkReparseBuffer.PathBuffer[1]=L'\\';
+		reparseBuffer->MountPointReparseBuffer.PathBuffer[1]=L'\\';
 
 		/*
 		 * Check if a corresponding drive letter exists, and use that
@@ -626,7 +627,7 @@ WinReadLinkDirectory(
 		 */
 
 		drive = TclWinDriveLetterForVolMountPoint(
-			reparseBuffer->SymbolicLinkReparseBuffer.PathBuffer);
+			reparseBuffer->MountPointReparseBuffer.PathBuffer);
 		if (drive != -1) {
 		    char driveSpec[3] = {
 			'\0', ':', '\0'
@@ -649,14 +650,14 @@ WinReadLinkDirectory(
 		 */
 
 		goto invalidError;
-	    } else if (wcsncmp(reparseBuffer->SymbolicLinkReparseBuffer
+	    } else if (wcsncmp(reparseBuffer->MountPointReparseBuffer
 		    .PathBuffer, L"\\\\?\\",4) == 0) {
 		/*
 		 * Strip off the prefix.
 		 */
 
 		offset = 4;
-	    } else if (wcsncmp(reparseBuffer->SymbolicLinkReparseBuffer
+	    } else if (wcsncmp(reparseBuffer->MountPointReparseBuffer
 		    .PathBuffer, L"\\??\\",4) == 0) {
 		/*
 		 * Strip off the prefix.
@@ -667,8 +668,8 @@ WinReadLinkDirectory(
 	}
 
 	Tcl_WinTCharToUtf((const char *)
-		reparseBuffer->SymbolicLinkReparseBuffer.PathBuffer,
-		(int) reparseBuffer->SymbolicLinkReparseBuffer
+		reparseBuffer->MountPointReparseBuffer.PathBuffer,
+		(int) reparseBuffer->MountPointReparseBuffer
 		.SubstituteNameLength, &ds);
 
 	copy = Tcl_DStringValue(&ds)+offset;
@@ -775,7 +776,6 @@ NativeWriteReparse(
 	TclWinConvertError(GetLastError());
 	return -1;
     }
-
     hFile = (*tclWinProcs->createFileProc)(linkDirPath, GENERIC_WRITE, 0,
 	    NULL, OPEN_EXISTING,
 	    FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_BACKUP_SEMANTICS, NULL);
@@ -1262,8 +1262,8 @@ WinIsReserved(
 	    }
 	}
 
-    } else if (!stricmp(path, "prn") || !stricmp(path, "nul")
-	    || !stricmp(path, "aux")) {
+    } else if (!strcasecmp(path, "prn") || !strcasecmp(path, "nul")
+	    || !strcasecmp(path, "aux")) {
 	/*
 	 * Have match for 'prn', 'nul' or 'aux'.
 	 */
@@ -1627,7 +1627,7 @@ NativeAccess(
 	}
 
 	/*
-	 * Now size contains the size of buffer needed
+	 * Now size contains the size of buffer needed.
 	 */
 
 	sdPtr = (SECURITY_DESCRIPTOR *) HeapAlloc(GetProcessHeap(), 0, size);
@@ -1637,7 +1637,7 @@ NativeAccess(
 	}
 
 	/*
-	 * Call GetFileSecurity() for real
+	 * Call GetFileSecurity() for real.
 	 */
 
 	if (!(*tclWinProcs->getFileSecurityProc)(nativePath,
@@ -1797,9 +1797,9 @@ NativeIsExec(
 	     * executable, whereas access did not.
 	     */
 
-	    if ((stricmp(p, "exe") == 0)
-		    || (stricmp(p, "com") == 0)
-		    || (stricmp(p, "bat") == 0)) {
+	    if ((strcasecmp(p, "exe") == 0)
+		    || (strcasecmp(p, "com") == 0)
+		    || (strcasecmp(p, "bat") == 0)) {
 		/*
 		 * File that ends with .exe, .com, or .bat is executable.
 		 */
@@ -2552,6 +2552,7 @@ TclpObjNormalizePath(
     char *lastValidPathEnd = NULL;
     Tcl_DString dsNorm;		/* This will hold the normalized string. */
     char *path, *currentPathEndPosition;
+    Tcl_Obj *temp = NULL;
 
     Tcl_DStringInit(&dsNorm);
     path = Tcl_GetString(pathPtr);
@@ -2709,7 +2710,6 @@ TclpObjNormalizePath(
 	 * We're on WinNT (or 2000 or XP; something with an NT core).
 	 */
 
-	Tcl_Obj *temp = NULL;
 	int isDrive = 1;
 	Tcl_DString ds;
 
@@ -2981,6 +2981,15 @@ TclpObjNormalizePath(
 	Tcl_DStringFree(&dsTemp);
     }
     Tcl_DStringFree(&dsNorm);
+
+    /*
+     * This must be done after we are totally finished with 'path' as we are
+     * sharing the same underlying string.
+     */
+
+    if (temp != NULL) {
+	Tcl_DecrRefCount(temp);
+    }
     return nextCheckpoint;
 }
 

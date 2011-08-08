@@ -1,11 +1,21 @@
-/auto.tcl/1.28/Fri Nov  3 00:34:52 2006//Tcore-8-5-2
-/clock.tcl/1.47/Wed Feb 27 02:08:27 2008//Tcore-8-5-2
-/history.tcl/1.7/Sat Jul 23 04:12:49 2005//Tcore-8-5-2
-/init.tcl/1.104/Fri Mar 28 17:31:44 2008//Tcore-8-5-2
-/package.tcl/1.35/Fri Nov  3 00:34:52 2006//Tcore-8-5-2
-/parray.tcl/1.4/Fri Jun  3 10:02:23 2005//Tcore-8-5-2
-/safe.tcl/1.16/Fri Nov  3 00:34:52 2006//Tcore-8-5-2
-/tclIndex/1.10/Tue Oct  2 16:31:47 2007//Tcore-8-5-2
-/tm.tcl/1.14/Tue Mar 18 18:14:57 2008//Tcore-8-5-2
-/word.tcl/1.10/Thu Dec 13 15:26:03 2007//Tcore-8-5-2
-D
+D/dde////
+D/encoding////
+D/http////
+D/http1.0////
+D/msgcat////
+D/msgs////
+D/opt////
+D/platform////
+D/reg////
+D/tcltest////
+D/tzdata////
+/auto.tcl/1.28/Mon Aug  8 21:35:48 2011//Tcore-8-5-9
+/clock.tcl/1.47.2.9/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/history.tcl/1.7/Mon Aug  8 21:35:48 2011//Tcore-8-5-9
+/init.tcl/1.104.2.15/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/package.tcl/1.35.4.1/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/parray.tcl/1.4/Mon Aug  8 21:35:48 2011//Tcore-8-5-9
+/safe.tcl/1.16.4.8/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/tclIndex/1.10.2.1/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/tm.tcl/1.14.2.3/Mon Aug  8 21:41:48 2011//Tcore-8-5-9
+/word.tcl/1.10/Mon Aug  8 21:35:48 2011//Tcore-8-5-9

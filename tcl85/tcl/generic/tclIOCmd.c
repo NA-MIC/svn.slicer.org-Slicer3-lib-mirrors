@@ -8,7 +8,7 @@
  * See the file "license.terms" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclIOCmd.c,v 1.51 2007/12/13 15:23:18 dgp Exp $
+ * RCS: @(#) $Id: tclIOCmd.c,v 1.51.2.3 2010/02/11 15:25:25 dkf Exp $
  */
 
 #include "tclInt.h"
@@ -1128,7 +1128,7 @@ Tcl_OpenObjCmd(
 		break;
 	    }
 	    chan = Tcl_OpenCommandChannel(interp, cmdObjc, cmdArgv, flags);
-	    if (binary) {
+	    if (binary && chan) {
 		Tcl_SetChannelOption(interp, chan, "-translation", "binary");
 	    }
 	}
@@ -1642,6 +1642,15 @@ Tcl_FcopyObjCmd(
 	case FcopySize:
 	    if (TclGetIntFromObj(interp, objv[i+1], &toRead) != TCL_OK) {
 		return TCL_ERROR;
+	    }
+	    if (toRead<0) {
+		/*
+		 * Handle all negative sizes like -1, meaning 'copy all'. By
+		 * resetting toRead we avoid changes in the core copying
+		 * functions (which explicitly check for -1 and crash on any
+		 * other negative value).
+		 */
+		toRead = -1;
 	    }
 	    break;
 	case FcopyCommand:

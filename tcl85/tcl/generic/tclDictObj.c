@@ -9,7 +9,7 @@
  * See the file "license.terms" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclDictObj.c,v 1.56 2007/12/13 15:23:16 dgp Exp $
+ * RCS: @(#) $Id: tclDictObj.c,v 1.56.2.4 2010/05/19 21:47:49 ferrieux Exp $
  */
 
 #include "tclInt.h"
@@ -588,15 +588,6 @@ SetDictFromAny(
 	}
 
 	/*
-	 * If the list is shared its string rep must not be lost so it still
-	 * is the same list.
-	 */
-
-	if (Tcl_IsShared(objPtr)) {
-	    (void) TclGetString(objPtr);
-	}
-
-	/*
 	 * Build the hash of key/value pairs.
 	 */
 
@@ -610,6 +601,14 @@ SetDictFromAny(
 	    hPtr = CreateChainEntry(dict, objv[i], &isNew);
 	    if (!isNew) {
 		Tcl_Obj *discardedValue = Tcl_GetHashValue(hPtr);
+
+		/*
+		 * Not really a well-formed dictionary as there are duplicate
+		 * keys, so better get the string rep here so that we can
+		 * convert back.
+		 */
+
+		(void) Tcl_GetString(objPtr);
 
 		TclDecrRefCount(discardedValue);
 	    }
@@ -2138,10 +2137,11 @@ DictIncrCmd(
 	 */
 
 	char *saved = dictPtr->bytes;
+	Tcl_Obj *oldPtr = dictPtr;
 
 	dictPtr->bytes = NULL;
 	dictPtr = Tcl_DuplicateObj(dictPtr);
-	dictPtr->bytes = saved;
+	oldPtr->bytes = saved;
     }
     if (valuePtr == NULL) {
 	/*
@@ -2159,6 +2159,12 @@ DictIncrCmd(
 	    if (code != TCL_OK) {
 		Tcl_AddErrorInfo(interp, "\n    (reading increment)");
 	    } else {
+		/*
+		 * Remember to dispose with the bignum as we're not actually
+		 * using it directly. [Bug 2874678]
+		 */
+
+		mp_clear(&increment);
 		Tcl_DictObjPut(interp, dictPtr, objv[2], objv[3]);
 	    }
 	} else {

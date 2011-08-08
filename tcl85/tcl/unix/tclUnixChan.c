@@ -10,7 +10,7 @@
  * See the file "license.terms" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclUnixChan.c,v 1.93 2008/03/03 14:54:43 rmax Exp $
+ * RCS: @(#) $Id: tclUnixChan.c,v 1.93.2.5 2010/03/01 15:25:27 ferrieux Exp $
  */
 
 #include "tclInt.h"	/* Internal definitions for Tcl. */
@@ -2132,15 +2132,24 @@ TcpGetOptionProc(
 	    ((len > 1) && (optionName[1] == 's') &&
 	    (strncmp(optionName, "-sockname", len) == 0))) {
 	if (getsockname(statePtr->fd, (struct sockaddr *) &sockname,
-		&size) >= 0) {
+                        &size) >= 0) {
 	    if (len == 0) {
 		Tcl_DStringAppendElement(dsPtr, "-sockname");
 		Tcl_DStringStartSublist(dsPtr);
 	    }
 	    Tcl_DStringAppendElement(dsPtr, inet_ntoa(sockname.sin_addr));
-	    hostEntPtr = TclpGetHostByAddr(			/* INTL: Native. */
-		    (char *) &sockname.sin_addr,
-		    sizeof(sockname.sin_addr), AF_INET);
+            if (sockname.sin_addr.s_addr == INADDR_ANY) {
+		/*
+		 * We don't want to resolve INADDR_ANY; it can sometimes cause
+		 * problems (and never has a name).
+		 */
+                
+                hostEntPtr = NULL;
+            } else {
+                hostEntPtr = TclpGetHostByAddr(		/* INTL: Native. */
+                                               (char *) &sockname.sin_addr,
+                                               sizeof(sockname.sin_addr), AF_INET);
+            }
 	    if (hostEntPtr != NULL) {
 		Tcl_DString ds;
 
@@ -2279,14 +2288,13 @@ CreateSocket(
 				 * attempt to do an async connect. Otherwise
 				 * do a synchronous connect or bind. */
 {
-    int status, sock, asyncConnect, curState, origState;
+    int status, sock, asyncConnect, curState;
     struct sockaddr_in sockaddr;	/* socket address */
     struct sockaddr_in mysockaddr;	/* Socket address for client */
     TcpState *statePtr;
     const char *errorMsg = NULL;
 
     sock = -1;
-    origState = 0;
     if (!CreateSocketAddress(&sockaddr, host, port, 0, &errorMsg)) {
 	goto addressError;
     }
@@ -2986,6 +2994,8 @@ Tcl_GetOpenFile(
     return TCL_ERROR;
 }
 
+#ifndef HAVE_COREFOUNDATION	/* Darwin/Mac OS X CoreFoundation notifier is
+				 * in tclMacOSXNotify.c */
 /*
  *----------------------------------------------------------------------
  *
@@ -3023,12 +3033,21 @@ TclUnixWaitForFile(
 {
     Tcl_Time abortTime = {0, 0}, now; /* silence gcc 4 warning */
     struct timeval blockTime, *timeoutPtr;
-    int index, numFound, result = 0;
-    fd_mask bit;
-    fd_mask readyMasks[3*MASK_SIZE];
-    fd_mask *maskp[3];		/* This array reflects the readable/writable
-				 * conditions that were found to exist by the
-				 * last call to select. */
+    int numFound, result = 0;
+    fd_set readableMask;
+    fd_set writableMask;
+    fd_set exceptionalMask;
+
+#ifndef _DARWIN_C_SOURCE
+    /*
+     * Sanity check fd.
+     */
+
+    if (fd >= FD_SETSIZE) {
+	Tcl_Panic("TclUnixWaitForFile can't handle file id %d", fd);
+	/* must never get here, or select masks overrun will occur below */
+    }
+#endif
 
     /*
      * If there is a non-zero finite timeout, compute the time when we give
@@ -3053,16 +3072,12 @@ TclUnixWaitForFile(
     }
 
     /*
-     * Initialize the ready masks and compute the mask offsets.
+     * Initialize the select masks.
      */
 
-    if (fd >= FD_SETSIZE) {
-	Tcl_Panic("TclWaitForFile can't handle file id %d", fd);
-	/* must never get here, or readyMasks overrun will occur below */
-    }
-    memset(readyMasks, 0, 3*MASK_SIZE*sizeof(fd_mask));
-    index = fd / (NBBY*sizeof(fd_mask));
-    bit = ((fd_mask)1) << (fd % (NBBY*sizeof(fd_mask)));
+    FD_ZERO(&readableMask);
+    FD_ZERO(&writableMask);
+    FD_ZERO(&exceptionalMask);
 
     /*
      * Loop in a mini-event loop of our own, waiting for either the file to
@@ -3084,41 +3099,33 @@ TclUnixWaitForFile(
 	}
 
 	/*
-	 * Set the appropriate bit in the ready masks for the fd.
+	 * Setup the select masks for the fd.
 	 */
 
-	if (mask & TCL_READABLE) {
-	    readyMasks[index] |= bit;
+	if (mask & TCL_READABLE)  {
+	    FD_SET(fd, &readableMask);
 	}
-	if (mask & TCL_WRITABLE) {
-	    (readyMasks+MASK_SIZE)[index] |= bit;
+	if (mask & TCL_WRITABLE)  {
+	    FD_SET(fd, &writableMask);
 	}
 	if (mask & TCL_EXCEPTION) {
-	    (readyMasks+2*(MASK_SIZE))[index] |= bit;
+	    FD_SET(fd, &exceptionalMask);
 	}
 
 	/*
 	 * Wait for the event or a timeout.
 	 */
 
-	/*
-	 * This is needed to satisfy GCC 3.3's strict aliasing rules.
-	 */
-
-	maskp[0] = &readyMasks[0];
-	maskp[1] = &readyMasks[MASK_SIZE];
-	maskp[2] = &readyMasks[2*MASK_SIZE];
-	numFound = select(fd+1, (SELECT_MASK *) maskp[0],
-		(SELECT_MASK *) maskp[1],
-		(SELECT_MASK *) maskp[2], timeoutPtr);
+	numFound = select(fd + 1, &readableMask, &writableMask,
+		&exceptionalMask, timeoutPtr);
 	if (numFound == 1) {
-	    if (readyMasks[index] & bit) {
+	    if (FD_ISSET(fd, &readableMask))   {
 		SET_BITS(result, TCL_READABLE);
 	    }
-	    if ((readyMasks+MASK_SIZE)[index] & bit) {
+	    if (FD_ISSET(fd, &writableMask))  {
 		SET_BITS(result, TCL_WRITABLE);
 	    }
-	    if ((readyMasks+2*(MASK_SIZE))[index] & bit) {
+	    if (FD_ISSET(fd, &exceptionalMask)) { 
 		SET_BITS(result, TCL_EXCEPTION);
 	    }
 	    result &= mask;
@@ -3145,6 +3152,7 @@ TclUnixWaitForFile(
     }
     return result;
 }
+#endif /* HAVE_COREFOUNDATION */
 
 /*
  *----------------------------------------------------------------------
@@ -3193,5 +3201,7 @@ FileTruncateProc(
  * mode: c
  * c-basic-offset: 4
  * fill-column: 78
+ * tab-width: 8
+ * indent-tabs-mode: nil
  * End:
  */

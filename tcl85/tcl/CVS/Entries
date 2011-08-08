@@ -1,12 +1,21 @@
-/ChangeLog/1.3975/Fri Mar 28 17:31:39 2008//Tcore-8-5-2
-/ChangeLog.1999/1.3/Thu Oct 11 12:28:41 2007//Tcore-8-5-2
-/ChangeLog.2000/1.2/Thu Oct 11 12:28:41 2007//Tcore-8-5-2
-/ChangeLog.2001/1.2/Thu Oct 11 12:28:41 2007//Tcore-8-5-2
-/ChangeLog.2002/1.2/Thu Oct 11 12:28:41 2007//Tcore-8-5-2
-/ChangeLog.2003/1.2/Thu Oct 11 12:28:41 2007//Tcore-8-5-2
-/ChangeLog.2004/1.2/Thu Oct 11 12:28:41 2007//Tcore-8-5-2
-/ChangeLog.2005/1.2/Thu Oct 11 12:28:41 2007//Tcore-8-5-2
-/README/1.67/Wed Feb 13 18:00:33 2008//Tcore-8-5-2
-/changes/1.136/Fri Mar 28 16:45:36 2008//Tcore-8-5-2
-/license.terms/1.3/Fri Jul 19 09:17:16 2002//Tcore-8-5-2
-D
+D/compat////
+D/doc////
+D/generic////
+D/library////
+D/macosx////
+D/tests////
+D/tools////
+D/unix////
+D/win////
+D/libtommath////
+/ChangeLog/1.3975.2.390/Mon Aug  8 21:41:46 2011//Tcore-8-5-9
+/ChangeLog.1999/1.3/Mon Aug  8 21:35:51 2011//Tcore-8-5-9
+/ChangeLog.2000/1.2/Mon Aug  8 21:35:51 2011//Tcore-8-5-9
+/ChangeLog.2001/1.2/Mon Aug  8 21:35:51 2011//Tcore-8-5-9
+/ChangeLog.2002/1.2/Mon Aug  8 21:35:51 2011//Tcore-8-5-9
+/ChangeLog.2003/1.2/Mon Aug  8 21:35:51 2011//Tcore-8-5-9
+/ChangeLog.2004/1.2/Mon Aug  8 21:35:51 2011//Tcore-8-5-9
+/ChangeLog.2005/1.2/Mon Aug  8 21:35:51 2011//Tcore-8-5-9
+/README/1.67.2.8/Mon Aug  8 21:41:46 2011//Tcore-8-5-9
+/changes/1.136.2.27/Mon Aug  8 21:41:46 2011//Tcore-8-5-9
+/license.terms/1.3.18.1/Mon Aug  8 21:41:46 2011//Tcore-8-5-9

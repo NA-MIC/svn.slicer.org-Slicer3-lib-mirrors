@@ -10,12 +10,12 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: safe.test,v 1.22 2006/12/05 18:45:51 andreas_kupries Exp $
+# RCS: @(#) $Id: safe.test,v 1.22.4.7 2009/12/30 22:20:57 dkf Exp $
 
 package require Tcl 8.5
 
 if {[lsearch [namespace children] ::tcltest] == -1} {
-    package require tcltest
+    package require tcltest 2
     namespace import -force ::tcltest::*
 }
 
@@ -72,8 +72,8 @@ test safe-2.3 {creating safe interpreters, should have no unexpected aliases} {
     interp create a -safe
     set l [a aliases]
     interp delete a
-    set l
-} {clock}
+    lsort $l
+} {::tcl::mathfunc::max ::tcl::mathfunc::min clock}
 
 test safe-3.1 {calling safe::interpInit is safe} {
     catch {safe::interpDelete a}
@@ -89,7 +89,7 @@ test safe-3.2 {calling safe::interpCreate on trusted interp} {
     set l [lsort [a aliases]]
     safe::interpDelete a
     set l
-} {clock encoding exit file load source}
+} {::tcl::info::nameofexecutable clock encoding exit file glob load source}
 test safe-3.3 {calling safe::interpCreate on trusted interp} {
     catch {safe::interpDelete a}
     safe::interpCreate a
@@ -117,23 +117,7 @@ test safe-4.2 {safe::interpDelete, indirectly} {
     a alias exit safe::interpDelete a
     a eval exit
 } ""
-test safe-4.3 {safe::interpDelete, state array (not a public api)} {
-    catch {safe::interpDelete a}
-    namespace eval safe {set [InterpStateName a](foo) 33}
-    # not an error anymore to call it if interp is already
-    # deleted, to make trhings smooth if it's called twice...
-    catch {safe::interpDelete a} m1
-    catch {namespace eval safe {set [InterpStateName a](foo)}} m2
-    list $m1 $m2
-} "{}\
-   {can't read \"[safe::InterpStateName a](foo)\": no such variable}"
-test safe-4.4 {safe::interpDelete, state array, indirectly (not a public api)} {
-    catch {safe::interpDelete a}
-    safe::interpCreate a
-    namespace eval safe {set [InterpStateName a](foo) 33}
-    a eval exit
-    catch {namespace eval safe {set [InterpStateName a](foo)}} msg
-} 1
+
 test safe-4.5 {safe::interpDelete} {
     catch {safe::interpDelete a}
     safe::interpCreate a
@@ -201,7 +185,7 @@ test safe-7.1 {tests that everything works at high level} {
     safe::interpDelete $i
     set v
 } 1.0
-test safe-7.2 {tests specific path and interpFind/AddToAccessPath} {
+test safe-7.2 {tests specific path and interpFind/AddToAccessPath} -body {
     set i [safe::interpCreate -nostat -nested 1 -accessPath [list [info library]]];
     # should not add anything (p0)
     set token1 [safe::interpAddToAccessPath $i [info library]]
@@ -213,7 +197,7 @@ test safe-7.2 {tests specific path and interpFind/AddToAccessPath} {
 	    [catch {interp eval $i {package require http 1}} msg] $msg \
 	    [safe::interpConfigure $i]\
 	    [safe::interpDelete $i]
-} "{\$p(:0:)} {\$p(:1:)} 1 {can't find package http 1} {-accessPath {[list $tcl_library /dummy/unixlike/test/path]} -statics 0 -nested 1 -deleteHook {}} {}"
+} -match glob -result "{\$p(:0:)} {\$p(:*:)} 1 {can't find package http 1} {-accessPath {[list $tcl_library * /dummy/unixlike/test/path]} -statics 0 -nested 1 -deleteHook {}} {}"
 
 
 # test source control on file name
@@ -224,7 +208,7 @@ test safe-8.1 {safe source control on file} {
     list  [catch {$i eval {source}} msg] \
 	    $msg \
 	    [safe::interpDelete $i] ;
-} {1 {wrong # args: should be "source fileName"} {}}
+} {1 {wrong # args: should be "source ?-encoding E? fileName"} {}}
 test safe-8.2 {safe source control on file} {
     set i "a";
     catch {safe::interpDelete $i}
@@ -232,7 +216,7 @@ test safe-8.2 {safe source control on file} {
     list  [catch {$i eval {source}} msg] \
 	    $msg \
 	    [safe::interpDelete $i] ;
-} {1 {wrong # args: should be "source fileName"} {}}
+} {1 {wrong # args: should be "source ?-encoding E? fileName"} {}}
 test safe-8.3 {safe source control on file} {
     set i "a";
     catch {safe::interpDelete $i}
@@ -315,7 +299,18 @@ test safe-8.8 {safe source forbids -rsrc} {
     list  [catch {$i eval {source -rsrc Init}} msg] \
 	    $msg \
 	    [safe::interpDelete $i] ;
-} {1 {wrong # args: should be "source fileName"} {}}
+} {1 {wrong # args: should be "source ?-encoding E? fileName"} {}}
+test safe-8.9 {safe source and return} -setup {
+    set returnScript [makeFile {return "ok"} return.tcl]
+    catch {safe::interpDelete $i}
+} -body {
+    safe::interpCreate $i
+    set token [safe::interpAddToAccessPath $i [file dirname $returnScript]]
+    $i eval [list source $token/[file tail $returnScript]]
+} -cleanup {
+    catch {safe::interpDelete $i}
+    removeFile $returnScript
+} -result ok
 
 test safe-9.1 {safe interps' deleteHook} {
     set i "a";
@@ -364,7 +359,7 @@ test safe-9.5 {dual specification of nested} {
     list [catch {safe::interpCreate -nested 0 -nestedload} msg] $msg
 } {1 {conflicting values given for -nested and -nestedLoadOk}}
 
-test safe-9.6 {interpConfigure widget like behaviour} {
+test safe-9.6 {interpConfigure widget like behaviour} -body {
    # this test shall work, don't try to "fix it" unless
    # you *really* know what you are doing (ie you are me :p) -- dl
    list [set i [safe::interpCreate \
@@ -381,7 +376,7 @@ test safe-9.6 {interpConfigure widget like behaviour} {
 	 safe::interpConfigure $i]\
 	[safe::interpConfigure $i -deleteHook toto -nosta -nested 0;
 	 safe::interpConfigure $i]
-} {{-accessPath /foo/bar -statics 0 -nested 1 -deleteHook {foo bar}} {-accessPath /foo/bar} {-nested 1} {-statics 0} {-deleteHook {foo bar}} {-accessPath /blah -statics 1 -nested 1 -deleteHook {foo bar}} {-accessPath /blah -statics 0 -nested 0 -deleteHook toto}}
+} -match glob -result {{-accessPath * -statics 0 -nested 1 -deleteHook {foo bar}} {-accessPath *} {-nested 1} {-statics 0} {-deleteHook {foo bar}} {-accessPath * -statics 1 -nested 1 -deleteHook {foo bar}} {-accessPath * -statics 0 -nested 0 -deleteHook toto}}
 
 # testing that nested and statics do what is advertised
 # (we use a static package : Tcltest)
@@ -428,7 +423,7 @@ test safe-11.1 {testing safe encoding} {
 	    [catch {interp eval $i encoding} msg] \
 	    $msg \
 	    [safe::interpDelete $i];
-} {1 {wrong # args: should be "encoding option ?arg ...?"} {}}
+} {1 {wrong # args: should be "encoding option ..."} {}}
 test safe-11.2 {testing safe encoding} {
     set i [safe::interpCreate]
     list \
@@ -479,6 +474,48 @@ test safe-11.8 {testing safe encoding} {
 	    [safe::interpDelete $i];
 } {1 {wrong # args: should be "encoding convertto ?encoding? data"} {}}
 
+test safe-12.1 {glob is restricted [Bug 2906841]} -setup {
+    set i [safe::interpCreate]
+} -body {
+    $i eval glob ../*
+} -returnCodes error -cleanup {
+    safe::interpDelete $i
+} -result "permission denied"
+test safe-12.2 {glob is restricted [Bug 2906841]} -setup {
+    set i [safe::interpCreate]
+} -body {
+    $i eval glob -directory .. *
+} -returnCodes error -cleanup {
+    safe::interpDelete $i
+} -result "permission denied"
+test safe-12.3 {glob is restricted [Bug 2906841]} -setup {
+    set i [safe::interpCreate]
+} -body {
+    $i eval glob -join .. *
+} -returnCodes error -cleanup {
+    safe::interpDelete $i
+} -result "permission denied"
+test safe-12.4 {glob is restricted [Bug 2906841]} -setup {
+    set i [safe::interpCreate]
+} -body {
+    $i eval glob -nocomplain ../*
+} -cleanup {
+    safe::interpDelete $i
+} -result {}
+test safe-12.5 {glob is restricted [Bug 2906841]} -setup {
+    set i [safe::interpCreate]
+} -body {
+    $i eval glob -directory .. -nocomplain *
+} -cleanup {
+    safe::interpDelete $i
+} -result {}
+test safe-12.6 {glob is restricted [Bug 2906841]} -setup {
+    set i [safe::interpCreate]
+} -body {
+    $i eval glob -nocomplain -join .. *
+} -cleanup {
+    safe::interpDelete $i
+} -result {}
 
 set ::auto_path $saveAutoPath
 # cleanup

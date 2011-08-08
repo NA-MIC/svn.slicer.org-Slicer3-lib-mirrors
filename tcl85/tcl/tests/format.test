@@ -10,7 +10,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: format.test,v 1.25 2008/01/10 16:09:23 dgp Exp $
+# RCS: @(#) $Id: format.test,v 1.25.2.2 2009/07/31 16:56:32 dgp Exp $
 
 if {[lsearch [namespace children] ::tcltest] == -1} {
     package require tcltest 2
@@ -496,6 +496,12 @@ test format-15.3 {testing %0..s 0 padding for chars/strings} {
 test format-15.4 {testing %0..s 0 padding for chars/strings} {
     format %05c 61
 } {0000=}
+test format-15.5 {testing %d space padding for integers} {
+    format "(% 1d) (% 1d)" 10 -10
+} {( 10) (-10)}
+test format-15.6 {testing %d plus padding for integers} {
+    format "(%+1d) (%+1d)" 10 -10
+} {(+10) (-10)}
 
 set a "0123456789"
 set b ""
@@ -556,6 +562,10 @@ test format-19.1 {
 test format-19.2 {Bug 1867855} {
     format %llx 0
 } 0
+
+test format-19.3 {Bug 2830354} {
+    string length [format %340f 0]
+} 340
 
 # cleanup
 catch {unset a}

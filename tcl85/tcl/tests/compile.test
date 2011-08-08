@@ -11,7 +11,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: compile.test,v 1.48 2007/12/13 15:26:06 dgp Exp $
+# RCS: @(#) $Id: compile.test,v 1.48.2.2 2009/10/29 17:21:18 dgp Exp $
 
 package require tcltest 2
 namespace import -force ::tcltest::*
@@ -276,7 +276,7 @@ test compile-11.9 {Tcl_Append*: ensure Tcl_ResetResult is used properly} {
 # TclReleaseLiteral. They are only effective when tcl is compiled 
 # with TCL_MEM_DEBUG
 #
-# Special test for leak on interp delete [Bug 467523]. 
+# Special test for leak on interp delete [Bug 467523].
 test compile-12.1 {testing literal leak on interp delete} -setup {
     proc getbytes {} {
 	set lines [split [memory info] "\n"]
@@ -296,6 +296,7 @@ test compile-12.1 {testing literal leak on interp delete} -setup {
     set leakedBytes [expr {$end - $tmp}]
 } -cleanup {
     rename getbytes {}
+    unset -nocomplain end i tmp leakedBytes
 } -result 0
 # Special test for a memory error in a preliminary fix of [Bug 467523]. 
 # It requires executing a helpfile.  Presumably the child process is

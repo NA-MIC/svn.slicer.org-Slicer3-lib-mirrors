@@ -9,7 +9,7 @@
  * See the file "license.terms" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclCompile.h,v 1.90 2008/02/26 20:28:59 jenglish Exp $
+ * RCS: @(#) $Id: tclCompile.h,v 1.90.2.8 2010/02/02 20:51:47 andreas_kupries Exp $
  */
 
 #ifndef _TCLCOMPILATION
@@ -129,18 +129,32 @@ typedef struct CmdLocation {
 
 typedef struct ECL {
     int srcOffset;		/* Command location to find the entry. */
-    int nline;
+    int nline;                  /* Number of words in the command */
     int *line;			/* Line information for all words in the
 				 * command. */
+    int** next;                 /* Transient information used by the compiler
+				 * for tracking of hidden continuation
+				 * lines. */
 } ECL;
 
 typedef struct ExtCmdLoc {
     int type;			/* Context type. */
+    int start;                  /* Starting line for compiled script. Needed
+				 * for the extended recompile check in
+				 * TclCompEvalObj. */
+
     Tcl_Obj *path;		/* Path of the sourced file the command is
 				 * in. */
     ECL *loc;			/* Command word locations (lines). */
     int nloc;			/* Number of allocated entries in 'loc'. */
     int nuloc;			/* Number of used entries in 'loc'. */
+    Tcl_HashTable litInfo;      /* Indexed by bytecode 'PC', to have the
+				 * information accessible per command and
+				 * argument, not per whole bytecode. Value is
+				 * index of command in 'loc', giving us the
+				 * literals to associate with line information
+				 * as command argument, see
+				 * TclArgumentBCEnter() */
 } ExtCmdLoc;
 
 /*
@@ -299,6 +313,13 @@ typedef struct CompileEnv {
 				 * should be issued; they should never be
 				 * issued repeatedly, as that is significantly
 				 * inefficient. */
+    ContLineLoc* clLoc;  /* If not NULL, the table holding the
+			  * locations of the invisible continuation
+			  * lines in the input script, to adjust the
+			  * line counter. */
+    int*         clNext; /* If not NULL, it refers to the next slot in
+			  * clLoc to check for an invisible
+			  * continuation line. */
 } CompileEnv;
 
 /*
@@ -1214,11 +1235,32 @@ MODULE_SCOPE int	TclWordKnownAtCompileTime(Tcl_Token *tokenPtr,
  * DTrace probe macros (NOPs if DTrace support is not enabled).
  */
 
+/*
+ * Define the following macros to enable debug logging of the DTrace proc,
+ * cmd, and inst probes. Note that this does _not_ require a platform with
+ * DTrace, it simply logs all probe output to /tmp/tclDTraceDebug-[pid].log.
+ *
+ * If the second macro is defined, logging to file starts immediately,
+ * otherwise only after the first call to [tcl::dtrace]. Note that the debug
+ * probe data is always computed, even when it is not logged to file.
+ * 
+ * Defining the third macro enables debug logging of inst probes (disabled
+ * by default due to the significant performance impact).
+ */
+
+/*
+#define TCL_DTRACE_DEBUG 1
+#define TCL_DTRACE_DEBUG_LOG_ENABLED 1
+#define TCL_DTRACE_DEBUG_INST_PROBES 1
+*/
+
+#if !(defined(TCL_DTRACE_DEBUG) && defined(__GNUC__))
+
 #ifdef USE_DTRACE
 
 #include "tclDTrace.h"
 
-#if defined(__GNUC__ ) && __GNUC__ > 2
+#if defined(__GNUC__) && __GNUC__ > 2
 /* Use gcc branch prediction hint to minimize cost of DTrace ENABLED checks. */
 #define unlikely(x) (__builtin_expect((x), 0))
 #else
@@ -1260,6 +1302,8 @@ MODULE_SCOPE int	TclWordKnownAtCompileTime(Tcl_Token *tokenPtr,
 #define TCL_DTRACE_TCL_PROBE(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9) \
 	TCL_TCL_PROBE(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9)
 
+#define TCL_DTRACE_DEBUG_LOG()
+
 MODULE_SCOPE void TclDTraceInfo(Tcl_Obj *info, char **args, int *argsi);
 
 #else /* USE_DTRACE */
@@ -1297,6 +1341,100 @@ MODULE_SCOPE void TclDTraceInfo(Tcl_Obj *info, char **args, int *argsi);
 #define TclDTraceInfo(info, args, argsi)    {*args = ""; *argsi = 0;}
 
 #endif /* USE_DTRACE */
+
+#else /* TCL_DTRACE_DEBUG */
+
+#define USE_DTRACE 1
+
+#if !defined(TCL_DTRACE_DEBUG_LOG_ENABLED) || !(TCL_DTRACE_DEBUG_LOG_ENABLED)
+#undef TCL_DTRACE_DEBUG_LOG_ENABLED
+#define TCL_DTRACE_DEBUG_LOG_ENABLED 0
+#endif
+
+#if !defined(TCL_DTRACE_DEBUG_INST_PROBES) || !(TCL_DTRACE_DEBUG_INST_PROBES)
+#undef TCL_DTRACE_DEBUG_INST_PROBES
+#define TCL_DTRACE_DEBUG_INST_PROBES 0
+#endif
+
+MODULE_SCOPE int tclDTraceDebugEnabled, tclDTraceDebugIndent;
+MODULE_SCOPE FILE *tclDTraceDebugLog;
+MODULE_SCOPE void TclDTraceOpenDebugLog(void);
+MODULE_SCOPE void TclDTraceInfo(Tcl_Obj *info, char **args, int *argsi);
+
+#define TCL_DTRACE_DEBUG_LOG() \
+	int tclDTraceDebugEnabled = TCL_DTRACE_DEBUG_LOG_ENABLED;\
+	int tclDTraceDebugIndent = 0; \
+	FILE *tclDTraceDebugLog = NULL; \
+	void TclDTraceOpenDebugLog(void) { char n[35]; \
+	sprintf(n, "/tmp/tclDTraceDebug-%lu.log", (unsigned long) getpid()); \
+	tclDTraceDebugLog = fopen(n, "a"); } \
+
+#define TclDTraceDbgMsg(p, m, ...) do { if (tclDTraceDebugEnabled) { \
+	int _l, _t = 0; if (!tclDTraceDebugLog) { TclDTraceOpenDebugLog(); } \
+	fprintf(tclDTraceDebugLog, "%.12s:%.4d:%n", strrchr(__FILE__, '/') + \
+		1, __LINE__, &_l); _t += _l; \
+	fprintf(tclDTraceDebugLog, " %.*s():%n", (_t < 18 ? 18 - _t : 0) + \
+		18, __func__, &_l); _t += _l; \
+	fprintf(tclDTraceDebugLog, "%*s" p "%n", (_t < 40 ? 40 - _t : 0) + \
+		2 * tclDTraceDebugIndent, "", &_l); _t += _l; \
+	fprintf(tclDTraceDebugLog, "%*s" m "\n", (_t < 64 ? 64 - _t : 1), "", \
+		##__VA_ARGS__); fflush(tclDTraceDebugLog); \
+	} } while (0)
+
+#define TCL_DTRACE_PROC_ENTRY_ENABLED()	    1
+#define TCL_DTRACE_PROC_RETURN_ENABLED()    1
+#define TCL_DTRACE_PROC_RESULT_ENABLED()    1
+#define TCL_DTRACE_PROC_ARGS_ENABLED()	    1
+#define TCL_DTRACE_PROC_INFO_ENABLED()	    1
+#define TCL_DTRACE_PROC_ENTRY(a0, a1, a2) \
+	tclDTraceDebugIndent++; \
+	TclDTraceDbgMsg("-> proc-entry", "%s %d %p", a0, a1, a2)
+#define TCL_DTRACE_PROC_RETURN(a0, a1) \
+	TclDTraceDbgMsg("<- proc-return", "%s %d", a0, a1); \
+	tclDTraceDebugIndent--
+#define TCL_DTRACE_PROC_RESULT(a0, a1, a2, a3) \
+	TclDTraceDbgMsg(" | proc-result", "%s %d %s %p", a0, a1, a2, a3)
+#define TCL_DTRACE_PROC_ARGS(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9) \
+	TclDTraceDbgMsg(" | proc-args", "%s %s %s %s %s %s %s %s %s %s", a0, \
+		a1, a2, a3, a4, a5, a6, a7, a8, a9)
+#define TCL_DTRACE_PROC_INFO(a0, a1, a2, a3, a4, a5) \
+	TclDTraceDbgMsg(" | proc-info", "%s %s %s %s %d %d", a0, a1, \
+		a2, a3, a4, a5)
+
+#define TCL_DTRACE_CMD_ENTRY_ENABLED()	    1
+#define TCL_DTRACE_CMD_RETURN_ENABLED()	    1
+#define TCL_DTRACE_CMD_RESULT_ENABLED()	    1
+#define TCL_DTRACE_CMD_ARGS_ENABLED()	    1
+#define TCL_DTRACE_CMD_INFO_ENABLED()	    1
+#define TCL_DTRACE_CMD_ENTRY(a0, a1, a2) \
+	tclDTraceDebugIndent++; \
+	TclDTraceDbgMsg("-> cmd-entry", "%s %d %p", a0, a1, a2)
+#define TCL_DTRACE_CMD_RETURN(a0, a1) \
+	TclDTraceDbgMsg("<- cmd-return", "%s %d", a0, a1); \
+	tclDTraceDebugIndent--
+#define TCL_DTRACE_CMD_RESULT(a0, a1, a2, a3) \
+	TclDTraceDbgMsg(" | cmd-result", "%s %d %s %p", a0, a1, a2, a3)
+#define TCL_DTRACE_CMD_ARGS(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9) \
+	TclDTraceDbgMsg(" | cmd-args", "%s %s %s %s %s %s %s %s %s %s", a0, \
+		a1, a2, a3, a4, a5, a6, a7, a8, a9)
+#define TCL_DTRACE_CMD_INFO(a0, a1, a2, a3, a4, a5) \
+	TclDTraceDbgMsg(" | cmd-info", "%s %s %s %s %d %d", a0, a1, \
+		a2, a3, a4, a5)
+
+#define TCL_DTRACE_INST_START_ENABLED()	    TCL_DTRACE_DEBUG_INST_PROBES
+#define TCL_DTRACE_INST_DONE_ENABLED()	    TCL_DTRACE_DEBUG_INST_PROBES
+#define TCL_DTRACE_INST_START(a0, a1, a2) \
+	TclDTraceDbgMsg(" | inst-start", "%s %d %p", a0, a1, a2)
+#define TCL_DTRACE_INST_DONE(a0, a1, a2) \
+	TclDTraceDbgMsg(" | inst-end", "%s %d %p", a0, a1, a2)
+
+#define TCL_DTRACE_TCL_PROBE_ENABLED()	    1
+#define TCL_DTRACE_TCL_PROBE(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9) \
+	tclDTraceDebugEnabled = 1; \
+	TclDTraceDbgMsg(" | tcl-probe", "%s %s %s %s %s %s %s %s %s %s", a0, \
+		a1, a2, a3, a4, a5, a6, a7, a8, a9)
+
+#endif /* TCL_DTRACE_DEBUG */
 
 #endif /* _TCLCOMPILATION */
 

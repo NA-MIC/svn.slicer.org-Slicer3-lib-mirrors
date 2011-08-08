@@ -1,9 +1,10 @@
-/Makefile.in/1.21/Fri Mar  7 22:42:53 2008//Tcore-8-5-2
-/README/1.4/Tue Feb 24 22:58:48 2004//Tcore-8-5-2
-/pkga.c/1.12/Thu Dec 13 15:28:42 2007//Tcore-8-5-2
-/pkgb.c/1.9/Thu Dec 13 15:28:42 2007//Tcore-8-5-2
-/pkgc.c/1.9/Thu Dec 13 15:28:43 2007//Tcore-8-5-2
-/pkgd.c/1.8/Thu Dec 13 15:28:43 2007//Tcore-8-5-2
-/pkge.c/1.10/Thu Dec 13 15:28:43 2007//Tcore-8-5-2
-/pkgua.c/1.7/Thu Dec 13 15:28:43 2007//Tcore-8-5-2
+/.cvsignore/1.2.2.4/Wed Jun 16 13:13:37 2010//Tcore-8-5-9
+/Makefile.in/1.21/Mon Aug  8 21:35:40 2011//Tcore-8-5-9
+/README/1.4/Mon Aug  8 21:35:40 2011//Tcore-8-5-9
+/pkga.c/1.12/Mon Aug  8 21:35:40 2011//Tcore-8-5-9
+/pkgb.c/1.9/Mon Aug  8 21:35:40 2011//Tcore-8-5-9
+/pkgc.c/1.9/Mon Aug  8 21:35:40 2011//Tcore-8-5-9
+/pkgd.c/1.8/Mon Aug  8 21:35:40 2011//Tcore-8-5-9
+/pkge.c/1.10/Mon Aug  8 21:35:40 2011//Tcore-8-5-9
+/pkgua.c/1.7/Mon Aug  8 21:35:40 2011//Tcore-8-5-9
 D
