@@ -73,7 +73,8 @@ IF(Subversion_SVN_EXECUTABLE)
     SET(_Subversion_SAVED_LC_ALL "$ENV{LC_ALL}")
     SET(ENV{LC_ALL} C)
 
-    EXECUTE_PROCESS(COMMAND ${Subversion_SVN_EXECUTABLE} info ${dir}
+    EXECUTE_PROCESS(COMMAND ${Subversion_SVN_EXECUTABLE} info "."
+      WORKING_DIRECTORY ${dir}
       OUTPUT_VARIABLE ${prefix}_WC_INFO
       ERROR_VARIABLE Subversion_svn_info_error
       RESULT_VARIABLE Subversion_svn_info_result
