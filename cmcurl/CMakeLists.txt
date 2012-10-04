@@ -12,6 +12,8 @@ ENDIF(COMMAND CMAKE_POLICY)
 
 PROJECT(SLICERLIBCURL C)
 
+INCLUDE(CTestUseLaunchers OPTIONAL)
+
 #-----------------------------------------------------------------------------
 # Disable MSVC 8 warnings
 IF(WIN32)
